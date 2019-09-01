@@ -62,7 +62,7 @@ namespace Iced.UnitTests.Intel.InstructionTests {
 			for (int i = 0; i < elems; i++) {
 				var expInstr = expected[i];
 				var actualInstr = actual[i];
-				Assert.True(Instruction.TEST_BitByBitEquals(expInstr, actualInstr), $"Index [{i}]: " + Instruction.TEST_DumpDiff(expInstr, actualInstr));
+				Assert.True(Instruction.EqualsAllBits(expInstr, actualInstr));
 			}
 		}
 
@@ -132,7 +132,7 @@ namespace Iced.UnitTests.Intel.InstructionTests {
 				yield return Create(new Instruction[] { Instruction.Create(Code.Nopd) });
 				yield return Create(GetInstructions());
 
-				object[] Create(Instruction[] instructions) => new object[] { instructions, new InstructionList(instructions) };
+				static object[] Create(Instruction[] instructions) => new object[] { instructions, new InstructionList(instructions) };
 			}
 		}
 
@@ -166,7 +166,7 @@ namespace Iced.UnitTests.Intel.InstructionTests {
 			var list = new InstructionList(instructions);
 			Assert.Equal(instructions.Length, list.Count);
 			for (int i = 0; i < instructions.Length; i++)
-				Assert.True(Instruction.TEST_BitByBitEquals(instructions[i], list[i]), $"Index [{i}]: " + Instruction.TEST_DumpDiff(instructions[i], list[i]));
+				Assert.True(Instruction.EqualsAllBits(instructions[i], list[i]));
 		}
 
 		[Fact]
@@ -337,7 +337,7 @@ namespace Iced.UnitTests.Intel.InstructionTests {
 			int index = 0;
 			foreach (ref var instr in list) {
 				Assert.True(index < instructions.Length);
-				Assert.True(Instruction.TEST_BitByBitEquals(instructions[index], instr), Instruction.TEST_DumpDiff(instructions[index], instr));
+				Assert.True(Instruction.EqualsAllBits(instructions[index], instr));
 				index++;
 			}
 			Assert.Equal(instructions.Length, index);
@@ -447,7 +447,7 @@ namespace Iced.UnitTests.Intel.InstructionTests {
 					yield return Create(kind, 1, new Instruction[] { i[1], i[12], i[10] }, new Instruction[] { i[3], i[5], i[7] }, new Instruction[] { i[1], i[3], i[5], i[7], i[12], i[10] });
 				}
 
-				object[] Create(InsertRangeKind kind, int index, Instruction[] instructions, Instruction[] inserted, Instruction[] expected) {
+				static object[] Create(InsertRangeKind kind, int index, Instruction[] instructions, Instruction[] inserted, Instruction[] expected) {
 					var list = new InstructionList(instructions);
 					return new object[] { index, list, Convert(kind, inserted), expected };
 				}
@@ -538,7 +538,7 @@ namespace Iced.UnitTests.Intel.InstructionTests {
 					yield return Create(kind, new Instruction[] { i[1], i[12], i[10] }, new Instruction[] { i[3], i[5], i[7] }, new Instruction[] { i[1], i[12], i[10], i[3], i[5], i[7] });
 				}
 
-				object[] Create(InsertRangeKind kind, Instruction[] instructions, Instruction[] inserted, Instruction[] expected) {
+				static object[] Create(InsertRangeKind kind, Instruction[] instructions, Instruction[] inserted, Instruction[] expected) {
 					var list = new InstructionList(instructions);
 					return new object[] { list, Convert(kind, inserted), expected };
 				}
@@ -578,7 +578,7 @@ namespace Iced.UnitTests.Intel.InstructionTests {
 
 				yield return Create(5, 0, new Instruction[] { i[0], i[1], i[2], i[3], i[4] }, new Instruction[] { i[0], i[1], i[2], i[3], i[4] });
 
-				object[] Create(int index, int count, Instruction[] instructions, Instruction[] expected) {
+				static object[] Create(int index, int count, Instruction[] instructions, Instruction[] expected) {
 					var list = new InstructionList(instructions);
 					return new object[] { index, count, list, expected };
 				}

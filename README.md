@@ -3,13 +3,13 @@
 
 <img align="right" width="160px" height="160px" src="logo.png">
 
-High performance x86 (16/32/64-bit) instruction decoder, encoder and formatter.
+High performance x86 (16/32/64-bit) instruction decoder, encoder and disassembler.
 It can be used for static analysis of x86/x64 binaries, to rewrite code (eg. remove garbage instructions), to relocate code or as a disassembler.
 
 - Supports all Intel and AMD instructions
 - The decoder doesn't allocate any memory and is 2x-5x+ faster than other similar libraries written in C or C#
 - Small decoded instructions, only 32 bytes
-- The formatter supports masm, nasm and gas (AT&T) and there are many options to customize the output
+- The formatter supports masm, nasm, gas (AT&T), Intel (XED) and there are many options to customize the output
 - The encoder can be used to re-encode decoded instructions at any address
 - The block encoder encodes a list of instructions and optimizes branches to short, near or 'long' (64-bit: 1 or more instructions)
 - API to get instruction info, eg. read/written registers, memory and rflags bits; CPUID feature flag, flow control info, etc
@@ -35,10 +35,12 @@ Formatters:
 	- `MasmFormatter`
 	- `NasmFormatter`
 	- `GasFormatter`
+	- `IntelFormatter`
 - `FormatterOptions`
 	- `MasmFormatterOptions`
 	- `NasmFormatterOptions`
 	- `GasFormatterOptions`
+	- `IntelFormatterOptions`
 - `FormatterOutput`
 	- `StringBuilderFormatterOutput`
 - `ISymbolResolver`
@@ -50,6 +52,7 @@ Encoder:
 - `BlockEncoder`
 - `CodeWriter`
 - `ConstantOffsets`
+- `OpCodeInfo` (`Instruction.OpCode` and `Code.ToOpCode()`)
 
 Instruction info:
 
@@ -125,7 +128,7 @@ namespace Iced.Examples {
                 decoder.Decode(out instructions.AllocUninitializedElement());
             }
 
-            // Formatters: Masm*, Nasm* and Gas* (AT&T)
+            // Formatters: Masm*, Nasm*, Gas* (AT&T) and Intel* (XED)
             var formatter = new NasmFormatter();
             formatter.Options.DigitSeparator = "`";
             formatter.Options.FirstOperandCharIndex = 10;
@@ -133,7 +136,7 @@ namespace Iced.Examples {
             // Use InstructionList's ref iterator (C# 7.3) to prevent copying 32 bytes every iteration
             foreach (ref var instr in instructions) {
                 // Don't use instr.ToString(), it allocates more, uses masm syntax and default options
-                formatter.Format(ref instr, output);
+                formatter.Format(instr, output);
                 Console.Write(instr.IP.ToString("X16"));
                 Console.Write(" ");
                 int instrLen = instr.ByteLength;
@@ -226,7 +229,7 @@ Disassembled code:
             endRip = newDecoder.IP + (uint)newCode.Length;
             while (newDecoder.IP < endRip) {
                 newDecoder.Decode(out var instr);
-                formatter.Format(ref instr, output);
+                formatter.Format(instr, output);
                 Console.WriteLine($"{instr.IP:X16} {output.ToStringAndReset()}");
             }
         }
@@ -309,7 +312,7 @@ Disassembled code:
             ulong endRip = newDecoder.IP + (uint)newCode.Length;
             while (newDecoder.IP < endRip) {
                 newDecoder.Decode(out var instr);
-                formatter.Format(ref instr, output);
+                formatter.Format(instr, output);
                 Console.WriteLine($"{instr.IP:X16} {output.ToStringAndReset()}");
             }
         }
@@ -317,6 +320,7 @@ Disassembled code:
         /*
          * This method produces the following output:
 00007FFAC46ACDA4 mov [rsp+10h],rbx
+    OpCode: REX.W 89 /r
     Encoding: Legacy
     Mnemonic: Mov
     Code: Mov_rm64_r64
@@ -326,10 +330,13 @@ Disassembled code:
     Memory size: 8
     Op0Access: Write
     Op1Access: Read
+    Op0: r64_mem
+    Op1: r64_reg
     RSP:Read
     RBX:Read
     [SS:RSP+0x10;UInt64;Write]
 00007FFAC46ACDA9 mov [rsp+18h],rsi
+    OpCode: REX.W 89 /r
     Encoding: Legacy
     Mnemonic: Mov
     Code: Mov_rm64_r64
@@ -339,10 +346,13 @@ Disassembled code:
     Memory size: 8
     Op0Access: Write
     Op1Access: Read
+    Op0: r64_mem
+    Op1: r64_reg
     RSP:Read
     RSI:Read
     [SS:RSP+0x18;UInt64;Write]
 00007FFAC46ACDAE push rbp
+    OpCode: 50+ro
     Encoding: Legacy
     Mnemonic: Push
     Code: Push_r64
@@ -350,10 +360,12 @@ Disassembled code:
     FlowControl: Next
     SP Increment: -8
     Op0Access: Read
+    Op0: r64_opcode
     RBP:Read
     RSP:ReadWrite
     [SS:RSP+0xFFFFFFFFFFFFFFF8;UInt64;Write]
 00007FFAC46ACDAF push rdi
+    OpCode: 50+ro
     Encoding: Legacy
     Mnemonic: Push
     Code: Push_r64
@@ -361,10 +373,12 @@ Disassembled code:
     FlowControl: Next
     SP Increment: -8
     Op0Access: Read
+    Op0: r64_opcode
     RDI:Read
     RSP:ReadWrite
     [SS:RSP+0xFFFFFFFFFFFFFFF8;UInt64;Write]
 00007FFAC46ACDB0 push r14
+    OpCode: 50+ro
     Encoding: Legacy
     Mnemonic: Push
     Code: Push_r64
@@ -372,10 +386,12 @@ Disassembled code:
     FlowControl: Next
     SP Increment: -8
     Op0Access: Read
+    Op0: r64_opcode
     R14:Read
     RSP:ReadWrite
     [SS:RSP+0xFFFFFFFFFFFFFFF8;UInt64;Write]
 00007FFAC46ACDB2 lea rbp,[rsp-100h]
+    OpCode: REX.W 8D /r
     Encoding: Legacy
     Mnemonic: Lea
     Code: Lea_r64_m
@@ -384,9 +400,12 @@ Disassembled code:
     Displacement offset = 4, size = 4
     Op0Access: Write
     Op1Access: NoMemAccess
+    Op0: r64_reg
+    Op1: mem
     RBP:Write
     RSP:Read
 00007FFAC46ACDBA sub rsp,200h
+    OpCode: REX.W 81 /5 id
     Encoding: Legacy
     Mnemonic: Sub
     Code: Sub_rm64_imm32
@@ -397,8 +416,11 @@ Disassembled code:
     RFLAGS Modified: OF, SF, ZF, AF, CF, PF
     Op0Access: ReadWrite
     Op1Access: Read
+    Op0: r64_mem
+    Op1: imm32sex64
     RSP:ReadWrite
 00007FFAC46ACDC1 mov rax,[7FFAC47524E0h]
+    OpCode: REX.W 8B /r
     Encoding: Legacy
     Mnemonic: Mov
     Code: Mov_r64_rm64
@@ -408,9 +430,12 @@ Disassembled code:
     Memory size: 8
     Op0Access: Write
     Op1Access: Read
+    Op0: r64_reg
+    Op1: r64_mem
     RAX:Write
     [DS:0x7FFAC47524E0;UInt64;Read]
 00007FFAC46ACDC8 xor rax,rsp
+    OpCode: REX.W 33 /r
     Encoding: Legacy
     Mnemonic: Xor
     Code: Xor_r64_rm64
@@ -422,9 +447,12 @@ Disassembled code:
     RFLAGS Modified: OF, SF, ZF, AF, CF, PF
     Op0Access: ReadWrite
     Op1Access: Read
+    Op0: r64_reg
+    Op1: r64_mem
     RAX:ReadWrite
     RSP:Read
 00007FFAC46ACDCB mov [rbp+0F0h],rax
+    OpCode: REX.W 89 /r
     Encoding: Legacy
     Mnemonic: Mov
     Code: Mov_rm64_r64
@@ -434,10 +462,13 @@ Disassembled code:
     Memory size: 8
     Op0Access: Write
     Op1Access: Read
+    Op0: r64_mem
+    Op1: r64_reg
     RBP:Read
     RAX:Read
     [SS:RBP+0xF0;UInt64;Write]
 00007FFAC46ACDD2 mov r8,[7FFAC474F208h]
+    OpCode: REX.W 8B /r
     Encoding: Legacy
     Mnemonic: Mov
     Code: Mov_r64_rm64
@@ -447,9 +478,12 @@ Disassembled code:
     Memory size: 8
     Op0Access: Write
     Op1Access: Read
+    Op0: r64_reg
+    Op1: r64_mem
     R8:Write
     [DS:0x7FFAC474F208;UInt64;Read]
 00007FFAC46ACDD9 lea rax,[7FFAC46F4A58h]
+    OpCode: REX.W 8D /r
     Encoding: Legacy
     Mnemonic: Lea
     Code: Lea_r64_m
@@ -458,8 +492,11 @@ Disassembled code:
     Displacement offset = 3, size = 4
     Op0Access: Write
     Op1Access: NoMemAccess
+    Op0: r64_reg
+    Op1: mem
     RAX:Write
 00007FFAC46ACDE0 xor edi,edi
+    OpCode: o32 33 /r
     Encoding: Legacy
     Mnemonic: Xor
     Code: Xor_r32_rm32
@@ -471,6 +508,8 @@ Disassembled code:
     RFLAGS Modified: OF, SF, ZF, AF, CF, PF
     Op0Access: Write
     Op1Access: None
+    Op0: r32_reg
+    Op1: r32_mem
     RDI:Write
          */
         static void InstructionInfoExample() {
@@ -492,15 +531,17 @@ Disassembled code:
                 // This can be useful if there are relocations in the binary. The encoder has a similar
                 // method. This method must be called after Decode() and you must pass in the last
                 // instruction Decode() returned.
-                var offsets = decoder.GetConstantOffsets(ref instr);
+                var offsets = decoder.GetConstantOffsets(instr);
 
                 // A formatter is recommended since this ToString() method defaults to masm syntax,
                 // uses default options, and allocates every single time it's called.
                 var disasmStr = instr.ToString();
                 Console.WriteLine($"{instr.IP:X16} {disasmStr}");
 
-                var info = instrInfoFactory.GetInfo(ref instr);
+                var opCode = instr.OpCode;
+                var info = instrInfoFactory.GetInfo(instr);
                 const string tab = "    ";
+                Console.WriteLine($"{tab}OpCode: {opCode.ToString()}");
                 Console.WriteLine($"{tab}Encoding: {instr.Encoding}");
                 Console.WriteLine($"{tab}Mnemonic: {instr.Mnemonic}");
                 Console.WriteLine($"{tab}Code: {instr.Code}");
@@ -537,6 +578,8 @@ Disassembled code:
                 }
                 for (int i = 0; i < instr.OpCount; i++)
                     Console.WriteLine($"{tab}Op{i}Access: {info.GetOpAccess(i)}");
+                for (int i = 0; i < opCode.OpCount; i++)
+                    Console.WriteLine($"{tab}Op{i}: {opCode.GetOpKind(i)}");
                 // The returned iterator is a struct, nothing is allocated unless you box it
                 foreach (var regInfo in info.GetUsedRegisters())
                     Console.WriteLine($"{tab}{regInfo.ToString()}");

@@ -139,6 +139,10 @@ data16 ret 0xa55a
 ret 0xa55a
 data16 ret
 ret
+data16 rep ret 0xa55a
+rep ret 0xa55a
+data16 rep ret
+rep ret
 les bx, [eax]
 les ebx, [eax]
 lds bx, [eax]
@@ -582,6 +586,7 @@ addr16 monitorx
 monitorx
 clzero ax
 clzero eax
+rdpru
 add cl, 0x5a
 add byte ptr [eax], 0x5a
 or dl, 0xa5
@@ -608,7 +613,6 @@ jmpe dword ptr [eax]
 loadallreset286
 loadall286
 loadall386
-cflsh
 umov dh, cl
 umov [eax], bl
 umov si, cx
@@ -623,8 +627,6 @@ umov ecx, esi
 umov ebx, [eax]
 mov esi, tr3
 mov tr3, esi
-wrecr
-rdecr
 xbts cx, si
 xbts bx, [eax]
 xbts ecx, esi
@@ -639,7 +641,6 @@ cmpxchg486 si, cx
 cmpxchg486 [eax], bx
 cmpxchg486 esi, ecx
 cmpxchg486 [eax], ebx
-zalloc [eax]
 umonitor bp
 umonitor ebp
 jmpe 0xa55a

@@ -880,6 +880,7 @@ namespace Iced.Intel {
 			0,// Clzerow
 			0,// Clzerod
 			0,// Clzeroq
+			0,// Rdpru
 			2,// Lar_r16_rm16
 			2,// Lar_r32_rm32
 			2,// Lar_r64_rm64
@@ -896,7 +897,6 @@ namespace Iced.Intel {
 			0,// Invd
 			0,// Wbinvd
 			0,// Wbnoinvd
-			0,// Cflsh
 			0,// Cl1invmb
 			0,// Ud2
 			2,// ReservedNop_rm16_r16_0F0D
@@ -1124,7 +1124,7 @@ namespace Iced.Intel {
 			2,// Cvtsi2sd_xmm_rm64
 			3,// VEX_Vcvtsi2sd_xmm_xmm_rm32
 			3,// VEX_Vcvtsi2sd_xmm_xmm_rm64
-			3,// EVEX_Vcvtsi2sd_xmm_xmm_rm32
+			3,// EVEX_Vcvtsi2sd_xmm_xmm_rm32_er
 			3,// EVEX_Vcvtsi2sd_xmm_xmm_rm64_er
 			2,// Movntps_m128_xmm
 			2,// VEX_Vmovntps_m128_xmm
@@ -1184,11 +1184,9 @@ namespace Iced.Intel {
 			0,// Rdtsc
 			0,// Rdmsr
 			0,// Rdpmc
-			0,// Wrecr
 			0,// Sysenter
 			0,// Sysexitd
 			0,// Sysexitq
-			0,// Rdecr
 			0,// Getsec
 			2,// Cmovo_r16_rm16
 			2,// Cmovo_r32_rm32
@@ -1825,7 +1823,7 @@ namespace Iced.Intel {
 			2,// EVEX_Vcvtpd2qq_zmm_k1z_zmmm512b64_er
 			3,// EVEX_Vcvtusi2ss_xmm_xmm_rm32_er
 			3,// EVEX_Vcvtusi2ss_xmm_xmm_rm64_er
-			3,// EVEX_Vcvtusi2sd_xmm_xmm_rm32
+			3,// EVEX_Vcvtusi2sd_xmm_xmm_rm32_er
 			3,// EVEX_Vcvtusi2sd_xmm_xmm_rm64_er
 			2,// Haddpd_xmm_xmmm128
 			3,// VEX_Vhaddpd_xmm_xmm_xmmm128
@@ -1949,12 +1947,12 @@ namespace Iced.Intel {
 			2,// VEX_Kmovd_m32_k
 			2,// VEX_Kmovw_k_r32
 			2,// VEX_Kmovb_k_r32
-			2,// VEX_Kmovq_k_r64
 			2,// VEX_Kmovd_k_r32
+			2,// VEX_Kmovq_k_r64
 			2,// VEX_Kmovw_r32_k
 			2,// VEX_Kmovb_r32_k
-			2,// VEX_Kmovq_r64_k
 			2,// VEX_Kmovd_r32_k
+			2,// VEX_Kmovq_r64_k
 			2,// VEX_Kortestw_k_k
 			2,// VEX_Kortestq_k_k
 			2,// VEX_Kortestb_k_k
@@ -2029,7 +2027,6 @@ namespace Iced.Intel {
 			3,// Shrd_rm16_r16_CL
 			3,// Shrd_rm32_r32_CL
 			3,// Shrd_rm64_r64_CL
-			1,// Zalloc_m256
 			1,// Fxsave_m512byte
 			1,// Fxsave64_m512byte
 			1,// Rdfsbase_r32
@@ -3862,14 +3859,14 @@ namespace Iced.Intel {
 			3,// EVEX_Vgetmantpd_zmm_k1z_zmmm512b64_imm8_sae
 			4,// EVEX_Vgetmantss_xmm_k1z_xmm_xmmm32_imm8_sae
 			4,// EVEX_Vgetmantsd_xmm_k1z_xmm_xmmm64_imm8_sae
-			3,// VEX_Kshiftrw_k_k_imm8
 			3,// VEX_Kshiftrb_k_k_imm8
-			3,// VEX_Kshiftrq_k_k_imm8
+			3,// VEX_Kshiftrw_k_k_imm8
 			3,// VEX_Kshiftrd_k_k_imm8
-			3,// VEX_Kshiftlw_k_k_imm8
+			3,// VEX_Kshiftrq_k_k_imm8
 			3,// VEX_Kshiftlb_k_k_imm8
-			3,// VEX_Kshiftlq_k_k_imm8
+			3,// VEX_Kshiftlw_k_k_imm8
 			3,// VEX_Kshiftld_k_k_imm8
+			3,// VEX_Kshiftlq_k_k_imm8
 			4,// VEX_Vinserti128_ymm_ymm_xmmm128_imm8
 			4,// EVEX_Vinserti32x4_ymm_k1z_ymm_xmmm128_imm8
 			4,// EVEX_Vinserti32x4_zmm_k1z_zmm_xmmm128_imm8

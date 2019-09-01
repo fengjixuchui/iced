@@ -53,7 +53,7 @@ namespace Iced.Intel {
 		/// <summary>
 		/// Upper case decorators, eg. {z}, {sae}, {rd-sae}
 		/// </summary>
-		[Obsolete("Use " + nameof(UpperCaseDecorators) + " instead", false)]
+		[Obsolete("Use " + nameof(UpperCaseDecorators) + " instead", true)]
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public bool UpperCaseOther {
 			get => UpperCaseDecorators;
@@ -125,12 +125,12 @@ namespace Iced.Intel {
 		/// <summary>
 		/// Hex number prefix or null/empty string, eg. "0x"
 		/// </summary>
-		public string HexPrefix { get; set; }
+		public string? HexPrefix { get; set; }
 
 		/// <summary>
 		/// Hex number suffix or null/empty string, eg. "h"
 		/// </summary>
-		public string HexSuffix { get; set; }
+		public string? HexSuffix { get; set; }
 
 		/// <summary>
 		/// Size of a digit group
@@ -140,12 +140,12 @@ namespace Iced.Intel {
 		/// <summary>
 		/// Decimal number prefix or null/empty string
 		/// </summary>
-		public string DecimalPrefix { get; set; }
+		public string? DecimalPrefix { get; set; }
 
 		/// <summary>
 		/// Decimal number suffix or null/empty string
 		/// </summary>
-		public string DecimalSuffix { get; set; }
+		public string? DecimalSuffix { get; set; }
 
 		/// <summary>
 		/// Size of a digit group
@@ -155,12 +155,12 @@ namespace Iced.Intel {
 		/// <summary>
 		/// Octal number prefix or null/empty string
 		/// </summary>
-		public string OctalPrefix { get; set; }
+		public string? OctalPrefix { get; set; }
 
 		/// <summary>
 		/// Octal number suffix or null/empty string
 		/// </summary>
-		public string OctalSuffix { get; set; }
+		public string? OctalSuffix { get; set; }
 
 		/// <summary>
 		/// Size of a digit group
@@ -170,12 +170,12 @@ namespace Iced.Intel {
 		/// <summary>
 		/// Binary number prefix or null/empty string
 		/// </summary>
-		public string BinaryPrefix { get; set; }
+		public string? BinaryPrefix { get; set; }
 
 		/// <summary>
 		/// Binary number suffix or null/empty string
 		/// </summary>
-		public string BinarySuffix { get; set; }
+		public string? BinarySuffix { get; set; }
 
 		/// <summary>
 		/// Size of a digit group
@@ -185,13 +185,13 @@ namespace Iced.Intel {
 		/// <summary>
 		/// Digit separator or null/empty string
 		/// </summary>
-		public string DigitSeparator { get; set; }
+		public string? DigitSeparator { get; set; }
 
 		/// <summary>
 		/// Use shortest possible hexadecimal/octal/binary numbers, eg. 0xA/0Ah instead of eg. 0x0000000A/0000000Ah.
 		/// This option has no effect on branch targets, use <see cref="ShortBranchNumbers"/>.
 		/// </summary>
-		[Obsolete("Use " + nameof(LeadingZeroes) + " instead", false)]
+		[Obsolete("Use " + nameof(LeadingZeroes) + " instead", true)]
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public bool ShortNumbers {
 			get => !LeadingZeroes;
@@ -235,7 +235,7 @@ namespace Iced.Intel {
 		/// <summary>
 		/// Don't add leading zeroes to branch offsets, eg. 'je 123h' vs 'je 00000123h'. Used by call near, call far, jmp near, jmp far, jcc, loop, loopcc, xbegin
 		/// </summary>
-		[Obsolete("Use " + nameof(BranchLeadingZeroes) + " instead", false)]
+		[Obsolete("Use " + nameof(BranchLeadingZeroes) + " instead", true)]
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public bool ShortBranchNumbers {
 			get => !BranchLeadingZeroes;

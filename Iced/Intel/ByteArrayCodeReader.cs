@@ -21,7 +21,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#if (!NO_DECODER32 || !NO_DECODER64) && !NO_DECODER
+#if !NO_DECODER
 using System;
 
 namespace Iced.Intel {
@@ -69,7 +69,7 @@ namespace Iced.Intel {
 		/// </summary>
 		/// <param name="data">Data</param>
 		public ByteArrayCodeReader(byte[] data) {
-			if (data == null)
+			if (data is null)
 				ThrowHelper.ThrowArgumentNullException_data();
 			this.data = data;
 			currentPosition = 0;
@@ -84,7 +84,7 @@ namespace Iced.Intel {
 		/// <param name="index">Start index</param>
 		/// <param name="count">Number of bytes</param>
 		public ByteArrayCodeReader(byte[] data, int index, int count) {
-			if (data == null)
+			if (data is null)
 				ThrowHelper.ThrowArgumentNullException_data();
 			this.data = data;
 			if (index < 0)
@@ -103,7 +103,7 @@ namespace Iced.Intel {
 		/// </summary>
 		/// <param name="data">Data</param>
 		public ByteArrayCodeReader(ArraySegment<byte> data) {
-			if (data.Array == null)
+			if (data.Array is null)
 				ThrowHelper.ThrowArgumentException();
 			this.data = data.Array;
 			int offset = data.Offset;

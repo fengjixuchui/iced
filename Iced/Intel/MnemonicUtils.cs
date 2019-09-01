@@ -897,6 +897,7 @@ namespace Iced.Intel {
 			(ushort)Mnemonic.Clzero,// Clzerow
 			(ushort)Mnemonic.Clzero,// Clzerod
 			(ushort)Mnemonic.Clzero,// Clzeroq
+			(ushort)Mnemonic.Rdpru,// Rdpru
 			(ushort)Mnemonic.Lar,// Lar_r16_rm16
 			(ushort)Mnemonic.Lar,// Lar_r32_rm32
 			(ushort)Mnemonic.Lar,// Lar_r64_rm64
@@ -913,7 +914,6 @@ namespace Iced.Intel {
 			(ushort)Mnemonic.Invd,// Invd
 			(ushort)Mnemonic.Wbinvd,// Wbinvd
 			(ushort)Mnemonic.Wbnoinvd,// Wbnoinvd
-			(ushort)Mnemonic.Cflsh,// Cflsh
 			(ushort)Mnemonic.Cl1invmb,// Cl1invmb
 			(ushort)Mnemonic.Ud2,// Ud2
 			(ushort)Mnemonic.ReservedNop,// ReservedNop_rm16_r16_0F0D
@@ -1141,7 +1141,7 @@ namespace Iced.Intel {
 			(ushort)Mnemonic.Cvtsi2sd,// Cvtsi2sd_xmm_rm64
 			(ushort)Mnemonic.Vcvtsi2sd,// VEX_Vcvtsi2sd_xmm_xmm_rm32
 			(ushort)Mnemonic.Vcvtsi2sd,// VEX_Vcvtsi2sd_xmm_xmm_rm64
-			(ushort)Mnemonic.Vcvtsi2sd,// EVEX_Vcvtsi2sd_xmm_xmm_rm32
+			(ushort)Mnemonic.Vcvtsi2sd,// EVEX_Vcvtsi2sd_xmm_xmm_rm32_er
 			(ushort)Mnemonic.Vcvtsi2sd,// EVEX_Vcvtsi2sd_xmm_xmm_rm64_er
 			(ushort)Mnemonic.Movntps,// Movntps_m128_xmm
 			(ushort)Mnemonic.Vmovntps,// VEX_Vmovntps_m128_xmm
@@ -1201,11 +1201,9 @@ namespace Iced.Intel {
 			(ushort)Mnemonic.Rdtsc,// Rdtsc
 			(ushort)Mnemonic.Rdmsr,// Rdmsr
 			(ushort)Mnemonic.Rdpmc,// Rdpmc
-			(ushort)Mnemonic.Wrecr,// Wrecr
 			(ushort)Mnemonic.Sysenter,// Sysenter
 			(ushort)Mnemonic.Sysexit,// Sysexitd
 			(ushort)Mnemonic.Sysexit,// Sysexitq
-			(ushort)Mnemonic.Rdecr,// Rdecr
 			(ushort)Mnemonic.Getsec,// Getsec
 			(ushort)Mnemonic.Cmovo,// Cmovo_r16_rm16
 			(ushort)Mnemonic.Cmovo,// Cmovo_r32_rm32
@@ -1842,7 +1840,7 @@ namespace Iced.Intel {
 			(ushort)Mnemonic.Vcvtpd2qq,// EVEX_Vcvtpd2qq_zmm_k1z_zmmm512b64_er
 			(ushort)Mnemonic.Vcvtusi2ss,// EVEX_Vcvtusi2ss_xmm_xmm_rm32_er
 			(ushort)Mnemonic.Vcvtusi2ss,// EVEX_Vcvtusi2ss_xmm_xmm_rm64_er
-			(ushort)Mnemonic.Vcvtusi2sd,// EVEX_Vcvtusi2sd_xmm_xmm_rm32
+			(ushort)Mnemonic.Vcvtusi2sd,// EVEX_Vcvtusi2sd_xmm_xmm_rm32_er
 			(ushort)Mnemonic.Vcvtusi2sd,// EVEX_Vcvtusi2sd_xmm_xmm_rm64_er
 			(ushort)Mnemonic.Haddpd,// Haddpd_xmm_xmmm128
 			(ushort)Mnemonic.Vhaddpd,// VEX_Vhaddpd_xmm_xmm_xmmm128
@@ -1966,12 +1964,12 @@ namespace Iced.Intel {
 			(ushort)Mnemonic.Kmovd,// VEX_Kmovd_m32_k
 			(ushort)Mnemonic.Kmovw,// VEX_Kmovw_k_r32
 			(ushort)Mnemonic.Kmovb,// VEX_Kmovb_k_r32
-			(ushort)Mnemonic.Kmovq,// VEX_Kmovq_k_r64
 			(ushort)Mnemonic.Kmovd,// VEX_Kmovd_k_r32
+			(ushort)Mnemonic.Kmovq,// VEX_Kmovq_k_r64
 			(ushort)Mnemonic.Kmovw,// VEX_Kmovw_r32_k
 			(ushort)Mnemonic.Kmovb,// VEX_Kmovb_r32_k
-			(ushort)Mnemonic.Kmovq,// VEX_Kmovq_r64_k
 			(ushort)Mnemonic.Kmovd,// VEX_Kmovd_r32_k
+			(ushort)Mnemonic.Kmovq,// VEX_Kmovq_r64_k
 			(ushort)Mnemonic.Kortestw,// VEX_Kortestw_k_k
 			(ushort)Mnemonic.Kortestq,// VEX_Kortestq_k_k
 			(ushort)Mnemonic.Kortestb,// VEX_Kortestb_k_k
@@ -2046,7 +2044,6 @@ namespace Iced.Intel {
 			(ushort)Mnemonic.Shrd,// Shrd_rm16_r16_CL
 			(ushort)Mnemonic.Shrd,// Shrd_rm32_r32_CL
 			(ushort)Mnemonic.Shrd,// Shrd_rm64_r64_CL
-			(ushort)Mnemonic.Zalloc,// Zalloc_m256
 			(ushort)Mnemonic.Fxsave,// Fxsave_m512byte
 			(ushort)Mnemonic.Fxsave64,// Fxsave64_m512byte
 			(ushort)Mnemonic.Rdfsbase,// Rdfsbase_r32
@@ -3879,14 +3876,14 @@ namespace Iced.Intel {
 			(ushort)Mnemonic.Vgetmantpd,// EVEX_Vgetmantpd_zmm_k1z_zmmm512b64_imm8_sae
 			(ushort)Mnemonic.Vgetmantss,// EVEX_Vgetmantss_xmm_k1z_xmm_xmmm32_imm8_sae
 			(ushort)Mnemonic.Vgetmantsd,// EVEX_Vgetmantsd_xmm_k1z_xmm_xmmm64_imm8_sae
-			(ushort)Mnemonic.Kshiftrw,// VEX_Kshiftrw_k_k_imm8
 			(ushort)Mnemonic.Kshiftrb,// VEX_Kshiftrb_k_k_imm8
-			(ushort)Mnemonic.Kshiftrq,// VEX_Kshiftrq_k_k_imm8
+			(ushort)Mnemonic.Kshiftrw,// VEX_Kshiftrw_k_k_imm8
 			(ushort)Mnemonic.Kshiftrd,// VEX_Kshiftrd_k_k_imm8
-			(ushort)Mnemonic.Kshiftlw,// VEX_Kshiftlw_k_k_imm8
+			(ushort)Mnemonic.Kshiftrq,// VEX_Kshiftrq_k_k_imm8
 			(ushort)Mnemonic.Kshiftlb,// VEX_Kshiftlb_k_k_imm8
-			(ushort)Mnemonic.Kshiftlq,// VEX_Kshiftlq_k_k_imm8
+			(ushort)Mnemonic.Kshiftlw,// VEX_Kshiftlw_k_k_imm8
 			(ushort)Mnemonic.Kshiftld,// VEX_Kshiftld_k_k_imm8
+			(ushort)Mnemonic.Kshiftlq,// VEX_Kshiftlq_k_k_imm8
 			(ushort)Mnemonic.Vinserti128,// VEX_Vinserti128_ymm_ymm_xmmm128_imm8
 			(ushort)Mnemonic.Vinserti32x4,// EVEX_Vinserti32x4_ymm_k1z_ymm_xmmm128_imm8
 			(ushort)Mnemonic.Vinserti32x4,// EVEX_Vinserti32x4_zmm_k1z_zmm_xmmm128_imm8

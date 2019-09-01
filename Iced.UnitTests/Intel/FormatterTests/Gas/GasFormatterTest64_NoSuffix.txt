@@ -706,6 +706,8 @@ sar $0xa5,%r8
 sarq $0xa5,(%rax)
 ret $0xa55a
 ret
+rep ret $0xa55a
+rep ret
 mov $0x5a,%cl
 movb $0x5a,(%rax)
 xabort $0x5a
@@ -1424,9 +1426,9 @@ nopl (%rax)
 nop %rcx
 nopq (%rax)
 mov %cr3,%rsi
-mov %db3,%rsi
+mov %dr3,%rsi
 mov %rsi,%cr3
-mov %rsi,%db3
+mov %rsi,%dr3
 movaps %xmm5,%xmm1
 movaps (%rax),%xmm1
 vmovaps %xmm5,%xmm1
@@ -7270,22 +7272,22 @@ mov %cr12,%rax
 mov %cr13,%rax
 mov %cr14,%rax
 mov %cr15,%rax
-mov %db0,%rax
-mov %db1,%rax
-mov %db2,%rax
-mov %db3,%rax
-mov %db4,%rax
-mov %db5,%rax
-mov %db6,%rax
-mov %db7,%rax
-mov %db8,%rax
-mov %db9,%rax
-mov %db10,%rax
-mov %db11,%rax
-mov %db12,%rax
-mov %db13,%rax
-mov %db14,%rax
-mov %db15,%rax
+mov %dr0,%rax
+mov %dr1,%rax
+mov %dr2,%rax
+mov %dr3,%rax
+mov %dr4,%rax
+mov %dr5,%rax
+mov %dr6,%rax
+mov %dr7,%rax
+mov %dr8,%rax
+mov %dr9,%rax
+mov %dr10,%rax
+mov %dr11,%rax
+mov %dr12,%rax
+mov %dr13,%rax
+mov %dr14,%rax
+mov %dr15,%rax
 movq %mm1,%mm0
 movq %mm3,%mm2
 movq %mm5,%mm4
@@ -7441,6 +7443,7 @@ monitorx
 mwaitx
 addr32 clzero
 clzero
+rdpru
 prefetch (%rax)
 femms
 movntss %xmm1,(%rax)
@@ -7965,27 +7968,6 @@ umonitor %ebp
 umonitor %rbp
 umwait %ebp
 umwait %rbp
-lfence
-lfence
-lfence
-lfence
-lfence
-lfence
-lfence
-mfence
-mfence
-mfence
-mfence
-mfence
-mfence
-mfence
-sfence
-sfence
-sfence
-sfence
-sfence
-sfence
-sfence
 pcommit
 vpdpbusd %xmm3,%xmm14,%xmm18{%k3}
 vpdpbusd 0x10(%rax),%xmm6,%xmm2
@@ -8327,10 +8309,10 @@ vdpbf16ps %zmm3,%zmm6,%zmm2{%k3}{z}
 vdpbf16ps 0x40(%rax),%zmm6,%zmm2
 vdpbf16ps 4(%rax){1to16},%zmm6,%zmm2{%k5}{z}
 vcvtneps2bf16 %xmm3,%xmm2{%k3}{z}
-vcvtneps2bf16 0x10(%rax),%xmm2{%k3}
+vcvtneps2bf16x 0x10(%rax),%xmm2{%k3}
 vcvtneps2bf16 4(%rax){1to4},%xmm2{%k5}{z}
 vcvtneps2bf16 %ymm3,%xmm2{%k3}{z}
-vcvtneps2bf16 0x20(%rax),%xmm2{%k3}
+vcvtneps2bf16y 0x20(%rax),%xmm2{%k3}
 vcvtneps2bf16 4(%rax){1to8},%xmm2{%k5}{z}
 vcvtneps2bf16 %zmm3,%ymm2{%k3}{z}
 vcvtneps2bf16 0x40(%rax),%ymm2{%k3}

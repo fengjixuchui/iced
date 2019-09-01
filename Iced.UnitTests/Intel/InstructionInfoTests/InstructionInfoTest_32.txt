@@ -1011,6 +1011,8 @@ C4E379 63 10 A5, VEX_Vpcmpistri_xmm_xmmm128_imm8, VEX, AVX, fw=cosz fc=ap op0=r 
 67 0F01 FC, Clzerow, Legacy, CLZERO, r=ax;ds
 # clzero
 0F01 FC, Clzerod, Legacy, CLZERO, r=eax;ds
+# rdpru
+0F01 FD, Rdpru, Legacy, RDPRU, fw=c fc=aopsz r=ecx w=eax;edx
 # add es:[eax],bh
 26 00 38, Add_rm8_r8, Legacy, INTEL8086, fw=oszacp op0=rw op1=r r=es r=eax r=bh rwm=es:eax;UInt8
 # add cs:[eax],bh
@@ -1056,15 +1058,15 @@ C4E379 63 10 A5, VEX_Vpcmpistri_xmm_xmmm128_imm8, VEX, AVX, fw=cosz fc=ap op0=r 
 # cmp byte ptr [eax],0A5h
 82 38 A5, Cmp_rm8_imm8_82, Legacy, INTEL8086, fw=oszacp op0=r op1=r r=ds r=eax rm=ds:eax;UInt8
 # fstenv [eax]
-9B 66 D9 30, Fstenv_m14byte, Legacy, FPU, op0=w r=ds r=eax wm=ds:eax;FpuEnv14
+9B 66 D9 30, Fstenv_m14byte, Legacy, FPU, op0=w r=ds r=eax wm=ds:eax;FpuEnv14 special
 # fstenv [eax]
-9B D9 30, Fstenv_m28byte, Legacy, FPU, op0=w r=ds r=eax wm=ds:eax;FpuEnv28
+9B D9 30, Fstenv_m28byte, Legacy, FPU, op0=w r=ds r=eax wm=ds:eax;FpuEnv28 special
 # frstpm
 DB E5, Frstpm, Legacy, FPU287XL_ONLY, decopt=oldfpu
 # fsave [eax]
-9B 66 DD 30, Fsave_m94byte, Legacy, FPU, saverestore op0=w r=ds r=eax wm=ds:eax;FpuState94
+9B 66 DD 30, Fsave_m94byte, Legacy, FPU, saverestore op0=w r=ds r=eax wm=ds:eax;FpuState94 special
 # fsave [eax]
-9B DD 30, Fsave_m108byte, Legacy, FPU, saverestore op0=w r=ds r=eax wm=ds:eax;FpuState108
+9B DD 30, Fsave_m108byte, Legacy, FPU, saverestore op0=w r=ds r=eax wm=ds:eax;FpuState108 special
 # fstdw ax
 DF E1, Fstdw_AX, Legacy, FPU387SL_ONLY, decopt=oldfpu op0=w w=ax
 # fstsg ax
@@ -1083,8 +1085,6 @@ DF E2, Fstsg_AX, Legacy, FPU387SL_ONLY, decopt=oldfpu op0=w w=ax
 0F05, Loadall286, Legacy, INTEL286_ONLY, decopt=loadall286 priv saverestore
 # loadall386
 0F07, Loadall386, Legacy, INTEL386_ONLY, decopt=loadall386 priv saverestore r=es;edi
-# cflsh
-0F0A, Cflsh, Legacy, CFLSH, decopt=cflsh
 # umov dh,cl
 0F10 CE, Umov_rm8_r8, Legacy, INTEL386_486_ONLY, decopt=umov op0=w op1=r w=dh r=cl
 # umov [eax],bl
@@ -1113,10 +1113,6 @@ DF E2, Fstsg_AX, Legacy, FPU387SL_ONLY, decopt=oldfpu op0=w w=ax
 0F24 DE, Mov_r32_tr, Legacy, INTEL386_486_ONLY, decopt=movtr priv fu=oszacp op0=w op1=r w=esi r=tr3
 # mov tr3,esi
 0F26 DE, Mov_tr_r32, Legacy, INTEL386_486_ONLY, decopt=movtr priv fu=oszacp op0=w op1=r w=tr3 r=esi
-# wrecr
-0F34, Wrecr, Legacy, ECR, priv r=eax;ecx;edx decopt=ecr
-# rdecr
-0F36, Rdecr, Legacy, ECR, priv r=ecx w=eax;edx decopt=ecr
 # xbts cx,si
 66 0FA6 CE, Xbts_r16_rm16, Legacy, INTEL386_A0_ONLY, decopt=xbts op0=rw op1=r rw=cx r=si r=ax;cl
 # xbts bx,[eax]
@@ -1145,8 +1141,6 @@ DF E2, Fstsg_AX, Legacy, FPU387SL_ONLY, decopt=oldfpu op0=w w=ax
 0FA7 CE, Cmpxchg486_rm32_r32, Legacy, INTEL486_A_ONLY, decopt=cmpxchg486a fw=acopsz op0=rw op1=r rw=esi r=ecx rcw=eax
 # cmpxchg486 [eax],ebx
 0FA7 18, Cmpxchg486_rm32_r32, Legacy, INTEL486_A_ONLY, decopt=cmpxchg486a fw=acopsz op0=rw op1=r r=ds r=eax rwm=ds:eax;UInt32 r=ebx rcw=eax
-# zalloc [eax]
-0FAE 00, Zalloc_m256, Legacy, ZALLOC, decopt=zalloc op0=nma r=ds r=eax
 # umonitor bp
 67 F3 0FAE F5, Umonitor_r16, Legacy, WAITPKG, op0=r r=ds;bp rm=ds:bp;UInt8
 # umonitor ebp

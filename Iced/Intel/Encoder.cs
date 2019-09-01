@@ -25,6 +25,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using Iced.Intel.EncoderInternal;
 
@@ -138,6 +139,45 @@ namespace Iced.Intel {
 		/// </summary>
 		public bool PreventVEX2 { get; set; }
 
+		/// <summary>
+		/// Value of the VEX.W bit to use if it's an instruction that ignores the bit. Default is 0.
+		/// </summary>
+		public uint VEX_WIG {
+			get => (Internal_VEX_WIG_LIG >> 7) & 1;
+			set => Internal_VEX_WIG_LIG = (Internal_VEX_WIG_LIG & ~0x80U) | ((value & 1) << 7);
+		}
+		internal uint Internal_VEX_WIG_LIG;
+		internal uint Internal_VEX_LIG;
+
+		/// <summary>
+		/// Value of the VEX.L bit to use if it's an instruction that ignores the bit. Default is 0.
+		/// </summary>
+		public uint VEX_LIG {
+			get => (Internal_VEX_WIG_LIG >> 2) & 1;
+			set {
+				Internal_VEX_WIG_LIG = (Internal_VEX_WIG_LIG & ~4U) | ((value & 1) << 2);
+				Internal_VEX_LIG = (value & 1) << 2;
+			}
+		}
+
+		/// <summary>
+		/// Value of the EVEX.W bit to use if it's an instruction that ignores the bit. Default is 0.
+		/// </summary>
+		public uint EVEX_WIG {
+			get => Internal_EVEX_WIG >> 7;
+			set => Internal_EVEX_WIG = (value & 1) << 7;
+		}
+		internal uint Internal_EVEX_WIG;
+
+		/// <summary>
+		/// Value of the EVEX.L'L bits to use if it's an instruction that ignores the bits. Default is 0.
+		/// </summary>
+		public uint EVEX_LIG {
+			get => Internal_EVEX_LIG >> 5;
+			set => Internal_EVEX_LIG = (value & 3) << 5;
+		}
+		internal uint Internal_EVEX_LIG;
+
 		internal const string ERROR_ONLY_1632_BIT_MODE = "The instruction can only be used in 16/32-bit mode";
 		internal const string ERROR_ONLY_64_BIT_MODE = "The instruction can only be used in 64-bit mode";
 
@@ -147,7 +187,7 @@ namespace Iced.Intel {
 
 		readonly uint[] immSizes;
 		ulong currentRip;
-		string errorMessage;
+		string? errorMessage;
 		OpCodeHandler handler;
 		uint eip;
 		uint displAddr;
@@ -174,12 +214,13 @@ namespace Iced.Intel {
 
 		Encoder(CodeWriter writer, int defaultCodeSize) {
 			Debug.Assert(defaultCodeSize == 16 || defaultCodeSize == 32 || defaultCodeSize == 64);
-			if (writer == null)
+			if (writer is null)
 				ThrowHelper.ThrowArgumentNullException_writer();
 			immSizes = s_immSizes;
 			this.writer = writer;
 			this.defaultCodeSize = defaultCodeSize;
 			handlers = OpCodeHandlers.Handlers;
+			handler = null!;// It's initialized by TryEncode
 		}
 
 		/// <summary>
@@ -204,7 +245,7 @@ namespace Iced.Intel {
 		/// </summary>
 		/// <param name="writer">Destination</param>
 		/// <returns></returns>
-		[Obsolete("Use " + nameof(Create) + " instead", false)]
+		[Obsolete("Use " + nameof(Create) + " instead", true)]
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static Encoder Create16(CodeWriter writer) => Create(16, writer);
 
@@ -213,7 +254,7 @@ namespace Iced.Intel {
 		/// </summary>
 		/// <param name="writer">Destination</param>
 		/// <returns></returns>
-		[Obsolete("Use " + nameof(Create) + " instead", false)]
+		[Obsolete("Use " + nameof(Create) + " instead", true)]
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static Encoder Create32(CodeWriter writer) => Create(32, writer);
 
@@ -222,7 +263,7 @@ namespace Iced.Intel {
 		/// </summary>
 		/// <param name="writer">Destination</param>
 		/// <returns></returns>
-		[Obsolete("Use " + nameof(Create) + " instead", false)]
+		[Obsolete("Use " + nameof(Create) + " instead", true)]
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static Encoder Create64(CodeWriter writer) => Create(64, writer);
 
@@ -233,13 +274,13 @@ namespace Iced.Intel {
 		/// <param name="instruction">Instruction to encode</param>
 		/// <param name="rip">RIP of the encoded instruction</param>
 		/// <returns></returns>
-		public uint Encode(ref Instruction instruction, ulong rip) {
-			if (!TryEncode(ref instruction, rip, out uint result, out var errorMessage))
-				ThrowEncoderException(ref instruction, errorMessage);
+		public uint Encode(in Instruction instruction, ulong rip) {
+			if (!TryEncode(instruction, rip, out uint result, out var errorMessage))
+				ThrowEncoderException(instruction, errorMessage);
 			return result;
 		}
 
-		static void ThrowEncoderException(ref Instruction instruction, string errorMessage) => throw new EncoderException(errorMessage, instruction);
+		static void ThrowEncoderException(in Instruction instruction, string errorMessage) => throw new EncoderException(errorMessage, instruction);
 
 		/// <summary>
 		/// Encodes an instruction
@@ -249,7 +290,7 @@ namespace Iced.Intel {
 		/// <param name="encodedLength">Updated with length of encoded instruction if successful</param>
 		/// <param name="errorMessage">Set to the error message if we couldn't encode the instruction</param>
 		/// <returns></returns>
-		public bool TryEncode(ref Instruction instruction, ulong rip, out uint encodedLength, out string errorMessage) {
+		public bool TryEncode(in Instruction instruction, ulong rip, out uint encodedLength, [NotNullWhen(false)] out string? errorMessage) {
 			currentRip = rip;
 			eip = (uint)rip;
 			this.errorMessage = null;
@@ -337,14 +378,14 @@ namespace Iced.Intel {
 				if (instruction.OpCount != ops.Length)
 					ErrorMessage = $"Expected {ops.Length} operand(s) but the instruction has {instruction.OpCount} operand(s)";
 				for (int i = 0; i < ops.Length; i++)
-					ops[i].Encode(this, ref instruction, i);
+					ops[i].Encode(this, instruction, i);
 
 				if ((handler.Flags & OpCodeHandlerFlags.Fwait) != 0)
 					WriteByte(0x9B);
 
-				WritePrefixes(ref instruction);
+				WritePrefixes(instruction);
 
-				handler.Encode(this, ref instruction);
+				handler.Encode(this, instruction);
 
 				WriteOpCode();
 
@@ -355,14 +396,14 @@ namespace Iced.Intel {
 			}
 			else {
 				Debug.Assert(handler is DeclareDataHandler);
-				handler.Encode(this, ref instruction);
+				handler.Encode(this, instruction);
 			}
 
 			uint instrLen = (uint)currentRip - (uint)rip;
 			if (instrLen > DecoderConstants.MaxInstructionLength && (handler.Flags & OpCodeHandlerFlags.DeclareData) == 0)
 				ErrorMessage = $"Instruction length > {DecoderConstants.MaxInstructionLength} bytes";
 			errorMessage = this.errorMessage;
-			if (errorMessage != null) {
+			if (!(errorMessage is null)) {
 				encodedLength = 0;
 				return false;
 			}
@@ -370,10 +411,10 @@ namespace Iced.Intel {
 			return true;
 		}
 
-		internal string ErrorMessage {
+		internal string? ErrorMessage {
 			get => errorMessage;
 			set {
-				if (errorMessage == null)
+				if (errorMessage is null)
 					errorMessage = value;
 			}
 		}
@@ -404,7 +445,7 @@ namespace Iced.Intel {
 			return false;
 		}
 
-		internal void AddBranch(OpKind opKind, int immSize, ref Instruction instr, int operand) {
+		internal void AddBranch(OpKind opKind, int immSize, in Instruction instr, int operand) {
 			if (!Verify(operand, opKind, instr.GetOpKind(operand)))
 				return;
 
@@ -478,7 +519,7 @@ namespace Iced.Intel {
 			}
 		}
 
-		internal void AddBranchX(int immSize, ref Instruction instr, int operand) {
+		internal void AddBranchX(int immSize, in Instruction instr, int operand) {
 			if (defaultCodeSize == 64) {
 				if (!Verify(operand, OpKind.NearBranch64, instr.GetOpKind(operand)))
 					return;
@@ -547,7 +588,7 @@ namespace Iced.Intel {
 			}
 		}
 
-		internal void AddBranchDisp(int displSize, ref Instruction instr, int operand) {
+		internal void AddBranchDisp(int displSize, in Instruction instr, int operand) {
 			Debug.Assert(displSize == 2 || displSize == 4);
 			OpKind opKind;
 			switch (displSize) {
@@ -570,7 +611,7 @@ namespace Iced.Intel {
 				return;
 		}
 
-		internal void AddFarBranch(ref Instruction instr, int operand, int size) {
+		internal void AddFarBranch(in Instruction instr, int operand, int size) {
 			if (size == 2) {
 				if (!Verify(operand, OpKind.FarBranch16, instr.GetOpKind(operand)))
 					return;
@@ -616,7 +657,7 @@ namespace Iced.Intel {
 			}
 		}
 
-		internal void AddAbsMem(ref Instruction instr, int operand) {
+		internal void AddAbsMem(in Instruction instr, int operand) {
 			EncoderFlags |= EncoderFlags.Displ;
 			var opKind = instr.GetOpKind(operand);
 			if (opKind == OpKind.Memory64) {
@@ -658,7 +699,7 @@ namespace Iced.Intel {
 				ErrorMessage = $"Operand {operand}: Expected OpKind {nameof(OpKind.Memory)} or {nameof(OpKind.Memory64)}, actual: {opKind}";
 		}
 
-		internal void AddModRMRegister(ref Instruction instr, int operand, Register regLo, Register regHi) {
+		internal void AddModRMRegister(in Instruction instr, int operand, Register regLo, Register regHi) {
 			if (!Verify(operand, OpKind.Register, instr.GetOpKind(operand)))
 				return;
 			var reg = instr.GetOpRegister(operand);
@@ -682,7 +723,7 @@ namespace Iced.Intel {
 			EncoderFlags |= (EncoderFlags)((regNum & 0x10) << (9 - 4));
 		}
 
-		internal void AddReg(ref Instruction instr, int operand, Register regLo, Register regHi) {
+		internal void AddReg(in Instruction instr, int operand, Register regLo, Register regHi) {
 			if (!Verify(operand, OpKind.Register, instr.GetOpKind(operand)))
 				return;
 			var reg = instr.GetOpRegister(operand);
@@ -704,10 +745,10 @@ namespace Iced.Intel {
 			EncoderFlags |= (EncoderFlags)(regNum >> 3);// regNum <= 15, so no need to mask out anything
 		}
 
-		internal void AddRegOrMem(ref Instruction instr, int operand, Register regLo, Register regHi, bool allowMemOp, bool allowRegOp) =>
-			AddRegOrMem(ref instr, operand, regLo, regHi, Register.None, Register.None, allowMemOp, allowRegOp);
+		internal void AddRegOrMem(in Instruction instr, int operand, Register regLo, Register regHi, bool allowMemOp, bool allowRegOp) =>
+			AddRegOrMem(instr, operand, regLo, regHi, Register.None, Register.None, allowMemOp, allowRegOp);
 
-		internal void AddRegOrMem(ref Instruction instr, int operand, Register regLo, Register regHi, Register vsibIndexRegLo, Register vsibIndexRegHi, bool allowMemOp, bool allowRegOp) {
+		internal void AddRegOrMem(in Instruction instr, int operand, Register regLo, Register regHi, Register vsibIndexRegLo, Register vsibIndexRegHi, bool allowMemOp, bool allowRegOp) {
 			var opKind = instr.GetOpKind(operand);
 			EncoderFlags |= EncoderFlags.ModRM;
 			if (opKind == OpKind.Register) {
@@ -763,19 +804,19 @@ namespace Iced.Intel {
 						ErrorMessage = $"Operand {operand}: VSIB operands can't use 16-bit addressing. It must be 32-bit or 64-bit addressing";
 						return;
 					}
-					AddMemOp16(ref instr, operand);
+					AddMemOp16(instr, operand);
 				}
 				else
-					AddMemOp(ref instr, operand, addrSize, vsibIndexRegLo, vsibIndexRegHi);
+					AddMemOp(instr, operand, addrSize, vsibIndexRegLo, vsibIndexRegHi);
 			}
 			else
 				ErrorMessage = $"Operand {operand}: Expected a register or memory operand, but opKind is {opKind}";
 		}
 
-		bool TryConvertToDisp8N(ref Instruction instr, int displ, out sbyte compressedValue) {
+		bool TryConvertToDisp8N(in Instruction instr, int displ, out sbyte compressedValue) {
 			var tryConvertToDisp8N = handler.TryConvertToDisp8N;
-			if (tryConvertToDisp8N != null)
-				return tryConvertToDisp8N(this, ref instr, handler, displ, out compressedValue);
+			if (!(tryConvertToDisp8N is null))
+				return tryConvertToDisp8N(this, instr, handler, displ, out compressedValue);
 			if (sbyte.MinValue <= displ && displ <= sbyte.MaxValue) {
 				compressedValue = (sbyte)displ;
 				return true;
@@ -784,7 +825,7 @@ namespace Iced.Intel {
 			return false;
 		}
 
-		void AddMemOp16(ref Instruction instr, int operand) {
+		void AddMemOp16(in Instruction instr, int operand) {
 			if (defaultCodeSize == 64) {
 				ErrorMessage = $"Operand {operand}: 16-bit addressing can't be used by 64-bit code";
 				return;
@@ -827,7 +868,7 @@ namespace Iced.Intel {
 					Displ = 0;
 				}
 				if (displSize == 1) {
-					if (TryConvertToDisp8N(ref instr, (short)Displ, out sbyte compressedValue))
+					if (TryConvertToDisp8N(instr, (short)Displ, out sbyte compressedValue))
 						Displ = (byte)compressedValue;
 					else
 						displSize = 2;
@@ -850,7 +891,7 @@ namespace Iced.Intel {
 			}
 		}
 
-		void AddMemOp(ref Instruction instr, int operand, int addrSize, Register vsibIndexRegLo, Register vsibIndexRegHi) {
+		void AddMemOp(in Instruction instr, int operand, int addrSize, Register vsibIndexRegLo, Register vsibIndexRegHi) {
 			Debug.Assert(addrSize == 32 || addrSize == 64);
 			if (defaultCodeSize != 64 && addrSize == 64) {
 				ErrorMessage = $"Operand {operand}: 64-bit addressing can only be used in 64-bit mode";
@@ -864,14 +905,14 @@ namespace Iced.Intel {
 
 			Register baseRegLo, baseRegHi;
 			Register indexRegLo, indexRegHi;
-			if (addrSize == 32) {
-				baseRegLo = Register.EAX;
-				baseRegHi = Register.R15D;
-			}
-			else {
-				Debug.Assert(addrSize == 64);
+			if (addrSize == 64) {
 				baseRegLo = Register.RAX;
 				baseRegHi = Register.R15;
+			}
+			else {
+				Debug.Assert(addrSize == 32);
+				baseRegLo = Register.EAX;
+				baseRegHi = Register.R15D;
 			}
 			if (vsibIndexRegLo != Register.None) {
 				indexRegLo = vsibIndexRegLo;
@@ -942,7 +983,7 @@ namespace Iced.Intel {
 			}
 
 			if (displSize == 1) {
-				if (TryConvertToDisp8N(ref instr, (short)Displ, out sbyte compressedValue))
+				if (TryConvertToDisp8N(instr, (short)Displ, out sbyte compressedValue))
 					Displ = (byte)compressedValue;
 				else
 					displSize = addrSize / 8;
@@ -1001,7 +1042,7 @@ namespace Iced.Intel {
 		}
 
 		static readonly byte[] segmentOverrides = new byte[6] { 0x26, 0x2E, 0x36, 0x3E, 0x64, 0x65 };
-		void WritePrefixes(ref Instruction instr) {
+		void WritePrefixes(in Instruction instr) {
 			Debug.Assert((handler.Flags & OpCodeHandlerFlags.DeclareData) == 0);
 			var seg = instr.SegmentPrefix;
 			if (seg != Register.None) {

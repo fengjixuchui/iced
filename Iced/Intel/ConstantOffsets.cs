@@ -21,7 +21,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#if ((!NO_DECODER32 || !NO_DECODER64) && !NO_DECODER) || !NO_ENCODER
+#if !NO_DECODER || !NO_ENCODER
 namespace Iced.Intel {
 	/// <summary>
 	/// Contains the offsets of the displacement and immediate. Call decoder's GetConstantOffsets() method
@@ -70,17 +70,17 @@ namespace Iced.Intel {
 		/// <summary>
 		/// true if <see cref="DisplacementOffset"/> is valid
 		/// </summary>
-		public bool HasDisplacement => DisplacementSize != 0;
+		public readonly bool HasDisplacement => DisplacementSize != 0;
 
 		/// <summary>
 		/// true if <see cref="ImmediateOffset"/> is valid
 		/// </summary>
-		public bool HasImmediate => ImmediateSize != 0;
+		public readonly bool HasImmediate => ImmediateSize != 0;
 
 		/// <summary>
 		/// true if <see cref="ImmediateOffset2"/> is valid
 		/// </summary>
-		public bool HasImmediate2 => ImmediateSize2 != 0;
+		public readonly bool HasImmediate2 => ImmediateSize2 != 0;
 	}
 }
 #endif

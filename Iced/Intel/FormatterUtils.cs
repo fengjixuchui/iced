@@ -38,43 +38,22 @@ namespace Iced.Intel {
 	}
 
 	static class FormatterUtils {
-		static readonly string[] spaceStrings = new string[] {
-			" ",
-			"  ",
-			"   ",
-			"    ",
-			"     ",
-			"      ",
-			"       ",
-			"        ",
-			"         ",
-			"          ",
-			"           ",
-			"            ",
-			"             ",
-			"              ",
-			"               ",
-			"                ",
-			"                 ",
-			"                  ",
-			"                   ",
-			"                    ",
-		};
-		static readonly string[] tabStrings = new string[] {
-			"\t",
-			"\t\t",
-			"\t\t\t",
-			"\t\t\t\t",
-			"\t\t\t\t\t",
-			"\t\t\t\t\t\t",
-		};
+		static readonly string[] spaceStrings = CreateStrings(' ', 20);
+		static readonly string[] tabStrings = CreateStrings('\t', 6);
+
+		static string[] CreateStrings(char c, int max) {
+			var strings = new string[max];
+			for (int i = 0; i < strings.Length; i++)
+				strings[i] = new string(c, i + 1);
+			return strings;
+		}
 
 		public static void AddTabs(FormatterOutput output, int column, int firstOperandCharIndex, int tabSize) {
 #if DEBUG
 			for (int i = 0; i < spaceStrings.Length; i++)
-				System.Diagnostics.Debug.Assert(spaceStrings[i].Length == i + 1);
+				Debug.Assert(spaceStrings[i].Length == i + 1);
 			for (int i = 0; i < tabStrings.Length; i++)
-				System.Diagnostics.Debug.Assert(tabStrings[i].Length == i + 1);
+				Debug.Assert(tabStrings[i].Length == i + 1);
 #endif
 			const int max_firstOperandCharIndex = 256;
 			if (firstOperandCharIndex < 0)
@@ -119,7 +98,7 @@ namespace Iced.Intel {
 
 		public static bool IsCall(FormatterFlowControl kind) => kind == FormatterFlowControl.NearCall || kind == FormatterFlowControl.FarCall;
 
-		public static FormatterFlowControl GetFlowControl(ref Instruction instruction) {
+		public static FormatterFlowControl GetFlowControl(in Instruction instruction) {
 			switch (instruction.Code) {
 			case Code.Jo_rel8_16:
 			case Code.Jo_rel8_32:

@@ -139,6 +139,10 @@ retw $-0x5aa6
 retl $-0x5aa6
 retw
 retl
+rep retw $-0x5aa6
+rep retl $-0x5aa6
+rep retw
+rep retl
 lesw (eax),bx
 lesl (eax),ebx
 ldsw (eax),bx
@@ -194,9 +198,9 @@ bndmk (eax),bnd1
 bndcn edx,bnd1
 bndcn (eax),bnd1
 movl cr3,esi
-movl db3,esi
+movl dr3,esi
 movl esi,cr3
-movl esi,db3
+movl esi,dr3
 vmreadl ecx,esi
 vmreadl ebx,(eax)
 vmwritel esi,ecx
@@ -582,6 +586,7 @@ addr16 monitorx
 monitorx
 addr16 clzero
 clzero
+rdpru
 addb $0x5a,cl
 addb $0x5a,(eax)
 orb $-0x5b,dl
@@ -608,7 +613,6 @@ jmpel *(eax)
 loadallreset286
 loadall286
 loadall386
-cflsh
 umovb cl,dh
 umovb bl,(eax)
 umovw cx,si
@@ -623,8 +627,6 @@ umovl esi,ecx
 umovl (eax),ebx
 movl tr3,esi
 movl esi,tr3
-wrecr
-rdecr
 xbtsw si,cx
 xbtsw (eax),bx
 xbtsl esi,ecx
@@ -639,7 +641,6 @@ cmpxchg486w cx,si
 cmpxchg486w bx,(eax)
 cmpxchg486l ecx,esi
 cmpxchg486l ebx,(eax)
-zalloc (eax)
 umonitor bp
 umonitor ebp
 data16 jmpe 0xa55a

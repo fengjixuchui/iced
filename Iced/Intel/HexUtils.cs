@@ -21,13 +21,13 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#if (!NO_DECODER32 || !NO_DECODER64) && !NO_DECODER
+#if !NO_DECODER
 using System;
 
 namespace Iced.Intel {
 	static class HexUtils {
 		public static byte[] ToByteArray(string hexData) {
-			if (hexData == null)
+			if (hexData is null)
 				throw new ArgumentNullException(nameof(hexData));
 			if (hexData.Length == 0)
 				return Array2.Empty<byte>();

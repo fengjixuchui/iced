@@ -706,6 +706,8 @@ sar r8,-5Bh
 sar qword ptr [rax],-5Bh
 ret -5AA6h
 ret
+rep ret -5AA6h
+rep ret
 mov cl,5Ah
 mov byte ptr [rax],5Ah
 xabort 5Ah
@@ -7441,6 +7443,7 @@ monitorx rax,rcx,rdx
 mwaitx rax,rcx,rbx
 clzero
 clzero
+rdpru
 prefetch byte ptr [rax]
 femms
 movntss dword ptr [rax],xmm1
@@ -7965,27 +7968,6 @@ umonitor ebp
 umonitor rbp
 umwait ebp
 umwait rbp
-lfence
-lfence
-lfence
-lfence
-lfence
-lfence
-lfence
-mfence
-mfence
-mfence
-mfence
-mfence
-mfence
-mfence
-sfence
-sfence
-sfence
-sfence
-sfence
-sfence
-sfence
 pcommit
 vpdpbusd xmm18{k3},xmm14,xmm3
 vpdpbusd xmm2,xmm6,xmmword ptr [rax+10h]

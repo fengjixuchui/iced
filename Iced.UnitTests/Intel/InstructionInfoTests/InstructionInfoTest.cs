@@ -73,63 +73,69 @@ namespace Iced.UnitTests.Intel.InstructionInfoTests {
 		protected void TestInstructionInfo(int bitness, string hexBytes, Code code, DecoderOptions options, int lineNo, InstructionInfoTestCase testCase) {
 			var codeBytes = HexUtils.ToByteArray(hexBytes);
 			Instruction instr;
-			if (bitness == 16 && code == Code.Popw_CS && hexBytes == "0F") {
-				instr = default;
-				instr.Code = Code.Popw_CS;
-				instr.Op0Kind = OpKind.Register;
-				instr.Op0Register = Register.CS;
-				instr.CodeSize = CodeSize.Code16;
-				instr.ByteLength = 1;
-			}
-			else if (code >= Code.DeclareByte) {
-				instr = default;
-				instr.Code = code;
-				instr.DeclareDataCount = 1;
-				Assert.Equal(64, bitness);
-				instr.CodeSize = CodeSize.Code64;
-				switch (code) {
-				case Code.DeclareByte:
-					Assert.Equal("66", hexBytes);
-					instr.SetDeclareByteValue(0, 0x66);
-					break;
-				case Code.DeclareWord:
-					Assert.Equal("6644", hexBytes);
-					instr.SetDeclareWordValue(0, 0x4466);
-					break;
-				case Code.DeclareDword:
-					Assert.Equal("664422EE", hexBytes);
-					instr.SetDeclareDwordValue(0, 0xEE224466);
-					break;
-				case Code.DeclareQword:
-					Assert.Equal("664422EE12345678", hexBytes);
-					instr.SetDeclareQwordValue(0, 0x78563412EE224466);
-					break;
-				default: throw new InvalidOperationException();
+			if (testCase.IsSpecial) {
+				if (bitness == 16 && code == Code.Popw_CS && hexBytes == "0F") {
+					instr = default;
+					instr.Code = Code.Popw_CS;
+					instr.Op0Kind = OpKind.Register;
+					instr.Op0Register = Register.CS;
+					instr.CodeSize = CodeSize.Code16;
+					instr.ByteLength = 1;
+				}
+				else if (code >= Code.DeclareByte) {
+					instr = default;
+					instr.Code = code;
+					instr.DeclareDataCount = 1;
+					Assert.Equal(64, bitness);
+					instr.CodeSize = CodeSize.Code64;
+					switch (code) {
+					case Code.DeclareByte:
+						Assert.Equal("66", hexBytes);
+						instr.SetDeclareByteValue(0, 0x66);
+						break;
+					case Code.DeclareWord:
+						Assert.Equal("6644", hexBytes);
+						instr.SetDeclareWordValue(0, 0x4466);
+						break;
+					case Code.DeclareDword:
+						Assert.Equal("664422EE", hexBytes);
+						instr.SetDeclareDwordValue(0, 0xEE224466);
+						break;
+					case Code.DeclareQword:
+						Assert.Equal("664422EE12345678", hexBytes);
+						instr.SetDeclareQwordValue(0, 0x78563412EE224466);
+						break;
+					default: throw new InvalidOperationException();
+					}
+				}
+				else {
+					var decoder = CreateDecoder(bitness, codeBytes, options);
+					instr = decoder.Decode();
+					if (codeBytes.Length > 1 && codeBytes[0] == 0x9B && instr.ByteLength == 1) {
+						instr = decoder.Decode();
+						switch (instr.Code) {
+						case Code.Fnstenv_m14byte: instr.Code = Code.Fstenv_m14byte; break;
+						case Code.Fnstenv_m28byte: instr.Code = Code.Fstenv_m28byte; break;
+						case Code.Fnstcw_m16: instr.Code = Code.Fstcw_m16; break;
+						case Code.Fneni: instr.Code = Code.Feni; break;
+						case Code.Fndisi: instr.Code = Code.Fdisi; break;
+						case Code.Fnclex: instr.Code = Code.Fclex; break;
+						case Code.Fninit: instr.Code = Code.Finit; break;
+						case Code.Fnsetpm: instr.Code = Code.Fsetpm; break;
+						case Code.Fnsave_m94byte: instr.Code = Code.Fsave_m94byte; break;
+						case Code.Fnsave_m108byte: instr.Code = Code.Fsave_m108byte; break;
+						case Code.Fnstsw_m16: instr.Code = Code.Fstsw_m16; break;
+						case Code.Fnstsw_AX: instr.Code = Code.Fstsw_AX; break;
+						default: throw new InvalidOperationException();
+						}
+					}
+					else
+						throw new InvalidOperationException();
 				}
 			}
 			else {
 				var decoder = CreateDecoder(bitness, codeBytes, options);
 				instr = decoder.Decode();
-				if (codeBytes.Length != 1 && codeBytes[0] == 0x9B && instr.ByteLength == 1) {
-					instr = decoder.Decode();
-					switch (instr.Code) {
-					case Code.Fnstenv_m14byte: instr.Code = Code.Fstenv_m14byte; break;
-					case Code.Fnstenv_m28byte: instr.Code = Code.Fstenv_m28byte; break;
-					case Code.Fnstcw_m16: instr.Code = Code.Fstcw_m16; break;
-					case Code.Fneni: instr.Code = Code.Feni; break;
-					case Code.Fndisi: instr.Code = Code.Fdisi; break;
-					case Code.Fnclex: instr.Code = Code.Fclex; break;
-					case Code.Fninit: instr.Code = Code.Finit; break;
-					case Code.Fnsetpm: instr.Code = Code.Fsetpm; break;
-					case Code.Fnsave_m94byte: instr.Code = Code.Fsave_m94byte; break;
-					case Code.Fnsave_m108byte: instr.Code = Code.Fsave_m108byte; break;
-					case Code.Fnstsw_m16: instr.Code = Code.Fstsw_m16; break;
-					case Code.Fnstsw_AX: instr.Code = Code.Fstsw_AX; break;
-					default:
-						Assert.False(true, $"Invalid FPU instr Code value: {instr.Code}");
-						break;
-					}
-				}
 			}
 			Assert.Equal(code, instr.Code);
 
@@ -199,13 +205,13 @@ namespace Iced.UnitTests.Intel.InstructionInfoTests {
 			Assert.Equal(RflagsBits.None, info.RflagsUndefined & (info.RflagsWritten | info.RflagsCleared | info.RflagsSet));
 			Assert.Equal(info.RflagsWritten | info.RflagsCleared | info.RflagsSet | info.RflagsUndefined, info.RflagsModified);
 
-			var info2 = new InstructionInfoFactory().GetInfo(ref instr);
+			var info2 = new InstructionInfoFactory().GetInfo(instr);
 			CheckEqual(ref info, ref info2, hasRegs2: true, hasMem2: true);
-			info2 = new InstructionInfoFactory().GetInfo(ref instr, InstructionInfoOptions.NoMemoryUsage);
+			info2 = new InstructionInfoFactory().GetInfo(instr, InstructionInfoOptions.NoMemoryUsage);
 			CheckEqual(ref info, ref info2, hasRegs2: true, hasMem2: false);
-			info2 = new InstructionInfoFactory().GetInfo(ref instr, InstructionInfoOptions.NoRegisterUsage);
+			info2 = new InstructionInfoFactory().GetInfo(instr, InstructionInfoOptions.NoRegisterUsage);
 			CheckEqual(ref info, ref info2, hasRegs2: false, hasMem2: true);
-			info2 = new InstructionInfoFactory().GetInfo(ref instr, InstructionInfoOptions.NoRegisterUsage | InstructionInfoOptions.NoMemoryUsage);
+			info2 = new InstructionInfoFactory().GetInfo(instr, InstructionInfoOptions.NoRegisterUsage | InstructionInfoOptions.NoMemoryUsage);
 			CheckEqual(ref info, ref info2, hasRegs2: false, hasMem2: false);
 
 			Assert.Equal(info.Encoding, instr.Code.Encoding());
@@ -608,6 +614,10 @@ namespace Iced.UnitTests.Intel.InstructionInfoTests {
 						testCase.IsStackInstruction = true;
 						break;
 
+					case "special":
+						testCase.IsSpecial = true;
+						break;
+
 					case "fr":
 						if (!ParseRflags(value, ref testCase.RflagsRead))
 							throw new Exception($"Invalid key-value value, line {lineNo}: '{keyValue}' ({filename})");
@@ -746,23 +756,14 @@ namespace Iced.UnitTests.Intel.InstructionInfoTests {
 				case "forcereservednop":
 					options |= DecoderOptions.ForceReservedNop;
 					break;
-				case "cflsh":
-					options |= DecoderOptions.Cflsh;
-					break;
 				case "umov":
 					options |= DecoderOptions.Umov;
-					break;
-				case "ecr":
-					options |= DecoderOptions.Ecr;
 					break;
 				case "xbts":
 					options |= DecoderOptions.Xbts;
 					break;
 				case "cmpxchg486a":
 					options |= DecoderOptions.Cmpxchg486A;
-					break;
-				case "zalloc":
-					options |= DecoderOptions.Zalloc;
 					break;
 				case "oldfpu":
 					options |= DecoderOptions.OldFpu;

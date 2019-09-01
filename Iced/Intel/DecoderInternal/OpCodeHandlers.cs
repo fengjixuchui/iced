@@ -21,19 +21,11 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#if (!NO_DECODER32 || !NO_DECODER64) && !NO_DECODER
+#if !NO_DECODER
 using System;
 using System.Diagnostics;
 
 namespace Iced.Intel.DecoderInternal {
-	enum HandlerFlags : uint {
-		None					= 0,
-		Xacquire				= 0x00000001,
-		Xrelease				= 0x00000002,
-		XacquireRelease			= Xacquire | Xrelease,
-		XacquireReleaseNoLock	= 0x00000004,
-	}
-
 	abstract class OpCodeHandler {
 		public readonly bool HasModRM;
 
@@ -71,117 +63,6 @@ namespace Iced.Intel.DecoderInternal {
 		public override void Decode(Decoder decoder, ref Instruction instruction) => instruction.InternalCode = code;
 	}
 
-	sealed class OpCodeHandler_Reg : OpCodeHandler {
-		readonly Code code;
-		readonly Register reg;
-
-		public OpCodeHandler_Reg(Code code, Register reg) {
-			this.code = code;
-			this.reg = reg;
-		}
-
-		public override void Decode(Decoder decoder, ref Instruction instruction) {
-			instruction.InternalCode = code;
-			Debug.Assert(OpKind.Register == 0);
-			//instruction.InternalOp0Kind = OpKind.Register;
-			instruction.InternalOp0Register = reg;
-		}
-	}
-
-	sealed class OpCodeHandler_RegIb : OpCodeHandler {
-		readonly Code code;
-		readonly Register reg;
-
-		public OpCodeHandler_RegIb(Code code, Register reg) {
-			this.code = code;
-			this.reg = reg;
-		}
-
-		public override void Decode(Decoder decoder, ref Instruction instruction) {
-			instruction.InternalCode = code;
-			Debug.Assert(OpKind.Register == 0);
-			//instruction.InternalOp0Kind = OpKind.Register;
-			instruction.InternalOp0Register = reg;
-			instruction.InternalOp1Kind = OpKind.Immediate8;
-			instruction.InternalImmediate8 = decoder.ReadIb();
-		}
-	}
-
-	sealed class OpCodeHandler_IbReg : OpCodeHandler {
-		readonly Code code;
-		readonly Register reg;
-
-		public OpCodeHandler_IbReg(Code code, Register reg) {
-			this.code = code;
-			this.reg = reg;
-		}
-
-		public override void Decode(Decoder decoder, ref Instruction instruction) {
-			instruction.InternalCode = code;
-			instruction.InternalOp0Kind = OpKind.Immediate8;
-			instruction.InternalImmediate8 = decoder.ReadIb();
-			Debug.Assert(OpKind.Register == 0);
-			//instruction.InternalOp1Kind = OpKind.Register;
-			instruction.InternalOp1Register = reg;
-		}
-	}
-
-	sealed class OpCodeHandler_AL_DX : OpCodeHandler {
-		readonly Code code;
-
-		public OpCodeHandler_AL_DX(Code code) => this.code = code;
-
-		public override void Decode(Decoder decoder, ref Instruction instruction) {
-			instruction.InternalCode = code;
-			Debug.Assert(OpKind.Register == 0);
-			//instruction.InternalOp0Kind = OpKind.Register;
-			instruction.InternalOp0Register = Register.AL;
-			Debug.Assert(OpKind.Register == 0);
-			//instruction.InternalOp1Kind = OpKind.Register;
-			instruction.InternalOp1Register = Register.DX;
-		}
-	}
-
-	sealed class OpCodeHandler_DX_AL : OpCodeHandler {
-		readonly Code code;
-
-		public OpCodeHandler_DX_AL(Code code) => this.code = code;
-
-		public override void Decode(Decoder decoder, ref Instruction instruction) {
-			instruction.InternalCode = code;
-			Debug.Assert(OpKind.Register == 0);
-			//instruction.InternalOp0Kind = OpKind.Register;
-			instruction.InternalOp0Register = Register.DX;
-			Debug.Assert(OpKind.Register == 0);
-			//instruction.InternalOp1Kind = OpKind.Register;
-			instruction.InternalOp1Register = Register.AL;
-		}
-	}
-
-	sealed class OpCodeHandler_Ib : OpCodeHandler {
-		readonly Code code;
-
-		public OpCodeHandler_Ib(Code code) => this.code = code;
-
-		public override void Decode(Decoder decoder, ref Instruction instruction) {
-			instruction.InternalCode = code;
-			instruction.InternalOp0Kind = OpKind.Immediate8;
-			instruction.InternalImmediate8 = decoder.ReadIb();
-		}
-	}
-
-	sealed class OpCodeHandler_Ib3 : OpCodeHandlerModRM {
-		readonly Code code;
-
-		public OpCodeHandler_Ib3(Code code) => this.code = code;
-
-		public override void Decode(Decoder decoder, ref Instruction instruction) {
-			instruction.InternalCode = code;
-			instruction.InternalOp0Kind = OpKind.Immediate8;
-			instruction.InternalImmediate8 = decoder.ReadIb();
-		}
-	}
-
 	sealed class OpCodeHandler_Group8x8 : OpCodeHandlerModRM {
 		readonly OpCodeHandler[] tableLow;
 		readonly OpCodeHandler[] tableHigh;
@@ -208,9 +89,9 @@ namespace Iced.Intel.DecoderInternal {
 
 	sealed class OpCodeHandler_Group8x64 : OpCodeHandlerModRM {
 		readonly OpCodeHandler[] tableLow;
-		readonly OpCodeHandler[] tableHigh;
+		readonly OpCodeHandler?[] tableHigh;
 
-		public OpCodeHandler_Group8x64(OpCodeHandler[] tableLow, OpCodeHandler[] tableHigh) {
+		public OpCodeHandler_Group8x64(OpCodeHandler[] tableLow, OpCodeHandler?[] tableHigh) {
 			if (tableLow.Length != 8)
 				throw new ArgumentException(nameof(tableLow));
 			if (tableHigh.Length != 64)
@@ -244,128 +125,6 @@ namespace Iced.Intel.DecoderInternal {
 		public override void Decode(Decoder decoder, ref Instruction instruction) => decoder.DecodeTable(otherTable, ref instruction);
 	}
 
-	sealed class OpCodeHandler_MandatoryPrefix : OpCodeHandlerModRM {
-		readonly OpCodeHandler[] handlers;
-
-		public OpCodeHandler_MandatoryPrefix(OpCodeHandler handler, OpCodeHandler handler66, OpCodeHandler handlerF3, OpCodeHandler handlerF2) {
-			Debug.Assert((int)MandatoryPrefix.None == 0);
-			Debug.Assert((int)MandatoryPrefix.P66 == 1);
-			Debug.Assert((int)MandatoryPrefix.PF3 == 2);
-			Debug.Assert((int)MandatoryPrefix.PF2 == 3);
-			handlers = new OpCodeHandler[4] {
-				handler ?? throw new ArgumentNullException(nameof(handler)),
-				handler66 ?? throw new ArgumentNullException(nameof(handler66)),
-				handlerF3 ?? throw new ArgumentNullException(nameof(handlerF3)),
-				handlerF2 ?? throw new ArgumentNullException(nameof(handlerF2)),
-			};
-			Debug.Assert(handler.HasModRM == HasModRM);
-			Debug.Assert(handler66.HasModRM == HasModRM);
-			Debug.Assert(handlerF3.HasModRM == HasModRM);
-			Debug.Assert(handlerF2.HasModRM == HasModRM);
-		}
-
-		public override void Decode(Decoder decoder, ref Instruction instruction) {
-			Debug.Assert(decoder.state.Encoding == EncodingKind.Legacy);
-			decoder.ClearMandatoryPrefix(ref instruction);
-			handlers[(int)decoder.state.mandatoryPrefix].Decode(decoder, ref instruction);
-		}
-	}
-
-	[Flags]
-	enum LegacyHandlerFlags {
-		HandlerReg				= 0x00000001,
-		HandlerMem				= 0x00000002,
-		Handler66Reg			= 0x00000004,
-		Handler66Mem			= 0x00000008,
-		HandlerF3Reg			= 0x00000010,
-		HandlerF3Mem			= 0x00000020,
-		HandlerF2Reg			= 0x00000040,
-		HandlerF2Mem			= 0x00000080,
-	}
-
-	sealed class OpCodeHandler_MandatoryPrefix3 : OpCodeHandlerModRM {
-		readonly Info[] handlers_reg;
-		readonly Info[] handlers_mem;
-
-		readonly struct Info {
-			public readonly OpCodeHandler handler;
-			public readonly bool mandatoryPrefix;
-			public Info(OpCodeHandler handler, bool mandatoryPrefix) {
-				this.handler = handler;
-				this.mandatoryPrefix = mandatoryPrefix;
-			}
-		}
-
-		public OpCodeHandler_MandatoryPrefix3(OpCodeHandler handler_reg, OpCodeHandler handler_mem, OpCodeHandler handler66_reg, OpCodeHandler handler66_mem, OpCodeHandler handlerF3_reg, OpCodeHandler handlerF3_mem, OpCodeHandler handlerF2_reg, OpCodeHandler handlerF2_mem, LegacyHandlerFlags flags) {
-			Debug.Assert((int)MandatoryPrefix.None == 0);
-			Debug.Assert((int)MandatoryPrefix.P66 == 1);
-			Debug.Assert((int)MandatoryPrefix.PF3 == 2);
-			Debug.Assert((int)MandatoryPrefix.PF2 == 3);
-			handlers_reg = new Info[4] {
-				new Info(handler_reg ?? throw new ArgumentNullException(nameof(handler_reg)), (flags & LegacyHandlerFlags.HandlerReg) == 0),
-				new Info(handler66_reg ?? throw new ArgumentNullException(nameof(handler66_reg)), (flags & LegacyHandlerFlags.Handler66Reg) == 0),
-				new Info(handlerF3_reg ?? throw new ArgumentNullException(nameof(handlerF3_reg)), (flags & LegacyHandlerFlags.HandlerF3Reg) == 0),
-				new Info(handlerF2_reg ?? throw new ArgumentNullException(nameof(handlerF2_reg)), (flags & LegacyHandlerFlags.HandlerF2Reg) == 0),
-			};
-			handlers_mem = new Info[4] {
-				new Info(handler_mem ?? throw new ArgumentNullException(nameof(handler_mem)), (flags & LegacyHandlerFlags.HandlerMem) == 0),
-				new Info(handler66_mem ?? throw new ArgumentNullException(nameof(handler66_mem)), (flags & LegacyHandlerFlags.Handler66Mem) == 0),
-				new Info(handlerF3_mem ?? throw new ArgumentNullException(nameof(handlerF3_mem)), (flags & LegacyHandlerFlags.HandlerF3Mem) == 0),
-				new Info(handlerF2_mem ?? throw new ArgumentNullException(nameof(handlerF2_mem)), (flags & LegacyHandlerFlags.HandlerF2Mem) == 0),
-			};
-			Debug.Assert(handler_reg.HasModRM == HasModRM);
-			Debug.Assert(handler_mem.HasModRM == HasModRM);
-			Debug.Assert(handler66_reg.HasModRM == HasModRM);
-			Debug.Assert(handler66_mem.HasModRM == HasModRM);
-			Debug.Assert(handlerF3_reg.HasModRM == HasModRM);
-			Debug.Assert(handlerF3_mem.HasModRM == HasModRM);
-			Debug.Assert(handlerF2_reg.HasModRM == HasModRM);
-			Debug.Assert(handlerF2_mem.HasModRM == HasModRM);
-		}
-
-		public override void Decode(Decoder decoder, ref Instruction instruction) {
-			Debug.Assert(decoder.state.Encoding == EncodingKind.Legacy);
-			var handlers = decoder.state.mod == 3 ? handlers_reg : handlers_mem;
-			var info = handlers[(int)decoder.state.mandatoryPrefix];
-			if (info.mandatoryPrefix)
-				decoder.ClearMandatoryPrefix(ref instruction);
-			info.handler.Decode(decoder, ref instruction);
-		}
-	}
-
-	sealed class OpCodeHandler_MandatoryPrefix_F3_F2 : OpCodeHandler {
-		readonly OpCodeHandler handlerNormal;
-		readonly OpCodeHandler handlerF3;
-		readonly OpCodeHandler handlerF2;
-
-		public OpCodeHandler_MandatoryPrefix_F3_F2(OpCodeHandler handlerNormal, OpCodeHandler handlerF3, OpCodeHandler handlerF2) {
-			this.handlerNormal = handlerNormal ?? throw new ArgumentNullException(nameof(handlerNormal));
-			this.handlerF3 = handlerF3 ?? throw new ArgumentNullException(nameof(handlerF3));
-			this.handlerF2 = handlerF2 ?? throw new ArgumentNullException(nameof(handlerF2));
-		}
-
-		public override void Decode(Decoder decoder, ref Instruction instruction) {
-			Debug.Assert(decoder.state.Encoding == EncodingKind.Legacy);
-			OpCodeHandler handler;
-			var prefix = decoder.state.mandatoryPrefix;
-			if (prefix == MandatoryPrefix.PF3) {
-				decoder.ClearMandatoryPrefixF3(ref instruction);
-				handler = handlerF3;
-			}
-			else if (prefix == MandatoryPrefix.PF2) {
-				decoder.ClearMandatoryPrefixF2(ref instruction);
-				handler = handlerF2;
-			}
-			else {
-				Debug.Assert(prefix == MandatoryPrefix.None || prefix == MandatoryPrefix.P66);
-				handler = handlerNormal;
-			}
-			if (handler.HasModRM)
-				decoder.ReadModRM();
-			handler.Decode(decoder, ref instruction);
-		}
-	}
-
 	sealed class OpCodeHandler_MandatoryPrefix2 : OpCodeHandlerModRM {
 		readonly OpCodeHandler[] handlers;
 
@@ -373,10 +132,10 @@ namespace Iced.Intel.DecoderInternal {
 			: this(handler, OpCodeHandler_Invalid.Instance, OpCodeHandler_Invalid.Instance, OpCodeHandler_Invalid.Instance) { }
 
 		public OpCodeHandler_MandatoryPrefix2(OpCodeHandler handler, OpCodeHandler handler66, OpCodeHandler handlerF3, OpCodeHandler handlerF2) {
-			Debug.Assert((int)MandatoryPrefix.None == 0);
-			Debug.Assert((int)MandatoryPrefix.P66 == 1);
-			Debug.Assert((int)MandatoryPrefix.PF3 == 2);
-			Debug.Assert((int)MandatoryPrefix.PF2 == 3);
+			Debug.Assert((int)MandatoryPrefixByte.None == 0);
+			Debug.Assert((int)MandatoryPrefixByte.P66 == 1);
+			Debug.Assert((int)MandatoryPrefixByte.PF3 == 2);
+			Debug.Assert((int)MandatoryPrefixByte.PF2 == 3);
 			handlers = new OpCodeHandler[4] {
 				handler ?? throw new ArgumentNullException(nameof(handler)),
 				handler66 ?? throw new ArgumentNullException(nameof(handler66)),
@@ -402,10 +161,10 @@ namespace Iced.Intel.DecoderInternal {
 		readonly OpCodeHandler[] handlers;
 
 		public OpCodeHandler_MandatoryPrefix2_NoModRM(OpCodeHandler handler, OpCodeHandler handler66, OpCodeHandler handlerF3, OpCodeHandler handlerF2) {
-			Debug.Assert((int)MandatoryPrefix.None == 0);
-			Debug.Assert((int)MandatoryPrefix.P66 == 1);
-			Debug.Assert((int)MandatoryPrefix.PF3 == 2);
-			Debug.Assert((int)MandatoryPrefix.PF2 == 3);
+			Debug.Assert((int)MandatoryPrefixByte.None == 0);
+			Debug.Assert((int)MandatoryPrefixByte.P66 == 1);
+			Debug.Assert((int)MandatoryPrefixByte.PF3 == 2);
+			Debug.Assert((int)MandatoryPrefixByte.PF2 == 3);
 			handlers = new OpCodeHandler[4] {
 				handler ?? throw new ArgumentNullException(nameof(handler)),
 				handler66 ?? throw new ArgumentNullException(nameof(handler66)),
@@ -427,161 +186,6 @@ namespace Iced.Intel.DecoderInternal {
 		}
 	}
 
-	sealed class OpCodeHandler_MandatoryPrefix_NoModRM : OpCodeHandler {
-		readonly OpCodeHandler[] handlers;
-
-		public OpCodeHandler_MandatoryPrefix_NoModRM(OpCodeHandler handler, OpCodeHandler handler66, OpCodeHandler handlerF3, OpCodeHandler handlerF2) {
-			Debug.Assert((int)MandatoryPrefix.None == 0);
-			Debug.Assert((int)MandatoryPrefix.P66 == 1);
-			Debug.Assert((int)MandatoryPrefix.PF3 == 2);
-			Debug.Assert((int)MandatoryPrefix.PF2 == 3);
-			handlers = new OpCodeHandler[4] {
-				handler ?? throw new ArgumentNullException(nameof(handler)),
-				handler66 ?? throw new ArgumentNullException(nameof(handler66)),
-				handlerF3 ?? throw new ArgumentNullException(nameof(handlerF3)),
-				handlerF2 ?? throw new ArgumentNullException(nameof(handlerF2)),
-			};
-			Debug.Assert(handler.HasModRM == HasModRM);
-			Debug.Assert(handler66.HasModRM == HasModRM);
-			Debug.Assert(handlerF3.HasModRM == HasModRM);
-			Debug.Assert(handlerF2.HasModRM == HasModRM);
-		}
-
-		public override void Decode(Decoder decoder, ref Instruction instruction) {
-			Debug.Assert(decoder.state.Encoding == EncodingKind.Legacy);
-			decoder.ClearMandatoryPrefix(ref instruction);
-			handlers[(int)decoder.state.mandatoryPrefix].Decode(decoder, ref instruction);
-		}
-	}
-
-	sealed class OpCodeHandler_MandatoryPrefix_MaybeModRM : OpCodeHandler {
-		readonly OpCodeHandler[] handlers;
-
-		public OpCodeHandler_MandatoryPrefix_MaybeModRM(OpCodeHandler handler, OpCodeHandler handler66, OpCodeHandler handlerF3, OpCodeHandler handlerF2) {
-			Debug.Assert((int)MandatoryPrefix.None == 0);
-			Debug.Assert((int)MandatoryPrefix.P66 == 1);
-			Debug.Assert((int)MandatoryPrefix.PF3 == 2);
-			Debug.Assert((int)MandatoryPrefix.PF2 == 3);
-			handlers = new OpCodeHandler[4] {
-				handler ?? throw new ArgumentNullException(nameof(handler)),
-				handler66 ?? throw new ArgumentNullException(nameof(handler66)),
-				handlerF3 ?? throw new ArgumentNullException(nameof(handlerF3)),
-				handlerF2 ?? throw new ArgumentNullException(nameof(handlerF2)),
-			};
-		}
-
-		public override void Decode(Decoder decoder, ref Instruction instruction) {
-			Debug.Assert(decoder.state.Encoding == EncodingKind.Legacy);
-			decoder.ClearMandatoryPrefix(ref instruction);
-			var handler = handlers[(int)decoder.state.mandatoryPrefix];
-			if (handler.HasModRM)
-				decoder.ReadModRM();
-			handler.Decode(decoder, ref instruction);
-		}
-	}
-
-	sealed class OpCodeHandler_VectorLength_VEX : OpCodeHandlerModRM {
-		readonly OpCodeHandler[] handlers;
-
-		public OpCodeHandler_VectorLength_VEX(OpCodeHandler handler128, OpCodeHandler handler256) {
-			Debug.Assert((int)VectorLength.L128 == 0);
-			Debug.Assert((int)VectorLength.L256 == 1);
-			Debug.Assert((int)VectorLength.L512 == 2);
-			Debug.Assert((int)VectorLength.Unknown == 3);
-			handlers = new OpCodeHandler[4] {
-				handler128 ?? throw new ArgumentNullException(nameof(handler128)),
-				handler256 ?? throw new ArgumentNullException(nameof(handler256)),
-				OpCodeHandler_Invalid.Instance,
-				OpCodeHandler_Invalid.Instance,
-			};
-			Debug.Assert(handler128.HasModRM == HasModRM);
-			Debug.Assert(handler256.HasModRM == HasModRM);
-		}
-
-		public override void Decode(Decoder decoder, ref Instruction instruction) {
-			Debug.Assert(decoder.state.Encoding == EncodingKind.VEX || decoder.state.Encoding == EncodingKind.XOP);
-			handlers[(int)decoder.state.vectorLength].Decode(decoder, ref instruction);
-		}
-	}
-
-	sealed class OpCodeHandler_VectorLength_NoModRM_VEX : OpCodeHandler {
-		readonly OpCodeHandler[] handlers;
-
-		public OpCodeHandler_VectorLength_NoModRM_VEX(OpCodeHandler handler128, OpCodeHandler handler256) {
-			Debug.Assert((int)VectorLength.L128 == 0);
-			Debug.Assert((int)VectorLength.L256 == 1);
-			Debug.Assert((int)VectorLength.L512 == 2);
-			Debug.Assert((int)VectorLength.Unknown == 3);
-			handlers = new OpCodeHandler[4] {
-				handler128 ?? throw new ArgumentNullException(nameof(handler128)),
-				handler256 ?? throw new ArgumentNullException(nameof(handler256)),
-				OpCodeHandler_Invalid.Instance,
-				OpCodeHandler_Invalid.Instance,
-			};
-			Debug.Assert(handler128.HasModRM == HasModRM);
-			Debug.Assert(handler256.HasModRM == HasModRM);
-		}
-
-		public override void Decode(Decoder decoder, ref Instruction instruction) {
-			Debug.Assert(decoder.state.Encoding == EncodingKind.VEX || decoder.state.Encoding == EncodingKind.XOP);
-			handlers[(int)decoder.state.vectorLength].Decode(decoder, ref instruction);
-		}
-	}
-
-	sealed class OpCodeHandler_VectorLength_EVEX : OpCodeHandlerModRM {
-		readonly OpCodeHandler[] handlers;
-
-		public OpCodeHandler_VectorLength_EVEX(OpCodeHandler handler128, OpCodeHandler handler256, OpCodeHandler handler512) {
-			Debug.Assert((int)VectorLength.L128 == 0);
-			Debug.Assert((int)VectorLength.L256 == 1);
-			Debug.Assert((int)VectorLength.L512 == 2);
-			Debug.Assert((int)VectorLength.Unknown == 3);
-			handlers = new OpCodeHandler[4] {
-				handler128 ?? throw new ArgumentNullException(nameof(handler128)),
-				handler256 ?? throw new ArgumentNullException(nameof(handler256)),
-				handler512 ?? throw new ArgumentNullException(nameof(handler512)),
-				OpCodeHandler_Invalid.Instance,
-			};
-			Debug.Assert(handler128.HasModRM == HasModRM);
-			Debug.Assert(handler256.HasModRM == HasModRM);
-			Debug.Assert(handler512.HasModRM == HasModRM);
-		}
-
-		public override void Decode(Decoder decoder, ref Instruction instruction) {
-			Debug.Assert(decoder.state.Encoding == EncodingKind.EVEX);
-			handlers[(int)decoder.state.vectorLength].Decode(decoder, ref instruction);
-		}
-	}
-
-	sealed class OpCodeHandler_VectorLength_EVEX_er : OpCodeHandlerModRM {
-		readonly OpCodeHandler[] handlers;
-
-		public OpCodeHandler_VectorLength_EVEX_er(OpCodeHandler handler128, OpCodeHandler handler256, OpCodeHandler handler512) {
-			Debug.Assert((int)VectorLength.L128 == 0);
-			Debug.Assert((int)VectorLength.L256 == 1);
-			Debug.Assert((int)VectorLength.L512 == 2);
-			Debug.Assert((int)VectorLength.Unknown == 3);
-			handlers = new OpCodeHandler[4] {
-				handler128 ?? throw new ArgumentNullException(nameof(handler128)),
-				handler256 ?? throw new ArgumentNullException(nameof(handler256)),
-				handler512 ?? throw new ArgumentNullException(nameof(handler512)),
-				OpCodeHandler_Invalid.Instance,
-			};
-			Debug.Assert(handler128.HasModRM == HasModRM);
-			Debug.Assert(handler256.HasModRM == HasModRM);
-			Debug.Assert(handler512.HasModRM == HasModRM);
-		}
-
-		public override void Decode(Decoder decoder, ref Instruction instruction) {
-			ref var state = ref decoder.state;
-			Debug.Assert(state.Encoding == EncodingKind.EVEX);
-			int index = (int)state.vectorLength;
-			if (state.mod == 3 && (state.flags & StateFlags.b) != 0)
-				index = (int)VectorLength.L512;
-			handlers[index].Decode(decoder, ref instruction);
-		}
-	}
-
 	sealed class OpCodeHandler_W : OpCodeHandlerModRM {
 		readonly OpCodeHandler handlerW0;
 		readonly OpCodeHandler handlerW1;
@@ -596,6 +200,46 @@ namespace Iced.Intel.DecoderInternal {
 		public override void Decode(Decoder decoder, ref Instruction instruction) => ((decoder.state.flags & StateFlags.W) != 0 ? handlerW1 : handlerW0).Decode(decoder, ref instruction);
 	}
 
+	sealed class OpCodeHandler_Bitness : OpCodeHandler {
+		readonly OpCodeHandler handler1632;
+		readonly OpCodeHandler handler64;
+
+		public OpCodeHandler_Bitness(OpCodeHandler handler1632, OpCodeHandler handler64) {
+			this.handler1632 = handler1632;
+			this.handler64 = handler64;
+		}
+
+		public override void Decode(Decoder decoder, ref Instruction instruction) {
+			OpCodeHandler handler;
+			if (decoder.is64Mode)
+				handler = handler64;
+			else
+				handler = handler1632;
+			if (handler.HasModRM)
+				decoder.ReadModRM();
+			handler.Decode(decoder, ref instruction);
+		}
+	}
+
+	sealed class OpCodeHandler_Bitness_DontReadModRM : OpCodeHandlerModRM {
+		readonly OpCodeHandler handler1632;
+		readonly OpCodeHandler handler64;
+
+		public OpCodeHandler_Bitness_DontReadModRM(OpCodeHandler handler1632, OpCodeHandler handler64) {
+			this.handler1632 = handler1632;
+			this.handler64 = handler64;
+		}
+
+		public override void Decode(Decoder decoder, ref Instruction instruction) {
+			OpCodeHandler handler;
+			if (decoder.is64Mode)
+				handler = handler64;
+			else
+				handler = handler1632;
+			handler.Decode(decoder, ref instruction);
+		}
+	}
+
 	sealed class OpCodeHandler_RM : OpCodeHandlerModRM {
 		readonly OpCodeHandler reg;
 		readonly OpCodeHandler mem;
@@ -606,27 +250,6 @@ namespace Iced.Intel.DecoderInternal {
 		}
 
 		public override void Decode(Decoder decoder, ref Instruction instruction) => (decoder.state.mod == 3 ? reg : mem).Decode(decoder, ref instruction);
-	}
-
-	sealed class OpCodeHandler_NIb : OpCodeHandlerModRM {
-		readonly Code code;
-
-		public OpCodeHandler_NIb(Code code) => this.code = code;
-
-		public override void Decode(Decoder decoder, ref Instruction instruction) {
-			ref var state = ref decoder.state;
-			Debug.Assert(state.Encoding == EncodingKind.Legacy);
-			instruction.InternalCode = code;
-			if (state.mod == 3) {
-				Debug.Assert(OpKind.Register == 0);
-				//instruction.InternalOp0Kind = OpKind.Register;
-				instruction.InternalOp0Register = (int)state.rm + Register.MM0;
-			}
-			else
-				decoder.SetInvalidInstruction();
-			instruction.InternalOp1Kind = OpKind.Immediate8;
-			instruction.InternalImmediate8 = decoder.ReadByte();
-		}
 	}
 
 	readonly struct HandlerOptions {
@@ -683,14 +306,6 @@ namespace Iced.Intel.DecoderInternal {
 			};
 		}
 
-		public OpCodeHandler_Options_DontReadModRM(OpCodeHandler defaultHandler, OpCodeHandler handler1, DecoderOptions options1, OpCodeHandler handler2, DecoderOptions options2) {
-			this.defaultHandler = defaultHandler ?? throw new ArgumentNullException(nameof(defaultHandler));
-			infos = new HandlerOptions[] {
-				new HandlerOptions(handler1 ?? throw new ArgumentNullException(nameof(handler1)), options1),
-				new HandlerOptions(handler2 ?? throw new ArgumentNullException(nameof(handler2)), options2),
-			};
-		}
-
 		public override void Decode(Decoder decoder, ref Instruction instruction) {
 			var handler = defaultHandler;
 			var options = decoder.options;
@@ -702,19 +317,6 @@ namespace Iced.Intel.DecoderInternal {
 			}
 			handler.Decode(decoder, ref instruction);
 		}
-	}
-
-	sealed class OpCodeHandler_ReservedNop : OpCodeHandlerModRM {
-		readonly OpCodeHandler reservedNopHandler;
-		readonly OpCodeHandler otherHandler;
-
-		public OpCodeHandler_ReservedNop(OpCodeHandler reservedNopHandler, OpCodeHandler otherHandler) {
-			this.reservedNopHandler = reservedNopHandler ?? throw new ArgumentNullException(nameof(reservedNopHandler));
-			this.otherHandler = otherHandler ?? throw new ArgumentNullException(nameof(otherHandler));
-		}
-
-		public override void Decode(Decoder decoder, ref Instruction instruction) =>
-			((decoder.options & DecoderOptions.ForceReservedNop) != 0 ? reservedNopHandler : otherHandler).Decode(decoder, ref instruction);
 	}
 }
 #endif

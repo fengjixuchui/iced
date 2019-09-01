@@ -23,7 +23,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #if (!NO_GAS_FORMATTER || !NO_INTEL_FORMATTER || !NO_MASM_FORMATTER || !NO_NASM_FORMATTER) && !NO_FORMATTER
 using System;
-using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace Iced.Intel {
@@ -39,7 +38,7 @@ namespace Iced.Intel {
 		/// <param name="instructionOperand">Instruction operand number, 0-based, or -1 if it's an operand created by the formatter.</param>
 		/// <param name="options">Options. Only those options that will be used by the formatter are initialized.</param>
 		/// <param name="numberOptions">Number formatting options</param>
-		void GetOperandOptions(ref Instruction instruction, int operand, int instructionOperand, ref FormatterOperandOptions options, ref NumberFormattingOptions numberOptions);
+		void GetOperandOptions(in Instruction instruction, int operand, int instructionOperand, ref FormatterOperandOptions options, ref NumberFormattingOptions numberOptions);
 	}
 
 	/// <summary>
@@ -114,17 +113,17 @@ namespace Iced.Intel {
 		/// <summary>
 		/// Digit separator or null/empty string
 		/// </summary>
-		public string DigitSeparator;
+		public string? DigitSeparator;
 
 		/// <summary>
 		/// Number prefix or null/empty string
 		/// </summary>
-		public string Prefix;
+		public string? Prefix;
 
 		/// <summary>
 		/// Number suffix or null/empty string
 		/// </summary>
-		public string Suffix;
+		public string? Suffix;
 
 		/// <summary>
 		/// Size of a digit group
@@ -135,10 +134,10 @@ namespace Iced.Intel {
 		/// Number base
 		/// </summary>
 		public NumberBase NumberBase {
-			get => (NumberBase)numberBaseByteValue;
+			readonly get => (NumberBase)numberBaseByteValue;
 			set => numberBaseByteValue = (byte)value;
 		}
-		internal byte numberBaseByteValue;
+		byte numberBaseByteValue;
 
 		/// <summary>
 		/// Use upper case hex digits
@@ -154,13 +153,6 @@ namespace Iced.Intel {
 		/// Add a leading zero to numbers if there's no prefix and the number begins with hex digits A-F, eg. Ah vs 0Ah
 		/// </summary>
 		public bool AddLeadingZeroToHexNumbers;
-
-		/// <summary>
-		/// If true, use short numbers, and if false, add leading zeroes, eg. '1h' vs '00000001h'
-		/// </summary>
-		[Obsolete("Use " + nameof(LeadingZeroes) + " instead", false)]
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public bool ShortNumbers;
 
 		/// <summary>
 		/// If true, add leading zeroes to numbers, eg. '1h' vs '00000001h'
@@ -184,7 +176,7 @@ namespace Iced.Intel {
 		/// <returns></returns>
 		[MethodImpl(MethodImplOptions2.AggressiveInlining)]
 		public static NumberFormattingOptions CreateImmediate(FormatterOptions options) {
-			if (options == null)
+			if (options is null)
 				ThrowHelper.ThrowArgumentNullException_options();
 			return CreateImmediateInternal(options);
 		}
@@ -200,7 +192,7 @@ namespace Iced.Intel {
 		/// <returns></returns>
 		[MethodImpl(MethodImplOptions2.AggressiveInlining)]
 		public static NumberFormattingOptions CreateDisplacement(FormatterOptions options) {
-			if (options == null)
+			if (options is null)
 				ThrowHelper.ThrowArgumentNullException_options();
 			return CreateDisplacementInternal(options);
 		}
@@ -216,7 +208,7 @@ namespace Iced.Intel {
 		/// <returns></returns>
 		[MethodImpl(MethodImplOptions2.AggressiveInlining)]
 		public static NumberFormattingOptions CreateBranch(FormatterOptions options) {
-			if (options == null)
+			if (options is null)
 				ThrowHelper.ThrowArgumentNullException_options();
 			return CreateBranchInternal(options);
 		}
@@ -233,11 +225,8 @@ namespace Iced.Intel {
 		/// <param name="signedNumber">Signed numbers if true, and unsigned numbers if false</param>
 		/// <param name="signExtendImmediate">Sign extend the number to the real size (16-bit, 32-bit, 64-bit), eg. 'mov al,[eax+12h]' vs 'mov al,[eax+00000012h]'</param>
 		public NumberFormattingOptions(FormatterOptions options, bool leadingZeroes, bool signedNumber, bool signExtendImmediate) {
-			if (options == null)
+			if (options is null)
 				ThrowHelper.ThrowArgumentNullException_options();
-#pragma warning disable CS0618 // Type or member is obsolete
-			ShortNumbers = !leadingZeroes;
-#pragma warning restore CS0618 // Type or member is obsolete
 			LeadingZeroes = leadingZeroes;
 			SignedNumber = signedNumber;
 			SignExtendImmediate = signExtendImmediate;

@@ -139,6 +139,10 @@ retnw 0A55Ah
 ret 0A55Ah
 retnw
 ret
+rep retnw 0A55Ah
+rep ret 0A55Ah
+rep retnw
+rep ret
 les bx,[eax]
 les ebx,[eax]
 lds bx,[eax]
@@ -582,6 +586,7 @@ monitorx ax,ecx,edx
 monitorx eax,ecx,edx
 clzero
 clzero
+rdpru
 add cl,5Ah
 add byte ptr [eax],5Ah
 or dl,0A5h
@@ -608,7 +613,6 @@ jmpe dword ptr [eax]
 loadallreset286
 loadall286
 loadall386
-cflsh
 umov dh,cl
 umov [eax],bl
 umov si,cx
@@ -623,8 +627,6 @@ umov ecx,esi
 umov ebx,[eax]
 mov esi,tr3
 mov tr3,esi
-wrecr
-rdecr
 xbts cx,si
 xbts bx,[eax]
 xbts ecx,esi
@@ -639,7 +641,6 @@ cmpxchg486 si,cx
 cmpxchg486 [eax],bx
 cmpxchg486 esi,ecx
 cmpxchg486 [eax],ebx
-zalloc [eax]
 umonitor bp
 umonitor ebp
 jmpe 0A55Ah

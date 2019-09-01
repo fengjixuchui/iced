@@ -706,6 +706,8 @@ C1 38 A5, Sar_rm32_imm8
 48 C1 38 A5, Sar_rm64_imm8
 C2 5AA5, Retnq_imm16
 C3, Retnq
+F3 C2 5AA5, Retnq_imm16
+F3 C3, Retnq
 C6 C1 5A, Mov_rm8_imm8
 C6 00 5A, Mov_rm8_imm8
 C6 F8 5A, Xabort_imm8
@@ -1499,8 +1501,8 @@ C5CB 2A D3, VEX_Vcvtsi2sd_xmm_xmm_rm32
 C5CB 2A 10, VEX_Vcvtsi2sd_xmm_xmm_rm32
 C4E1CB 2A D3, VEX_Vcvtsi2sd_xmm_xmm_rm64
 C4E1CB 2A 10, VEX_Vcvtsi2sd_xmm_xmm_rm64
-62 F14F08 2A D3, EVEX_Vcvtsi2sd_xmm_xmm_rm32
-62 F14F08 2A 50 01, EVEX_Vcvtsi2sd_xmm_xmm_rm32
+62 F14F08 2A D3, EVEX_Vcvtsi2sd_xmm_xmm_rm32_er
+62 F14F08 2A 50 01, EVEX_Vcvtsi2sd_xmm_xmm_rm32_er
 62 F1CF08 2A D3, EVEX_Vcvtsi2sd_xmm_xmm_rm64_er
 62 F1CF08 2A 50 01, EVEX_Vcvtsi2sd_xmm_xmm_rm64_er
 0F2B 08, Movntps_m128_xmm
@@ -2963,8 +2965,8 @@ C5FC 77, VEX_Vzeroall
 62 F14E08 7B 50 01, EVEX_Vcvtusi2ss_xmm_xmm_rm32_er
 62 F1CE08 7B D3, EVEX_Vcvtusi2ss_xmm_xmm_rm64_er
 62 F1CE08 7B 50 01, EVEX_Vcvtusi2ss_xmm_xmm_rm64_er
-62 F14F08 7B D3, EVEX_Vcvtusi2sd_xmm_xmm_rm32
-62 F14F08 7B 50 01, EVEX_Vcvtusi2sd_xmm_xmm_rm32
+62 F14F08 7B D3, EVEX_Vcvtusi2sd_xmm_xmm_rm32_er
+62 F14F08 7B 50 01, EVEX_Vcvtusi2sd_xmm_xmm_rm32_er
 62 F1CF08 7B D3, EVEX_Vcvtusi2sd_xmm_xmm_rm64_er
 62 F1CF08 7B 50 01, EVEX_Vcvtusi2sd_xmm_xmm_rm64_er
 66 0F7C CD, Haddpd_xmm_xmmm128
@@ -7441,6 +7443,7 @@ F2 0F1B D8, Bndcn_bnd_rm64
 0F01 FB, Mwaitx
 67 0F01 FC, Clzerod
 0F01 FC, Clzeroq
+0F01 FD, Rdpru
 0F0D 00, Prefetch_m8
 0F0E, Femms
 F3 0F2B 08, Movntss_m32_xmm
@@ -7965,27 +7968,6 @@ F3 0FAE 30, Clrssbsy_m64
 F3 0FAE F5, Umonitor_r64
 F2 0FAE F5, Umwait_r32
 F2 48 0FAE F5, Umwait_r64
-0FAE E9, Lfence
-0FAE EA, Lfence
-0FAE EB, Lfence
-0FAE EC, Lfence
-0FAE ED, Lfence
-0FAE EE, Lfence
-0FAE EF, Lfence
-0FAE F1, Mfence
-0FAE F2, Mfence
-0FAE F3, Mfence
-0FAE F4, Mfence
-0FAE F5, Mfence
-0FAE F6, Mfence
-0FAE F7, Mfence
-0FAE F9, Sfence
-0FAE FA, Sfence
-0FAE FB, Sfence
-0FAE FC, Sfence
-0FAE FD, Sfence
-0FAE FE, Sfence
-0FAE FF, Sfence
 66 0FAE F8, Pcommit, Pcommit
 62 E20D0B 50 D3, EVEX_Vpdpbusd_xmm_k1z_xmm_xmmm128b32
 62 F24D08 50 50 01, EVEX_Vpdpbusd_xmm_k1z_xmm_xmmm128b32

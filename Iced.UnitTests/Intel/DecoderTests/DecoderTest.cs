@@ -45,7 +45,7 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 			return CreateDecoder(codeSize, hexBytes, options).decoder;
 		}
 
-		(Decoder decoder, int byteLength) CreateDecoder(int codeSize, string hexBytes, DecoderOptions options) {
+		(Decoder decoder, int byteLength, ByteArrayCodeReader codeReader) CreateDecoder(int codeSize, string hexBytes, DecoderOptions options) {
 			var codeReader = new ByteArrayCodeReader(hexBytes);
 			var decoder = Decoder.Create(codeSize, codeReader, options);
 			switch (codeSize) {
@@ -66,16 +66,18 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 			}
 
 			Assert.Equal(codeSize, decoder.Bitness);
-			return (decoder, codeReader.Count);
+			return (decoder, codeReader.Count, codeReader);
 		}
 
-		protected void DecodeMemOpsBase(int bitness, string hexBytes, Code code, Register register, Register prefixSeg, Register segReg, Register baseReg, Register indexReg, int scale, uint displ, int displSize, in ConstantOffsets constantOffsets, string encodedHexBytes) {
-			var (decoder, byteLength) = CreateDecoder(bitness, hexBytes, DecoderOptions.None);
+		protected void DecodeMemOpsBase(int bitness, string hexBytes, Code code, Register register, Register prefixSeg, Register segReg, Register baseReg, Register indexReg, int scale, uint displ, int displSize, in ConstantOffsets constantOffsets, string encodedHexBytes, DecoderOptions options) {
+			var (decoder, byteLength, codeReader) = CreateDecoder(bitness, hexBytes, options);
 			var instr = decoder.Decode();
+			Assert.False(codeReader.CanReadByte);
 
 			Assert.Equal(code, instr.Code);
 			Assert.Equal(2, instr.OpCount);
 			Assert.Equal(byteLength, instr.ByteLength);
+			Assert.False(instr.HasRepPrefix);
 			Assert.False(instr.HasRepePrefix);
 			Assert.False(instr.HasRepnePrefix);
 			Assert.False(instr.HasLockPrefix);
@@ -91,7 +93,7 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 
 			Assert.Equal(OpKind.Register, instr.Op1Kind);
 			Assert.Equal(register, instr.Op1Register);
-			VerifyConstantOffsets(constantOffsets, decoder.GetConstantOffsets(ref instr));
+			VerifyConstantOffsets(constantOffsets, decoder.GetConstantOffsets(instr));
 		}
 
 		static readonly Dictionary<string, Code> toCode = CreateToCode();
@@ -143,10 +145,11 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 				int displSize = (int)ParseUInt32(parts[9].Trim());
 				var constantOffsets = ParseConstantOffsets(parts[10].Trim());
 				string encodedHexBytes = parts.Length > 11 ? parts[11].Trim() : hexBytes;
-				yield return new object[12] { hexBytes, code, register, prefixSeg, segReg, baseReg, indexReg, scale, displ, displSize, constantOffsets, encodedHexBytes };
+				var options = DecoderOptions.None;
+				yield return new object[13] { hexBytes, code, register, prefixSeg, segReg, baseReg, indexReg, scale, displ, displSize, constantOffsets, encodedHexBytes, options };
 			}
 
-			uint ParseUInt32(string s) {
+			static uint ParseUInt32(string s) {
 				if (uint.TryParse(s, out uint value))
 					return value;
 				if (s.StartsWith("0x")) {
@@ -158,7 +161,7 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 				throw new InvalidOperationException();
 			}
 
-			ConstantOffsets ParseConstantOffsets(string s) {
+			static ConstantOffsets ParseConstantOffsets(string s) {
 				var vs = s.Split(coSeps);
 				if (vs.Length != 6)
 					throw new InvalidOperationException();
@@ -191,9 +194,10 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 		}
 
 		internal void DecoderTestBase(int bitness, int lineNo, string hexBytes, DecoderTestCase tc) {
-			var (decoder, byteLength) = CreateDecoder(bitness, hexBytes, tc.DecoderOptions);
+			var (decoder, byteLength, codeReader) = CreateDecoder(bitness, hexBytes, tc.DecoderOptions);
 			ulong rip = decoder.IP;
 			decoder.Decode(out var instr);
+			Assert.False(codeReader.CanReadByte);
 			Assert.Equal(tc.Code, instr.Code);
 			Assert.Equal(tc.Mnemonic, instr.Mnemonic);
 			Assert.Equal(instr.Mnemonic, instr.Code.ToMnemonic());
@@ -207,6 +211,7 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 			Assert.Equal(tc.IsBroadcast, instr.IsBroadcast);
 			Assert.Equal(tc.HasXacquirePrefix, instr.HasXacquirePrefix);
 			Assert.Equal(tc.HasXreleasePrefix, instr.HasXreleasePrefix);
+			Assert.Equal(tc.HasRepePrefix, instr.HasRepPrefix);
 			Assert.Equal(tc.HasRepePrefix, instr.HasRepePrefix);
 			Assert.Equal(tc.HasRepnePrefix, instr.HasRepnePrefix);
 			Assert.Equal(tc.HasLockPrefix, instr.HasLockPrefix);
@@ -367,10 +372,10 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 					}
 				}
 			}
-			VerifyConstantOffsets(tc.ConstantOffsets, decoder.GetConstantOffsets(ref instr));
+			VerifyConstantOffsets(tc.ConstantOffsets, decoder.GetConstantOffsets(instr));
 		}
 
-		static void VerifyConstantOffsets(in ConstantOffsets expectedConstantOffsets, in ConstantOffsets actualConstantOffsets) {
+		protected static void VerifyConstantOffsets(in ConstantOffsets expectedConstantOffsets, in ConstantOffsets actualConstantOffsets) {
 			Assert.Equal(expectedConstantOffsets.ImmediateOffset, actualConstantOffsets.ImmediateOffset);
 			Assert.Equal(expectedConstantOffsets.ImmediateSize, actualConstantOffsets.ImmediateSize);
 			Assert.Equal(expectedConstantOffsets.ImmediateOffset2, actualConstantOffsets.ImmediateOffset2);

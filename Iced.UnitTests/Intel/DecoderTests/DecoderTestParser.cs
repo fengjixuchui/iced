@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Iced.Intel;
+using SG = System.Globalization;
 
 namespace Iced.UnitTests.Intel.DecoderTests {
 	static class DecoderTestParser {
@@ -51,12 +52,9 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 		const string EncodedHexBytes = "enc";
 		const string DecoderOptions_AMD = "amd";
 		const string DecoderOptions_ForceReservedNop = "resnop";
-		const string DecoderOptions_Cflsh = "cflsh";
 		const string DecoderOptions_Umov = "umov";
-		const string DecoderOptions_Ecr = "ecr";
 		const string DecoderOptions_Xbts = "xbts";
 		const string DecoderOptions_Cmpxchg486A = "cmpxchg486a";
-		const string DecoderOptions_Zalloc = "zalloc";
 		const string DecoderOptions_OldFpu = "oldfpu";
 		const string DecoderOptions_Pcommit = "pcommit";
 		const string DecoderOptions_Loadall286 = "loadall286";
@@ -70,6 +68,7 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 		const string DecoderOptions_NoMPFX_0FBC = "nompfx_0fbc";
 		const string DecoderOptions_NoMPFX_0FBD = "nompfx_0fbd";
 		const string DecoderOptions_NoLahfSahf64 = "nolahfsahf64";
+		const string DecoderOptions_NoInvalidCheck = "noinvalidcheck";
 		const string SegmentPrefix_ES = "es:";
 		const string SegmentPrefix_CS = "cs:";
 		const string SegmentPrefix_SS = "ss:";
@@ -183,7 +182,7 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 		static DecoderTestCase ReadTestCase(int bitness, string line, int lineNo) {
 			var parts = line.Split(seps);
 			if (parts.Length != 5)
-				throw new InvalidOperationException();
+				throw new InvalidOperationException($"Invalid number of commas ({parts.Length - 1} commas)");
 
 			var tc = new DecoderTestCase();
 			tc.LineNumber = lineNo;
@@ -309,16 +308,8 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 					tc.DecoderOptions |= DecoderOptions.ForceReservedNop;
 					break;
 
-				case DecoderOptions_Cflsh:
-					tc.DecoderOptions |= DecoderOptions.Cflsh;
-					break;
-
 				case DecoderOptions_Umov:
 					tc.DecoderOptions |= DecoderOptions.Umov;
-					break;
-
-				case DecoderOptions_Ecr:
-					tc.DecoderOptions |= DecoderOptions.Ecr;
 					break;
 
 				case DecoderOptions_Xbts:
@@ -327,10 +318,6 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 
 				case DecoderOptions_Cmpxchg486A:
 					tc.DecoderOptions |= DecoderOptions.Cmpxchg486A;
-					break;
-
-				case DecoderOptions_Zalloc:
-					tc.DecoderOptions |= DecoderOptions.Zalloc;
 					break;
 
 				case DecoderOptions_OldFpu:
@@ -383,6 +370,10 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 
 				case DecoderOptions_NoLahfSahf64:
 					tc.DecoderOptions |= DecoderOptions.NoLahfSahf64;
+					break;
+
+				case DecoderOptions_NoInvalidCheck:
+					tc.DecoderOptions |= DecoderOptions.NoInvalidCheck;
 					break;
 
 				case SegmentPrefix_ES:
@@ -453,7 +444,7 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 		static readonly char[] coSeps = new char[] { ';' };
 		static bool TryParseConstantOffsets(string value, out ConstantOffsets constantOffsets) {
 			constantOffsets = default;
-			if (value == null)
+			if (value is null)
 				return false;
 
 			var parts = value.Split(coSeps);
@@ -688,7 +679,7 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 		static ulong ToUInt64(string value) {
 			if (value.StartsWith("0x")) {
 				value = value.Substring(2);
-				if (ulong.TryParse(value, System.Globalization.NumberStyles.HexNumber, null, out var number))
+				if (ulong.TryParse(value, SG.NumberStyles.HexNumber, null, out var number))
 					return number;
 			}
 			else if (ulong.TryParse(value, out var number))
@@ -699,7 +690,7 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 		static long ToInt64(string value) {
 			if (value.StartsWith("0x")) {
 				value = value.Substring(2);
-				if (long.TryParse(value, System.Globalization.NumberStyles.HexNumber, null, out var number))
+				if (long.TryParse(value, SG.NumberStyles.HexNumber, null, out var number))
 					return number;
 			}
 			else if (long.TryParse(value, out var number))

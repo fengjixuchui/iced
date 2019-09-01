@@ -25,7 +25,6 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace Iced.Intel {
 	/// <summary>
@@ -149,8 +148,8 @@ namespace Iced.Intel {
 		/// <param name="other">Other instruction</param>
 		/// <returns></returns>
 		[MethodImpl(MethodImplOptions2.AggressiveInlining)]
-		public bool Equals(in Instruction other) => EqualsInternal(this, other);
-		bool IEquatable<Instruction>.Equals(Instruction other) => EqualsInternal(this, other);
+		public readonly bool Equals(in Instruction other) => EqualsInternal(this, other);
+		readonly bool IEquatable<Instruction>.Equals(Instruction other) => EqualsInternal(this, other);
 
 		static bool EqualsInternal(in Instruction a, in Instruction b) =>
 			((a.codeFlags ^ b.codeFlags) & ~(uint)CodeFlags.EqualsIgnoreMask) == 0 &&
@@ -169,7 +168,7 @@ namespace Iced.Intel {
 		/// Gets the hash code
 		/// </summary>
 		/// <returns></returns>
-		public override int GetHashCode() {
+		public override readonly int GetHashCode() {
 			uint c = codeFlags & ~(uint)CodeFlags.EqualsIgnoreMask;
 			c ^= opKindFlags & ~(uint)OpKindFlags.EqualsIgnoreMask;
 			c ^= immediate;
@@ -189,7 +188,7 @@ namespace Iced.Intel {
 		/// </summary>
 		/// <param name="obj">Other instruction</param>
 		/// <returns></returns>
-		public override bool Equals(object obj) => obj is Instruction other && EqualsInternal(this, other);
+		public override readonly bool Equals(object? obj) => obj is Instruction other && EqualsInternal(this, other);
 
 		/// <summary>
 		/// Checks if two instructions are equal, comparing all bits, not ignoring anything
@@ -211,42 +210,11 @@ namespace Iced.Intel {
 			a.reg3 == b.reg3 &&
 			a.nextRip == b.nextRip;
 
-		internal static bool TEST_BitByBitEquals(in Instruction a, in Instruction b) => EqualsAllBits(a, b);
-
-		internal static string TEST_DumpDiff(in Instruction a, in Instruction b) {
-			var builder = new StringBuilder();
-			if (a.nextRip != b.nextRip)
-				builder.AppendLine($"a.nextRip={a.nextRip:X16} b.nextRip={b.nextRip:X16}");
-			if (a.codeFlags != b.codeFlags)
-				builder.AppendLine($"a.codeFlags={a.codeFlags:X} b.codeFlags={b.codeFlags:X}");
-			if (a.opKindFlags != b.opKindFlags)
-				builder.AppendLine($"a.opKindFlags={a.opKindFlags:X} b.opKindFlags={b.opKindFlags:X}");
-			if (a.immediate != b.immediate)
-				builder.AppendLine($"a.immediate={a.immediate:X} b.immediate={b.immediate:X}");
-			if (a.memDispl != b.memDispl)
-				builder.AppendLine($"a.memDispl={a.memDispl:X} b.memDispl={b.memDispl:X}");
-			if (a.memoryFlags != b.memoryFlags)
-				builder.AppendLine($"a.memoryFlags={a.memoryFlags:X} b.memoryFlags={b.memoryFlags:X}");
-			if (a.memBaseReg != b.memBaseReg)
-				builder.AppendLine($"a.MemoryBase={(Register)a.memBaseReg} b.MemoryBase={(Register)b.memBaseReg}");
-			if (a.memIndexReg != b.memIndexReg)
-				builder.AppendLine($"a.MemoryIndex={(Register)a.memIndexReg} b.MemoryIndex={(Register)b.memIndexReg}");
-			if (a.reg0 != b.reg0)
-				builder.AppendLine($"a.Op0Register={(Register)a.reg0} b.Op0Register={(Register)b.reg0}");
-			if (a.reg1 != b.reg1)
-				builder.AppendLine($"a.Op1Register={(Register)a.reg1} b.Op1Register={(Register)b.reg1}");
-			if (a.reg2 != b.reg2)
-				builder.AppendLine($"a.Op2Register={(Register)a.reg2} b.Op2Register={(Register)b.reg2}");
-			if (a.reg3 != b.reg3)
-				builder.AppendLine($"a.Op3Register={(Register)a.reg3} b.Op3Register={(Register)b.reg3}");
-			return builder.ToString();
-		}
-
 		/// <summary>
 		/// 16-bit IP of the instruction
 		/// </summary>
 		public ushort IP16 {
-			get => (ushort)((uint)nextRip - (uint)ByteLength);
+			readonly get => (ushort)((uint)nextRip - (uint)ByteLength);
 			set => nextRip = value + (uint)ByteLength;
 		}
 
@@ -254,17 +222,17 @@ namespace Iced.Intel {
 		/// 32-bit IP of the instruction
 		/// </summary>
 		public uint IP32 {
-			get => (uint)nextRip - (uint)ByteLength;
+			readonly get => (uint)nextRip - (uint)ByteLength;
 			set => nextRip = value + (uint)ByteLength;
 		}
 
 		/// <summary>
 		/// 64-bit IP of the instruction
 		/// </summary>
-		[Obsolete("Use " + nameof(IP) + " instead of this property", false)]
+		[Obsolete("Use " + nameof(IP) + " instead of this property", true)]
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public ulong IP64 {
-			get => nextRip - (uint)ByteLength;
+			readonly get => nextRip - (uint)ByteLength;
 			set => nextRip = value + (uint)ByteLength;
 		}
 
@@ -272,7 +240,7 @@ namespace Iced.Intel {
 		/// 64-bit IP of the instruction
 		/// </summary>
 		public ulong IP {
-			get => nextRip - (uint)ByteLength;
+			readonly get => nextRip - (uint)ByteLength;
 			set => nextRip = value + (uint)ByteLength;
 		}
 
@@ -280,7 +248,7 @@ namespace Iced.Intel {
 		/// 16-bit IP of the next instruction
 		/// </summary>
 		public ushort NextIP16 {
-			get => (ushort)nextRip;
+			readonly get => (ushort)nextRip;
 			set => nextRip = value;
 		}
 
@@ -288,17 +256,17 @@ namespace Iced.Intel {
 		/// 32-bit IP of the next instruction
 		/// </summary>
 		public uint NextIP32 {
-			get => (uint)nextRip;
+			readonly get => (uint)nextRip;
 			set => nextRip = value;
 		}
 
 		/// <summary>
 		/// 64-bit IP of the next instruction
 		/// </summary>
-		[Obsolete("Use " + nameof(NextIP) + " instead of this property", false)]
+		[Obsolete("Use " + nameof(NextIP) + " instead of this property", true)]
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public ulong NextIP64 {
-			get => nextRip;
+			readonly get => nextRip;
 			set => nextRip = value;
 		}
 
@@ -306,7 +274,7 @@ namespace Iced.Intel {
 		/// 64-bit IP of the next instruction
 		/// </summary>
 		public ulong NextIP {
-			get => nextRip;
+			readonly get => nextRip;
 			set => nextRip = value;
 		}
 
@@ -316,7 +284,7 @@ namespace Iced.Intel {
 		/// </summary>
 		public CodeSize CodeSize {
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
-			get => (CodeSize)((opKindFlags >> (int)OpKindFlags.CodeSizeShift) & (uint)OpKindFlags.CodeSizeMask);
+			readonly get => (CodeSize)((opKindFlags >> (int)OpKindFlags.CodeSizeShift) & (uint)OpKindFlags.CodeSizeMask);
 			set => opKindFlags = ((opKindFlags & ~((uint)OpKindFlags.CodeSizeMask << (int)OpKindFlags.CodeSizeShift)) |
 				(((uint)value & (uint)OpKindFlags.CodeSizeMask) << (int)OpKindFlags.CodeSizeShift));
 		}
@@ -330,7 +298,7 @@ namespace Iced.Intel {
 		/// </summary>
 		public Code Code {
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
-			get => (Code)(codeFlags & (uint)CodeFlags.CodeMask);
+			readonly get => (Code)(codeFlags & (uint)CodeFlags.CodeMask);
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
 			set {
 				if ((uint)value >= (uint)DecoderConstants.NumberOfCodeValues)
@@ -351,7 +319,7 @@ namespace Iced.Intel {
 		/// <summary>
 		/// Gets the mnemonic
 		/// </summary>
-		public Mnemonic Mnemonic {
+		public readonly Mnemonic Mnemonic {
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
 			get => Code.ToMnemonic();
 		}
@@ -359,7 +327,7 @@ namespace Iced.Intel {
 		/// <summary>
 		/// Gets the operand count. Up to 5 operands is allowed.
 		/// </summary>
-		public int OpCount {
+		public readonly int OpCount {
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
 			get => InstructionOpCounts.OpCount[(int)(codeFlags & (uint)CodeFlags.CodeMask)];
 		}
@@ -370,7 +338,7 @@ namespace Iced.Intel {
 		/// </summary>
 		public int ByteLength {
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
-			get => (int)((codeFlags >> (int)CodeFlags.InstrLengthShift) & (uint)CodeFlags.InstrLengthMask);
+			readonly get => (int)((codeFlags >> (int)CodeFlags.InstrLengthShift) & (uint)CodeFlags.InstrLengthMask);
 			set => codeFlags = (codeFlags & ~((uint)CodeFlags.InstrLengthMask << (int)CodeFlags.InstrLengthShift)) |
 				(((uint)value & (uint)CodeFlags.InstrLengthMask) << (int)CodeFlags.InstrLengthShift);
 		}
@@ -379,15 +347,15 @@ namespace Iced.Intel {
 			set => codeFlags |= (value << (int)CodeFlags.InstrLengthShift);
 		}
 
-		internal bool Internal_HasRepePrefix_HasXreleasePrefix {
+		internal readonly bool Internal_HasRepePrefix_HasXreleasePrefix {
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
 			get => (codeFlags & (uint)(CodeFlags.RepePrefix | CodeFlags.XreleasePrefix)) != 0;
 		}
-		internal bool Internal_HasRepnePrefix_HasXacquirePrefix {
+		internal readonly bool Internal_HasRepnePrefix_HasXacquirePrefix {
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
 			get => (codeFlags & (uint)(CodeFlags.RepnePrefix | CodeFlags.XacquirePrefix)) != 0;
 		}
-		internal bool Internal_HasRepeOrRepnePrefix {
+		internal readonly bool Internal_HasRepeOrRepnePrefix {
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
 			get => (codeFlags & (uint)(CodeFlags.RepePrefix | CodeFlags.RepnePrefix)) != 0;
 		}
@@ -397,7 +365,7 @@ namespace Iced.Intel {
 		/// </summary>
 		public bool HasXacquirePrefix {
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
-			get => (codeFlags & (uint)CodeFlags.XacquirePrefix) != 0;
+			readonly get => (codeFlags & (uint)CodeFlags.XacquirePrefix) != 0;
 			set {
 				if (value)
 					codeFlags |= (uint)CodeFlags.XacquirePrefix;
@@ -413,7 +381,7 @@ namespace Iced.Intel {
 		/// </summary>
 		public bool HasXreleasePrefix {
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
-			get => (codeFlags & (uint)CodeFlags.XreleasePrefix) != 0;
+			readonly get => (codeFlags & (uint)CodeFlags.XreleasePrefix) != 0;
 			set {
 				if (value)
 					codeFlags |= (uint)CodeFlags.XreleasePrefix;
@@ -427,9 +395,23 @@ namespace Iced.Intel {
 		/// <summary>
 		/// Checks if the instruction has the REPE or REP prefix (F3)
 		/// </summary>
+		public bool HasRepPrefix {
+			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
+			readonly get => (codeFlags & (uint)CodeFlags.RepePrefix) != 0;
+			set {
+				if (value)
+					codeFlags |= (uint)CodeFlags.RepePrefix;
+				else
+					codeFlags &= ~(uint)CodeFlags.RepePrefix;
+			}
+		}
+
+		/// <summary>
+		/// Checks if the instruction has the REPE or REP prefix (F3)
+		/// </summary>
 		public bool HasRepePrefix {
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
-			get => (codeFlags & (uint)CodeFlags.RepePrefix) != 0;
+			readonly get => (codeFlags & (uint)CodeFlags.RepePrefix) != 0;
 			set {
 				if (value)
 					codeFlags |= (uint)CodeFlags.RepePrefix;
@@ -447,7 +429,7 @@ namespace Iced.Intel {
 		/// </summary>
 		public bool HasRepnePrefix {
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
-			get => (codeFlags & (uint)CodeFlags.RepnePrefix) != 0;
+			readonly get => (codeFlags & (uint)CodeFlags.RepnePrefix) != 0;
 			set {
 				if (value)
 					codeFlags |= (uint)CodeFlags.RepnePrefix;
@@ -465,7 +447,7 @@ namespace Iced.Intel {
 		/// </summary>
 		public bool HasLockPrefix {
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
-			get => (codeFlags & (uint)CodeFlags.LockPrefix) != 0;
+			readonly get => (codeFlags & (uint)CodeFlags.LockPrefix) != 0;
 			set {
 				if (value)
 					codeFlags |= (uint)CodeFlags.LockPrefix;
@@ -483,7 +465,7 @@ namespace Iced.Intel {
 		/// </summary>
 		public OpKind Op0Kind {
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
-			get => (OpKind)(opKindFlags & (uint)OpKindFlags.OpKindMask);
+			readonly get => (OpKind)(opKindFlags & (uint)OpKindFlags.OpKindMask);
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
 			set => opKindFlags = (opKindFlags & ~(uint)OpKindFlags.OpKindMask) | ((uint)value & (uint)OpKindFlags.OpKindMask);
 		}
@@ -491,7 +473,7 @@ namespace Iced.Intel {
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
 			set => opKindFlags |= (uint)value;
 		}
-		internal bool Internal_Op0IsNotReg_or_Op0IsNotReg {
+		internal readonly bool Internal_Op0IsNotReg_or_Op0IsNotReg {
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
 			get => (opKindFlags & ((uint)OpKindFlags.OpKindMask | ((uint)OpKindFlags.OpKindMask << (int)OpKindFlags.Op1KindShift))) != 0;
 		}
@@ -501,7 +483,7 @@ namespace Iced.Intel {
 		/// </summary>
 		public OpKind Op1Kind {
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
-			get => (OpKind)((opKindFlags >> (int)OpKindFlags.Op1KindShift) & (uint)OpKindFlags.OpKindMask);
+			readonly get => (OpKind)((opKindFlags >> (int)OpKindFlags.Op1KindShift) & (uint)OpKindFlags.OpKindMask);
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
 			set => opKindFlags = (opKindFlags & ~((uint)OpKindFlags.OpKindMask << (int)OpKindFlags.Op1KindShift)) |
 				(((uint)value & (uint)OpKindFlags.OpKindMask) << (int)OpKindFlags.Op1KindShift);
@@ -516,7 +498,7 @@ namespace Iced.Intel {
 		/// </summary>
 		public OpKind Op2Kind {
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
-			get => (OpKind)((opKindFlags >> (int)OpKindFlags.Op2KindShift) & (uint)OpKindFlags.OpKindMask);
+			readonly get => (OpKind)((opKindFlags >> (int)OpKindFlags.Op2KindShift) & (uint)OpKindFlags.OpKindMask);
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
 			set => opKindFlags = (opKindFlags & ~((uint)OpKindFlags.OpKindMask << (int)OpKindFlags.Op2KindShift)) |
 				(((uint)value & (uint)OpKindFlags.OpKindMask) << (int)OpKindFlags.Op2KindShift);
@@ -531,7 +513,7 @@ namespace Iced.Intel {
 		/// </summary>
 		public OpKind Op3Kind {
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
-			get => (OpKind)((opKindFlags >> (int)OpKindFlags.Op3KindShift) & (uint)OpKindFlags.OpKindMask);
+			readonly get => (OpKind)((opKindFlags >> (int)OpKindFlags.Op3KindShift) & (uint)OpKindFlags.OpKindMask);
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
 			set => opKindFlags = (opKindFlags & ~((uint)OpKindFlags.OpKindMask << (int)OpKindFlags.Op3KindShift)) |
 				(((uint)value & (uint)OpKindFlags.OpKindMask) << (int)OpKindFlags.Op3KindShift);
@@ -545,7 +527,7 @@ namespace Iced.Intel {
 		/// Gets operand #4's kind if the operand exists (see <see cref="OpCount"/>)
 		/// </summary>
 		public OpKind Op4Kind {
-			get => OpKind.Immediate8;
+			readonly get => OpKind.Immediate8;
 			set {
 				if (value != OpKind.Immediate8)
 					ThrowHelper.ThrowArgumentOutOfRangeException_value();
@@ -564,7 +546,7 @@ namespace Iced.Intel {
 		/// </summary>
 		/// <param name="operand">Operand number, 0-4</param>
 		/// <returns></returns>
-		public OpKind GetOpKind(int operand) {
+		public readonly OpKind GetOpKind(int operand) {
 			switch (operand) {
 			case 0: return Op0Kind;
 			case 1: return Op1Kind;
@@ -599,7 +581,7 @@ namespace Iced.Intel {
 		/// <see cref="OpKind.MemorySegSI"/>, <see cref="OpKind.MemorySegESI"/>, <see cref="OpKind.MemorySegRSI"/>
 		/// </summary>
 		public Register SegmentPrefix {
-			get {
+			readonly get {
 				uint index = (((uint)memoryFlags >> (int)MemoryFlags.SegmentPrefixShift) & (uint)MemoryFlags.SegmentPrefixMask) - 1;
 				return index < 6 ? Register.ES + (int)index : Register.None;
 			}
@@ -619,7 +601,7 @@ namespace Iced.Intel {
 		/// Use this property if the operand has kind <see cref="OpKind.Memory"/>, <see cref="OpKind.Memory64"/>,
 		/// <see cref="OpKind.MemorySegSI"/>, <see cref="OpKind.MemorySegESI"/>, <see cref="OpKind.MemorySegRSI"/>
 		/// </summary>
-		public Register MemorySegment {
+		public readonly Register MemorySegment {
 			get {
 				var segReg = SegmentPrefix;
 				if (segReg != Register.None)
@@ -638,7 +620,7 @@ namespace Iced.Intel {
 		/// Use this property if the operand has kind <see cref="OpKind.Memory"/>
 		/// </summary>
 		public int MemoryDisplSize {
-			get {
+			readonly get {
 				switch (((uint)memoryFlags >> (int)MemoryFlags.DisplSizeShift) & (uint)MemoryFlags.DisplSizeMask) {
 				case 0: return 0;
 				case 1: return 1;
@@ -673,7 +655,7 @@ namespace Iced.Intel {
 		/// </summary>
 		public bool IsBroadcast {
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
-			get => (memoryFlags & (uint)MemoryFlags.BroadcastedMemory) != 0;
+			readonly get => (memoryFlags & (uint)MemoryFlags.BroadcastedMemory) != 0;
 			set {
 				if (value)
 					memoryFlags |= (ushort)MemoryFlags.BroadcastedMemory;
@@ -690,11 +672,11 @@ namespace Iced.Intel {
 		/// <see cref="OpKind.MemorySegSI"/>, <see cref="OpKind.MemorySegESI"/>, <see cref="OpKind.MemorySegRSI"/>,
 		/// <see cref="OpKind.MemoryESDI"/>, <see cref="OpKind.MemoryESEDI"/>, <see cref="OpKind.MemoryESRDI"/>
 		/// </summary>
-		public MemorySize MemorySize {
+		public readonly MemorySize MemorySize {
 			get {
-				int index = (int)Code * 2;
+				int index = (int)Code;
 				if (IsBroadcast)
-					index++;
+					index += DecoderConstants.NumberOfCodeValues;
 				return (MemorySize)InstructionMemorySizes.Sizes[index];
 			}
 		}
@@ -704,7 +686,7 @@ namespace Iced.Intel {
 		/// </summary>
 		public int MemoryIndexScale {
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
-			get => 1 << (int)(memoryFlags & (uint)MemoryFlags.ScaleMask);
+			readonly get => 1 << (int)(memoryFlags & (uint)MemoryFlags.ScaleMask);
 			set {
 				if (value == 1)
 					memoryFlags &= 0xFFFC;
@@ -720,7 +702,7 @@ namespace Iced.Intel {
 		}
 		internal int InternalMemoryIndexScale {
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
-			get => (int)(memoryFlags & (uint)MemoryFlags.ScaleMask);
+			readonly get => (int)(memoryFlags & (uint)MemoryFlags.ScaleMask);
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
 			set => memoryFlags |= (ushort)value;
 		}
@@ -730,7 +712,7 @@ namespace Iced.Intel {
 		/// Use this property if the operand has kind <see cref="OpKind.Memory"/>
 		/// </summary>
 		public uint MemoryDisplacement {
-			get => memDispl;
+			readonly get => memDispl;
 			set => memDispl = value;
 		}
 
@@ -739,7 +721,7 @@ namespace Iced.Intel {
 		/// </summary>
 		/// <param name="operand">Operand number, 0-4</param>
 		/// <returns></returns>
-		public ulong GetImmediate(int operand) {
+		public readonly ulong GetImmediate(int operand) {
 			switch (GetOpKind(operand)) {
 			case OpKind.Immediate8:			return Immediate8;
 			case OpKind.Immediate8_2nd:		return Immediate8_2nd;
@@ -815,7 +797,7 @@ namespace Iced.Intel {
 		/// Gets the operand's immediate value. Use this property if the operand has kind <see cref="OpKind.Immediate8"/>
 		/// </summary>
 		public byte Immediate8 {
-			get => (byte)immediate;
+			readonly get => (byte)immediate;
 			set => immediate = value;
 		}
 		internal uint InternalImmediate8 {
@@ -826,7 +808,7 @@ namespace Iced.Intel {
 		/// Gets the operand's immediate value. Use this property if the operand has kind <see cref="OpKind.Immediate8_2nd"/>
 		/// </summary>
 		public byte Immediate8_2nd {
-			get => (byte)memDispl;
+			readonly get => (byte)memDispl;
 			set => memDispl = value;
 		}
 		internal uint InternalImmediate8_2nd {
@@ -837,7 +819,7 @@ namespace Iced.Intel {
 		/// Gets the operand's immediate value. Use this property if the operand has kind <see cref="OpKind.Immediate16"/>
 		/// </summary>
 		public ushort Immediate16 {
-			get => (ushort)immediate;
+			readonly get => (ushort)immediate;
 			set => immediate = value;
 		}
 		internal uint InternalImmediate16 {
@@ -848,7 +830,7 @@ namespace Iced.Intel {
 		/// Gets the operand's immediate value. Use this property if the operand has kind <see cref="OpKind.Immediate32"/>
 		/// </summary>
 		public uint Immediate32 {
-			get => immediate;
+			readonly get => immediate;
 			set => immediate = value;
 		}
 
@@ -857,7 +839,7 @@ namespace Iced.Intel {
 		/// </summary>
 		public ulong Immediate64 {
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
-			get => ((ulong)memDispl << 32) | immediate;
+			readonly get => ((ulong)memDispl << 32) | immediate;
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
 			set {
 				immediate = (uint)value;
@@ -875,7 +857,7 @@ namespace Iced.Intel {
 		/// Gets the operand's immediate value. Use this property if the operand has kind <see cref="OpKind.Immediate8to16"/>
 		/// </summary>
 		public short Immediate8to16 {
-			get => (sbyte)immediate;
+			readonly get => (sbyte)immediate;
 			set => immediate = (uint)(sbyte)value;
 		}
 
@@ -883,7 +865,7 @@ namespace Iced.Intel {
 		/// Gets the operand's immediate value. Use this property if the operand has kind <see cref="OpKind.Immediate8to32"/>
 		/// </summary>
 		public int Immediate8to32 {
-			get => (sbyte)immediate;
+			readonly get => (sbyte)immediate;
 			set => immediate = (uint)(sbyte)value;
 		}
 
@@ -891,7 +873,7 @@ namespace Iced.Intel {
 		/// Gets the operand's immediate value. Use this property if the operand has kind <see cref="OpKind.Immediate8to64"/>
 		/// </summary>
 		public long Immediate8to64 {
-			get => (sbyte)immediate;
+			readonly get => (sbyte)immediate;
 			set => immediate = (uint)(sbyte)value;
 		}
 
@@ -899,7 +881,7 @@ namespace Iced.Intel {
 		/// Gets the operand's immediate value. Use this property if the operand has kind <see cref="OpKind.Immediate32to64"/>
 		/// </summary>
 		public long Immediate32to64 {
-			get => (int)immediate;
+			readonly get => (int)immediate;
 			set => immediate = (uint)value;
 		}
 
@@ -908,7 +890,7 @@ namespace Iced.Intel {
 		/// </summary>
 		public ulong MemoryAddress64 {
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
-			get => ((ulong)memDispl << 32) | immediate;
+			readonly get => ((ulong)memDispl << 32) | immediate;
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
 			set {
 				immediate = (uint)value;
@@ -926,7 +908,7 @@ namespace Iced.Intel {
 		/// Gets the operand's branch target. Use this property if the operand has kind <see cref="OpKind.NearBranch16"/>
 		/// </summary>
 		public ushort NearBranch16 {
-			get => (ushort)immediate;
+			readonly get => (ushort)immediate;
 			set => immediate = value;
 		}
 		internal uint InternalNearBranch16 {
@@ -937,7 +919,7 @@ namespace Iced.Intel {
 		/// Gets the operand's branch target. Use this property if the operand has kind <see cref="OpKind.NearBranch32"/>
 		/// </summary>
 		public uint NearBranch32 {
-			get => immediate;
+			readonly get => immediate;
 			set => immediate = value;
 		}
 
@@ -946,7 +928,7 @@ namespace Iced.Intel {
 		/// </summary>
 		public ulong NearBranch64 {
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
-			get => ((ulong)memDispl << 32) | immediate;
+			readonly get => ((ulong)memDispl << 32) | immediate;
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
 			set {
 				immediate = (uint)value;
@@ -957,7 +939,7 @@ namespace Iced.Intel {
 		/// <summary>
 		/// Gets the near branch target if it's a call/jmp near branch instruction
 		/// </summary>
-		public ulong NearBranchTarget {
+		public readonly ulong NearBranchTarget {
 			get {
 				switch (Op0Kind) {
 				case OpKind.NearBranch16:	return NearBranch16;
@@ -972,7 +954,7 @@ namespace Iced.Intel {
 		/// Gets the operand's branch target. Use this property if the operand has kind <see cref="OpKind.FarBranch16"/>
 		/// </summary>
 		public ushort FarBranch16 {
-			get => (ushort)immediate;
+			readonly get => (ushort)immediate;
 			set => immediate = value;
 		}
 		internal uint InternalFarBranch16 {
@@ -983,7 +965,7 @@ namespace Iced.Intel {
 		/// Gets the operand's branch target. Use this property if the operand has kind <see cref="OpKind.FarBranch32"/>
 		/// </summary>
 		public uint FarBranch32 {
-			get => immediate;
+			readonly get => immediate;
 			set => immediate = value;
 		}
 
@@ -991,7 +973,7 @@ namespace Iced.Intel {
 		/// Gets the operand's branch target selector. Use this property if the operand has kind <see cref="OpKind.FarBranch16"/> or <see cref="OpKind.FarBranch32"/>
 		/// </summary>
 		public ushort FarBranchSelector {
-			get => (ushort)memDispl;
+			readonly get => (ushort)memDispl;
 			set => memDispl = value;
 		}
 		internal uint InternalFarBranchSelector {
@@ -1002,7 +984,7 @@ namespace Iced.Intel {
 		/// Gets the memory operand's base register or <see cref="Register.None"/> if none. Use this property if the operand has kind <see cref="OpKind.Memory"/>
 		/// </summary>
 		public Register MemoryBase {
-			get => (Register)memBaseReg;
+			readonly get => (Register)memBaseReg;
 			set => memBaseReg = (byte)value;
 		}
 		internal Register InternalMemoryBase {
@@ -1013,7 +995,7 @@ namespace Iced.Intel {
 		/// Gets the memory operand's index register or <see cref="Register.None"/> if none. Use this property if the operand has kind <see cref="OpKind.Memory"/>
 		/// </summary>
 		public Register MemoryIndex {
-			get => (Register)memIndexReg;
+			readonly get => (Register)memIndexReg;
 			set => memIndexReg = (byte)value;
 		}
 		internal Register InternalMemoryIndex {
@@ -1024,7 +1006,7 @@ namespace Iced.Intel {
 		/// Gets operand #0's register value. Use this property if operand #0 (<see cref="Op0Kind"/>) has kind <see cref="OpKind.Register"/>
 		/// </summary>
 		public Register Op0Register {
-			get => (Register)reg0;
+			readonly get => (Register)reg0;
 			set => reg0 = (byte)value;
 		}
 		internal Register InternalOp0Register {
@@ -1035,7 +1017,7 @@ namespace Iced.Intel {
 		/// Gets operand #1's register value. Use this property if operand #1 (<see cref="Op1Kind"/>) has kind <see cref="OpKind.Register"/>
 		/// </summary>
 		public Register Op1Register {
-			get => (Register)reg1;
+			readonly get => (Register)reg1;
 			set => reg1 = (byte)value;
 		}
 		internal Register InternalOp1Register {
@@ -1046,7 +1028,7 @@ namespace Iced.Intel {
 		/// Gets operand #2's register value. Use this property if operand #2 (<see cref="Op2Kind"/>) has kind <see cref="OpKind.Register"/>
 		/// </summary>
 		public Register Op2Register {
-			get => (Register)reg2;
+			readonly get => (Register)reg2;
 			set => reg2 = (byte)value;
 		}
 		internal Register InternalOp2Register {
@@ -1057,7 +1039,7 @@ namespace Iced.Intel {
 		/// Gets operand #3's register value. Use this property if operand #3 (<see cref="Op3Kind"/>) has kind <see cref="OpKind.Register"/>
 		/// </summary>
 		public Register Op3Register {
-			get => (Register)reg3;
+			readonly get => (Register)reg3;
 			set => reg3 = (byte)value;
 		}
 		internal Register InternalOp3Register {
@@ -1068,7 +1050,7 @@ namespace Iced.Intel {
 		/// Gets operand #4's register value. Use this property if operand #4 (<see cref="Op4Kind"/>) has kind <see cref="OpKind.Register"/>
 		/// </summary>
 		public Register Op4Register {
-			get => Register.None;
+			readonly get => Register.None;
 			set {
 				if (value != Register.None)
 					ThrowHelper.ThrowArgumentOutOfRangeException_value();
@@ -1080,7 +1062,7 @@ namespace Iced.Intel {
 		/// </summary>
 		/// <param name="operand">Operand number, 0-4</param>
 		/// <returns></returns>
-		public Register GetOpRegister(int operand) {
+		public readonly Register GetOpRegister(int operand) {
 			switch (operand) {
 			case 0: return Op0Register;
 			case 1: return Op1Register;
@@ -1113,7 +1095,7 @@ namespace Iced.Intel {
 		/// Gets the opmask register (<see cref="Register.K1"/> - <see cref="Register.K7"/>) or <see cref="Register.None"/> if none
 		/// </summary>
 		public Register OpMask {
-			get {
+			readonly get {
 				int r = (int)(codeFlags >> (int)CodeFlags.OpMaskShift) & (int)CodeFlags.OpMaskMask;
 				return r == 0 ? Register.None : r + Register.K0;
 			}
@@ -1129,7 +1111,7 @@ namespace Iced.Intel {
 		}
 		internal uint InternalOpMask {
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
-			get => (codeFlags >> (int)CodeFlags.OpMaskShift) & (uint)CodeFlags.OpMaskMask;
+			readonly get => (codeFlags >> (int)CodeFlags.OpMaskShift) & (uint)CodeFlags.OpMaskMask;
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
 			set => codeFlags |= value << (int)CodeFlags.OpMaskShift;
 		}
@@ -1137,7 +1119,7 @@ namespace Iced.Intel {
 		/// <summary>
 		/// true if there's an opmask register (<see cref="OpMask"/>)
 		/// </summary>
-		public bool HasOpMask {
+		public readonly bool HasOpMask {
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
 			get => (codeFlags & ((uint)CodeFlags.OpMaskMask << (int)CodeFlags.OpMaskShift)) != 0;
 		}
@@ -1148,7 +1130,7 @@ namespace Iced.Intel {
 		/// </summary>
 		public bool ZeroingMasking {
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
-			get => (codeFlags & (uint)CodeFlags.ZeroingMasking) != 0;
+			readonly get => (codeFlags & (uint)CodeFlags.ZeroingMasking) != 0;
 			set {
 				if (value)
 					codeFlags |= (uint)CodeFlags.ZeroingMasking;
@@ -1165,7 +1147,7 @@ namespace Iced.Intel {
 		/// </summary>
 		public bool MergingMasking {
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
-			get => (codeFlags & (uint)CodeFlags.ZeroingMasking) == 0;
+			readonly get => (codeFlags & (uint)CodeFlags.ZeroingMasking) == 0;
 			set {
 				if (value)
 					codeFlags &= ~(uint)CodeFlags.ZeroingMasking;
@@ -1180,7 +1162,7 @@ namespace Iced.Intel {
 		/// </summary>
 		public RoundingControl RoundingControl {
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
-			get => (RoundingControl)((codeFlags >> (int)CodeFlags.RoundingControlShift) & (int)CodeFlags.RoundingControlMask);
+			readonly get => (RoundingControl)((codeFlags >> (int)CodeFlags.RoundingControlShift) & (int)CodeFlags.RoundingControlMask);
 			set => codeFlags = (codeFlags & ~((uint)CodeFlags.RoundingControlMask << (int)CodeFlags.RoundingControlShift)) |
 				(((uint)value & (uint)CodeFlags.RoundingControlMask) << (int)CodeFlags.RoundingControlShift);
 		}
@@ -1195,7 +1177,7 @@ namespace Iced.Intel {
 		/// </summary>
 		public int DeclareDataCount {
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
-			get => (int)((opKindFlags >> (int)OpKindFlags.DataLengthShift) & (uint)OpKindFlags.DataLengthMask) + 1;
+			readonly get => (int)((opKindFlags >> (int)OpKindFlags.DataLengthShift) & (uint)OpKindFlags.DataLengthMask) + 1;
 			set => opKindFlags = (opKindFlags & ~((uint)OpKindFlags.DataLengthMask << (int)OpKindFlags.DataLengthShift)) |
 					(((uint)(value - 1) & (uint)OpKindFlags.DataLengthMask) << (int)OpKindFlags.DataLengthShift);
 		}
@@ -1280,7 +1262,7 @@ namespace Iced.Intel {
 		/// </summary>
 		/// <param name="index">Index</param>
 		/// <returns></returns>
-		public byte GetDeclareByteValue(int index) {
+		public readonly byte GetDeclareByteValue(int index) {
 			switch (index) {
 			case 0:		return reg0;
 			case 1:		return reg1;
@@ -1359,7 +1341,7 @@ namespace Iced.Intel {
 		/// </summary>
 		/// <param name="index">Index</param>
 		/// <returns></returns>
-		public ushort GetDeclareWordValue(int index) {
+		public readonly ushort GetDeclareWordValue(int index) {
 			switch (index) {
 			case 0:	return (ushort)((uint)reg0 | (uint)(reg1 << 8));
 			case 1:	return (ushort)((uint)reg2 | (uint)(reg3 << 8));
@@ -1420,7 +1402,7 @@ namespace Iced.Intel {
 		/// </summary>
 		/// <param name="index">Index</param>
 		/// <returns></returns>
-		public uint GetDeclareDwordValue(int index) {
+		public readonly uint GetDeclareDwordValue(int index) {
 			switch (index) {
 			case 0:	return (uint)reg0 | (uint)(reg1 << 8) | (uint)(reg2 << 16) | (uint)(reg3 << 24);
 			case 1:	return immediate;
@@ -1476,7 +1458,7 @@ namespace Iced.Intel {
 		/// </summary>
 		/// <param name="index">Index</param>
 		/// <returns></returns>
-		public ulong GetDeclareQwordValue(int index) {
+		public readonly ulong GetDeclareQwordValue(int index) {
 			switch (index) {
 			case 0:	return (ulong)reg0 | (ulong)((uint)reg1 << 8) | (ulong)((uint)reg2 << 16) | (ulong)((uint)reg3 << 24) | ((ulong)immediate << 32);
 			case 1:	return (ulong)memDispl | ((ulong)memBaseReg << 32) | ((ulong)memIndexReg << 40) | ((ulong)opKindFlags << 48);
@@ -1489,17 +1471,17 @@ namespace Iced.Intel {
 		/// <summary>
 		/// Checks if this is a VSIB instruction, see also <see cref="IsVsib32"/>, <see cref="IsVsib64"/>
 		/// </summary>
-		public bool IsVsib => TryGetVsib64(out _);
+		public readonly bool IsVsib => TryGetVsib64(out _);
 
 		/// <summary>
 		/// VSIB instructions only (<see cref="IsVsib"/>): true if it's using 32-bit indexes, false if it's using 64-bit indexes
 		/// </summary>
-		public bool IsVsib32 => TryGetVsib64(out bool vsib64) && !vsib64;
+		public readonly bool IsVsib32 => TryGetVsib64(out bool vsib64) && !vsib64;
 
 		/// <summary>
 		/// VSIB instructions only (<see cref="IsVsib"/>): true if it's using 64-bit indexes, false if it's using 32-bit indexes
 		/// </summary>
-		public bool IsVsib64 => TryGetVsib64(out bool vsib64) && vsib64;
+		public readonly bool IsVsib64 => TryGetVsib64(out bool vsib64) && vsib64;
 
 		/// <summary>
 		/// Checks if it's a VSIB instruction. If it's a VSIB instruction, it sets <paramref name="vsib64"/> to true if it's
@@ -1507,7 +1489,7 @@ namespace Iced.Intel {
 		/// </summary>
 		/// <param name="vsib64">If it's a VSIB instruction, set to true if it's using 64-bit indexes, set to false if it's using 32-bit indexes</param>
 		/// <returns></returns>
-		public bool TryGetVsib64(out bool vsib64) {
+		public readonly bool TryGetVsib64(out bool vsib64) {
 			switch (Code) {
 			case Code.VEX_Vpgatherdd_xmm_vm32x_xmm:
 			case Code.VEX_Vpgatherdd_ymm_vm32y_ymm:
@@ -1615,7 +1597,7 @@ namespace Iced.Intel {
 		/// </summary>
 		public bool SuppressAllExceptions {
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
-			get => (codeFlags & (uint)CodeFlags.SuppressAllExceptions) != 0;
+			readonly get => (codeFlags & (uint)CodeFlags.SuppressAllExceptions) != 0;
 			set {
 				if (value)
 					codeFlags |= (uint)CodeFlags.SuppressAllExceptions;
@@ -1629,9 +1611,9 @@ namespace Iced.Intel {
 		/// <summary>
 		/// Checks if the memory operand is RIP/EIP relative
 		/// </summary>
-		[Obsolete("Use " + nameof(IsIPRelativeMemoryOperand) + " instead of this property", false)]
+		[Obsolete("Use " + nameof(IsIPRelativeMemoryOperand) + " instead of this property", true)]
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public bool IsIPRelativeMemoryOp {
+		public readonly bool IsIPRelativeMemoryOp {
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
 			get => MemoryBase == Register.RIP || MemoryBase == Register.EIP;
 		}
@@ -1639,7 +1621,7 @@ namespace Iced.Intel {
 		/// <summary>
 		/// Checks if the memory operand is RIP/EIP relative
 		/// </summary>
-		public bool IsIPRelativeMemoryOperand {
+		public readonly bool IsIPRelativeMemoryOperand {
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
 			get => MemoryBase == Register.RIP || MemoryBase == Register.EIP;
 		}
@@ -1647,7 +1629,7 @@ namespace Iced.Intel {
 		/// <summary>
 		/// Gets the RIP/EIP releative address ((<see cref="NextIP"/> or <see cref="NextIP32"/>) + <see cref="MemoryDisplacement"/>). This property is only valid if there's a memory operand with RIP/EIP relative addressing.
 		/// </summary>
-		public ulong IPRelativeMemoryAddress {
+		public readonly ulong IPRelativeMemoryAddress {
 			get {
 				ulong result = NextIP + (ulong)(int)MemoryDisplacement;
 				if (MemoryBase == Register.EIP)
@@ -1656,55 +1638,41 @@ namespace Iced.Intel {
 			}
 		}
 
+#if !NO_ENCODER
+		/// <summary>
+		/// Gets the <see cref="OpCodeInfo"/>
+		/// </summary>
+		/// <returns></returns>
+		public readonly OpCodeInfo OpCode {
+			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
+			get => Code.ToOpCode();
+		}
+#endif
+
 		/// <summary>
 		/// Formats the instruction using the default formatter with default formatter options
 		/// </summary>
 		/// <returns></returns>
-		public override string ToString() {
+		public override readonly string ToString() {
 #if !NO_MASM_FORMATTER && !NO_FORMATTER
 			var output = new StringBuilderFormatterOutput();
-			new MasmFormatter().Format(ref this, output);
+			new MasmFormatter().Format(this, output);
 			return output.ToString();
 #elif !NO_NASM_FORMATTER && !NO_FORMATTER
 			var output = new StringBuilderFormatterOutput();
-			new NasmFormatter().Format(ref this, output);
+			new NasmFormatter().Format(this, output);
 			return output.ToString();
 #elif !NO_INTEL_FORMATTER && !NO_FORMATTER
 			var output = new StringBuilderFormatterOutput();
-			new IntelFormatter().Format(ref this, output);
+			new IntelFormatter().Format(this, output);
 			return output.ToString();
 #elif !NO_GAS_FORMATTER && !NO_FORMATTER
 			var output = new StringBuilderFormatterOutput();
-			new GasFormatter().Format(ref this, output);
+			new GasFormatter().Format(this, output);
 			return output.ToString();
 #else
-			return base.ToString();
+			return base.ToString() ?? string.Empty;
 #endif
 		}
-	}
-
-	/// <summary>
-	/// Default code size when an instruction was decoded
-	/// </summary>
-	public enum CodeSize {
-		/// <summary>
-		/// Unknown size
-		/// </summary>
-		Unknown				= 0,
-
-		/// <summary>
-		/// 16-bit code
-		/// </summary>
-		Code16				= 1,
-
-		/// <summary>
-		/// 32-bit code
-		/// </summary>
-		Code32				= 2,
-
-		/// <summary>
-		/// 64-bit code
-		/// </summary>
-		Code64				= 3,
 	}
 }

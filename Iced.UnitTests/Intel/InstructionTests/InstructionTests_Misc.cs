@@ -76,7 +76,7 @@ namespace Iced.UnitTests.Intel.InstructionTests {
 			Assert.Equal(Code.INVALID, instr1.Code);
 			var instr2 = new Instruction();
 			Assert.Equal(Code.INVALID, instr2.Code);
-			Assert.True(Instruction.TEST_BitByBitEquals(instr1, instr2));
+			Assert.True(Instruction.EqualsAllBits(instr1, instr2));
 		}
 
 #if !NO_ENCODER
@@ -264,9 +264,18 @@ namespace Iced.UnitTests.Intel.InstructionTests {
 			instr.HasXreleasePrefix = true;
 			Assert.True(instr.HasXreleasePrefix);
 
+			instr.HasRepPrefix = false;
+			Assert.False(instr.HasRepPrefix);
+			Assert.False(instr.HasRepePrefix);
+			instr.HasRepPrefix = true;
+			Assert.True(instr.HasRepPrefix);
+			Assert.True(instr.HasRepePrefix);
+
 			instr.HasRepePrefix = false;
+			Assert.False(instr.HasRepPrefix);
 			Assert.False(instr.HasRepePrefix);
 			instr.HasRepePrefix = true;
+			Assert.True(instr.HasRepPrefix);
 			Assert.True(instr.HasRepePrefix);
 
 			instr.HasRepnePrefix = false;
