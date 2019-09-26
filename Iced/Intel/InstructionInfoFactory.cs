@@ -316,6 +316,7 @@ namespace Iced.Intel {
 
 		static unsafe void CodeInfoHandler(CodeInfo codeInfo, in Instruction instruction, ref SimpleList<UsedRegister> usedRegisters, ref SimpleList<UsedMemory> usedMemoryLocations, ref RflagsInfo rflagsInfo, Flags flags, OpAccess* accesses) {
 			Debug.Assert(codeInfo != CodeInfo.None);
+			int index;
 			ulong xspMask;
 			ulong displ;
 			Register xsp;
@@ -416,11 +417,8 @@ namespace Iced.Intel {
 
 			case CodeInfo.Push_8:
 				xsp = GetXSP(instruction.CodeSize, out xspMask);
-				if ((flags & Flags.NoRegisterUsage) == 0) {
-					if ((flags & Flags.Is64Bit) == 0)
-						AddRegister(flags, ref usedRegisters, Register.SS, OpAccess.Read);
+				if ((flags & Flags.NoRegisterUsage) == 0)
 					AddRegister(flags, ref usedRegisters, xsp, OpAccess.ReadWrite);
-				}
 				if ((flags & Flags.NoMemoryUsage) == 0)
 					AddMemory(ref usedMemoryLocations, Register.SS, xsp, Register.None, 1, 0xFFFF_FFFF_FFFF_FFF8 & xspMask, MemorySize.UInt64, OpAccess.Write);
 				break;
@@ -453,11 +451,8 @@ namespace Iced.Intel {
 
 			case CodeInfo.Push_8_8:
 				xsp = GetXSP(instruction.CodeSize, out xspMask);
-				if ((flags & Flags.NoRegisterUsage) == 0) {
-					if ((flags & Flags.Is64Bit) == 0)
-						AddRegister(flags, ref usedRegisters, Register.SS, OpAccess.Read);
+				if ((flags & Flags.NoRegisterUsage) == 0)
 					AddRegister(flags, ref usedRegisters, xsp, OpAccess.ReadWrite);
-				}
 				if ((flags & Flags.NoMemoryUsage) == 0) {
 					AddMemory(ref usedMemoryLocations, Register.SS, xsp, Register.None, 1, 0xFFFF_FFFF_FFFF_FFF8 & xspMask, MemorySize.UInt64, OpAccess.Write);
 					AddMemory(ref usedMemoryLocations, Register.SS, xsp, Register.None, 1, 0xFFFF_FFFF_FFFF_FFF0 & xspMask, MemorySize.UInt64, OpAccess.Write);
@@ -488,11 +483,8 @@ namespace Iced.Intel {
 
 			case CodeInfo.Pop_8:
 				xsp = GetXSP(instruction.CodeSize, out xspMask);
-				if ((flags & Flags.NoRegisterUsage) == 0) {
-					if ((flags & Flags.Is64Bit) == 0)
-						AddRegister(flags, ref usedRegisters, Register.SS, OpAccess.Read);
+				if ((flags & Flags.NoRegisterUsage) == 0)
 					AddRegister(flags, ref usedRegisters, xsp, OpAccess.ReadWrite);
-				}
 				if ((flags & Flags.NoMemoryUsage) == 0)
 					AddMemory(ref usedMemoryLocations, Register.SS, xsp, Register.None, 1, 0, MemorySize.UInt64, OpAccess.Read);
 				break;
@@ -525,11 +517,8 @@ namespace Iced.Intel {
 
 			case CodeInfo.Pop_8_8:
 				xsp = GetXSP(instruction.CodeSize, out xspMask);
-				if ((flags & Flags.NoRegisterUsage) == 0) {
-					if ((flags & Flags.Is64Bit) == 0)
-						AddRegister(flags, ref usedRegisters, Register.SS, OpAccess.Read);
+				if ((flags & Flags.NoRegisterUsage) == 0)
 					AddRegister(flags, ref usedRegisters, xsp, OpAccess.ReadWrite);
-				}
 				if ((flags & Flags.NoMemoryUsage) == 0) {
 					AddMemory(ref usedMemoryLocations, Register.SS, xsp, Register.None, 1, 0, MemorySize.UInt64, OpAccess.Read);
 					AddMemory(ref usedMemoryLocations, Register.SS, xsp, Register.None, 1, 8, MemorySize.UInt64, OpAccess.Read);
@@ -1232,16 +1221,16 @@ namespace Iced.Intel {
 			case CodeInfo.Lds:
 				if ((flags & Flags.NoRegisterUsage) == 0) {
 					code = instruction.Code;
-					if (Code.Lfs_r16_m32 <= code && code <= Code.Lfs_r64_m80)
+					if (Code.Lfs_r16_m1616 <= code && code <= Code.Lfs_r64_m1664)
 						AddRegister(flags, ref usedRegisters, Register.FS, OpAccess.Write);
-					else if (Code.Lgs_r16_m32 <= code && code <= Code.Lgs_r64_m80)
+					else if (Code.Lgs_r16_m1616 <= code && code <= Code.Lgs_r64_m1664)
 						AddRegister(flags, ref usedRegisters, Register.GS, OpAccess.Write);
-					else if (Code.Lss_r16_m32 <= code && code <= Code.Lss_r64_m80)
+					else if (Code.Lss_r16_m1616 <= code && code <= Code.Lss_r64_m1664)
 						AddRegister(flags, ref usedRegisters, Register.SS, OpAccess.Write);
-					else if (Code.Lds_r16_m32 <= code && code <= Code.Lds_r32_m48)
+					else if (Code.Lds_r16_m1616 <= code && code <= Code.Lds_r32_m1632)
 						AddRegister(flags, ref usedRegisters, Register.DS, OpAccess.Write);
 					else {
-						Debug.Assert(Code.Les_r16_m32 <= code && code <= Code.Les_r32_m48);
+						Debug.Assert(Code.Les_r16_m1616 <= code && code <= Code.Les_r32_m1632);
 						AddRegister(flags, ref usedRegisters, Register.ES, OpAccess.Write);
 					}
 				}
@@ -1510,8 +1499,16 @@ namespace Iced.Intel {
 				break;
 
 			case CodeInfo.RW_CR0:
-				if ((flags & Flags.NoRegisterUsage) == 0)
+				if ((flags & Flags.NoRegisterUsage) == 0) {
 					AddRegister(flags, ref usedRegisters, Register.CR0, OpAccess.ReadWrite);
+					if (instruction.Op0Kind == OpKind.Register && instruction.OpCount > 0) {
+						Debug.Assert(usedRegisters.ValidLength >= 1);
+						Debug.Assert(usedRegisters.Array[0].Register == instruction.Op0Register);
+						index = TryGetGpr163264Index(instruction.Op0Register);
+						if (index >= 0)
+							usedRegisters.Array[0] = new UsedRegister(Register.AX + index, OpAccess.Read);
+					}
+				}
 				break;
 
 			case CodeInfo.RW_ST0:
@@ -1887,10 +1884,88 @@ namespace Iced.Intel {
 				}
 				break;
 
+			case CodeInfo.Read_Reg8_Op1:
+				if ((flags & Flags.NoRegisterUsage) == 0) {
+					if (instruction.Op1Kind == OpKind.Register) {
+						Debug.Assert(usedRegisters.ValidLength >= 2);
+						Debug.Assert(usedRegisters.Array[1].Register == instruction.Op1Register);
+						index = TryGetGpr163264Index(instruction.Op1Register);
+						if (index >= 4)
+							index += 4;
+						if (index >= 0)
+							usedRegisters.Array[1] = new UsedRegister(Register.AL + index, OpAccess.Read);
+					}
+				}
+				break;
+
+			case CodeInfo.Read_Reg8_Op2:
+				if ((flags & Flags.NoRegisterUsage) == 0) {
+					if (instruction.Op2Kind == OpKind.Register) {
+						Debug.Assert(usedRegisters.ValidLength >= 3);
+						Debug.Assert(usedRegisters.Array[2].Register == instruction.Op2Register);
+						index = TryGetGpr163264Index(instruction.Op2Register);
+						if (index >= 4)
+							index += 4;
+						if (index >= 0)
+							usedRegisters.Array[2] = new UsedRegister(Register.AL + index, OpAccess.Read);
+					}
+				}
+				break;
+
+			case CodeInfo.Read_Reg16_Op0:
+				if ((flags & Flags.NoRegisterUsage) == 0) {
+					if (instruction.Op0Kind == OpKind.Register) {
+						Debug.Assert(usedRegisters.ValidLength >= 1);
+						Debug.Assert(usedRegisters.Array[0].Register == instruction.Op0Register);
+						index = TryGetGpr163264Index(instruction.Op0Register);
+						if (index >= 0)
+							usedRegisters.Array[0] = new UsedRegister(Register.AX + index, OpAccess.Read);
+					}
+				}
+				break;
+
+			case CodeInfo.Read_Reg16_Op1:
+				if ((flags & Flags.NoRegisterUsage) == 0) {
+					if (instruction.Op1Kind == OpKind.Register) {
+						Debug.Assert(usedRegisters.ValidLength >= 2);
+						Debug.Assert(usedRegisters.Array[1].Register == instruction.Op1Register);
+						index = TryGetGpr163264Index(instruction.Op1Register);
+						if (index >= 0)
+							usedRegisters.Array[1] = new UsedRegister(Register.AX + index, OpAccess.Read);
+					}
+				}
+				break;
+
+			case CodeInfo.Read_Reg16_Op2:
+				if ((flags & Flags.NoRegisterUsage) == 0) {
+					if (instruction.Op2Kind == OpKind.Register) {
+						Debug.Assert(usedRegisters.ValidLength >= 3);
+						Debug.Assert(usedRegisters.Array[2].Register == instruction.Op2Register);
+						index = TryGetGpr163264Index(instruction.Op2Register);
+						if (index >= 0)
+							usedRegisters.Array[2] = new UsedRegister(Register.AX + index, OpAccess.Read);
+					}
+				}
+				break;
+
 			case CodeInfo.None:
 			default:
 				throw new InvalidOperationException();
 			}
+		}
+
+		static int TryGetGpr163264Index(Register register) {
+			int index;
+			index = register - Register.EAX;
+			if ((uint)index <= 15)
+				return index;
+			index = register - Register.RAX;
+			if ((uint)index <= 15)
+				return index;
+			index = register - Register.AX;
+			if ((uint)index <= 15)
+				return index;
+			return -1;
 		}
 
 		static void AddMemory(ref SimpleList<UsedMemory> usedMemoryLocations, Register segReg, Register baseReg, Register indexReg, int scale, ulong displ, MemorySize memorySize, OpAccess access) {

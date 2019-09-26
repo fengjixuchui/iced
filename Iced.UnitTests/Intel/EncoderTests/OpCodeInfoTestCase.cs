@@ -29,6 +29,7 @@ namespace Iced.UnitTests.Intel.EncoderTests {
 		public int LineNumber = -1;
 		public Code Code = Code.INVALID;
 		public string OpCodeString = string.Empty;
+		public string InstructionString = string.Empty;
 		public EncodingKind Encoding = EncodingKind.Legacy;
 		public bool IsInstruction;
 		public bool Mode16;
@@ -47,6 +48,7 @@ namespace Iced.UnitTests.Intel.EncoderTests {
 		public bool CanUseRoundingControl;
 		public bool CanSuppressAllExceptions;
 		public bool CanUseOpMaskRegister;
+		public bool RequireNonZeroOpMaskRegister;
 		public bool CanUseZeroingMasking;
 		public bool CanUseLockPrefix;
 		public bool CanUseXacquirePrefix;

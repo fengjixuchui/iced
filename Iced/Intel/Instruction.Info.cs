@@ -116,11 +116,11 @@ namespace Iced.Intel {
 				case Code.Call_m1616:
 					return -(2 + 2);
 
-				case Code.Call_ptr3216:
-				case Code.Call_m3216:
+				case Code.Call_ptr1632:
+				case Code.Call_m1632:
 					return -(4 + 4);
 
-				case Code.Call_m6416:
+				case Code.Call_m1664:
 					return -(8 + 8);
 
 				case Code.Call_rel16:
@@ -591,6 +591,33 @@ namespace Iced.Intel {
 		public readonly bool IsCallFarIndirect {
 			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
 			get => Code.IsCallFarIndirect();
+		}
+
+		/// <summary>
+		/// Negates the condition code, eg. je -> jne. Can be used if it's jcc, setcc, cmovcc and does
+		/// nothing if the instruction doesn't have a condition code.
+		/// </summary>
+		[MethodImpl(MethodImplOptions2.AggressiveInlining)]
+		public void NegateConditionCode() => Code = Code.NegateConditionCode();
+
+		/// <summary>
+		/// Converts jcc near to jcc short and does nothing if it's not a jcc near instruction
+		/// </summary>
+		[MethodImpl(MethodImplOptions2.AggressiveInlining)]
+		public void ToShortBranch() => Code = Code.ToShortBranch();
+
+		/// <summary>
+		/// Converts jcc short to jcc near and does nothing if it's not a jcc short instruction
+		/// </summary>
+		[MethodImpl(MethodImplOptions2.AggressiveInlining)]
+		public void ToNearBranch() => Code = Code.ToNearBranch();
+
+		/// <summary>
+		/// Gets the condition code if it's jcc, setcc, cmovcc else <see cref="ConditionCode.None"/> is returned
+		/// </summary>
+		public readonly ConditionCode ConditionCode {
+			[MethodImpl(MethodImplOptions2.AggressiveInlining)]
+			get => Code.GetConditionCode();
 		}
 	}
 }

@@ -1,4 +1,4 @@
-# Iced  [![Build status](https://ci.appveyor.com/api/projects/status/xldctwks3we9tcb4/branch/master?svg=true)](https://ci.appveyor.com/project/0xd4d/iced/branch/master)   [![NuGet](https://img.shields.io/nuget/v/Iced.svg)](https://www.nuget.org/packages/Iced/)
+# Iced [![NuGet](https://img.shields.io/nuget/v/Iced.svg)](https://www.nuget.org/packages/Iced/)  [![](https://github.com/0xd4d/iced/workflows/GitHub%20CI/badge.svg)](https://github.com/0xd4d/iced/actions)
 
 
 <img align="right" width="160px" height="160px" src="logo.png">
@@ -321,6 +321,7 @@ Disassembled code:
          * This method produces the following output:
 00007FFAC46ACDA4 mov [rsp+10h],rbx
     OpCode: REX.W 89 /r
+    Instruction: MOV r/m64, r64
     Encoding: Legacy
     Mnemonic: Mov
     Code: Mov_rm64_r64
@@ -330,13 +331,14 @@ Disassembled code:
     Memory size: 8
     Op0Access: Write
     Op1Access: Read
-    Op0: r64_mem
+    Op0: r64_or_mem
     Op1: r64_reg
     RSP:Read
     RBX:Read
     [SS:RSP+0x10;UInt64;Write]
 00007FFAC46ACDA9 mov [rsp+18h],rsi
     OpCode: REX.W 89 /r
+    Instruction: MOV r/m64, r64
     Encoding: Legacy
     Mnemonic: Mov
     Code: Mov_rm64_r64
@@ -346,13 +348,14 @@ Disassembled code:
     Memory size: 8
     Op0Access: Write
     Op1Access: Read
-    Op0: r64_mem
+    Op0: r64_or_mem
     Op1: r64_reg
     RSP:Read
     RSI:Read
     [SS:RSP+0x18;UInt64;Write]
 00007FFAC46ACDAE push rbp
     OpCode: 50+ro
+    Instruction: PUSH r64
     Encoding: Legacy
     Mnemonic: Push
     Code: Push_r64
@@ -366,6 +369,7 @@ Disassembled code:
     [SS:RSP+0xFFFFFFFFFFFFFFF8;UInt64;Write]
 00007FFAC46ACDAF push rdi
     OpCode: 50+ro
+    Instruction: PUSH r64
     Encoding: Legacy
     Mnemonic: Push
     Code: Push_r64
@@ -379,6 +383,7 @@ Disassembled code:
     [SS:RSP+0xFFFFFFFFFFFFFFF8;UInt64;Write]
 00007FFAC46ACDB0 push r14
     OpCode: 50+ro
+    Instruction: PUSH r64
     Encoding: Legacy
     Mnemonic: Push
     Code: Push_r64
@@ -392,6 +397,7 @@ Disassembled code:
     [SS:RSP+0xFFFFFFFFFFFFFFF8;UInt64;Write]
 00007FFAC46ACDB2 lea rbp,[rsp-100h]
     OpCode: REX.W 8D /r
+    Instruction: LEA r64, m
     Encoding: Legacy
     Mnemonic: Lea
     Code: Lea_r64_m
@@ -406,6 +412,7 @@ Disassembled code:
     RSP:Read
 00007FFAC46ACDBA sub rsp,200h
     OpCode: REX.W 81 /5 id
+    Instruction: SUB r/m64, imm32
     Encoding: Legacy
     Mnemonic: Sub
     Code: Sub_rm64_imm32
@@ -416,11 +423,12 @@ Disassembled code:
     RFLAGS Modified: OF, SF, ZF, AF, CF, PF
     Op0Access: ReadWrite
     Op1Access: Read
-    Op0: r64_mem
+    Op0: r64_or_mem
     Op1: imm32sex64
     RSP:ReadWrite
 00007FFAC46ACDC1 mov rax,[7FFAC47524E0h]
     OpCode: REX.W 8B /r
+    Instruction: MOV r64, r/m64
     Encoding: Legacy
     Mnemonic: Mov
     Code: Mov_r64_rm64
@@ -431,11 +439,12 @@ Disassembled code:
     Op0Access: Write
     Op1Access: Read
     Op0: r64_reg
-    Op1: r64_mem
+    Op1: r64_or_mem
     RAX:Write
     [DS:0x7FFAC47524E0;UInt64;Read]
 00007FFAC46ACDC8 xor rax,rsp
     OpCode: REX.W 33 /r
+    Instruction: XOR r64, r/m64
     Encoding: Legacy
     Mnemonic: Xor
     Code: Xor_r64_rm64
@@ -448,11 +457,12 @@ Disassembled code:
     Op0Access: ReadWrite
     Op1Access: Read
     Op0: r64_reg
-    Op1: r64_mem
+    Op1: r64_or_mem
     RAX:ReadWrite
     RSP:Read
 00007FFAC46ACDCB mov [rbp+0F0h],rax
     OpCode: REX.W 89 /r
+    Instruction: MOV r/m64, r64
     Encoding: Legacy
     Mnemonic: Mov
     Code: Mov_rm64_r64
@@ -462,13 +472,14 @@ Disassembled code:
     Memory size: 8
     Op0Access: Write
     Op1Access: Read
-    Op0: r64_mem
+    Op0: r64_or_mem
     Op1: r64_reg
     RBP:Read
     RAX:Read
     [SS:RBP+0xF0;UInt64;Write]
 00007FFAC46ACDD2 mov r8,[7FFAC474F208h]
     OpCode: REX.W 8B /r
+    Instruction: MOV r64, r/m64
     Encoding: Legacy
     Mnemonic: Mov
     Code: Mov_r64_rm64
@@ -479,11 +490,12 @@ Disassembled code:
     Op0Access: Write
     Op1Access: Read
     Op0: r64_reg
-    Op1: r64_mem
+    Op1: r64_or_mem
     R8:Write
     [DS:0x7FFAC474F208;UInt64;Read]
 00007FFAC46ACDD9 lea rax,[7FFAC46F4A58h]
     OpCode: REX.W 8D /r
+    Instruction: LEA r64, m
     Encoding: Legacy
     Mnemonic: Lea
     Code: Lea_r64_m
@@ -497,6 +509,7 @@ Disassembled code:
     RAX:Write
 00007FFAC46ACDE0 xor edi,edi
     OpCode: o32 33 /r
+    Instruction: XOR r32, r/m32
     Encoding: Legacy
     Mnemonic: Xor
     Code: Xor_r32_rm32
@@ -509,7 +522,7 @@ Disassembled code:
     Op0Access: Write
     Op1Access: None
     Op0: r32_reg
-    Op1: r32_mem
+    Op1: r32_or_mem
     RDI:Write
          */
         static void InstructionInfoExample() {
@@ -541,7 +554,8 @@ Disassembled code:
                 var opCode = instr.OpCode;
                 var info = instrInfoFactory.GetInfo(instr);
                 const string tab = "    ";
-                Console.WriteLine($"{tab}OpCode: {opCode.ToString()}");
+                Console.WriteLine($"{tab}OpCode: {opCode.ToOpCodeString()}");
+                Console.WriteLine($"{tab}Instruction: {opCode.ToInstructionString()}");
                 Console.WriteLine($"{tab}Encoding: {instr.Encoding}");
                 Console.WriteLine($"{tab}Mnemonic: {instr.Mnemonic}");
                 Console.WriteLine($"{tab}Code: {instr.Code}");
@@ -555,6 +569,8 @@ Disassembled code:
                     Console.WriteLine($"{tab}Immediate #2 offset = {offsets.ImmediateOffset2}, size = {offsets.ImmediateSize2}");
                 if (instr.IsStackInstruction)
                     Console.WriteLine($"{tab}SP Increment: {instr.StackPointerIncrement}");
+                if (instr.ConditionCode != ConditionCode.None)
+                    Console.WriteLine($"{tab}Condition code: {instr.ConditionCode}");
                 if (instr.RflagsRead != RflagsBits.None)
                     Console.WriteLine($"{tab}RFLAGS Read: {instr.RflagsRead}");
                 if (instr.RflagsWritten != RflagsBits.None)

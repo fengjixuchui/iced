@@ -23,6 +23,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #if !NO_DECODER
 using System;
+using System.ComponentModel;
 
 namespace Iced.Intel {
 	/// <summary>
@@ -43,9 +44,16 @@ namespace Iced.Intel {
 		NoInvalidCheck				= 0x00000001,
 
 		/// <summary>
-		/// AMD decoder: allow 16-bit branch/ret instructions in 64-bit mode
+		/// AMD branch decoder: allow 16-bit branch/ret instructions in 64-bit mode
 		/// </summary>
-		AMD							= 0x00000002,
+		AmdBranches					= 0x00000002,
+
+		/// <summary>
+		/// AMD branch decoder: allow 16-bit branch/ret instructions in 64-bit mode
+		/// </summary>
+		[Obsolete("Use " + nameof(AmdBranches) + " instead", true)]
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		AMD							= AmdBranches,
 
 		/// <summary>
 		/// Decode opcodes 0F0D and 0F18-0F1F as reserved-nop instructions (eg. <see cref="Code.ReservedNop_rm32_r32_0F1D"/>)
@@ -98,24 +106,24 @@ namespace Iced.Intel {
 		MovTr						= 0x00000800,
 
 		/// <summary>
+		/// Decode jmpe instructions
+		/// </summary>
+		Jmpe						= 0x00001000,
+
+		/// <summary>
 		/// Don't decode <see cref="Code.Pause"/>, decode <see cref="Code.Nopd"/>/etc instead
 		/// </summary>
-		NoPause						= 0x00001000,
+		NoPause						= 0x00002000,
 
 		/// <summary>
 		/// Don't decode <see cref="Code.Wbnoinvd"/>, decode <see cref="Code.Wbinvd"/> instead
 		/// </summary>
-		NoWbnoinvd					= 0x00002000,
+		NoWbnoinvd					= 0x00004000,
 
 		/// <summary>
-		/// Don't decode LOCK MOV CR0 as MOV CR8
+		/// Don't decode LOCK MOV CR0 as MOV CR8 (AMD)
 		/// </summary>
-		NoLockMovCR0				= 0x00004000,
-
-		/// <summary>
-		/// Don't decode <see cref="Code.Popcnt_r32_rm32"/>/etc, decode eg. <see cref="Code.Jmpe_disp32"/>/etc instead
-		/// </summary>
-		NoMPFX_0FB8					= 0x00008000,
+		NoLockMovCR0				= 0x00008000,
 
 		/// <summary>
 		/// Don't decode <see cref="Code.Tzcnt_r32_rm32"/>/etc, decode <see cref="Code.Bsf_r32_rm32"/>/etc instead

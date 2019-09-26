@@ -81,6 +81,9 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 			Assert.Equal(Code.INVALID, instr.Code);
 			Assert.Equal(0, instr.OpCount);
 			Assert.Equal(15, instr.ByteLength);
+			Assert.Equal(DecoderConstants.DEFAULT_IP16, instr.IP);
+			Assert.Equal(DecoderConstants.DEFAULT_IP16 + 15, instr.NextIP);
+			Assert.Equal(CodeSize.Code16, instr.CodeSize);
 			Assert.False(instr.HasRepPrefix);
 			Assert.False(instr.HasRepePrefix);
 			Assert.False(instr.HasRepnePrefix);
@@ -121,6 +124,9 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 			Assert.Equal(Code.INVALID, instr.Code);
 			Assert.Equal(0, instr.OpCount);
 			Assert.Equal(15, instr.ByteLength);
+			Assert.Equal(DecoderConstants.DEFAULT_IP32, instr.IP);
+			Assert.Equal(DecoderConstants.DEFAULT_IP32 + 15, instr.NextIP);
+			Assert.Equal(CodeSize.Code32, instr.CodeSize);
 			Assert.False(instr.HasRepPrefix);
 			Assert.False(instr.HasRepePrefix);
 			Assert.False(instr.HasRepnePrefix);
@@ -161,6 +167,9 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 			Assert.Equal(Code.INVALID, instr.Code);
 			Assert.Equal(0, instr.OpCount);
 			Assert.Equal(15, instr.ByteLength);
+			Assert.Equal(DecoderConstants.DEFAULT_IP64, instr.IP);
+			Assert.Equal(DecoderConstants.DEFAULT_IP64 + 15, instr.NextIP);
+			Assert.Equal(CodeSize.Code64, instr.CodeSize);
 			Assert.False(instr.HasRepPrefix);
 			Assert.False(instr.HasRepePrefix);
 			Assert.False(instr.HasRepnePrefix);
@@ -687,7 +696,7 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 							bytes[evexIndex + 2] ^= 0x80;
 							var decoder = Decoder.Create(info.Bitness, new ByteArrayCodeReader(bytes), info.Options);
 							decoder.Decode(out var instr);
-							Assert.True(info.Code != instr.Code);
+							Assert.NotEqual(info.Code, instr.Code);
 						}
 					}
 				}
@@ -722,7 +731,7 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 							bytes[vexIndex + 2] ^= 0x80;
 							var decoder = Decoder.Create(info.Bitness, new ByteArrayCodeReader(bytes), info.Options);
 							decoder.Decode(out var instr);
-							Assert.True(info.Code != instr.Code);
+							Assert.NotEqual(info.Code, instr.Code);
 						}
 					}
 				}
@@ -815,7 +824,7 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 							bytes[lIndex] ^= 4;
 							var decoder = Decoder.Create(info.Bitness, new ByteArrayCodeReader(bytes), info.Options);
 							decoder.Decode(out var instr);
-							Assert.True(info.Code != instr.Code);
+							Assert.NotEqual(info.Code, instr.Code);
 						}
 					}
 				}
@@ -823,78 +832,6 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 					continue;
 				else
 					throw new InvalidOperationException();
-			}
-		}
-
-		static bool MustUseNonZeroOpMaskRegister(OpCodeInfo opCode) {
-			switch (opCode.Code) {
-			case Code.EVEX_Vpgatherdd_xmm_k1_vm32x:
-			case Code.EVEX_Vpgatherdd_ymm_k1_vm32y:
-			case Code.EVEX_Vpgatherdd_zmm_k1_vm32z:
-			case Code.EVEX_Vpgatherdq_xmm_k1_vm32x:
-			case Code.EVEX_Vpgatherdq_ymm_k1_vm32x:
-			case Code.EVEX_Vpgatherdq_zmm_k1_vm32y:
-			case Code.EVEX_Vpgatherqd_xmm_k1_vm64x:
-			case Code.EVEX_Vpgatherqd_xmm_k1_vm64y:
-			case Code.EVEX_Vpgatherqd_ymm_k1_vm64z:
-			case Code.EVEX_Vpgatherqq_xmm_k1_vm64x:
-			case Code.EVEX_Vpgatherqq_ymm_k1_vm64y:
-			case Code.EVEX_Vpgatherqq_zmm_k1_vm64z:
-			case Code.EVEX_Vgatherdps_xmm_k1_vm32x:
-			case Code.EVEX_Vgatherdps_ymm_k1_vm32y:
-			case Code.EVEX_Vgatherdps_zmm_k1_vm32z:
-			case Code.EVEX_Vgatherdpd_xmm_k1_vm32x:
-			case Code.EVEX_Vgatherdpd_ymm_k1_vm32x:
-			case Code.EVEX_Vgatherdpd_zmm_k1_vm32y:
-			case Code.EVEX_Vgatherqps_xmm_k1_vm64x:
-			case Code.EVEX_Vgatherqps_xmm_k1_vm64y:
-			case Code.EVEX_Vgatherqps_ymm_k1_vm64z:
-			case Code.EVEX_Vgatherqpd_xmm_k1_vm64x:
-			case Code.EVEX_Vgatherqpd_ymm_k1_vm64y:
-			case Code.EVEX_Vgatherqpd_zmm_k1_vm64z:
-			case Code.EVEX_Vpscatterdd_vm32x_k1_xmm:
-			case Code.EVEX_Vpscatterdd_vm32y_k1_ymm:
-			case Code.EVEX_Vpscatterdd_vm32z_k1_zmm:
-			case Code.EVEX_Vpscatterdq_vm32x_k1_xmm:
-			case Code.EVEX_Vpscatterdq_vm32x_k1_ymm:
-			case Code.EVEX_Vpscatterdq_vm32y_k1_zmm:
-			case Code.EVEX_Vpscatterqd_vm64x_k1_xmm:
-			case Code.EVEX_Vpscatterqd_vm64y_k1_xmm:
-			case Code.EVEX_Vpscatterqd_vm64z_k1_ymm:
-			case Code.EVEX_Vpscatterqq_vm64x_k1_xmm:
-			case Code.EVEX_Vpscatterqq_vm64y_k1_ymm:
-			case Code.EVEX_Vpscatterqq_vm64z_k1_zmm:
-			case Code.EVEX_Vscatterdps_vm32x_k1_xmm:
-			case Code.EVEX_Vscatterdps_vm32y_k1_ymm:
-			case Code.EVEX_Vscatterdps_vm32z_k1_zmm:
-			case Code.EVEX_Vscatterdpd_vm32x_k1_xmm:
-			case Code.EVEX_Vscatterdpd_vm32x_k1_ymm:
-			case Code.EVEX_Vscatterdpd_vm32y_k1_zmm:
-			case Code.EVEX_Vscatterqps_vm64x_k1_xmm:
-			case Code.EVEX_Vscatterqps_vm64y_k1_xmm:
-			case Code.EVEX_Vscatterqps_vm64z_k1_ymm:
-			case Code.EVEX_Vscatterqpd_vm64x_k1_xmm:
-			case Code.EVEX_Vscatterqpd_vm64y_k1_ymm:
-			case Code.EVEX_Vscatterqpd_vm64z_k1_zmm:
-			case Code.EVEX_Vgatherpf0dps_vm32z_k1:
-			case Code.EVEX_Vgatherpf0dpd_vm32y_k1:
-			case Code.EVEX_Vgatherpf1dps_vm32z_k1:
-			case Code.EVEX_Vgatherpf1dpd_vm32y_k1:
-			case Code.EVEX_Vscatterpf0dps_vm32z_k1:
-			case Code.EVEX_Vscatterpf0dpd_vm32y_k1:
-			case Code.EVEX_Vscatterpf1dps_vm32z_k1:
-			case Code.EVEX_Vscatterpf1dpd_vm32y_k1:
-			case Code.EVEX_Vgatherpf0qps_vm64z_k1:
-			case Code.EVEX_Vgatherpf0qpd_vm64z_k1:
-			case Code.EVEX_Vgatherpf1qps_vm64z_k1:
-			case Code.EVEX_Vgatherpf1qpd_vm64z_k1:
-			case Code.EVEX_Vscatterpf0qps_vm64z_k1:
-			case Code.EVEX_Vscatterpf0qpd_vm64z_k1:
-			case Code.EVEX_Vscatterpf1qps_vm64z_k1:
-			case Code.EVEX_Vscatterpf1qpd_vm64z_k1:
-				return true;
-			default:
-				return false;
 			}
 		}
 
@@ -919,7 +856,7 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 					p2Values = p2Values_k1z;
 				}
 				else if (opCode.CanUseOpMaskRegister) {
-					if (MustUseNonZeroOpMaskRegister(opCode))
+					if (opCode.RequireNonZeroOpMaskRegister)
 						p2Values = p2Values_k1_fk;
 					else
 						p2Values = p2Values_k1;
@@ -1270,10 +1207,10 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 				bool other_reg = false;
 				for (int i = 0; i < opCode.OpCount; i++) {
 					switch (opCode.GetOpKind(i)) {
-					case OpCodeOperandKind.r32_mem:
-					case OpCodeOperandKind.r64_mem:
-					case OpCodeOperandKind.r32_mem_mpx:
-					case OpCodeOperandKind.r64_mem_mpx:
+					case OpCodeOperandKind.r32_or_mem:
+					case OpCodeOperandKind.r64_or_mem:
+					case OpCodeOperandKind.r32_or_mem_mpx:
+					case OpCodeOperandKind.r64_or_mem_mpx:
 					case OpCodeOperandKind.r32_rm:
 					case OpCodeOperandKind.r64_rm:
 						uses_rm = true;
@@ -1282,17 +1219,18 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 					case OpCodeOperandKind.r64_reg:
 						uses_reg = true;
 						break;
-					case OpCodeOperandKind.k_mem:
+					case OpCodeOperandKind.k_or_mem:
 					case OpCodeOperandKind.k_rm:
-					case OpCodeOperandKind.xmm_mem:
-					case OpCodeOperandKind.ymm_mem:
-					case OpCodeOperandKind.zmm_mem:
+					case OpCodeOperandKind.xmm_or_mem:
+					case OpCodeOperandKind.ymm_or_mem:
+					case OpCodeOperandKind.zmm_or_mem:
 					case OpCodeOperandKind.xmm_rm:
 					case OpCodeOperandKind.ymm_rm:
 					case OpCodeOperandKind.zmm_rm:
 						other_rm = true;
 						break;
 					case OpCodeOperandKind.k_reg:
+					case OpCodeOperandKind.kp1_reg:
 					case OpCodeOperandKind.xmm_reg:
 					case OpCodeOperandKind.ymm_reg:
 					case OpCodeOperandKind.zmm_reg:
@@ -1472,23 +1410,24 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 					case OpCodeOperandKind.mem:
 						maybe_uses_rm = true;
 						break;
-					case OpCodeOperandKind.k_mem:
+					case OpCodeOperandKind.k_or_mem:
 					case OpCodeOperandKind.k_rm:
 						uses_rm = true;
 						break;
 					case OpCodeOperandKind.k_reg:
+					case OpCodeOperandKind.kp1_reg:
 						uses_reg = true;
 						break;
 
-					case OpCodeOperandKind.r32_mem:
-					case OpCodeOperandKind.r64_mem:
-					case OpCodeOperandKind.r32_mem_mpx:
-					case OpCodeOperandKind.r64_mem_mpx:
+					case OpCodeOperandKind.r32_or_mem:
+					case OpCodeOperandKind.r64_or_mem:
+					case OpCodeOperandKind.r32_or_mem_mpx:
+					case OpCodeOperandKind.r64_or_mem_mpx:
 					case OpCodeOperandKind.r32_rm:
 					case OpCodeOperandKind.r64_rm:
-					case OpCodeOperandKind.xmm_mem:
-					case OpCodeOperandKind.ymm_mem:
-					case OpCodeOperandKind.zmm_mem:
+					case OpCodeOperandKind.xmm_or_mem:
+					case OpCodeOperandKind.ymm_or_mem:
+					case OpCodeOperandKind.zmm_or_mem:
 					case OpCodeOperandKind.xmm_rm:
 					case OpCodeOperandKind.ymm_rm:
 					case OpCodeOperandKind.zmm_rm:
@@ -1659,7 +1598,7 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 		}
 
 		[Fact]
-		void Verify_vsib_with_invalid_index_register() {
+		void Verify_vsib_with_invalid_index_register_EVEX() {
 			var codeValues = new HashSet<Code> {
 				Code.EVEX_Vpgatherdd_xmm_k1_vm32x,
 				Code.EVEX_Vpgatherdd_ymm_k1_vm32y,
@@ -1690,8 +1629,8 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 				if ((info.Options & DecoderOptions.NoInvalidCheck) != 0)
 					continue;
 				var opCode = info.Code.ToOpCode();
-				Assert.Equal(CanHaveInvalidIndexRegister(opCode), codeValues.Contains(info.Code));
-				if (!CanHaveInvalidIndexRegister(opCode))
+				Assert.Equal(CanHaveInvalidIndexRegister_EVEX(opCode), codeValues.Contains(info.Code));
+				if (!CanHaveInvalidIndexRegister_EVEX(opCode))
 					continue;
 
 				if (opCode.Encoding == EncodingKind.EVEX) {
@@ -1736,7 +1675,7 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 		}
 
 		// All Vk_VSIB instructions, eg. EVEX_Vpgatherdd_xmm_k1_vm32x
-		static bool CanHaveInvalidIndexRegister(OpCodeInfo opCode) {
+		static bool CanHaveInvalidIndexRegister_EVEX(OpCodeInfo opCode) {
 			if (opCode.Encoding != EncodingKind.EVEX)
 				return false;
 
@@ -1765,6 +1704,159 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 			}
 			if (vsibIndex <= 0)
 				return false;
+
+			return true;
+		}
+
+		[Fact]
+		void Verify_vsib_with_invalid_index_mask_dest_register_VEX() {
+			var codeValues = new HashSet<Code> {
+				Code.VEX_Vpgatherdd_xmm_vm32x_xmm,
+				Code.VEX_Vpgatherdd_ymm_vm32y_ymm,
+				Code.VEX_Vpgatherdq_xmm_vm32x_xmm,
+				Code.VEX_Vpgatherdq_ymm_vm32x_ymm,
+				Code.VEX_Vpgatherqd_xmm_vm64x_xmm,
+				Code.VEX_Vpgatherqd_xmm_vm64y_xmm,
+				Code.VEX_Vpgatherqq_xmm_vm64x_xmm,
+				Code.VEX_Vpgatherqq_ymm_vm64y_ymm,
+				Code.VEX_Vgatherdps_xmm_vm32x_xmm,
+				Code.VEX_Vgatherdps_ymm_vm32y_ymm,
+				Code.VEX_Vgatherdpd_xmm_vm32x_xmm,
+				Code.VEX_Vgatherdpd_ymm_vm32x_ymm,
+				Code.VEX_Vgatherqps_xmm_vm64x_xmm,
+				Code.VEX_Vgatherqps_xmm_vm64y_xmm,
+				Code.VEX_Vgatherqpd_xmm_vm64x_xmm,
+				Code.VEX_Vgatherqpd_ymm_vm64y_ymm,
+			};
+			foreach (var info in DecoderTestUtils.GetDecoderTests(includeOtherTests: false, includeInvalid: false)) {
+				if ((info.Options & DecoderOptions.NoInvalidCheck) != 0)
+					continue;
+				var opCode = info.Code.ToOpCode();
+				Assert.Equal(CanHaveInvalidIndexMaskDestRegister_VEX(opCode), codeValues.Contains(info.Code));
+				if (!CanHaveInvalidIndexMaskDestRegister_VEX(opCode))
+					continue;
+
+				if (opCode.Encoding == EncodingKind.VEX || opCode.Encoding == EncodingKind.XOP) {
+					var bytes = HexUtils.ToByteArray(info.HexBytes);
+					int vexIndex = GetVexXopIndex(bytes);
+
+					bool isVEX2 = bytes[vexIndex] == 0xC5;
+					int rIndex = vexIndex + 1;
+					int vIndex = isVEX2 ? rIndex : rIndex + 1;
+					int mIndex = vIndex + 2;
+					int sIndex = vIndex + 3;
+
+					var r = bytes[rIndex];
+					var v = bytes[vIndex];
+					var m = bytes[mIndex];
+					var s = bytes[sIndex];
+
+					const int reg_eq_vvvv = 0;
+					const int reg_eq_vidx = 1;
+					const int vvvv_eq_vidx = 2;
+					const int all_eq_all = 3;
+					foreach (var testKind in new[] { reg_eq_vvvv, reg_eq_vidx, vvvv_eq_vidx, all_eq_all }) {
+						for (int i = 0; i < 16; i++) {
+							int regNum = info.Bitness == 64 ? i : i & 7;
+							// Use a small number (0-7) in case it's VEX2 and 'other' is vidx (uses VEX.X bit)
+							int other = regNum == 0 ? 1 : 0;
+							int newReg, newVvvv, newVidx;
+
+							switch (testKind) {
+							case reg_eq_vvvv:
+								newReg = newVvvv = regNum;
+								newVidx = other;
+								break;
+							case reg_eq_vidx:
+								newReg = newVidx = regNum;
+								newVvvv = other;
+								break;
+							case vvvv_eq_vidx:
+								newVvvv = newVidx = regNum;
+								newReg = other;
+								break;
+							case all_eq_all:
+								newReg = newVvvv = newVidx = regNum;
+								break;
+							default:
+								throw new InvalidOperationException();
+							}
+
+							// reg  = R modrm.reg
+							// vidx = X sib.index
+							if (isVEX2) {
+								if (newVidx >= 8)
+									continue;
+								bytes[rIndex] = (byte)((r & 0x07) | /*R*/(((newReg ^ 8) & 0x8) << 4) | /*vvvv*/((newVvvv ^ 0xF) << 3));
+							}
+							else {
+								bytes[rIndex] = (byte)((r & 0x3F) | /*R*/(((newReg ^ 8) & 8) << 4) | /*X*/(((newVidx ^ 8) & 8) << 3));
+								bytes[vIndex] = (byte)((v & 0x87) | /*vvvv*/((newVvvv ^ 0xF) << 3));
+							}
+							bytes[mIndex] = (byte)((m & 0xC7) | /*modrm.reg*/((newReg & 7) << 3));
+							bytes[sIndex] = (byte)((s & 0xC7) | /*sib.index*/((newVidx & 7) << 3));
+
+							{
+								var decoder = Decoder.Create(info.Bitness, new ByteArrayCodeReader(bytes), info.Options);
+								decoder.Decode(out var instr);
+								Assert.Equal(Code.INVALID, instr.Code);
+							}
+							{
+								var decoder = Decoder.Create(info.Bitness, new ByteArrayCodeReader(bytes), info.Options | DecoderOptions.NoInvalidCheck);
+								decoder.Decode(out var instr);
+								Assert.Equal(info.Code, instr.Code);
+								Assert.Equal(OpKind.Register, instr.Op0Kind);
+								Assert.Equal(OpKind.Memory, instr.Op1Kind);
+								Assert.Equal(OpKind.Register, instr.Op2Kind);
+								Assert.NotEqual(Register.None, instr.MemoryIndex);
+								Assert.Equal(newReg, instr.Op0Register.GetInfo().Number);
+								Assert.Equal(newVidx, instr.MemoryIndex.GetInfo().Number);
+								Assert.Equal(newVvvv, instr.Op2Register.GetInfo().Number);
+							}
+						}
+					}
+				}
+				else
+					throw new InvalidOperationException();
+			}
+		}
+
+		// All VX_VSIB_HX instructions, eg. VEX_Vpgatherdd_xmm_vm32x_xmm
+		static bool CanHaveInvalidIndexMaskDestRegister_VEX(OpCodeInfo opCode) {
+			if (opCode.Encoding != EncodingKind.VEX && opCode.Encoding != EncodingKind.XOP)
+				return false;
+			if (opCode.OpCount != 3)
+				return false;
+
+			switch (opCode.Op0Kind) {
+			case OpCodeOperandKind.xmm_reg:
+			case OpCodeOperandKind.ymm_reg:
+			case OpCodeOperandKind.zmm_reg:
+				break;
+			default:
+				return false;
+			}
+
+			switch (opCode.Op2Kind) {
+			case OpCodeOperandKind.xmm_vvvv:
+			case OpCodeOperandKind.ymm_vvvv:
+			case OpCodeOperandKind.zmm_vvvv:
+				break;
+			default:
+				return false;
+			}
+
+			switch (opCode.Op1Kind) {
+			case OpCodeOperandKind.mem_vsib32x:
+			case OpCodeOperandKind.mem_vsib32y:
+			case OpCodeOperandKind.mem_vsib32z:
+			case OpCodeOperandKind.mem_vsib64x:
+			case OpCodeOperandKind.mem_vsib64y:
+			case OpCodeOperandKind.mem_vsib64z:
+				break;
+			default:
+				return false;
+			}
 
 			return true;
 		}
@@ -1809,12 +1901,48 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 			}
 		}
 
+		static int SkipPrefixes(byte[] bytes, int bitness, out uint rex) {
+			rex = 0;
+			int i;
+			for (i = 0; i < bytes.Length; i++) {
+				byte b = bytes[i];
+				bool isPrefix;
+				switch (b) {
+				case 0x26:
+				case 0x2E:
+				case 0x36:
+				case 0x3E:
+				case 0x64:
+				case 0x65:
+				case 0x66:
+				case 0x67:
+				case 0xF0:
+				case 0xF2:
+				case 0xF3:
+					isPrefix = true;
+					rex = 0;
+					break;
+				default:
+					if (bitness == 64 && (b & 0xF0) == 0x40) {
+						isPrefix = true;
+						rex = b;
+					}
+					else
+						isPrefix = false;
+					break;
+				}
+				if (!isPrefix)
+					break;
+			}
+			return i;
+		}
+
 		struct TestedInfo {
 			// VEX/XOP.L and EVEX.L'L values
 			public uint LBits;// bit 0 = L0/L128, bit 1 = L1/L256, etc
 			public uint VEX2_LBits;
 
-			// VEX/XOP/EVEX/MVEX: W values
+			// REX/VEX/XOP/EVEX/MVEX: W values
 			public uint WBits;// bit 0 = W0, bit 1 = W1
 
 			// REX/VEX/XOP/EVEX/MVEX.R
@@ -1871,6 +1999,37 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 			var testedInfos16 = new TestedInfo[Iced.Intel.DecoderConstants.NumberOfCodeValues];
 			var testedInfos32 = new TestedInfo[Iced.Intel.DecoderConstants.NumberOfCodeValues];
 			var testedInfos64 = new TestedInfo[Iced.Intel.DecoderConstants.NumberOfCodeValues];
+
+			var canUseW = new bool[Iced.Intel.DecoderConstants.NumberOfCodeValues];
+			{
+				var usesW = new HashSet<(OpCodeTableKind table, uint opCode)>();
+				for (int i = 0; i < Iced.Intel.DecoderConstants.NumberOfCodeValues; i++) {
+					var code = (Code)i;
+					var opCode = code.ToOpCode();
+					if (opCode.Encoding != EncodingKind.Legacy)
+						continue;
+					if (opCode.OperandSize != 0)
+						usesW.Add((opCode.Table, opCode.OpCode));
+				}
+				for (int i = 0; i < Iced.Intel.DecoderConstants.NumberOfCodeValues; i++) {
+					var code = (Code)i;
+					var opCode = code.ToOpCode();
+					switch (opCode.Encoding) {
+					case EncodingKind.Legacy:
+					case EncodingKind.D3NOW:
+						canUseW[i] = !usesW.Contains((opCode.Table, opCode.OpCode));
+						break;
+
+					case EncodingKind.VEX:
+					case EncodingKind.EVEX:
+					case EncodingKind.XOP:
+						break;
+
+					default:
+						throw new InvalidOperationException();
+					}
+				}
+			}
 
 			foreach (var info in DecoderTestUtils.GetDecoderTests(includeOtherTests: false, includeInvalid: false)) {
 				if ((info.Options & DecoderOptions.NoInvalidCheck) != 0)
@@ -1939,44 +2098,15 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 					}
 				}
 				else if (opCode.Encoding == EncodingKind.Legacy || opCode.Encoding == EncodingKind.D3NOW) {
-					uint rex = 0;
-					int i;
-					for (i = 0; i < bytes.Length; i++) {
-						byte b = bytes[i];
-						bool isPrefix;
-						switch (b) {
-						case 0x26:
-						case 0x2E:
-						case 0x36:
-						case 0x3E:
-						case 0x64:
-						case 0x65:
-						case 0x66:
-						case 0x67:
-						case 0xF0:
-						case 0xF2:
-						case 0xF3:
-							isPrefix = true;
-							rex = 0;
-							break;
-						default:
-							if (info.Bitness == 64 && (b & 0xF0) == 0x40) {
-								isPrefix = true;
-								rex = b;
-							}
-							else
-								isPrefix = false;
-							break;
-						}
-						if (!isPrefix)
-							break;
-					}
+					int i = SkipPrefixes(bytes, info.Bitness, out var rex);
 					if (info.Bitness == 64) {
+						tested.WBits |= 1U << (int)((rex >> 3) & 1);
 						tested.RBits |= 1U << (int)((rex >> 2) & 1);
 						tested.XBits |= 1U << (int)((rex >> 1) & 1);
 						tested.BBits |= 1U << (int)(rex & 1);
 					}
 					else {
+						tested.WBits |= 1;
 						tested.RBits |= 1;
 						tested.XBits |= 1;
 						tested.BBits |= 1;
@@ -2075,6 +2205,8 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 			var wig_16 = new List<Code>();
 			var wig_32 = new List<Code>();
 			var wig_64 = new List<Code>();
+
+			var w_64 = new List<Code>();
 
 			var lig_16 = new List<Code>();
 			var lig_32 = new List<Code>();
@@ -2240,6 +2372,12 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 						if (tested.WBits != 3)
 							GetList(bitness, wig_16, wig_32, wig_64).Add(code);
 					}
+					if (bitness == 64 && opCode.Mode64 && (opCode.Encoding == EncodingKind.Legacy || opCode.Encoding == EncodingKind.D3NOW)) {
+						Debug.Assert(!opCode.IsWIG);
+						Debug.Assert(!opCode.IsWIG32);
+						if (canUseW[(int)code] && tested.WBits != 3)
+							w_64.Add(code);
+					}
 					if (opCode.IsLIG) {
 						uint allLBits;
 						switch (opCode.Encoding) {
@@ -2294,7 +2432,7 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 					if (opCode.CanUseOpMaskRegister) {
 						if (!tested.OpMask)
 							GetList(bitness, opmask_16, opmask_32, opmask_64).Add(code);
-						if (!tested.NoOpMask && !MustUseNonZeroOpMaskRegister(opCode))
+						if (!tested.NoOpMask && !opCode.RequireNonZeroOpMaskRegister)
 							GetList(bitness, noopmask_16, noopmask_32, noopmask_64).Add(code);
 					}
 					if (CanUseB(bitness, opCode)) {
@@ -2431,6 +2569,7 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 			Assert.Equal("wig_16:", "wig_16:" + string.Join(",", wig_16.ToArray()));
 			Assert.Equal("wig_32:", "wig_32:" + string.Join(",", wig_32.ToArray()));
 			Assert.Equal("wig_64:", "wig_64:" + string.Join(",", wig_64.ToArray()));
+			Assert.Equal("w_64:", "w_64:" + string.Join(",", w_64.ToArray()));
 			Assert.Equal("lig_16:", "lig_16:" + string.Join(",", lig_16.ToArray()));
 			Assert.Equal("lig_32:", "lig_32:" + string.Join(",", lig_32.ToArray()));
 			Assert.Equal("lig_64:", "lig_64:" + string.Join(",", lig_64.ToArray()));
@@ -2526,18 +2665,18 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 			static bool CanUseModRM_rm_reg(OpCodeInfo opCode) {
 				for (int i = 0; i < opCode.OpCount; i++) {
 					switch (opCode.GetOpKind(i)) {
-					case OpCodeOperandKind.r8_mem:
-					case OpCodeOperandKind.r16_mem:
-					case OpCodeOperandKind.r32_mem:
-					case OpCodeOperandKind.r32_mem_mpx:
-					case OpCodeOperandKind.r64_mem:
-					case OpCodeOperandKind.r64_mem_mpx:
-					case OpCodeOperandKind.mm_mem:
-					case OpCodeOperandKind.xmm_mem:
-					case OpCodeOperandKind.ymm_mem:
-					case OpCodeOperandKind.zmm_mem:
-					case OpCodeOperandKind.bnd_mem_mpx:
-					case OpCodeOperandKind.k_mem:
+					case OpCodeOperandKind.r8_or_mem:
+					case OpCodeOperandKind.r16_or_mem:
+					case OpCodeOperandKind.r32_or_mem:
+					case OpCodeOperandKind.r32_or_mem_mpx:
+					case OpCodeOperandKind.r64_or_mem:
+					case OpCodeOperandKind.r64_or_mem_mpx:
+					case OpCodeOperandKind.mm_or_mem:
+					case OpCodeOperandKind.xmm_or_mem:
+					case OpCodeOperandKind.ymm_or_mem:
+					case OpCodeOperandKind.zmm_or_mem:
+					case OpCodeOperandKind.bnd_or_mem_mpx:
+					case OpCodeOperandKind.k_or_mem:
 					case OpCodeOperandKind.r16_rm:
 					case OpCodeOperandKind.r32_rm:
 					case OpCodeOperandKind.r64_rm:
@@ -2557,24 +2696,25 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 					switch (opCode.GetOpKind(i)) {
 					case OpCodeOperandKind.mem:
 					case OpCodeOperandKind.mem_mpx:
+					case OpCodeOperandKind.mem_mib:
 					case OpCodeOperandKind.mem_vsib32x:
 					case OpCodeOperandKind.mem_vsib64x:
 					case OpCodeOperandKind.mem_vsib32y:
 					case OpCodeOperandKind.mem_vsib64y:
 					case OpCodeOperandKind.mem_vsib32z:
 					case OpCodeOperandKind.mem_vsib64z:
-					case OpCodeOperandKind.r8_mem:
-					case OpCodeOperandKind.r16_mem:
-					case OpCodeOperandKind.r32_mem:
-					case OpCodeOperandKind.r32_mem_mpx:
-					case OpCodeOperandKind.r64_mem:
-					case OpCodeOperandKind.r64_mem_mpx:
-					case OpCodeOperandKind.mm_mem:
-					case OpCodeOperandKind.xmm_mem:
-					case OpCodeOperandKind.ymm_mem:
-					case OpCodeOperandKind.zmm_mem:
-					case OpCodeOperandKind.bnd_mem_mpx:
-					case OpCodeOperandKind.k_mem:
+					case OpCodeOperandKind.r8_or_mem:
+					case OpCodeOperandKind.r16_or_mem:
+					case OpCodeOperandKind.r32_or_mem:
+					case OpCodeOperandKind.r32_or_mem_mpx:
+					case OpCodeOperandKind.r64_or_mem:
+					case OpCodeOperandKind.r64_or_mem_mpx:
+					case OpCodeOperandKind.mm_or_mem:
+					case OpCodeOperandKind.xmm_or_mem:
+					case OpCodeOperandKind.ymm_or_mem:
+					case OpCodeOperandKind.zmm_or_mem:
+					case OpCodeOperandKind.bnd_or_mem_mpx:
+					case OpCodeOperandKind.k_or_mem:
 						return true;
 					}
 				}
@@ -2584,8 +2724,15 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 			static bool CanUseVEX2(OpCodeInfo opCode) => opCode.Table == OpCodeTableKind.T0F && opCode.W == 0;
 
 			static bool CanUseB(int bitness, OpCodeInfo opCode) {
-				if (opCode.Code == Code.Nopw || opCode.Code == Code.Nopd || opCode.Code == Code.Nopq)
+				switch (opCode.Code) {
+				case Code.Nopw:
+				case Code.Nopd:
+				case Code.Nopq:
+				case Code.Bndmov_bnd_bndm128:
+				case Code.Bndmov_bndm128_bnd:
 					return false;
+				}
+
 				for (int i = 0; i < opCode.OpCount; i++) {
 					switch (opCode.GetOpKind(i)) {
 					case OpCodeOperandKind.k_rm:
@@ -2597,24 +2744,25 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 					case OpCodeOperandKind.ymm_rm:
 					case OpCodeOperandKind.zmm_rm:
 
-					case OpCodeOperandKind.bnd_mem_mpx:
-					case OpCodeOperandKind.k_mem:
-					case OpCodeOperandKind.mm_mem:
-					case OpCodeOperandKind.r16_mem:
-					case OpCodeOperandKind.r32_mem:
-					case OpCodeOperandKind.r32_mem_mpx:
-					case OpCodeOperandKind.r64_mem:
-					case OpCodeOperandKind.r64_mem_mpx:
-					case OpCodeOperandKind.r8_mem:
-					case OpCodeOperandKind.xmm_mem:
-					case OpCodeOperandKind.ymm_mem:
-					case OpCodeOperandKind.zmm_mem:
+					case OpCodeOperandKind.bnd_or_mem_mpx:
+					case OpCodeOperandKind.k_or_mem:
+					case OpCodeOperandKind.mm_or_mem:
+					case OpCodeOperandKind.r16_or_mem:
+					case OpCodeOperandKind.r32_or_mem:
+					case OpCodeOperandKind.r32_or_mem_mpx:
+					case OpCodeOperandKind.r64_or_mem:
+					case OpCodeOperandKind.r64_or_mem_mpx:
+					case OpCodeOperandKind.r8_or_mem:
+					case OpCodeOperandKind.xmm_or_mem:
+					case OpCodeOperandKind.ymm_or_mem:
+					case OpCodeOperandKind.zmm_or_mem:
 						if (opCode.Encoding == EncodingKind.Legacy || opCode.Encoding == EncodingKind.D3NOW)
 							return bitness == 64;
 						return true;
 
 					case OpCodeOperandKind.mem:
 					case OpCodeOperandKind.mem_mpx:
+					case OpCodeOperandKind.mem_mib:
 					case OpCodeOperandKind.mem_vsib32x:
 					case OpCodeOperandKind.mem_vsib32y:
 					case OpCodeOperandKind.mem_vsib32z:
@@ -2642,22 +2790,23 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 					case OpCodeOperandKind.ymm_rm:
 					case OpCodeOperandKind.zmm_rm:
 
-					case OpCodeOperandKind.bnd_mem_mpx:
-					case OpCodeOperandKind.k_mem:
-					case OpCodeOperandKind.mm_mem:
-					case OpCodeOperandKind.r16_mem:
-					case OpCodeOperandKind.r32_mem:
-					case OpCodeOperandKind.r32_mem_mpx:
-					case OpCodeOperandKind.r64_mem:
-					case OpCodeOperandKind.r64_mem_mpx:
-					case OpCodeOperandKind.r8_mem:
-					case OpCodeOperandKind.xmm_mem:
-					case OpCodeOperandKind.ymm_mem:
-					case OpCodeOperandKind.zmm_mem:
+					case OpCodeOperandKind.bnd_or_mem_mpx:
+					case OpCodeOperandKind.k_or_mem:
+					case OpCodeOperandKind.mm_or_mem:
+					case OpCodeOperandKind.r16_or_mem:
+					case OpCodeOperandKind.r32_or_mem:
+					case OpCodeOperandKind.r32_or_mem_mpx:
+					case OpCodeOperandKind.r64_or_mem:
+					case OpCodeOperandKind.r64_or_mem_mpx:
+					case OpCodeOperandKind.r8_or_mem:
+					case OpCodeOperandKind.xmm_or_mem:
+					case OpCodeOperandKind.ymm_or_mem:
+					case OpCodeOperandKind.zmm_or_mem:
 						return true;
 
 					case OpCodeOperandKind.mem:
 					case OpCodeOperandKind.mem_mpx:
+					case OpCodeOperandKind.mem_mib:
 					case OpCodeOperandKind.mem_vsib32x:
 					case OpCodeOperandKind.mem_vsib32y:
 					case OpCodeOperandKind.mem_vsib32z:
@@ -2675,10 +2824,11 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 				for (int i = 0; i < opCode.OpCount; i++) {
 					switch (opCode.GetOpKind(i)) {
 					case OpCodeOperandKind.k_reg:
+					case OpCodeOperandKind.kp1_reg:
 					case OpCodeOperandKind.tr_reg:
+					case OpCodeOperandKind.bnd_reg:
 						return false;
 
-					case OpCodeOperandKind.bnd_reg:
 					case OpCodeOperandKind.cr_reg:
 					case OpCodeOperandKind.dr_reg:
 					case OpCodeOperandKind.mm_reg:
@@ -2700,6 +2850,7 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 				for (int i = 0; i < opCode.OpCount; i++) {
 					switch (opCode.GetOpKind(i)) {
 					case OpCodeOperandKind.k_reg:
+					case OpCodeOperandKind.kp1_reg:
 					case OpCodeOperandKind.tr_reg:
 					case OpCodeOperandKind.bnd_reg:
 					case OpCodeOperandKind.cr_reg:
@@ -2754,24 +2905,25 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 					switch (opCode.GetOpKind(i)) {
 					case OpCodeOperandKind.mem:
 					case OpCodeOperandKind.mem_mpx:
+					case OpCodeOperandKind.mem_mib:
 					case OpCodeOperandKind.mem_vsib32x:
 					case OpCodeOperandKind.mem_vsib64x:
 					case OpCodeOperandKind.mem_vsib32y:
 					case OpCodeOperandKind.mem_vsib64y:
 					case OpCodeOperandKind.mem_vsib32z:
 					case OpCodeOperandKind.mem_vsib64z:
-					case OpCodeOperandKind.r8_mem:
-					case OpCodeOperandKind.r16_mem:
-					case OpCodeOperandKind.r32_mem:
-					case OpCodeOperandKind.r32_mem_mpx:
-					case OpCodeOperandKind.r64_mem:
-					case OpCodeOperandKind.r64_mem_mpx:
-					case OpCodeOperandKind.mm_mem:
-					case OpCodeOperandKind.xmm_mem:
-					case OpCodeOperandKind.ymm_mem:
-					case OpCodeOperandKind.zmm_mem:
-					case OpCodeOperandKind.bnd_mem_mpx:
-					case OpCodeOperandKind.k_mem:
+					case OpCodeOperandKind.r8_or_mem:
+					case OpCodeOperandKind.r16_or_mem:
+					case OpCodeOperandKind.r32_or_mem:
+					case OpCodeOperandKind.r32_or_mem_mpx:
+					case OpCodeOperandKind.r64_or_mem:
+					case OpCodeOperandKind.r64_or_mem_mpx:
+					case OpCodeOperandKind.mm_or_mem:
+					case OpCodeOperandKind.xmm_or_mem:
+					case OpCodeOperandKind.ymm_or_mem:
+					case OpCodeOperandKind.zmm_or_mem:
+					case OpCodeOperandKind.bnd_or_mem_mpx:
+					case OpCodeOperandKind.k_or_mem:
 					case OpCodeOperandKind.r8_reg:
 					case OpCodeOperandKind.r16_reg:
 					case OpCodeOperandKind.r16_rm:
@@ -2781,6 +2933,7 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 					case OpCodeOperandKind.r64_rm:
 					case OpCodeOperandKind.seg_reg:
 					case OpCodeOperandKind.k_reg:
+					case OpCodeOperandKind.kp1_reg:
 					case OpCodeOperandKind.k_rm:
 					case OpCodeOperandKind.mm_reg:
 					case OpCodeOperandKind.mm_rm:
@@ -2815,6 +2968,452 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 					_ => throw new InvalidOperationException(),
 				};
 		}
+
+		[Fact]
+		void Test_invalid_zero_opmask_reg() {
+			foreach (var info in DecoderTestUtils.GetDecoderTests(includeOtherTests: false, includeInvalid: false)) {
+				if ((info.Options & DecoderOptions.NoInvalidCheck) != 0)
+					continue;
+				var opCode = info.Code.ToOpCode();
+				if (!opCode.RequireNonZeroOpMaskRegister)
+					continue;
+
+				var bytes = HexUtils.ToByteArray(info.HexBytes);
+				Instruction origInstr;
+				{
+					var decoder = Decoder.Create(info.Bitness, new ByteArrayCodeReader(bytes), info.Options);
+					decoder.Decode(out origInstr);
+					Assert.Equal(info.Code, origInstr.Code);
+				}
+
+				int evexIndex = GetEvexIndex(bytes);
+				bytes[evexIndex + 3] &= 0xF8;
+				{
+					var decoder = Decoder.Create(info.Bitness, new ByteArrayCodeReader(bytes), info.Options);
+					decoder.Decode(out var instr);
+					Assert.Equal(Code.INVALID, instr.Code);
+				}
+				{
+					var decoder = Decoder.Create(info.Bitness, new ByteArrayCodeReader(bytes), info.Options | DecoderOptions.NoInvalidCheck);
+					decoder.Decode(out var instr);
+					Assert.Equal(info.Code, instr.Code);
+					Assert.Equal(Register.None, instr.OpMask);
+					origInstr.OpMask = Register.None;
+					Assert.True(Instruction.EqualsAllBits(origInstr, instr));
+				}
+			}
+		}
+
+		[Fact]
+		void Verify_cpu_mode() {
+			var hash1632 = new HashSet<Code>(DecoderTestUtils.Code32Only);
+			foreach (var code in DecoderTestUtils.NotDecoded32Only)
+				hash1632.Add(code);
+			var hash64 = new HashSet<Code>(DecoderTestUtils.Code64Only);
+			foreach (var code in DecoderTestUtils.NotDecoded64Only)
+				hash64.Add(code);
+			for (int i = 0; i < Iced.Intel.DecoderConstants.NumberOfCodeValues; i++) {
+				var code = (Code)i;
+				var opCode = code.ToOpCode();
+				if (hash1632.Contains(code)) {
+					Assert.True(opCode.Mode16);
+					Assert.True(opCode.Mode32);
+					Assert.False(opCode.Mode64);
+				}
+				else if (hash64.Contains(code)) {
+					Assert.False(opCode.Mode16);
+					Assert.False(opCode.Mode32);
+					Assert.True(opCode.Mode64);
+				}
+				else {
+					Assert.True(opCode.Mode16);
+					Assert.True(opCode.Mode32);
+					Assert.True(opCode.Mode64);
+				}
+			}
+		}
+
+		[Fact]
+		void Verify_can_only_decode_in_correct_mode() {
+			var extraBytes = new string('0', (Iced.Intel.DecoderConstants.MaxInstructionLength - 1) * 2);
+			foreach (var info in DecoderTestUtils.GetDecoderTests(includeOtherTests: false, includeInvalid: false)) {
+				var opCode = info.Code.ToOpCode();
+				var newHexBytes = info.HexBytes + extraBytes;
+				if (!opCode.Mode16) {
+					var decoder = Decoder.Create(16, new ByteArrayCodeReader(newHexBytes), info.Options);
+					decoder.Decode(out var instr);
+					Assert.NotEqual(info.Code, instr.Code);
+				}
+				if (!opCode.Mode32) {
+					var decoder = Decoder.Create(32, new ByteArrayCodeReader(newHexBytes), info.Options);
+					decoder.Decode(out var instr);
+					Assert.NotEqual(info.Code, instr.Code);
+				}
+				if (!opCode.Mode64) {
+					var decoder = Decoder.Create(64, new ByteArrayCodeReader(newHexBytes), info.Options);
+					decoder.Decode(out var instr);
+					Assert.NotEqual(info.Code, instr.Code);
+				}
+			}
+		}
+
+		[Fact]
+		void Verify_invalid_table_encoding() {
+			foreach (var info in DecoderTestUtils.GetDecoderTests(includeOtherTests: false, includeInvalid: false)) {
+				var opCode = info.Code.ToOpCode();
+				if (opCode.Encoding == EncodingKind.EVEX) {
+					var hexBytes = HexUtils.ToByteArray(info.HexBytes);
+					var evexIndex = GetEvexIndex(hexBytes);
+					hexBytes[evexIndex + 1] &= 0xFC;
+					{
+						var decoder = Decoder.Create(info.Bitness, new ByteArrayCodeReader(hexBytes), info.Options);
+						decoder.Decode(out var instr);
+						Assert.Equal(Code.INVALID, instr.Code);
+					}
+					{
+						var decoder = Decoder.Create(info.Bitness, new ByteArrayCodeReader(hexBytes), info.Options ^ DecoderOptions.NoInvalidCheck);
+						decoder.Decode(out var instr);
+						Assert.Equal(Code.INVALID, instr.Code);
+					}
+				}
+				else if (opCode.Encoding == EncodingKind.VEX) {
+					var hexBytes = HexUtils.ToByteArray(info.HexBytes);
+					var vexIndex = GetVexXopIndex(hexBytes);
+					if (hexBytes[vexIndex] == 0xC5)
+						continue;
+					for (int i = 0; i < 32; i++) {
+						switch (i) {
+						case 1:// 0F
+						case 2:// 0F 38
+						case 3:// 0F 3A
+							continue;
+						}
+						hexBytes[vexIndex + 1] = (byte)((hexBytes[vexIndex + 1] & 0xE0) | i);
+						{
+							var decoder = Decoder.Create(info.Bitness, new ByteArrayCodeReader(hexBytes), info.Options);
+							decoder.Decode(out var instr);
+							Assert.Equal(Code.INVALID, instr.Code);
+						}
+						{
+							var decoder = Decoder.Create(info.Bitness, new ByteArrayCodeReader(hexBytes), info.Options ^ DecoderOptions.NoInvalidCheck);
+							decoder.Decode(out var instr);
+							Assert.Equal(Code.INVALID, instr.Code);
+						}
+					}
+				}
+				else if (opCode.Encoding == EncodingKind.XOP) {
+					var hexBytes = HexUtils.ToByteArray(info.HexBytes);
+					var vexIndex = GetVexXopIndex(hexBytes);
+					for (int i = 0; i < 32; i++) {
+						switch (i) {
+						case 8:// XOP8
+						case 9:// XOP9
+						case 0xA:// XOPA
+							continue;
+						}
+						hexBytes[vexIndex + 1] = (byte)((hexBytes[vexIndex + 1] & 0xE0) | i);
+						{
+							var decoder = Decoder.Create(info.Bitness, new ByteArrayCodeReader(hexBytes), info.Options);
+							decoder.Decode(out var instr);
+							if (i < 8)
+								Assert.NotEqual(info.Code, instr.Code);
+							else
+								Assert.Equal(Code.INVALID, instr.Code);
+						}
+						{
+							var decoder = Decoder.Create(info.Bitness, new ByteArrayCodeReader(hexBytes), info.Options ^ DecoderOptions.NoInvalidCheck);
+							decoder.Decode(out var instr);
+							if (i < 8)
+								Assert.NotEqual(info.Code, instr.Code);
+							else
+								Assert.Equal(Code.INVALID, instr.Code);
+						}
+					}
+				}
+				else if (opCode.Encoding == EncodingKind.Legacy || opCode.Encoding == EncodingKind.D3NOW) {
+				}
+				else
+					throw new InvalidOperationException();
+			}
+		}
+
+		[Fact]
+		void Verify_invalid_pp_field() {
+			foreach (var info in DecoderTestUtils.GetDecoderTests(includeOtherTests: false, includeInvalid: false)) {
+				var opCode = info.Code.ToOpCode();
+				if (opCode.Encoding == EncodingKind.EVEX) {
+					var hexBytes = HexUtils.ToByteArray(info.HexBytes);
+					var evexIndex = GetEvexIndex(hexBytes);
+					var b = hexBytes[evexIndex + 2];
+					for (int i = 1; i <= 3; i++) {
+						hexBytes[evexIndex + 2] = (byte)(b ^ i);
+						{
+							var decoder = Decoder.Create(info.Bitness, new ByteArrayCodeReader(hexBytes), info.Options);
+							decoder.Decode(out var instr);
+							Assert.NotEqual(info.Code, instr.Code);
+						}
+						{
+							var decoder = Decoder.Create(info.Bitness, new ByteArrayCodeReader(hexBytes), info.Options ^ DecoderOptions.NoInvalidCheck);
+							decoder.Decode(out var instr);
+							Assert.NotEqual(info.Code, instr.Code);
+						}
+					}
+				}
+				else if (opCode.Encoding == EncodingKind.VEX || opCode.Encoding == EncodingKind.XOP) {
+					var hexBytes = HexUtils.ToByteArray(info.HexBytes);
+					var vexIndex = GetVexXopIndex(hexBytes);
+					int ppIndex = hexBytes[vexIndex] == 0xC5 ? vexIndex + 1 : vexIndex + 2;
+					var b = hexBytes[ppIndex];
+					for (int i = 1; i <= 3; i++) {
+						hexBytes[ppIndex] = (byte)(b ^ i);
+						{
+							var decoder = Decoder.Create(info.Bitness, new ByteArrayCodeReader(hexBytes), info.Options);
+							decoder.Decode(out var instr);
+							Assert.NotEqual(info.Code, instr.Code);
+						}
+						{
+							var decoder = Decoder.Create(info.Bitness, new ByteArrayCodeReader(hexBytes), info.Options ^ DecoderOptions.NoInvalidCheck);
+							decoder.Decode(out var instr);
+							Assert.NotEqual(info.Code, instr.Code);
+						}
+					}
+				}
+				else if (opCode.Encoding == EncodingKind.Legacy || opCode.Encoding == EncodingKind.D3NOW) {
+				}
+				else
+					throw new InvalidOperationException();
+			}
+		}
+
+		[Fact]
+		void Verify_regonly_or_regmemonly_mod_bits() {
+			var extraBytes = new string('0', (Iced.Intel.DecoderConstants.MaxInstructionLength - 1) * 2);
+			foreach (var info in DecoderTestUtils.GetDecoderTests(includeOtherTests: false, includeInvalid: false)) {
+				var opCode = info.Code.ToOpCode();
+				if (!IsRegOnlyOrRegMemOnlyModRM(opCode))
+					continue;
+				// There are a few instructions that ignore the mod bits...
+				switch (info.Code) {
+				case Code.Mov_r32_cr:
+				case Code.Mov_r64_cr:
+				case Code.Mov_r32_dr:
+				case Code.Mov_r64_dr:
+				case Code.Mov_cr_r32:
+				case Code.Mov_cr_r64:
+				case Code.Mov_dr_r32:
+				case Code.Mov_dr_r64:
+				case Code.Mov_r32_tr:
+				case Code.Mov_tr_r32:
+					continue;
+				}
+
+				var bytes = HexUtils.ToByteArray(info.HexBytes + extraBytes);
+				int mIndex;
+				if (opCode.Encoding == EncodingKind.EVEX)
+					mIndex = GetEvexIndex(bytes) + 5;
+				else if (opCode.Encoding == EncodingKind.VEX || opCode.Encoding == EncodingKind.XOP) {
+					int vexIndex = GetVexXopIndex(bytes);
+					mIndex = bytes[vexIndex] == 0xC5 ? vexIndex + 3 : vexIndex + 4;
+				}
+				else if (opCode.Encoding == EncodingKind.Legacy || opCode.Encoding == EncodingKind.D3NOW) {
+					mIndex = SkipPrefixes(bytes, info.Bitness, out var rex);
+					switch (opCode.Table) {
+					case OpCodeTableKind.Normal:
+						break;
+					case OpCodeTableKind.T0F:
+						if (bytes[mIndex++] != 0x0F)
+							throw new InvalidOperationException();
+						break;
+					case OpCodeTableKind.T0F38:
+						if (bytes[mIndex++] != 0x0F)
+							throw new InvalidOperationException();
+						if (bytes[mIndex++] != 0x38)
+							throw new InvalidOperationException();
+						break;
+					case OpCodeTableKind.T0F3A:
+						if (bytes[mIndex++] != 0x0F)
+							throw new InvalidOperationException();
+						if (bytes[mIndex++] != 0x3A)
+							throw new InvalidOperationException();
+						break;
+					default:
+						throw new InvalidOperationException();
+					}
+					mIndex++;
+				}
+				else
+					throw new InvalidOperationException();
+
+				if (bytes[mIndex] >= 0xC0)
+					bytes[mIndex] &= 0x3F;
+				else
+					bytes[mIndex] |= 0xC0;
+				{
+					var decoder = Decoder.Create(info.Bitness, new ByteArrayCodeReader(bytes), info.Options);
+					decoder.Decode(out var instr);
+					Assert.NotEqual(info.Code, instr.Code);
+				}
+				{
+					var decoder = Decoder.Create(info.Bitness, new ByteArrayCodeReader(bytes), info.Options ^ DecoderOptions.NoInvalidCheck);
+					decoder.Decode(out var instr);
+					Assert.NotEqual(info.Code, instr.Code);
+				}
+			}
+
+			static bool IsRegOnlyOrRegMemOnlyModRM(OpCodeInfo opCode) {
+				for (int i = 0; i < opCode.OpCount; i++) {
+					switch (opCode.GetOpKind(i)) {
+					case OpCodeOperandKind.mem:
+					case OpCodeOperandKind.mem_mpx:
+					case OpCodeOperandKind.mem_mib:
+					case OpCodeOperandKind.mem_vsib32x:
+					case OpCodeOperandKind.mem_vsib64x:
+					case OpCodeOperandKind.mem_vsib32y:
+					case OpCodeOperandKind.mem_vsib64y:
+					case OpCodeOperandKind.mem_vsib32z:
+					case OpCodeOperandKind.mem_vsib64z:
+					case OpCodeOperandKind.r16_rm:
+					case OpCodeOperandKind.r32_rm:
+					case OpCodeOperandKind.r64_rm:
+					case OpCodeOperandKind.k_rm:
+					case OpCodeOperandKind.mm_rm:
+					case OpCodeOperandKind.xmm_rm:
+					case OpCodeOperandKind.ymm_rm:
+					case OpCodeOperandKind.zmm_rm:
+						return true;
+					}
+				}
+				return false;
+			}
+		}
 #endif
+
+		[Theory]
+		[InlineData("C4E249 90 54 A1 01", Code.INVALID, 16, DecoderOptions.None)]
+		[InlineData("C4E249 90 54 A1 01", Code.VEX_Vpgatherdd_xmm_vm32x_xmm, 16, DecoderOptions.NoInvalidCheck)]
+		[InlineData("67 C4E249 90 00", Code.INVALID, 16, DecoderOptions.None)]
+		[InlineData("67 C4E249 90 00", Code.VEX_Vpgatherdd_xmm_vm32x_xmm, 16, DecoderOptions.NoInvalidCheck)]
+		[InlineData("62 F27D0B 90 54 A1 01", Code.INVALID, 16, DecoderOptions.None)]
+		[InlineData("62 F27D0B 90 54 A1 01", Code.EVEX_Vpgatherdd_xmm_k1_vm32x, 16, DecoderOptions.NoInvalidCheck)]
+		[InlineData("67 62 F27D0B 90 00", Code.INVALID, 16, DecoderOptions.None)]
+		[InlineData("67 62 F27D0B 90 00", Code.EVEX_Vpgatherdd_xmm_k1_vm32x, 16, DecoderOptions.NoInvalidCheck)]
+
+		[InlineData("67 C4E249 90 54 A1 01", Code.INVALID, 32, DecoderOptions.None)]
+		[InlineData("67 C4E249 90 54 A1 01", Code.VEX_Vpgatherdd_xmm_vm32x_xmm, 32, DecoderOptions.NoInvalidCheck)]
+		[InlineData("C4E249 90 00", Code.INVALID, 32, DecoderOptions.None)]
+		[InlineData("C4E249 90 00", Code.VEX_Vpgatherdd_xmm_vm32x_xmm, 32, DecoderOptions.NoInvalidCheck)]
+		[InlineData("67 62 F27D0B 90 54 A1 01", Code.INVALID, 32, DecoderOptions.None)]
+		[InlineData("67 62 F27D0B 90 54 A1 01", Code.EVEX_Vpgatherdd_xmm_k1_vm32x, 32, DecoderOptions.NoInvalidCheck)]
+		[InlineData("62 F27D0B 90 00", Code.INVALID, 32, DecoderOptions.None)]
+		[InlineData("62 F27D0B 90 00", Code.EVEX_Vpgatherdd_xmm_k1_vm32x, 32, DecoderOptions.NoInvalidCheck)]
+		void Verify_vsib_a16_is_invalid(string hexBytes, Code code, int bitness, DecoderOptions options) {
+			var decoder = Decoder.Create(bitness, new ByteArrayCodeReader(hexBytes), options);
+			decoder.Decode(out var instr);
+			Assert.Equal(code, instr.Code);
+		}
+
+		[Theory]
+		[MemberData(nameof(Test_ByteArrayCodeReader_ctor_Data))]
+		void Test_ByteArrayCodeReader_ctor(ByteArrayCodeReader reader, byte[] expectedData) {
+			int i = 0;
+			Assert.Equal(0, reader.Position);
+			while (reader.CanReadByte) {
+				Assert.Equal(i, reader.Position);
+				Assert.True(i < expectedData.Length);
+				Assert.Equal(expectedData[i], reader.ReadByte());
+				i++;
+			}
+			Assert.Equal(i, reader.Position);
+			Assert.Equal(expectedData.Length, i);
+			Assert.Equal(-1, reader.ReadByte());
+			Assert.Equal(i, reader.Position);
+
+			reader.Position = 0;
+			Assert.Equal(0, reader.Position);
+			i = 0;
+			while (reader.CanReadByte) {
+				Assert.Equal(i, reader.Position);
+				Assert.True(i < expectedData.Length);
+				Assert.Equal(expectedData[i], reader.ReadByte());
+				i++;
+			}
+			Assert.Equal(i, reader.Position);
+			Assert.Equal(expectedData.Length, i);
+			Assert.Equal(-1, reader.ReadByte());
+			Assert.Equal(i, reader.Position);
+
+			reader.Position = reader.Count;
+			Assert.Equal(reader.Count, reader.Position);
+			Assert.False(reader.CanReadByte);
+			Assert.Equal(-1, reader.ReadByte());
+
+			for (i = expectedData.Length - 1; i >= 0; i--) {
+				reader.Position = i;
+				Assert.Equal(i, reader.Position);
+				Assert.True(reader.CanReadByte);
+				Assert.Equal(expectedData[i], reader.ReadByte());
+				Assert.Equal(i + 1, reader.Position);
+			}
+		}
+		public static IEnumerable<object[]> Test_ByteArrayCodeReader_ctor_Data {
+			get {
+				yield return new object[] { new ByteArrayCodeReader(""), new byte[] { } };
+				yield return new object[] { new ByteArrayCodeReader("12"), new byte[] { 0x12 } };
+				yield return new object[] { new ByteArrayCodeReader("1234"), new byte[] { 0x12, 0x34 } };
+
+				yield return new object[] { new ByteArrayCodeReader(new byte[] { }), new byte[] { } };
+				yield return new object[] { new ByteArrayCodeReader(new byte[] { 0x23 }), new byte[] { 0x23 } };
+				yield return new object[] { new ByteArrayCodeReader(new byte[] { 0x23, 0x45 }), new byte[] { 0x23, 0x45 } };
+
+				yield return new object[] { new ByteArrayCodeReader(new byte[] { }, 0, 0), new byte[] { } };
+				yield return new object[] { new ByteArrayCodeReader(new byte[] { 0x45 }, 0, 1), new byte[] { 0x45 } };
+				yield return new object[] { new ByteArrayCodeReader(new byte[] { 0x45, 0x67 }, 0, 2), new byte[] { 0x45, 0x67 } };
+				yield return new object[] { new ByteArrayCodeReader(new byte[] { 0x45, 0x67, 0x89 }, 0, 3), new byte[] { 0x45, 0x67, 0x89 } };
+				yield return new object[] { new ByteArrayCodeReader(new byte[] { 0x45, 0x67, 0x89, 0xAB }, 0, 4), new byte[] { 0x45, 0x67, 0x89, 0xAB } };
+				yield return new object[] { new ByteArrayCodeReader(new byte[] { 0x45, 0x67, 0x89, 0xAB }, 1, 3), new byte[] { 0x67, 0x89, 0xAB } };
+				yield return new object[] { new ByteArrayCodeReader(new byte[] { 0x45, 0x67, 0x89, 0xAB }, 2, 2), new byte[] { 0x89, 0xAB } };
+				yield return new object[] { new ByteArrayCodeReader(new byte[] { 0x45, 0x67, 0x89, 0xAB }, 3, 1), new byte[] { 0xAB } };
+				yield return new object[] { new ByteArrayCodeReader(new byte[] { 0x45, 0x67, 0x89, 0xAB }, 4, 0), new byte[] { } };
+				yield return new object[] { new ByteArrayCodeReader(new byte[] { 0x45, 0x67, 0x89, 0xAB }, 0, 3), new byte[] { 0x45, 0x67, 0x89 } };
+				yield return new object[] { new ByteArrayCodeReader(new byte[] { 0x45, 0x67, 0x89, 0xAB }, 0, 2), new byte[] { 0x45, 0x67 } };
+				yield return new object[] { new ByteArrayCodeReader(new byte[] { 0x45, 0x67, 0x89, 0xAB }, 0, 1), new byte[] { 0x45 } };
+				yield return new object[] { new ByteArrayCodeReader(new byte[] { 0x45, 0x67, 0x89, 0xAB }, 0, 0), new byte[] { } };
+				yield return new object[] { new ByteArrayCodeReader(new byte[] { 0x45, 0x67, 0x89, 0xAB }, 1, 2), new byte[] { 0x67, 0x89 } };
+				yield return new object[] { new ByteArrayCodeReader(new byte[] { 0x45, 0x67, 0x89, 0xAB }, 1, 1), new byte[] { 0x67 } };
+				yield return new object[] { new ByteArrayCodeReader(new byte[] { 0x45, 0x67, 0x89, 0xAB }, 2, 1), new byte[] { 0x89 } };
+
+				yield return new object[] { new ByteArrayCodeReader(new ArraySegment<byte>(new byte[] { }, 0, 0)), new byte[] { } };
+				yield return new object[] { new ByteArrayCodeReader(new ArraySegment<byte>(new byte[] { 0x45 }, 0, 1)), new byte[] { 0x45 } };
+				yield return new object[] { new ByteArrayCodeReader(new ArraySegment<byte>(new byte[] { 0x45, 0x67 }, 0, 2)), new byte[] { 0x45, 0x67 } };
+				yield return new object[] { new ByteArrayCodeReader(new ArraySegment<byte>(new byte[] { 0x45, 0x67, 0x89 }, 0, 3)), new byte[] { 0x45, 0x67, 0x89 } };
+				yield return new object[] { new ByteArrayCodeReader(new ArraySegment<byte>(new byte[] { 0x45, 0x67, 0x89, 0xAB }, 0, 4)), new byte[] { 0x45, 0x67, 0x89, 0xAB } };
+				yield return new object[] { new ByteArrayCodeReader(new ArraySegment<byte>(new byte[] { 0x45, 0x67, 0x89, 0xAB }, 1, 3)), new byte[] { 0x67, 0x89, 0xAB } };
+				yield return new object[] { new ByteArrayCodeReader(new ArraySegment<byte>(new byte[] { 0x45, 0x67, 0x89, 0xAB }, 2, 2)), new byte[] { 0x89, 0xAB } };
+				yield return new object[] { new ByteArrayCodeReader(new ArraySegment<byte>(new byte[] { 0x45, 0x67, 0x89, 0xAB }, 3, 1)), new byte[] { 0xAB } };
+				yield return new object[] { new ByteArrayCodeReader(new ArraySegment<byte>(new byte[] { 0x45, 0x67, 0x89, 0xAB }, 4, 0)), new byte[] { } };
+				yield return new object[] { new ByteArrayCodeReader(new ArraySegment<byte>(new byte[] { 0x45, 0x67, 0x89, 0xAB }, 0, 3)), new byte[] { 0x45, 0x67, 0x89 } };
+				yield return new object[] { new ByteArrayCodeReader(new ArraySegment<byte>(new byte[] { 0x45, 0x67, 0x89, 0xAB }, 0, 2)), new byte[] { 0x45, 0x67 } };
+				yield return new object[] { new ByteArrayCodeReader(new ArraySegment<byte>(new byte[] { 0x45, 0x67, 0x89, 0xAB }, 0, 1)), new byte[] { 0x45 } };
+				yield return new object[] { new ByteArrayCodeReader(new ArraySegment<byte>(new byte[] { 0x45, 0x67, 0x89, 0xAB }, 0, 0)), new byte[] { } };
+				yield return new object[] { new ByteArrayCodeReader(new ArraySegment<byte>(new byte[] { 0x45, 0x67, 0x89, 0xAB }, 1, 2)), new byte[] { 0x67, 0x89 } };
+				yield return new object[] { new ByteArrayCodeReader(new ArraySegment<byte>(new byte[] { 0x45, 0x67, 0x89, 0xAB }, 1, 1)), new byte[] { 0x67 } };
+				yield return new object[] { new ByteArrayCodeReader(new ArraySegment<byte>(new byte[] { 0x45, 0x67, 0x89, 0xAB }, 2, 1)), new byte[] { 0x89 } };
+			}
+		}
+
+		[Fact]
+		void Test_ByteArrayCodeReader_throws() {
+			Assert.Throws<ArgumentNullException>(() => new ByteArrayCodeReader((string)null));
+			Assert.Throws<ArgumentNullException>(() => new ByteArrayCodeReader((byte[])null));
+			Assert.Throws<ArgumentNullException>(() => new ByteArrayCodeReader((byte[])null, 0, 0));
+			Assert.Throws<ArgumentException>(() => new ByteArrayCodeReader(default(ArraySegment<byte>)));
+			Assert.Throws<ArgumentOutOfRangeException>(() => new ByteArrayCodeReader(new byte[] { 1, 2, 3, 4 }, -1, 0));
+			Assert.Throws<ArgumentOutOfRangeException>(() => new ByteArrayCodeReader(new byte[] { 1, 2, 3, 4 }, int.MinValue, 0));
+			Assert.Throws<ArgumentOutOfRangeException>(() => new ByteArrayCodeReader(new byte[] { 1, 2, 3, 4 }, 0, 5));
+			Assert.Throws<ArgumentOutOfRangeException>(() => new ByteArrayCodeReader(new byte[] { 1, 2, 3, 4 }, 0, int.MaxValue));
+			Assert.Throws<ArgumentOutOfRangeException>(() => new ByteArrayCodeReader(new byte[] { 1, 2, 3, 4 }, int.MinValue, int.MaxValue));
+			Assert.Throws<ArgumentOutOfRangeException>(() => new ByteArrayCodeReader(new byte[] { 1, 2, 3, 4 }, 4, 1));
+			Assert.Throws<ArgumentOutOfRangeException>(() => new ByteArrayCodeReader(new byte[] { 1, 2, 3, 4 }, 4, int.MaxValue));
+		}
 	}
 }

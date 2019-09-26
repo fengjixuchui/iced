@@ -116,7 +116,7 @@ namespace Iced.UnitTests.Intel.InstructionInfoTests {
 						switch (instr.Code) {
 						case Code.Fnstenv_m14byte: instr.Code = Code.Fstenv_m14byte; break;
 						case Code.Fnstenv_m28byte: instr.Code = Code.Fstenv_m28byte; break;
-						case Code.Fnstcw_m16: instr.Code = Code.Fstcw_m16; break;
+						case Code.Fnstcw_m2byte: instr.Code = Code.Fstcw_m2byte; break;
 						case Code.Fneni: instr.Code = Code.Feni; break;
 						case Code.Fndisi: instr.Code = Code.Fdisi; break;
 						case Code.Fnclex: instr.Code = Code.Fclex; break;
@@ -124,7 +124,7 @@ namespace Iced.UnitTests.Intel.InstructionInfoTests {
 						case Code.Fnsetpm: instr.Code = Code.Fsetpm; break;
 						case Code.Fnsave_m94byte: instr.Code = Code.Fsave_m94byte; break;
 						case Code.Fnsave_m108byte: instr.Code = Code.Fsave_m108byte; break;
-						case Code.Fnstsw_m16: instr.Code = Code.Fstsw_m16; break;
+						case Code.Fnstsw_m2byte: instr.Code = Code.Fstsw_m2byte; break;
 						case Code.Fnstsw_AX: instr.Code = Code.Fstsw_AX; break;
 						default: throw new InvalidOperationException();
 						}
@@ -207,6 +207,8 @@ namespace Iced.UnitTests.Intel.InstructionInfoTests {
 
 			var info2 = new InstructionInfoFactory().GetInfo(instr);
 			CheckEqual(ref info, ref info2, hasRegs2: true, hasMem2: true);
+			info2 = new InstructionInfoFactory().GetInfo(instr, InstructionInfoOptions.None);
+			CheckEqual(ref info, ref info2, hasRegs2: true, hasMem2: true);
 			info2 = new InstructionInfoFactory().GetInfo(instr, InstructionInfoOptions.NoMemoryUsage);
 			CheckEqual(ref info, ref info2, hasRegs2: true, hasMem2: false);
 			info2 = new InstructionInfoFactory().GetInfo(instr, InstructionInfoOptions.NoRegisterUsage);
@@ -214,7 +216,19 @@ namespace Iced.UnitTests.Intel.InstructionInfoTests {
 			info2 = new InstructionInfoFactory().GetInfo(instr, InstructionInfoOptions.NoRegisterUsage | InstructionInfoOptions.NoMemoryUsage);
 			CheckEqual(ref info, ref info2, hasRegs2: false, hasMem2: false);
 
+			info2 = instr.GetInfo(InstructionInfoOptions.None);
+			CheckEqual(ref info, ref info2, hasRegs2: true, hasMem2: true);
+			info2 = instr.GetInfo(InstructionInfoOptions.NoMemoryUsage);
+			CheckEqual(ref info, ref info2, hasRegs2: true, hasMem2: false);
+			info2 = instr.GetInfo(InstructionInfoOptions.NoRegisterUsage);
+			CheckEqual(ref info, ref info2, hasRegs2: false, hasMem2: true);
+			info2 = instr.GetInfo(InstructionInfoOptions.NoRegisterUsage | InstructionInfoOptions.NoMemoryUsage);
+			CheckEqual(ref info, ref info2, hasRegs2: false, hasMem2: false);
+
 			Assert.Equal(info.Encoding, instr.Code.Encoding());
+#if !NO_ENCODER
+			Assert.Equal(code.ToOpCode().Encoding, instr.Code.Encoding());
+#endif
 			var cf = instr.Code.CpuidFeatures();
 			if (cf.Length == 1 && cf[0] == CpuidFeature.AVX && instr.Op1Kind == OpKind.Register && (code == Code.VEX_Vbroadcastss_xmm_xmmm32 || code == Code.VEX_Vbroadcastss_ymm_xmmm32 || code == Code.VEX_Vbroadcastsd_ymm_xmmm64))
 				cf = new[] { CpuidFeature.AVX2 };
@@ -750,8 +764,8 @@ namespace Iced.UnitTests.Intel.InstructionInfoTests {
 		static bool TryParseDecoderOptions(string[] stringOptions, ref DecoderOptions options) {
 			foreach (var opt in stringOptions) {
 				switch (opt.Trim().ToLowerInvariant()) {
-				case "amd":
-					options |= DecoderOptions.AMD;
+				case "amdbr":
+					options |= DecoderOptions.AmdBranches;
 					break;
 				case "forcereservednop":
 					options |= DecoderOptions.ForceReservedNop;
@@ -782,6 +796,9 @@ namespace Iced.UnitTests.Intel.InstructionInfoTests {
 					break;
 				case "movtr":
 					options |= DecoderOptions.MovTr;
+					break;
+				case "jmpe":
+					options |= DecoderOptions.Jmpe;
 					break;
 				default:
 					return false;

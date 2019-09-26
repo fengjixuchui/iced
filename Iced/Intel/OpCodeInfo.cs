@@ -57,9 +57,11 @@ namespace Iced.Intel {
 			HintTakenPrefix			= 0x00080000,
 			NotrackPrefix			= 0x00100000,
 			IsInstruction			= 0x00200000,
+			NonZeroOpMaskRegister	= 0x00400000,
 		}
 
-		readonly string toStringValue;
+		readonly string toOpCodeStringValue;
+		readonly string toInstructionStringValue;
 		readonly Flags flags;
 		readonly ushort code;
 		readonly ushort opCode;
@@ -76,6 +78,7 @@ namespace Iced.Intel {
 		readonly byte op2Kind;
 		readonly byte op3Kind;
 		readonly byte op4Kind;
+		readonly LKind lkind;
 
 		internal OpCodeInfo(uint dword3, uint dword2, uint dword1, StringBuilder sb) {
 			var code = (Code)(dword1 & (uint)EncFlags1.CodeMask);
@@ -88,7 +91,6 @@ namespace Iced.Intel {
 
 			byte[] opKinds;
 			encoding = (byte)((dword1 >> (int)EncFlags1.EncodingShift) & (uint)EncFlags1.EncodingMask);
-			bool l0l1;
 			switch ((EncodingKind)encoding) {
 			case EncodingKind.Legacy:
 				opKinds = OpCodeOperandKinds.LegacyOpKinds;
@@ -116,55 +118,29 @@ namespace Iced.Intel {
 				groupIndex = (sbyte)((dword2 & (uint)LegacyFlags.HasGroupIndex) == 0 ? -1 : (int)((dword2 >> (int)LegacyFlags.GroupShift) & 7));
 				tupleType = (byte)TupleType.None;
 
-				switch ((Encodable)((dword2 >> (int)LegacyFlags.EncodableShift) & (uint)LegacyFlags.EncodableMask)) {
-				case Encodable.Any:
+				if (!IsInstruction)
 					flags |= Flags.Mode16 | Flags.Mode32 | Flags.Mode64;
-					break;
-				case Encodable.Only1632:
-					flags |= Flags.Mode16 | Flags.Mode32;
-					break;
-				case Encodable.Only64:
-					flags |= Flags.Mode64;
-					break;
-				default:
-					if (!IsInstruction)
-						flags |= Flags.Mode16 | Flags.Mode32 | Flags.Mode64;
-					else
-						throw new InvalidOperationException();
-					break;
+				else {
+					flags |= (Encodable)((dword2 >> (int)LegacyFlags.EncodableShift) & (uint)LegacyFlags.EncodableMask) switch {
+						Encodable.Any => Flags.Mode16 | Flags.Mode32 | Flags.Mode64,
+						Encodable.Only1632 => Flags.Mode16 | Flags.Mode32,
+						Encodable.Only64 => Flags.Mode64,
+						_ => throw new InvalidOperationException(),
+					};
 				}
 
-				switch ((AllowedPrefixes)((dword2 >> (int)LegacyFlags.AllowedPrefixesShift) & (uint)LegacyFlags.AllowedPrefixesMask)) {
-				case AllowedPrefixes.None:
-					break;
-				case AllowedPrefixes.Bnd:
-					flags |= Flags.BndPrefix;
-					break;
-				case AllowedPrefixes.BndNotrack:
-					flags |= Flags.BndPrefix | Flags.NotrackPrefix;
-					break;
-				case AllowedPrefixes.HintTakenBnd:
-					flags |= Flags.HintTakenPrefix | Flags.BndPrefix;
-					break;
-				case AllowedPrefixes.Lock:
-					flags |= Flags.LockPrefix;
-					break;
-				case AllowedPrefixes.Rep:
-					flags |= Flags.RepPrefix;
-					break;
-				case AllowedPrefixes.RepeRepne:
-					flags |= Flags.RepPrefix | Flags.RepnePrefix;
-					break;
-				case AllowedPrefixes.XacquireXreleaseLock:
-					flags |= Flags.XacquirePrefix | Flags.XreleasePrefix | Flags.LockPrefix;
-					break;
-				case AllowedPrefixes.Xrelease:
-					flags |= Flags.XreleasePrefix;
-					break;
-				default:
-					throw new InvalidOperationException();
-				}
-
+				flags |= (AllowedPrefixes)((dword2 >> (int)LegacyFlags.AllowedPrefixesShift) & (uint)LegacyFlags.AllowedPrefixesMask) switch {
+					AllowedPrefixes.None => Flags.None,
+					AllowedPrefixes.Bnd => Flags.BndPrefix,
+					AllowedPrefixes.BndNotrack => Flags.BndPrefix | Flags.NotrackPrefix,
+					AllowedPrefixes.HintTakenBnd => Flags.HintTakenPrefix | Flags.BndPrefix,
+					AllowedPrefixes.Lock => Flags.LockPrefix,
+					AllowedPrefixes.Rep => Flags.RepPrefix,
+					AllowedPrefixes.RepeRepne => Flags.RepPrefix | Flags.RepnePrefix,
+					AllowedPrefixes.XacquireXreleaseLock => Flags.XacquirePrefix | Flags.XreleasePrefix | Flags.LockPrefix,
+					AllowedPrefixes.Xrelease => Flags.XreleasePrefix,
+					_ => throw new InvalidOperationException(),
+				};
 				if ((dword2 & (uint)LegacyFlags.Fwait) != 0)
 					flags |= Flags.Fwait;
 
@@ -199,7 +175,7 @@ namespace Iced.Intel {
 				}
 
 				l = 0;
-				l0l1 = false;
+				lkind = LKind.None;
 				break;
 
 			case EncodingKind.VEX:
@@ -228,33 +204,50 @@ namespace Iced.Intel {
 				groupIndex = (sbyte)((dword2 & (uint)VexFlags.HasGroupIndex) == 0 ? -1 : (int)((dword2 >> (int)VexFlags.GroupShift) & 7));
 				tupleType = (byte)TupleType.None;
 
-				switch ((Encodable)((dword2 >> (int)VexFlags.EncodableShift) & (uint)VexFlags.EncodableMask)) {
-				case Encodable.Any:
-					flags |= Flags.Mode16 | Flags.Mode32 | Flags.Mode64;
+				flags |= (Encodable)((dword2 >> (int)VexFlags.EncodableShift) & (uint)VexFlags.EncodableMask) switch {
+					Encodable.Any => Flags.Mode16 | Flags.Mode32 | Flags.Mode64,
+					Encodable.Only1632 => Flags.Mode16 | Flags.Mode32,
+					Encodable.Only64 => Flags.Mode64,
+					_ => throw new InvalidOperationException(),
+				};
+				operandSize = 0;
+				addressSize = 0;
+				switch ((VexFlags)((dword2 >> (int)VexFlags.VEX_LShift) & (int)VexFlags.VEX_LMask)) {
+				case VexFlags.LZ:
+					lkind = LKind.LZ;
+					l = 0;
 					break;
-				case Encodable.Only1632:
-					flags |= Flags.Mode16 | Flags.Mode32;
+				case VexFlags.L0:
+					lkind = LKind.L0;
+					l = 0;
 					break;
-				case Encodable.Only64:
-					flags |= Flags.Mode64;
+				case VexFlags.L1:
+					lkind = LKind.L0;
+					l = 1;
+					break;
+				case VexFlags.L128:
+					lkind = LKind.L128;
+					l = 0;
+					break;
+				case VexFlags.L256:
+					lkind = LKind.L128;
+					l = 1;
+					break;
+				case VexFlags.LIG:
+					lkind = LKind.None;
+					l = 0;
+					flags |= Flags.LIG;
 					break;
 				default:
 					throw new InvalidOperationException();
 				}
 
-				operandSize = 0;
-				addressSize = 0;
-				l = (byte)((dword2 >> (int)VexFlags.VEX_LShift) & 1);
-
 				if ((dword2 & (uint)VexFlags.VEX_W1) != 0)
 					flags |= Flags.W;
-				if ((dword2 & (uint)VexFlags.VEX_LIG) != 0)
-					flags |= Flags.LIG;
 				if ((dword2 & (uint)VexFlags.VEX_WIG) != 0)
 					flags |= Flags.WIG;
 				if ((dword2 & (uint)VexFlags.VEX_WIG32) != 0)
 					flags |= Flags.WIG32;
-				l0l1 = (dword2 & (uint)VexFlags.VEX_L0_L1) != 0;
 				break;
 
 			case EncodingKind.EVEX:
@@ -282,20 +275,12 @@ namespace Iced.Intel {
 				groupIndex = (sbyte)((dword2 & (uint)EvexFlags.HasGroupIndex) == 0 ? -1 : (int)((dword2 >> (int)EvexFlags.GroupShift) & 7));
 				tupleType = (byte)((dword2 >> (int)EvexFlags.TupleTypeShift) & (uint)EvexFlags.TupleTypeMask);
 
-				switch ((Encodable)((dword2 >> (int)EvexFlags.EncodableShift) & (uint)EvexFlags.EncodableMask)) {
-				case Encodable.Any:
-					flags |= Flags.Mode16 | Flags.Mode32 | Flags.Mode64;
-					break;
-				case Encodable.Only1632:
-					flags |= Flags.Mode16 | Flags.Mode32;
-					break;
-				case Encodable.Only64:
-					flags |= Flags.Mode64;
-					break;
-				default:
-					throw new InvalidOperationException();
-				}
-
+				flags |= (Encodable)((dword2 >> (int)EvexFlags.EncodableShift) & (uint)EvexFlags.EncodableMask) switch {
+					Encodable.Any => Flags.Mode16 | Flags.Mode32 | Flags.Mode64,
+					Encodable.Only1632 => Flags.Mode16 | Flags.Mode32,
+					Encodable.Only64 => Flags.Mode64,
+					_ => throw new InvalidOperationException(),
+				};
 				operandSize = 0;
 				addressSize = 0;
 				l = (byte)((dword2 >> (int)EvexFlags.EVEX_LShift) & 3);
@@ -318,7 +303,75 @@ namespace Iced.Intel {
 					flags |= Flags.OpMaskRegister;
 				if ((dword2 & (uint)EvexFlags.EVEX_z) != 0)
 					flags |= Flags.ZeroingMasking;
-				l0l1 = false;
+				lkind = LKind.L128;
+				switch (code) {
+				case Code.EVEX_Vpgatherdd_xmm_k1_vm32x:
+				case Code.EVEX_Vpgatherdd_ymm_k1_vm32y:
+				case Code.EVEX_Vpgatherdd_zmm_k1_vm32z:
+				case Code.EVEX_Vpgatherdq_xmm_k1_vm32x:
+				case Code.EVEX_Vpgatherdq_ymm_k1_vm32x:
+				case Code.EVEX_Vpgatherdq_zmm_k1_vm32y:
+				case Code.EVEX_Vpgatherqd_xmm_k1_vm64x:
+				case Code.EVEX_Vpgatherqd_xmm_k1_vm64y:
+				case Code.EVEX_Vpgatherqd_ymm_k1_vm64z:
+				case Code.EVEX_Vpgatherqq_xmm_k1_vm64x:
+				case Code.EVEX_Vpgatherqq_ymm_k1_vm64y:
+				case Code.EVEX_Vpgatherqq_zmm_k1_vm64z:
+				case Code.EVEX_Vgatherdps_xmm_k1_vm32x:
+				case Code.EVEX_Vgatherdps_ymm_k1_vm32y:
+				case Code.EVEX_Vgatherdps_zmm_k1_vm32z:
+				case Code.EVEX_Vgatherdpd_xmm_k1_vm32x:
+				case Code.EVEX_Vgatherdpd_ymm_k1_vm32x:
+				case Code.EVEX_Vgatherdpd_zmm_k1_vm32y:
+				case Code.EVEX_Vgatherqps_xmm_k1_vm64x:
+				case Code.EVEX_Vgatherqps_xmm_k1_vm64y:
+				case Code.EVEX_Vgatherqps_ymm_k1_vm64z:
+				case Code.EVEX_Vgatherqpd_xmm_k1_vm64x:
+				case Code.EVEX_Vgatherqpd_ymm_k1_vm64y:
+				case Code.EVEX_Vgatherqpd_zmm_k1_vm64z:
+				case Code.EVEX_Vpscatterdd_vm32x_k1_xmm:
+				case Code.EVEX_Vpscatterdd_vm32y_k1_ymm:
+				case Code.EVEX_Vpscatterdd_vm32z_k1_zmm:
+				case Code.EVEX_Vpscatterdq_vm32x_k1_xmm:
+				case Code.EVEX_Vpscatterdq_vm32x_k1_ymm:
+				case Code.EVEX_Vpscatterdq_vm32y_k1_zmm:
+				case Code.EVEX_Vpscatterqd_vm64x_k1_xmm:
+				case Code.EVEX_Vpscatterqd_vm64y_k1_xmm:
+				case Code.EVEX_Vpscatterqd_vm64z_k1_ymm:
+				case Code.EVEX_Vpscatterqq_vm64x_k1_xmm:
+				case Code.EVEX_Vpscatterqq_vm64y_k1_ymm:
+				case Code.EVEX_Vpscatterqq_vm64z_k1_zmm:
+				case Code.EVEX_Vscatterdps_vm32x_k1_xmm:
+				case Code.EVEX_Vscatterdps_vm32y_k1_ymm:
+				case Code.EVEX_Vscatterdps_vm32z_k1_zmm:
+				case Code.EVEX_Vscatterdpd_vm32x_k1_xmm:
+				case Code.EVEX_Vscatterdpd_vm32x_k1_ymm:
+				case Code.EVEX_Vscatterdpd_vm32y_k1_zmm:
+				case Code.EVEX_Vscatterqps_vm64x_k1_xmm:
+				case Code.EVEX_Vscatterqps_vm64y_k1_xmm:
+				case Code.EVEX_Vscatterqps_vm64z_k1_ymm:
+				case Code.EVEX_Vscatterqpd_vm64x_k1_xmm:
+				case Code.EVEX_Vscatterqpd_vm64y_k1_ymm:
+				case Code.EVEX_Vscatterqpd_vm64z_k1_zmm:
+				case Code.EVEX_Vgatherpf0dps_vm32z_k1:
+				case Code.EVEX_Vgatherpf0dpd_vm32y_k1:
+				case Code.EVEX_Vgatherpf1dps_vm32z_k1:
+				case Code.EVEX_Vgatherpf1dpd_vm32y_k1:
+				case Code.EVEX_Vscatterpf0dps_vm32z_k1:
+				case Code.EVEX_Vscatterpf0dpd_vm32y_k1:
+				case Code.EVEX_Vscatterpf1dps_vm32z_k1:
+				case Code.EVEX_Vscatterpf1dpd_vm32y_k1:
+				case Code.EVEX_Vgatherpf0qps_vm64z_k1:
+				case Code.EVEX_Vgatherpf0qpd_vm64z_k1:
+				case Code.EVEX_Vgatherpf1qps_vm64z_k1:
+				case Code.EVEX_Vgatherpf1qpd_vm64z_k1:
+				case Code.EVEX_Vscatterpf0qps_vm64z_k1:
+				case Code.EVEX_Vscatterpf0qpd_vm64z_k1:
+				case Code.EVEX_Vscatterpf1qps_vm64z_k1:
+				case Code.EVEX_Vscatterpf1qpd_vm64z_k1:
+					flags |= Flags.NonZeroOpMaskRegister;
+					break;
+				}
 				break;
 
 			case EncodingKind.XOP:
@@ -346,20 +399,12 @@ namespace Iced.Intel {
 				groupIndex = (sbyte)((dword2 & (uint)XopFlags.HasGroupIndex) == 0 ? -1 : (int)((dword2 >> (int)XopFlags.GroupShift) & 7));
 				tupleType = (byte)TupleType.None;
 
-				switch ((Encodable)((dword2 >> (int)XopFlags.EncodableShift) & (uint)XopFlags.EncodableMask)) {
-				case Encodable.Any:
-					flags |= Flags.Mode16 | Flags.Mode32 | Flags.Mode64;
-					break;
-				case Encodable.Only1632:
-					flags |= Flags.Mode16 | Flags.Mode32;
-					break;
-				case Encodable.Only64:
-					flags |= Flags.Mode64;
-					break;
-				default:
-					throw new InvalidOperationException();
-				}
-
+				flags |= (Encodable)((dword2 >> (int)XopFlags.EncodableShift) & (uint)XopFlags.EncodableMask) switch {
+					Encodable.Any => Flags.Mode16 | Flags.Mode32 | Flags.Mode64,
+					Encodable.Only1632 => Flags.Mode16 | Flags.Mode32,
+					Encodable.Only64 => Flags.Mode64,
+					_ => throw new InvalidOperationException(),
+				};
 				operandSize = 0;
 				addressSize = 0;
 				l = (byte)((dword2 >> (int)XopFlags.XOP_LShift) & 1);
@@ -368,42 +413,35 @@ namespace Iced.Intel {
 					flags |= Flags.W;
 				if ((dword2 & (uint)XopFlags.XOP_WIG32) != 0)
 					flags |= Flags.WIG32;
-				l0l1 = (dword2 & (uint)XopFlags.XOP_L0_L1) != 0;
+				lkind = (dword2 & (uint)XopFlags.XOP_L0_L1) != 0 ? LKind.L0 : LKind.L128;
 				break;
 
 			case EncodingKind.D3NOW:
 				op0Kind = (byte)OpCodeOperandKind.mm_reg;
-				op1Kind = (byte)OpCodeOperandKind.mm_mem;
+				op1Kind = (byte)OpCodeOperandKind.mm_or_mem;
 				mandatoryPrefix = (byte)MandatoryPrefix.None;
 				table = (byte)OpCodeTableKind.T0F;
 				groupIndex = -1;
 				tupleType = (byte)TupleType.None;
 
-				switch ((Encodable)((dword2 >> (int)D3nowFlags.EncodableShift) & (uint)D3nowFlags.EncodableMask)) {
-				case Encodable.Any:
-					flags |= Flags.Mode16 | Flags.Mode32 | Flags.Mode64;
-					break;
-				case Encodable.Only1632:
-					flags |= Flags.Mode16 | Flags.Mode32;
-					break;
-				case Encodable.Only64:
-					flags |= Flags.Mode64;
-					break;
-				default:
-					throw new InvalidOperationException();
-				}
-
+				flags |= (Encodable)((dword2 >> (int)D3nowFlags.EncodableShift) & (uint)D3nowFlags.EncodableMask) switch {
+					Encodable.Any => Flags.Mode16 | Flags.Mode32 | Flags.Mode64,
+					Encodable.Only1632 => Flags.Mode16 | Flags.Mode32,
+					Encodable.Only64 => Flags.Mode64,
+					_ => throw new InvalidOperationException(),
+				};
 				operandSize = 0;
 				addressSize = 0;
 				l = 0;
-				l0l1 = false;
+				lkind = LKind.None;
 				break;
 
 			default:
 				throw new InvalidOperationException();
 			}
 
-			toStringValue = OpCodeFormatter.ToString(this, sb, l0l1);
+			toOpCodeStringValue = new OpCodeFormatter(this, sb, lkind).Format();
+			toInstructionStringValue = new InstructionFormatter(this, sb).Format();
 		}
 
 		/// <summary>
@@ -442,12 +480,12 @@ namespace Iced.Intel {
 		public bool Fwait => (flags & Flags.Fwait) != 0;
 
 		/// <summary>
-		/// (Legacy) Gets the operand size (16,32,64) or 0
+		/// (Legacy encoding) Gets the required operand size (16,32,64) or 0 if no operand size prefix (66) or REX.W prefix is needed
 		/// </summary>
 		public int OperandSize => operandSize;
 
 		/// <summary>
-		/// (Legacy) Gets the address size (16,32,64) or 0
+		/// (Legacy encoding) Gets the required address size (16,32,64) or 0 if no address size prefix (67) is needed
 		/// </summary>
 		public int AddressSize => addressSize;
 
@@ -457,7 +495,7 @@ namespace Iced.Intel {
 		public uint L => l;
 
 		/// <summary>
-		/// (VEX/XOP/EVEX) W value or default value if <see cref="IsWIG"/> is true
+		/// (VEX/XOP/EVEX) W value or default value if <see cref="IsWIG"/> or <see cref="IsWIG32"/> is true
 		/// </summary>
 		public uint W => (flags & Flags.W) != 0 ? 1U : 0;
 
@@ -501,6 +539,11 @@ namespace Iced.Intel {
 		/// (EVEX) true if an opmask register can be used
 		/// </summary>
 		public bool CanUseOpMaskRegister => (flags & Flags.OpMaskRegister) != 0;
+
+		/// <summary>
+		/// (EVEX) true if a non-zero opmask register must be used
+		/// </summary>
+		public bool RequireNonZeroOpMaskRegister => (flags & Flags.NonZeroOpMaskRegister) != 0;
 
 		/// <summary>
 		/// (EVEX) true if the instruction supports zeroing masking if opmask register k1-k7 is used
@@ -621,10 +664,22 @@ namespace Iced.Intel {
 		}
 
 		/// <summary>
-		/// Gets the opcode string
+		/// Gets the opcode string, eg. "VEX.128.66.0F38.W0 78 /r", see also <see cref="ToInstructionString()"/>
 		/// </summary>
 		/// <returns></returns>
-		public override string ToString() => toStringValue;
+		public string ToOpCodeString() => toOpCodeStringValue;
+
+		/// <summary>
+		/// Gets the instruction string, eg. "VPBROADCASTB xmm1, xmm2/m8", see also <see cref="ToOpCodeString()"/>
+		/// </summary>
+		/// <returns></returns>
+		public string ToInstructionString() => toInstructionStringValue;
+
+		/// <summary>
+		/// Gets the instruction string, eg. "VPBROADCASTB xmm1, xmm2/m8", see also <see cref="ToOpCodeString()"/>
+		/// </summary>
+		/// <returns></returns>
+		public override string ToString() => ToInstructionString();
 	}
 }
 #endif
