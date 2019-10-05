@@ -3424,16 +3424,7 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 
 		[Fact]
 		void Test_Decoder_Create_throws() {
-			static IEnumerable<int> GetDecoderBitness() {
-				yield return int.MinValue;
-				yield return int.MaxValue;
-				for (int bitness = -1; bitness <= 128; bitness++) {
-					if (bitness == 16 || bitness == 32 || bitness == 64)
-						continue;
-					yield return bitness;
-				}
-			}
-			foreach (var bitness in GetDecoderBitness())
+			foreach (var bitness in BitnessUtils.GetInvalidBitnessValues())
 				Assert.Throws<ArgumentOutOfRangeException>(() => Decoder.Create(bitness, new ByteArrayCodeReader("90"), DecoderOptions.None));
 
 			foreach (var bitness in new[] { 16, 32, 64 })
@@ -3442,14 +3433,13 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 
 		[Fact]
 		void Instruction_operator_eq_neq() {
-			var instr1 = Instruction.Create(Code.Mov_r64_rm64, Register.RAX, Register.RCX);
+			var instr1a = Instruction.Create(Code.Mov_r64_rm64, Register.RAX, Register.RCX);
+			var instr1b = instr1a;
 			var instr2 = Instruction.Create(Code.Mov_r64_rm64, Register.RAX, Register.RDX);
-#pragma warning disable CS1718 // Comparison made to same variable
-			Assert.True(instr1 == instr1);
-			Assert.False(instr1 == instr2);
-			Assert.True(instr1 != instr2);
-			Assert.False(instr1 != instr1);
-#pragma warning restore CS1718 // Comparison made to same variable
+			Assert.True(instr1a == instr1b);
+			Assert.False(instr1a == instr2);
+			Assert.True(instr1a != instr2);
+			Assert.False(instr1a != instr1b);
 		}
 	}
 }
