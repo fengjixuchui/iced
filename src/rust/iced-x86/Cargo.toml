@@ -1,0 +1,51 @@
+[package]
+name = "iced-x86"
+version = "1.0.1"# Update html_root_url in lib.rs and usage section in lib.rs/README and version numbers in README docs.rs links
+authors = ["0xd4d <de4dot@gmail.com>"]
+license = "MIT"
+description = "iced-x86 is an x86/x64 disassembler, assembler and instruction decoder written in Rust"
+homepage = "https://github.com/0xd4d/iced"
+repository = "https://github.com/0xd4d/iced"
+readme = "README.md"
+# At most 5 keywords can be used
+keywords = ["disassembler", "assembler", "x86", "amd64", "x86_64"]
+categories = ["no-std", "development-tools::debugging", "encoding", "hardware-support"]
+
+[badges]
+codecov = { repository = "0xd4d/iced", branch = "master", service = "github" }
+maintenance = { status = "actively-developed" }
+
+# These features are documented in the module docs (lib.rs)
+[features]
+default = ["std", "decoder", "encoder", "instr_info", "gas", "intel", "masm", "nasm"]
+decoder = []
+encoder = []
+instr_info = []
+gas = []
+intel = []
+masm = []
+nasm = []
+db = []
+std = ["lazy_static"]
+# no_std feature is needed since std and no_std require different deps
+no_std = ["lazy_static/spin_no_std", "hashbrown"]
+exhaustive_enums = []
+
+# if: always
+[dependencies.static_assertions]
+version = "0.3.4"
+
+# if: decoder or encoder or gas or intel or masm or nasm
+[dependencies.lazy_static]
+version = "1.1.1"
+# It's not really optional, std or no_std must be used and they both require it.
+optional = true
+
+# if: no_std and encoder
+[dependencies.hashbrown]
+version = "0.7.0"
+optional = true
+
+# build.rs dependency
+[build-dependencies]
+rustc_version = "0.2.3"

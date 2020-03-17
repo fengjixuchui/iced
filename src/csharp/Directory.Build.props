@@ -1,0 +1,25 @@
+<Project>
+
+  <PropertyGroup>
+    <Copyright>Copyright (C) 2018-2020 de4dot@gmail.com</Copyright>
+    <Version>1.5.0</Version>
+    <Authors>0xd4d</Authors>
+    <InformationalVersion>$(Version)</InformationalVersion>
+
+    <LangVersion>latest</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Features>strict;nullablePublicOnly</Features>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)Iced.snk</AssemblyOriginatorKeyFile>
+    <IcedFeatureFlags>DECODER;ENCODER;INSTR_INFO;GAS;INTEL;MASM;NASM</IcedFeatureFlags>
+    <DefineConstants>$(IcedDefineConstants);$(IcedFeatureFlags)</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DefineConstants>$(DefineConstants);DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DefineConstants>$(DefineConstants);TRACE</DefineConstants>
+  </PropertyGroup>
+
+</Project>
