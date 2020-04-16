@@ -39,7 +39,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //! - ✔️The encoder can be used to re-encode decoded instructions at any address
 //! - ✔️API to get instruction info, eg. read/written registers, memory and rflags bits; CPUID feature flag, flow control info, etc
 //! - ✔️All instructions are tested (decode, encode, format, instruction info)
-//! - ✔️Supports `#![no_std]`
+//! - ✔️Supports `#![no_std]` and `WebAssembly`
 //! - ✔️Supports `rustc` `1.20.0` or later
 //! - ✔️Few dependencies (`static_assertions` and `lazy_static`)
 //! - ✔️License: MIT
@@ -75,6 +75,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //!
 //! - `decoder`: (✔️Enabled by default) Enables the decoder
 //! - `encoder`: (✔️Enabled by default) Enables the encoder
+//! - `block_encoder`: (✔️Enabled by default) Enables the [`BlockEncoder`]. This feature enables `encoder`
+//! - `op_code_info`: (✔️Enabled by default) Enables getting instruction metadata ([`OpCodeInfo`]). This feature enables `encoder`
 //! - `instr_info`: (✔️Enabled by default) Enables the instruction info code
 //! - `gas`: (✔️Enabled by default) Enables the GNU Assembler (AT&T) formatter
 //! - `intel`: (✔️Enabled by default) Enables the Intel (XED) formatter
@@ -84,6 +86,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //! - `std`: (✔️Enabled by default) Enables the `std` crate. `std` or `no_std` must be defined, but not both.
 //! - `no_std`: Enables `#![no_std]`. `std` or `no_std` must be defined, but not both. This feature uses the `alloc` crate (`rustc` `1.36.0+`) and the `hashbrown` crate.
 //! - `exhaustive_enums`: Enables exhaustive enums, i.e., no enum has the `#[non_exhaustive]` attribute
+//!
+//! [`BlockEncoder`]: struct.BlockEncoder.html
+//! [`OpCodeInfo`]: struct.OpCodeInfo.html
 //!
 //! ## How-tos
 //!
@@ -1090,18 +1095,33 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #![cfg_attr(feature = "cargo-clippy", allow(clippy::match_ref_pats))] // Not supported if < 1.26.0
 #![cfg_attr(feature = "cargo-clippy", allow(clippy::needless_lifetimes))] // Not supported if < 1.31.0
 #![cfg_attr(feature = "cargo-clippy", allow(clippy::ptr_offset_with_cast))] // Not supported if < 1.26.0
-#![cfg_attr(feature = "cargo-clippy", allow(clippy::range_plus_one))] // Not supported if < 1.26.0
+#![cfg_attr(feature = "cargo-clippy", allow(clippy::too_many_arguments))]
+#![cfg_attr(feature = "cargo-clippy", allow(clippy::type_complexity))]
 #![cfg_attr(feature = "cargo-clippy", allow(clippy::verbose_bit_mask))]
+#![cfg_attr(feature = "cargo-clippy", allow(clippy::wrong_self_convention))]
+#![cfg_attr(feature = "cargo-clippy", warn(clippy::cargo_common_metadata))]
+#![cfg_attr(feature = "cargo-clippy", warn(clippy::clone_on_ref_ptr))]
 #![cfg_attr(feature = "cargo-clippy", warn(clippy::dbg_macro))]
+#![cfg_attr(feature = "cargo-clippy", warn(clippy::debug_assert_with_mut_call))]
 #![cfg_attr(feature = "cargo-clippy", warn(clippy::default_trait_access))]
 #![cfg_attr(feature = "cargo-clippy", warn(clippy::doc_markdown))]
+#![cfg_attr(feature = "cargo-clippy", warn(clippy::empty_line_after_outer_attr))]
+#![cfg_attr(feature = "cargo-clippy", warn(clippy::explicit_into_iter_loop))]
+#![cfg_attr(feature = "cargo-clippy", warn(clippy::explicit_iter_loop))]
 #![cfg_attr(feature = "cargo-clippy", warn(clippy::fallible_impl_from))]
 #![cfg_attr(feature = "cargo-clippy", warn(clippy::large_digit_groups))]
 #![cfg_attr(feature = "cargo-clippy", warn(clippy::missing_errors_doc))]
 #![cfg_attr(feature = "cargo-clippy", warn(clippy::missing_inline_in_public_items))]
 #![cfg_attr(feature = "cargo-clippy", warn(clippy::must_use_candidate))]
+#![cfg_attr(feature = "cargo-clippy", warn(clippy::needless_borrow))]
+#![cfg_attr(feature = "cargo-clippy", warn(clippy::print_stdout))]
+#![cfg_attr(feature = "cargo-clippy", warn(clippy::redundant_closure))]
+#![cfg_attr(feature = "cargo-clippy", warn(clippy::redundant_closure_for_method_calls))]
 #![cfg_attr(feature = "cargo-clippy", warn(clippy::same_functions_in_if_condition))]
+#![cfg_attr(feature = "cargo-clippy", warn(clippy::todo))]
 #![cfg_attr(feature = "cargo-clippy", warn(clippy::unimplemented))]
+#![cfg_attr(feature = "cargo-clippy", warn(clippy::unreadable_literal))]
+#![cfg_attr(feature = "cargo-clippy", warn(clippy::unused_self))]
 #![cfg_attr(feature = "cargo-clippy", warn(clippy::used_underscore_binding))]
 #![cfg_attr(not(feature = "std"), no_std)]
 
@@ -1122,10 +1142,10 @@ extern crate lazy_static;
 #[macro_use]
 extern crate static_assertions;
 #[cfg(not(feature = "std"))]
-#[cfg(feature = "encoder")]
+#[cfg(all(feature = "encoder", feature = "block_encoder"))]
 extern crate hashbrown;
 
-#[cfg(feature = "encoder")]
+#[cfg(all(feature = "encoder", feature = "block_encoder"))]
 mod block_enc;
 mod code;
 #[cfg(any(feature = "decoder", feature = "encoder"))]
@@ -1156,7 +1176,7 @@ mod test;
 #[cfg(test)]
 pub(crate) mod test_utils;
 
-#[cfg(feature = "encoder")]
+#[cfg(all(feature = "encoder", feature = "block_encoder"))]
 pub use self::block_enc::*;
 pub use self::code::*;
 #[cfg(any(feature = "decoder", feature = "encoder"))]

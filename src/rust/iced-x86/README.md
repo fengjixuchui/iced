@@ -16,7 +16,7 @@ It can be used for static analysis of x86/x64 binaries, to rewrite code (eg. rem
 - ✔️The encoder can be used to re-encode decoded instructions at any address
 - ✔️API to get instruction info, eg. read/written registers, memory and rflags bits; CPUID feature flag, flow control info, etc
 - ✔️All instructions are tested (decode, encode, format, instruction info)
-- ✔️Supports `#![no_std]`
+- ✔️Supports `#![no_std]` and `WebAssembly`
 - ✔️Supports `rustc` `1.20.0` or later
 - ✔️Few dependencies (`static_assertions` and `lazy_static`)
 - ✔️License: MIT
@@ -52,6 +52,8 @@ You can enable/disable these in your `Cargo.toml` file.
 
 - `decoder`: (✔️Enabled by default) Enables the decoder
 - `encoder`: (✔️Enabled by default) Enables the encoder
+- `block_encoder`: (✔️Enabled by default) Enables the [`BlockEncoder`]. This feature enables `encoder`
+- `op_code_info`: (✔️Enabled by default) Enables getting instruction metadata ([`OpCodeInfo`]). This feature enables `encoder`
 - `instr_info`: (✔️Enabled by default) Enables the instruction info code
 - `gas`: (✔️Enabled by default) Enables the GNU Assembler (AT&T) formatter
 - `intel`: (✔️Enabled by default) Enables the Intel (XED) formatter
@@ -61,6 +63,9 @@ You can enable/disable these in your `Cargo.toml` file.
 - `std`: (✔️Enabled by default) Enables the `std` crate. `std` or `no_std` must be defined, but not both.
 - `no_std`: Enables `#![no_std]`. `std` or `no_std` must be defined, but not both. This feature uses the `alloc` crate (`rustc` `1.36.0+`) and the `hashbrown` crate.
 - `exhaustive_enums`: Enables exhaustive enums, i.e., no enum has the `#[non_exhaustive]` attribute
+
+[`BlockEncoder`]: https://docs.rs/iced-x86/1.0.1/iced_x86/struct.BlockEncoder.html
+[`OpCodeInfo`]: https://docs.rs/iced-x86/1.0.1/iced_x86/struct.OpCodeInfo.html
 
 ## How-tos
 

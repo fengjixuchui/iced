@@ -23,14 +23,20 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 mod enums;
 pub(crate) mod handlers_table;
+#[cfg(feature = "op_code_info")]
 mod instruction_fmt;
 mod mem_op;
+#[cfg(feature = "op_code_info")]
 mod mnemonic_str_tbl;
+#[cfg(feature = "op_code_info")]
 mod op_code;
 mod op_code_data;
+#[cfg(feature = "op_code_info")]
 mod op_code_fmt;
 mod op_code_handler;
+#[cfg(feature = "op_code_info")]
 pub(crate) mod op_code_tbl;
+#[cfg(feature = "op_code_info")]
 mod op_kind_tables;
 mod ops;
 mod ops_tables;
@@ -40,6 +46,7 @@ pub(crate) mod tests;
 pub use self::enums::*;
 use self::handlers_table::*;
 pub use self::mem_op::*;
+#[cfg(feature = "op_code_info")]
 pub use self::op_code::*;
 use self::op_code_handler::OpCodeHandler;
 use super::iced_constants::IcedConstants;
@@ -84,7 +91,7 @@ static IMM_SIZES: [u32; 19] = [
 /// ```
 /// use iced_x86::*;
 ///
-/// // xchg [rdx+rsi+16h],ah
+/// // xchg ah,[rdx+rsi+16h]
 /// let bytes = b"\x86\x64\x32\x16";
 /// let mut decoder = Decoder::new(64, bytes, DecoderOptions::NONE);
 /// decoder.set_ip(0x1234_5678);
@@ -369,7 +376,10 @@ impl Encoder {
 			if cfg!(debug_assertions) {
 				self.set_error_message(format!("Operand {}: Expected: {:?}, actual: {:?}", operand, expected, actual));
 			} else {
-				self.set_error_message(format!("Operand {}: Expected: {}, actual: {}", operand, expected as u32, actual as u32));
+				self.set_error_message(format!(
+					"Operand {}: Expected: OpKind value {}, actual: OpKind value {}",
+					operand, expected as u32, actual as u32
+				));
 			}
 			false
 		}
@@ -384,7 +394,10 @@ impl Encoder {
 			if cfg!(debug_assertions) {
 				self.set_error_message(format!("Operand {}: Expected: {:?}, actual: {:?}", operand, expected, actual));
 			} else {
-				self.set_error_message(format!("Operand {}: Expected: {}, actual: {}", operand, expected as u32, actual as u32));
+				self.set_error_message(format!(
+					"Operand {}: Expected: Register value {}, actual: Register value {}",
+					operand, expected as u32, actual as u32
+				));
 			}
 			false
 		}
@@ -632,7 +645,10 @@ impl Encoder {
 			if cfg!(debug_assertions) {
 				self.set_error_message(format!("Operand {}: Expected OpKind::Memory or OpKind::Memory64, actual: {:?}", operand, op_kind));
 			} else {
-				self.set_error_message(format!("Operand {}: Expected OpKind::Memory or OpKind::Memory64, actual: {}", operand, op_kind as u32));
+				self.set_error_message(format!(
+					"Operand {}: Expected OpKind::Memory or OpKind::Memory64, actual: OpKind value {}",
+					operand, op_kind as u32
+				));
 			}
 		}
 	}
@@ -1364,6 +1380,7 @@ impl Encoder {
 		self.current_rip = self.current_rip.wrapping_add(1);
 	}
 
+	#[cfg(all(feature = "encoder", feature = "block_encoder"))]
 	#[inline]
 	pub(super) fn position(&self) -> usize {
 		self.buffer.len()
@@ -1387,6 +1404,7 @@ impl Encoder {
 		self.buffer = buffer;
 	}
 
+	#[cfg(all(feature = "encoder", feature = "block_encoder"))]
 	#[inline]
 	pub(super) fn clear_buffer(&mut self) {
 		self.buffer.clear()

@@ -25,7 +25,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #nullable enable
 
-#if ENCODER
+#if ENCODER && BLOCK_ENCODER
 namespace Iced.Intel {
 	public partial class Assembler {
 		/// <summary>aaa instruction.<br/>
@@ -28670,6 +28670,20 @@ namespace Iced.Intel {
 			op = Code.Psllw_xmm_imm8;
 			AddInstruction(Instruction.Create(op, dst, (uint)imm));
 		}
+		/// <summary>psmash instruction.<br/>
+		/// <br/>
+		/// <c>PSMASH</c><br/>
+		/// <br/>
+		/// <c>F3 0F 01 FF</c><br/>
+		/// <br/>
+		/// <c>SNP</c><br/>
+		/// <br/>
+		/// <c>64-bit</c></summary>
+		public void psmash() {
+			Code op;
+			op = Code.Psmash;
+			AddInstruction(Instruction.Create(op));
+		}
 		/// <summary>psrad instruction.<br/>
 		/// <br/>
 		/// <c>PSRAD mm, mm/m64</c><br/>
@@ -30526,7 +30540,7 @@ namespace Iced.Intel {
 			if (Bitness >= 32) {
 				op = imm <= (uint)sbyte.MaxValue || (0xFFFF_FF80 <= imm && imm <= 0xFFFF_FFFF) ? Code.Pushd_imm8 : Code.Pushd_imm32;
 			} else if (Bitness >= 16) {
-				op = imm <= (uint)sbyte.MaxValue || (0xFFFF_FF80 <= imm && imm <= 0xFFFF_FFFF) ? Code.Pushw_imm8 : Code.Push_imm16;
+				op = imm <= (uint)sbyte.MaxValue || (0xFF80 <= imm && imm <= 0xFFFF) ? Code.Pushw_imm8 : Code.Push_imm16;
 			} else {
 				throw NoOpCodeFoundFor(Mnemonic.Push, imm);
 			}
@@ -30600,6 +30614,38 @@ namespace Iced.Intel {
 		public void pushfq() {
 			Code op;
 			op = Code.Pushfq;
+			AddInstruction(Instruction.Create(op));
+		}
+		/// <summary>pvalidate instruction.<br/>
+		/// <br/>
+		/// <c>PVALIDATE</c><br/>
+		/// <br/>
+		/// <c>F2 0F 01 FF</c><br/>
+		/// <br/>
+		/// <c>SNP</c><br/>
+		/// <br/>
+		/// <c>64-bit</c><br/>
+		/// <br/>
+		/// <c>PVALIDATE</c><br/>
+		/// <br/>
+		/// <c>a32 F2 0F 01 FF</c><br/>
+		/// <br/>
+		/// <c>SNP</c><br/>
+		/// <br/>
+		/// <c>16/32/64-bit</c><br/>
+		/// <br/>
+		/// <c>PVALIDATE</c><br/>
+		/// <br/>
+		/// <c>a16 F2 0F 01 FF</c><br/>
+		/// <br/>
+		/// <c>SNP</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		public void pvalidate() {
+			Code op;
+			if (Bitness == 64) {
+				op = Code.Pvalidateq;
+			} else op = Bitness >= 32 ? Code.Pvalidated : Code.Pvalidatew;
 			AddInstruction(Instruction.Create(op));
 		}
 		/// <summary>pxor instruction.<br/>
@@ -32869,6 +32915,34 @@ namespace Iced.Intel {
 				op = Code.Retfq_imm16;
 			} else op = Bitness >= 32 ? Code.Retfd_imm16 : Code.Retfw_imm16;
 			AddInstruction(Instruction.Create(op, (uint)imm));
+		}
+		/// <summary>rmpadjust instruction.<br/>
+		/// <br/>
+		/// <c>RMPADJUST</c><br/>
+		/// <br/>
+		/// <c>F3 0F 01 FE</c><br/>
+		/// <br/>
+		/// <c>SNP</c><br/>
+		/// <br/>
+		/// <c>64-bit</c></summary>
+		public void rmpadjust() {
+			Code op;
+			op = Code.Rmpadjust;
+			AddInstruction(Instruction.Create(op));
+		}
+		/// <summary>rmpupdate instruction.<br/>
+		/// <br/>
+		/// <c>RMPUPDATE</c><br/>
+		/// <br/>
+		/// <c>F2 0F 01 FE</c><br/>
+		/// <br/>
+		/// <c>SNP</c><br/>
+		/// <br/>
+		/// <c>64-bit</c></summary>
+		public void rmpupdate() {
+			Code op;
+			op = Code.Rmpupdate;
+			AddInstruction(Instruction.Create(op));
 		}
 		/// <summary>rol instruction.<br/>
 		/// <br/>
@@ -35789,6 +35863,20 @@ namespace Iced.Intel {
 		/// <c>16/32/64-bit</c></summary>
 		public void scasw() {
 			AddInstruction(Instruction.CreateScasw(Bitness));
+		}
+		/// <summary>serialize instruction.<br/>
+		/// <br/>
+		/// <c>SERIALIZE</c><br/>
+		/// <br/>
+		/// <c>NP 0F 01 E8</c><br/>
+		/// <br/>
+		/// <c>SERIALIZE</c><br/>
+		/// <br/>
+		/// <c>16/32/64-bit</c></summary>
+		public void serialize() {
+			Code op;
+			op = Code.Serialize;
+			AddInstruction(Instruction.Create(op));
 		}
 		/// <summary>seta instruction.<br/>
 		/// <br/>
@@ -48304,7 +48392,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>EVEX.512.F2.0F38.W0 72 /r</c><br/>
 		/// <br/>
-		/// <c>AVX512VL and AVX512_BF16</c><br/>
+		/// <c>AVX512F and AVX512_BF16</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		public void vcvtne2ps2bf16(AssemblerRegisterZMM dst, AssemblerRegisterZMM src1, AssemblerRegisterZMM src2) {
@@ -48346,7 +48434,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>EVEX.512.F2.0F38.W0 72 /r</c><br/>
 		/// <br/>
-		/// <c>AVX512VL and AVX512_BF16</c><br/>
+		/// <c>AVX512F and AVX512_BF16</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		public void vcvtne2ps2bf16(AssemblerRegisterZMM dst, AssemblerRegisterZMM src1, AssemblerMemoryOperand src2) {
@@ -48388,7 +48476,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>EVEX.512.F3.0F38.W0 72 /r</c><br/>
 		/// <br/>
-		/// <c>AVX512VL and AVX512_BF16</c><br/>
+		/// <c>AVX512F and AVX512_BF16</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		public void vcvtneps2bf16(AssemblerRegisterYMM dst, AssemblerRegisterZMM src) {
@@ -48432,7 +48520,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>EVEX.512.F3.0F38.W0 72 /r</c><br/>
 		/// <br/>
-		/// <c>AVX512VL and AVX512_BF16</c><br/>
+		/// <c>AVX512F and AVX512_BF16</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		public void vcvtneps2bf16(AssemblerRegisterYMM dst, AssemblerMemoryOperand src) {
@@ -52728,7 +52816,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>EVEX.512.F3.0F38.W0 52 /r</c><br/>
 		/// <br/>
-		/// <c>AVX512VL and AVX512_BF16</c><br/>
+		/// <c>AVX512F and AVX512_BF16</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		public void vdpbf16ps(AssemblerRegisterZMM dst, AssemblerRegisterZMM src1, AssemblerRegisterZMM src2) {
@@ -52770,7 +52858,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>EVEX.512.F3.0F38.W0 52 /r</c><br/>
 		/// <br/>
-		/// <c>AVX512VL and AVX512_BF16</c><br/>
+		/// <c>AVX512F and AVX512_BF16</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		public void vdpbf16ps(AssemblerRegisterZMM dst, AssemblerRegisterZMM src1, AssemblerMemoryOperand src2) {
@@ -110506,6 +110594,20 @@ namespace Iced.Intel {
 			op = Code.Xorps_xmm_xmmm128;
 			AddInstruction(Instruction.Create(op, dst, src.ToMemoryOperand(Bitness)));
 		}
+		/// <summary>xresldtrk instruction.<br/>
+		/// <br/>
+		/// <c>XRESLDTRK</c><br/>
+		/// <br/>
+		/// <c>F2 0F 01 E9</c><br/>
+		/// <br/>
+		/// <c>TSXLDTRK</c><br/>
+		/// <br/>
+		/// <c>16/32/64-bit</c></summary>
+		public void xresldtrk() {
+			Code op;
+			op = Code.Xresldtrk;
+			AddInstruction(Instruction.Create(op));
+		}
 		/// <summary>xrstor instruction.<br/>
 		/// <br/>
 		/// <c>XRSTOR mem</c><br/>
@@ -110782,6 +110884,20 @@ namespace Iced.Intel {
 			if (Bitness == 64) {
 				op = Code.Xstore_64;
 			} else op = Bitness >= 32 ? Code.Xstore_32 : Code.Xstore_16;
+			AddInstruction(Instruction.Create(op));
+		}
+		/// <summary>xsusldtrk instruction.<br/>
+		/// <br/>
+		/// <c>XSUSLDTRK</c><br/>
+		/// <br/>
+		/// <c>F2 0F 01 E8</c><br/>
+		/// <br/>
+		/// <c>TSXLDTRK</c><br/>
+		/// <br/>
+		/// <c>16/32/64-bit</c></summary>
+		public void xsusldtrk() {
+			Code op;
+			op = Code.Xsusldtrk;
 			AddInstruction(Instruction.Create(op));
 		}
 		/// <summary>xtest instruction.<br/>

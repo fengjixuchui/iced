@@ -139,7 +139,7 @@ impl SimpleBranchInstr {
 		}
 
 		// If it's in the same block, we assume the target is at most 2GB away.
-		let mut use_near = self.bitness != 64 || self.target_instr.is_in_block(self.block.clone());
+		let mut use_near = self.bitness != 64 || self.target_instr.is_in_block(Rc::clone(&self.block));
 		if !use_near {
 			target_address = self.target_instr.address(self);
 			next_rip = self.ip.wrapping_add(self.near_instruction_size as u64);
@@ -157,14 +157,13 @@ impl SimpleBranchInstr {
 
 		if self.pointer_data.is_none() {
 			// Temp needed if rustc < 1.36.0 (2015 edition)
-			let tmp = self.block.clone();
+			let tmp = Rc::clone(&self.block);
 			self.pointer_data = Some(tmp.borrow_mut().alloc_pointer_location());
 		}
 		self.instr_kind = InstrKind::Long;
 		false
 	}
 
-	#[cfg_attr(feature = "cargo-clippy", allow(clippy::wrong_self_convention))]
 	fn as_native_branch_code(code: Code, bitness: u32) -> Code {
 		let (c16, c32, c64) = match code {
 			Code::Loopne_rel8_16_CX | Code::Loopne_rel8_32_CX => (Code::Loopne_rel8_16_CX, Code::Loopne_rel8_32_CX, Code::INVALID),
@@ -199,7 +198,7 @@ impl SimpleBranchInstr {
 
 impl Instr for SimpleBranchInstr {
 	fn block(&self) -> Rc<RefCell<Block>> {
-		self.block.clone()
+		Rc::clone(&self.block)
 	}
 
 	fn size(&self) -> u32 {

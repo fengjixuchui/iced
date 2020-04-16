@@ -22,7 +22,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 use super::super::*;
-use super::enums::*;
 use super::instruction_fmt::*;
 use super::op_code_fmt::*;
 use super::op_kind_tables::*;
@@ -66,7 +65,7 @@ impl Flags {
 ///
 /// [`Code::op_code()`]: enum.Code.html#method.op_code
 /// [`Instruction::op_code()`]: struct.Instruction.html#method.op_code
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct OpCodeInfo {
 	op_code_string: String,
 	instruction_string: String,
@@ -784,10 +783,6 @@ impl OpCodeInfo {
 	/// ```
 	///
 	/// [`table()`]: #method.table
-	/// [`Code::Ffreep_sti`]: enum.Code.html#variant.Ffreep_sti
-	/// [`Code::Vmrunw`]: enum.Code.html#variant.Vmrunw
-	/// [`Code::Sub_r8_rm8`]: enum.Code.html#variant.Sub_r8_rm8
-	/// [`Code::Cvtpi2ps_xmm_mmm64`]: enum.Code.html#variant.Cvtpi2ps_xmm_mmm64
 	#[cfg_attr(has_must_use, must_use)]
 	#[inline]
 	pub fn op_code(&self) -> u32 {

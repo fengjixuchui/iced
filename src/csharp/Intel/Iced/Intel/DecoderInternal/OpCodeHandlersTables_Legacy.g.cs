@@ -1596,14 +1596,21 @@ namespace Iced.Intel.DecoderInternal {
 
 				// 40 = 0x28
 				0x11,// MandatoryPrefix
-					0x02,// Invalid
+					0xA5,// Simple_ModRM
+						0xF1, 0x20,// Serialize
 					0x02,// Invalid
 					0xA5,// Simple_ModRM
 						0xCF, 0x06,// Setssbsy
-					0x02,// Invalid
+					0xA5,// Simple_ModRM
+						0xF2, 0x20,// Xsusldtrk
 
 				// 41 = 0x29
-				0x06,// Null
+				0x11,// MandatoryPrefix
+					0x02,// Invalid
+					0x02,// Invalid
+					0x02,// Invalid
+					0xA5,// Simple_ModRM
+						0xF3, 0x20,// Xresldtrk
 
 				// 42 = 0x2A
 				0x11,// MandatoryPrefix
@@ -1671,9 +1678,28 @@ namespace Iced.Intel.DecoderInternal {
 					0xDD, 0x06,// Rdpru
 
 				// 62 = 0x3E
-				0x05,// Dup
-					0x02,// 2
-					0x06,// Null
+				0x14,// MandatoryPrefix_NoModRM
+					0x03,// Invalid_NoModRM
+					0x03,// Invalid_NoModRM
+					0x00,// Bitness
+						0x03,// Invalid_NoModRM
+						0xA4,// Simple
+							0xEB, 0x20,// Rmpadjust
+					0x00,// Bitness
+						0x03,// Invalid_NoModRM
+						0xA4,// Simple
+							0xEC, 0x20,// Rmpupdate
+
+				// 63 = 0x3F
+				0x14,// MandatoryPrefix_NoModRM
+					0x03,// Invalid_NoModRM
+					0x03,// Invalid_NoModRM
+					0x00,// Bitness
+						0x03,// Invalid_NoModRM
+						0xA4,// Simple
+							0xED, 0x20,// Psmash
+					0xAB,// Simple5
+						0xEE, 0x20,// Pvalidatew
 
 				// handlers_Grp_0FA6_lo
 				0x01,// ArrayReference

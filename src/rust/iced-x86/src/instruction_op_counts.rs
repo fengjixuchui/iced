@@ -4230,4 +4230,13 @@ pub(super) static OP_COUNT: [u8; IcedConstants::NUMBER_OF_CODE_VALUES] = [
 	2,// D3NOW_Pmulhrw_mm_mmm64
 	2,// D3NOW_Pswapd_mm_mmm64
 	2,// D3NOW_Pavgusb_mm_mmm64
+	0,// Rmpadjust
+	0,// Rmpupdate
+	0,// Psmash
+	0,// Pvalidatew
+	0,// Pvalidated
+	0,// Pvalidateq
+	0,// Serialize
+	0,// Xsusldtrk
+	0,// Xresldtrk
 ];

@@ -99,7 +99,7 @@ fn verify_result_vectors() {
 		BlockEncoderOptions::RETURN_NEW_INSTRUCTION_OFFSETS,
 		BlockEncoderOptions::RETURN_CONSTANT_OFFSETS,
 	];
-	for &options in tests.iter() {
+	for &options in &tests {
 		{
 			let instructions1 = decode(BITNESS, ORIG_RIP1, &[0xE9, 0x56, 0x78, 0xA5, 0x5A], DecoderOptions::NONE);
 			let result = BlockEncoder::encode(BITNESS, InstructionBlock::new(&instructions1, NEW_RIP1), options).unwrap();
@@ -167,7 +167,7 @@ fn encode_declare_byte() {
 		(vec![0x77, 0xA9, 0xCE, 0x9D, 0x55, 0x05, 0x42, 0x6C, 0x86, 0x32, 0xFE, 0x4F, 0x34, 0x27, 0xAA, 0x08], vec![0x90, 0x77, 0xA9, 0xCE, 0x9D, 0x55, 0x05, 0x42, 0x6C, 0x86, 0x32, 0xFE, 0x4F, 0x34, 0x27, 0xAA, 0x08, 0x90]),
 	];
 
-	for info in test_data.iter() {
+	for info in &test_data {
 		#[cfg_attr(feature = "cargo-fmt", rustfmt::skip)]
 		let instructions = [
 			Instruction::with(Code::Nopd),

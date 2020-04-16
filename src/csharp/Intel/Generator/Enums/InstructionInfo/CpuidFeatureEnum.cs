@@ -285,6 +285,12 @@ namespace Generator.Enums.InstructionInfo {
 		XSAVEOPT,
 		[Comment("CPUID.(EAX=0DH, ECX=1H):EAX.XSAVES[bit 3]")]
 		XSAVES,
+		[Comment("CPUID.8000001FH:EAX.SNP[bit 4]")]
+		SNP,
+		[Comment("CPUID.(EAX=07H, ECX=0H):EDX.SERIALIZE[bit 14]")]
+		SERIALIZE,
+		[Comment("CPUID.(EAX=07H, ECX=0H):EDX.TSXLDTRK[bit 16]")]
+		TSXLDTRK,
 	}
 
 	static class CpuidFeatureEnum {

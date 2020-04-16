@@ -212,7 +212,7 @@ impl IIFlags {
 /// Created by an [`InstructionInfoFactory`].
 ///
 /// [`InstructionInfoFactory`]: struct.InstructionInfoFactory.html
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct InstructionInfo {
 	used_registers: Vec<UsedRegister>,
 	used_memory_locations: Vec<UsedMemory>,

@@ -54,13 +54,13 @@ use hashbrown::{HashMap, HashSet};
 use std::collections::{HashMap, HashSet};
 
 lazy_static! {
-	static ref INSTR_INFO_16: Vec<InstrInfoTestCase> = { read_instr_info_test_cases(16) };
+	static ref INSTR_INFO_16: Vec<InstrInfoTestCase> = read_instr_info_test_cases(16);
 }
 lazy_static! {
-	static ref INSTR_INFO_32: Vec<InstrInfoTestCase> = { read_instr_info_test_cases(32) };
+	static ref INSTR_INFO_32: Vec<InstrInfoTestCase> = read_instr_info_test_cases(32);
 }
 lazy_static! {
-	static ref INSTR_INFO_64: Vec<InstrInfoTestCase> = { read_instr_info_test_cases(64) };
+	static ref INSTR_INFO_64: Vec<InstrInfoTestCase> = read_instr_info_test_cases(64);
 }
 
 fn read_instr_info_test_cases(bitness: u32) -> Vec<InstrInfoTestCase> {
@@ -214,36 +214,36 @@ fn test_info_core(tc: &InstrInfoTestCase, factory: &mut InstructionInfoFactory) 
 
 	let mut factory2 = InstructionInfoFactory::new();
 	let info2 = factory2.info_options(&instr, InstructionInfoOptions::NONE);
-	check_equal(&info, info2, true, true);
+	check_equal(info, info2, true, true);
 	let mut factory2 = InstructionInfoFactory::new();
 	let info2 = factory2.info_options(&instr, InstructionInfoOptions::NO_MEMORY_USAGE);
-	check_equal(&info, info2, true, false);
+	check_equal(info, info2, true, false);
 	let mut factory2 = InstructionInfoFactory::new();
 	let info2 = factory2.info_options(&instr, InstructionInfoOptions::NO_REGISTER_USAGE);
-	check_equal(&info, info2, false, true);
+	check_equal(info, info2, false, true);
 	let mut factory2 = InstructionInfoFactory::new();
 	let info2 = factory2.info_options(&instr, InstructionInfoOptions::NO_REGISTER_USAGE | InstructionInfoOptions::NO_MEMORY_USAGE);
-	check_equal(&info, info2, false, false);
+	check_equal(info, info2, false, false);
 
 	{
 		let info2 = factory.info(&instr);
-		check_equal(&info, info2, true, true);
+		check_equal(info, info2, true, true);
 	}
 	{
 		let info2 = factory.info_options(&instr, InstructionInfoOptions::NONE);
-		check_equal(&info, info2, true, true);
+		check_equal(info, info2, true, true);
 	}
 	{
 		let info2 = factory.info_options(&instr, InstructionInfoOptions::NO_MEMORY_USAGE);
-		check_equal(&info, info2, true, false);
+		check_equal(info, info2, true, false);
 	}
 	{
 		let info2 = factory.info_options(&instr, InstructionInfoOptions::NO_REGISTER_USAGE);
-		check_equal(&info, info2, false, true);
+		check_equal(info, info2, false, true);
 	}
 	{
 		let info2 = factory.info_options(&instr, InstructionInfoOptions::NO_REGISTER_USAGE | InstructionInfoOptions::NO_MEMORY_USAGE);
-		check_equal(&info, info2, false, false);
+		check_equal(info, info2, false, false);
 	}
 
 	assert_eq!(info.encoding(), instr.code().encoding());

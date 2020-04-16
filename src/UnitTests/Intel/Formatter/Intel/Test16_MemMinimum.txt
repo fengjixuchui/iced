@@ -533,3 +533,8 @@ monitorx
 addr32 monitorx
 clzero ax
 clzero eax
+pvalidate ax
+pvalidate eax
+serialize
+xsusldtrk
+xresldtrk

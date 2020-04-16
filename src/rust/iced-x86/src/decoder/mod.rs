@@ -302,7 +302,7 @@ impl<'a> Decoder<'a> {
 	/// ```
 	/// use iced_x86::*;
 	///
-	/// // xchg [rdx+rsi+16h],ah
+	/// // xchg ah,[rdx+rsi+16h]
 	/// // xacquire lock add dword ptr [rax],5Ah
 	/// // vmovdqu64 zmm18{k3}{z},zmm11
 	/// let bytes = b"\x86\x64\x32\x16\xF0\xF2\x83\x00\x5A\x62\xC1\xFE\xCB\x6F\xD3";
@@ -442,7 +442,7 @@ impl<'a> Decoder<'a> {
 		self.ip
 	}
 
-	/// Sets the current `IP`/`EIP`/`RIP`, see also [`set_position()`]
+	/// Sets the current `IP`/`EIP`/`RIP` value, see also [`set_position()`]
 	///
 	/// [`set_position()`]: #method.set_position
 	///
@@ -472,7 +472,7 @@ impl<'a> Decoder<'a> {
 	}
 
 	/// Gets the current data position. This value is always <= [`max_position()`].
-	/// When [`position()`] == `max_position()`, it's not possible to decode more
+	/// When [`position()`] == [`max_position()`], it's not possible to decode more
 	/// instructions and [`can_decode()`] returns `false`.
 	///
 	/// [`max_position()`]: #method.max_position
@@ -495,7 +495,7 @@ impl<'a> Decoder<'a> {
 	///
 	/// # Arguments
 	///
-	/// * `new_value`: New position and must be <= `max_position()`
+	/// * `new_pos`: New position and must be <= [`max_position()`]
 	///
 	/// # Examples
 	///
@@ -629,11 +629,11 @@ impl<'a> Decoder<'a> {
 	}
 
 	#[cfg_attr(has_must_use, must_use)]
-	#[cfg_attr(feature = "cargo-clippy", allow(clippy::cast_ptr_alignment))]
 	pub(self) fn read_u16(&mut self) -> usize {
 		unsafe {
 			let data_ptr = self.data_ptr;
 			if data_ptr.offset(1) < self.max_data_ptr {
+				#[cfg_attr(feature = "cargo-clippy", allow(clippy::cast_ptr_alignment))]
 				let result = u16::from_le(ptr::read_unaligned(data_ptr as *const u16)) as usize;
 				self.data_ptr = data_ptr.offset(2);
 				result
@@ -645,7 +645,6 @@ impl<'a> Decoder<'a> {
 	}
 
 	#[cfg_attr(has_must_use, must_use)]
-	#[cfg_attr(feature = "cargo-clippy", allow(clippy::cast_ptr_alignment))]
 	pub(self) fn read_u32(&mut self) -> usize {
 		// What I really wanted to do was: (this saves one instruction)
 		//		const N: isize = 4;
@@ -661,6 +660,7 @@ impl<'a> Decoder<'a> {
 		unsafe {
 			let data_ptr = self.data_ptr;
 			if data_ptr.offset(3) < self.max_data_ptr {
+				#[cfg_attr(feature = "cargo-clippy", allow(clippy::cast_ptr_alignment))]
 				let result = u32::from_le(ptr::read_unaligned(data_ptr as *const u32)) as usize;
 				self.data_ptr = data_ptr.offset(4);
 				result

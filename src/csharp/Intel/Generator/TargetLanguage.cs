@@ -25,5 +25,7 @@ namespace Generator {
 	enum TargetLanguage {
 		CSharp,
 		Rust,
+		// Rust JavaScript bindings code
+		RustJS,
 	}
 }

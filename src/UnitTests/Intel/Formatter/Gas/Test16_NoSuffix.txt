@@ -533,3 +533,8 @@ monitorx
 addr32 monitorx
 clzero
 addr32 clzero
+pvalidate
+addr32 pvalidate
+serialize
+xsusldtrk
+xresldtrk

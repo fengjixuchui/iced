@@ -1,5 +1,15 @@
 [workspace]
 
+exclude = [
+    # Exclude it so it can override the [profile.release] section
+    "iced-x86-js",
+]
+
 members = [
     "iced-x86",
 ]
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = 3
