@@ -33702,9 +33702,41 @@ pub enum Code {
 	///
 	/// `16/32/64-bit`
 	Xresldtrk = 4211,
+	/// `INVLPGB`
+	///
+	/// `a16 NP 0F 01 FE`
+	///
+	/// `INVLPGB`
+	///
+	/// `16/32-bit`
+	Invlpgbw = 4212,
+	/// `INVLPGB`
+	///
+	/// `a32 NP 0F 01 FE`
+	///
+	/// `INVLPGB`
+	///
+	/// `16/32/64-bit`
+	Invlpgbd = 4213,
+	/// `INVLPGB`
+	///
+	/// `NP 0F 01 FE`
+	///
+	/// `INVLPGB`
+	///
+	/// `64-bit`
+	Invlpgbq = 4214,
+	/// `TLBSYNC`
+	///
+	/// `NP 0F 01 FF`
+	///
+	/// `INVLPGB`
+	///
+	/// `16/32/64-bit`
+	Tlbsync = 4215,
 }
 #[cfg_attr(feature = "cargo-fmt", rustfmt::skip)]
-static GEN_DEBUG_CODE: [&str; 4212] = [
+static GEN_DEBUG_CODE: [&str; 4216] = [
 	"INVALID",
 	"DeclareByte",
 	"DeclareWord",
@@ -37917,6 +37949,10 @@ static GEN_DEBUG_CODE: [&str; 4212] = [
 	"Serialize",
 	"Xsusldtrk",
 	"Xresldtrk",
+	"Invlpgbw",
+	"Invlpgbd",
+	"Invlpgbq",
+	"Tlbsync",
 ];
 impl fmt::Debug for Code {
 	#[inline]
@@ -38167,7 +38203,7 @@ impl Code {
 		(self as u32).wrapping_sub(Code::Call_m1616 as u32) <= (Code::Call_m1664 as u32 - Code::Call_m1616 as u32)
 	}
 
-	/// Gets the condition code if it's `Jcc`, `SETcc`, `CMOVcc` else [`ConditionCode::None`] is returned
+	/// Gets the condition code if it's `Jcc`, `SETcc`, `CMOVcc`, `LOOPcc` else [`ConditionCode::None`] is returned
 	///
 	/// [`ConditionCode::None`]: enum.ConditionCode.html#variant.None
 	///
@@ -38205,14 +38241,24 @@ impl Code {
 			return unsafe { mem::transmute((t + ConditionCode::o as u32) as u8) };
 		}
 
+		t = (self as u32).wrapping_sub(Code::Loopne_rel8_16_CX as u32);
+		if t <= (Code::Loopne_rel8_64_RCX as u32 - Code::Loopne_rel8_16_CX as u32) {
+			return ConditionCode::ne;
+		}
+
+		t = (self as u32).wrapping_sub(Code::Loope_rel8_16_CX as u32);
+		if t <= (Code::Loope_rel8_64_RCX as u32 - Code::Loope_rel8_16_CX as u32) {
+			return ConditionCode::e;
+		}
+
 		ConditionCode::None
 	}
 }
 
 #[cfg(any(feature = "instr_info", feature = "encoder"))]
 impl Code {
-	/// Negates the condition code, eg. `JE` -> `JNE`. Can be used if it's `Jcc`, `SETcc`, `CMOVcc` and returns
-	/// the original value if it's none of those instructions.
+	/// Negates the condition code, eg. `JE` -> `JNE`. Can be used if it's `Jcc`, `SETcc`, `CMOVcc`, `LOOPcc`
+	/// and returns the original value if it's none of those instructions.
 	///
 	/// # Examples
 	///
@@ -38256,6 +38302,12 @@ impl Code {
 		t = (self as u32).wrapping_sub(Code::Seto_rm8 as u32);
 		if t <= (Code::Setg_rm8 as u32 - Code::Seto_rm8 as u32) {
 			return unsafe { mem::transmute(((t ^ 1) + Code::Seto_rm8 as u32) as u16) };
+		}
+
+		const_assert_eq!(Code::Loope_rel8_16_CX as u32, Code::Loopne_rel8_16_CX as u32 + 7);
+		t = (self as u32).wrapping_sub(Code::Loopne_rel8_16_CX as u32);
+		if t <= (Code::Loope_rel8_64_RCX as u32 - Code::Loopne_rel8_16_CX as u32) {
+			return unsafe { mem::transmute((Code::Loopne_rel8_16_CX as u32 + (t + 7) % 14) as u16) };
 		}
 
 		self
