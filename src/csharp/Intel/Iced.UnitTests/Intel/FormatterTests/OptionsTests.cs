@@ -95,10 +95,20 @@ namespace Iced.UnitTests.Intel.FormatterTests {
 		CC_ge,
 		CC_le,
 		CC_g,
+		DecoderOptions,
 	}
 	// GENERATOR-END: OptionsProps
 
 	static class OptionsPropsUtils {
+		public static DecoderOptions GetDecoderOptions(IList<(OptionsProps property, object value)> props) {
+			var options = DecoderOptions.None;
+			foreach (var (prop, value) in props) {
+				if (prop == OptionsProps.DecoderOptions)
+					options |= (DecoderOptions)value;
+			}
+			return options;
+		}
+
 		public static void Initialize(FormatterOptions options, OptionsProps property, object value) {
 			switch (property) {
 			case OptionsProps.AddLeadingZeroToHexNumbers: options.AddLeadingZeroToHexNumbers = (bool)value; break;
@@ -162,7 +172,9 @@ namespace Iced.UnitTests.Intel.FormatterTests {
 			case OptionsProps.CC_ge: options.CC_ge = (CC_ge)value; break;
 			case OptionsProps.CC_le: options.CC_le = (CC_le)value; break;
 			case OptionsProps.CC_g: options.CC_g = (CC_g)value; break;
-			case OptionsProps.IP: break;
+			case OptionsProps.IP:
+			case OptionsProps.DecoderOptions:
+				break;
 			default: throw new InvalidOperationException();
 			}
 		}
@@ -190,12 +202,14 @@ namespace Iced.UnitTests.Intel.FormatterTests {
 		public readonly int Bitness;
 		public readonly string HexBytes;
 		public readonly Code Code;
+		public readonly DecoderOptions DecoderOptions;
 		readonly List<(OptionsProps property, object value)> properties;
 		internal OptionsInstructionInfo(int bitness, string hexBytes, Code code, List<(OptionsProps property, object value)> properties) {
 			Bitness = bitness;
 			HexBytes = hexBytes;
 			Code = code;
 			this.properties = properties;
+			DecoderOptions = OptionsPropsUtils.GetDecoderOptions(properties);
 		}
 
 		internal void Initialize(FormatterOptions options) => OptionsPropsUtils.Initialize(options, properties);
@@ -205,13 +219,16 @@ namespace Iced.UnitTests.Intel.FormatterTests {
 	public abstract class OptionsTests {
 		protected static IEnumerable<object[]> GetFormatData(string formatterDir, string formattedStringsFile, string optionsFile = null) {
 			OptionsInstructionInfo[] infos;
+			HashSet<int> ignored;
 			if (optionsFile is null)
-				infos = FormatterOptionsTests.AllInfos;
+				(infos, ignored) = FormatterOptionsTests.AllInfos;
 			else {
 				var infosFilename = FileUtils.GetFormatterFilename(Path.Combine(formatterDir, optionsFile));
-				infos = OptionsTestsReader.ReadFile(infosFilename).ToArray();
+				ignored = new HashSet<int>();
+				infos = OptionsTestsReader.ReadFile(infosFilename, ignored).ToArray();
 			}
 			var formattedStrings = FileUtils.ReadRawStrings(Path.Combine(formatterDir, formattedStringsFile)).ToArray();
+			formattedStrings = Utils.Filter(formattedStrings, ignored);
 			if (infos.Length != formattedStrings.Length)
 				throw new ArgumentException($"(infos.Length) {infos.Length} != (formattedStrings.Length) {formattedStrings.Length} . infos[0].HexBytes = {(infos.Length == 0 ? "<EMPTY>" : infos[0].HexBytes)} & formattedStrings[0] = {(formattedStrings.Length == 0 ? "<EMPTY>" : formattedStrings[0])}");
 			var res = new object[infos.Length][];
@@ -222,7 +239,7 @@ namespace Iced.UnitTests.Intel.FormatterTests {
 
 		protected void FormatBase(int index, OptionsInstructionInfo info, string formattedString, Formatter formatter) {
 			info.Initialize(formatter.Options);
-			FormatterTestUtils.SimpleFormatTest(info.Bitness, info.HexBytes, info.Code, DecoderOptions.None, formattedString, formatter, decoder => info.Initialize(decoder));
+			FormatterTestUtils.SimpleFormatTest(info.Bitness, info.HexBytes, info.Code, info.DecoderOptions, formattedString, formatter, decoder => info.Initialize(decoder));
 		}
 
 		protected void TestOptionsBase(FormatterOptions options) {

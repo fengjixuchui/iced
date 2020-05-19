@@ -28,6 +28,7 @@ using System.Text;
 using Generator.Enums;
 using Generator.Enums.Decoder;
 using Generator.Enums.Encoder;
+using Generator.Tables;
 
 namespace Generator.Encoder {
 	sealed class EncoderTypesGen {
@@ -45,6 +46,11 @@ namespace Generator.Encoder {
 		public EnumType? EvexFlags;
 		public EnumType? D3nowFlags;
 
+		readonly GenTypes genTypes;
+
+		public EncoderTypesGen(GenTypes genTypes) =>
+			this.genTypes = genTypes;
+
 		public void Generate() {
 			GenerateImmSizes();
 			GenerateEncFlags1();
@@ -61,7 +67,7 @@ namespace Generator.Encoder {
 		}
 
 		void GenerateImmSizes() {
-			var isEnum = ImmSizeEnum.Instance;
+			var isEnum = genTypes[TypeIds.ImmSize];
 			var immSizes = new (EnumValue value, uint size)[] {
 				(isEnum[nameof(ImmSize.None)], 0),
 				(isEnum[nameof(ImmSize.Size1)], 1),
@@ -122,10 +128,10 @@ namespace Generator.Encoder {
 			return new EnumType(flags3TypeId, null, values.ToArray(), EnumTypeFlags.Flags | EnumTypeFlags.NoInitialize);
 		}
 
-		void GenerateLegacyFlags3() => LegacyFlags3 = GenerateFlags3(LegacyOpKindEnum.Instance, TypeIds.LegacyFlags3, 4);
-		void GenerateVexFlags3() => VexFlags3 = GenerateFlags3(VexOpKindEnum.Instance, TypeIds.VexFlags3, 5);
-		void GenerateXopFlags3() => XopFlags3 = GenerateFlags3(XopOpKindEnum.Instance, TypeIds.XopFlags3, 4);
-		void GenerateEvexFlags3() => EvexFlags3 = GenerateFlags3(EvexOpKindEnum.Instance, TypeIds.EvexFlags3, 4);
+		void GenerateLegacyFlags3() => LegacyFlags3 = GenerateFlags3(genTypes[TypeIds.LegacyOpKind], TypeIds.LegacyFlags3, 4);
+		void GenerateVexFlags3() => VexFlags3 = GenerateFlags3(genTypes[TypeIds.VexOpKind], TypeIds.VexFlags3, 5);
+		void GenerateXopFlags3() => XopFlags3 = GenerateFlags3(genTypes[TypeIds.XopOpKind], TypeIds.XopFlags3, 4);
+		void GenerateEvexFlags3() => EvexFlags3 = GenerateFlags3(genTypes[TypeIds.EvexOpKind], TypeIds.EvexFlags3, 4);
 
 		internal const OpCodeFlags PrefixesMask =
 			OpCodeFlags.LockPrefix | OpCodeFlags.XacquirePrefix | OpCodeFlags.XreleasePrefix | OpCodeFlags.RepPrefix |
@@ -133,8 +139,8 @@ namespace Generator.Encoder {
 		void GenerateAllowedPrefixes() {
 			var maskHash = new HashSet<OpCodeFlags>();
 			maskHash.Add(OpCodeFlags.None);
-			foreach (var info in OpCodeInfoTable.Data) {
-				maskHash.Add(info.Flags & PrefixesMask);
+			foreach (var def in genTypes.GetObject<InstructionDefs>(TypeIds.InstructionDefs).Table) {
+				maskHash.Add(def.OpCodeInfo.Flags & PrefixesMask);
 			}
 
 			AllowedPrefixesMap = new Dictionary<OpCodeFlags, EnumValue>();

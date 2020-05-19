@@ -24,18 +24,25 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 use super::super::super::Instruction;
 use super::super::test_utils::get_formatter_unit_tests_dir;
 use super::super::*;
+use super::filter_removed_code_tests;
 use super::sym_res_test_case::*;
 use super::sym_res_test_parser::*;
 #[cfg(not(feature = "std"))]
 use alloc::boxed::Box;
 #[cfg(not(feature = "std"))]
 use alloc::vec::Vec;
+#[cfg(not(feature = "std"))]
+use hashbrown::HashSet;
+#[cfg(feature = "std")]
+use std::collections::HashSet;
 
 lazy_static! {
-	static ref ALL_INFOS: Vec<SymbolResolverTestCase> = {
+	static ref ALL_INFOS: (Vec<SymbolResolverTestCase>, HashSet<u32>) = {
 		let mut filename = get_formatter_unit_tests_dir();
 		filename.push("SymbolResolverTests.txt");
-		SymbolResolverTestParser::new(filename.as_path()).into_iter().collect()
+		let mut ignored: HashSet<u32> = HashSet::new();
+		let v = SymbolResolverTestParser::new(filename.as_path(), &mut ignored).into_iter().collect();
+		(v, ignored)
 	};
 }
 
@@ -69,8 +76,8 @@ pub(in super::super) fn symbol_resolver_test(dir: &str, filename: &str, fmt_fact
 	let mut path = get_formatter_unit_tests_dir();
 	path.push(dir);
 	path.push(format!("{}.txt", filename));
-	let formatted_lines = super::get_lines_ignore_comments(path.as_path());
-	let infos = &*ALL_INFOS;
+	let &(ref infos, ref ignored) = &*ALL_INFOS;
+	let formatted_lines = filter_removed_code_tests(super::get_lines_ignore_comments(path.as_path()), ignored);
 	if infos.len() != formatted_lines.len() {
 		panic!("infos.len() ({}) != formatted_lines.len() ({})", infos.len(), formatted_lines.len());
 	}
@@ -81,10 +88,18 @@ pub(in super::super) fn symbol_resolver_test(dir: &str, filename: &str, fmt_fact
 		for props in &info.options {
 			props.1.initialize_options(formatter.options_mut(), props.0);
 		}
-		super::simple_format_test(info.bitness, &info.hex_bytes, info.code, 0, formatted_line.as_str(), formatter.as_mut(), |decoder| {
-			for props in &info.options {
-				props.1.initialize_decoder(decoder, props.0);
-			}
-		});
+		super::simple_format_test(
+			info.bitness,
+			&info.hex_bytes,
+			info.code,
+			info.decoder_options,
+			formatted_line.as_str(),
+			formatter.as_mut(),
+			|decoder| {
+				for props in &info.options {
+					props.1.initialize_decoder(decoder, props.0);
+				}
+			},
+		);
 	}
 }

@@ -23,6 +23,17 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 namespace Generator {
 	static class TypeIds {
+		public static readonly TypeId RemovedCodeValues = new TypeId(nameof(RemovedCodeValues));
+		public static readonly TypeId InstructionDefs = new TypeId(nameof(InstructionDefs));
+		public static readonly TypeId EncoderTypes = new TypeId(nameof(EncoderTypes));
+		public static readonly TypeId InstrInfoTypes = new TypeId(nameof(InstrInfoTypes));
+		public static readonly TypeId GasCtorInfos = new TypeId(nameof(GasCtorInfos));
+		public static readonly TypeId IntelCtorInfos = new TypeId(nameof(IntelCtorInfos));
+		public static readonly TypeId MasmCtorInfos = new TypeId(nameof(MasmCtorInfos));
+		public static readonly TypeId NasmCtorInfos = new TypeId(nameof(NasmCtorInfos));
+		public static readonly TypeId MemorySizeInfoTable = new TypeId(nameof(MemorySizeInfoTable));
+		public static readonly TypeId RegisterInfoTable = new TypeId(nameof(RegisterInfoTable));
+
 		public static readonly TypeId IcedConstants = new TypeId(nameof(IcedConstants));
 		public static readonly TypeId DecoderTestParserConstants = new TypeId(nameof(DecoderTestParserConstants));
 		public static readonly TypeId DecoderConstants = new TypeId(nameof(DecoderConstants));

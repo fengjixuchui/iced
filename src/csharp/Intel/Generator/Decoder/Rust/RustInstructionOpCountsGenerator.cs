@@ -24,29 +24,32 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 using System.IO;
 using Generator.Constants;
 using Generator.IO;
+using Generator.Tables;
 
 namespace Generator.Decoder.Rust {
 	[Generator(TargetLanguage.Rust, GeneratorNames.Code_OpCount)]
 	sealed class RustInstructionOpCountsGenerator {
 		readonly IdentifierConverter idConverter;
-		readonly GeneratorOptions generatorOptions;
+		readonly GeneratorContext generatorContext;
 
-		public RustInstructionOpCountsGenerator(GeneratorOptions generatorOptions) {
+		public RustInstructionOpCountsGenerator(GeneratorContext generatorContext) {
 			idConverter = RustIdentifierConverter.Create();
-			this.generatorOptions = generatorOptions;
+			this.generatorContext = generatorContext;
 		}
 
 		public void Generate() {
-			var data = InstructionOpCountsTable.Table;
-			using (var writer = new FileWriter(TargetLanguage.Rust, FileUtils.OpenWrite(Path.Combine(generatorOptions.RustDir, "instruction_op_counts.rs")))) {
+			var genTypes = generatorContext.Types;
+			var icedConstants = genTypes.GetConstantsType(TypeIds.IcedConstants);
+			var defs = genTypes.GetObject<InstructionDefs>(TypeIds.InstructionDefs).Table;
+			using (var writer = new FileWriter(TargetLanguage.Rust, FileUtils.OpenWrite(Path.Combine(generatorContext.RustDir, "instruction_op_counts.rs")))) {
 				writer.WriteFileHeader();
-				writer.WriteLine($"use super::iced_constants::{IcedConstantsType.Instance.Name(idConverter)};");
+				writer.WriteLine($"use super::iced_constants::{icedConstants.Name(idConverter)};");
 				writer.WriteLine();
 				writer.WriteLine(RustConstants.AttributeNoRustFmt);
-				writer.WriteLine($"pub(super) static OP_COUNT: [u8; {IcedConstantsType.Instance.Name(idConverter)}::{IcedConstantsType.Instance[IcedConstants.NumberOfCodeValuesName].Name(idConverter)}] = [");
+				writer.WriteLine($"pub(super) static OP_COUNT: [u8; {icedConstants.Name(idConverter)}::{icedConstants[IcedConstants.NumberOfCodeValuesName].Name(idConverter)}] = [");
 				using (writer.Indent()) {
-					foreach (var d in data)
-						writer.WriteLine($"{d.count},// {d.codeEnum.Name(idConverter)}");
+					foreach (var def in defs)
+						writer.WriteLine($"{def.OpCount},// {def.OpCodeInfo.Code.Name(idConverter)}");
 				}
 				writer.WriteLine("];");
 			}

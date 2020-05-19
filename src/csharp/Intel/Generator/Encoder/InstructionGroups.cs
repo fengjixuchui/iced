@@ -28,6 +28,7 @@ using System.Text;
 using Generator.Constants;
 using Generator.Enums;
 using Generator.Enums.Encoder;
+using Generator.Tables;
 
 namespace Generator.Encoder {
 	enum InstructionOperand {
@@ -59,6 +60,7 @@ namespace Generator.Encoder {
 	}
 
 	sealed class InstructionGroups {
+		readonly GenTypes genTypes;
 		readonly Dictionary<LegacyOpKind, OpCodeOperandKind> legacyToOpKind;
 		readonly Dictionary<VexOpKind, OpCodeOperandKind> vexToOpKind;
 		readonly Dictionary<XopOpKind, OpCodeOperandKind> xopToOpKind;
@@ -66,16 +68,18 @@ namespace Generator.Encoder {
 		readonly OpCodeOperandKind[] d3nowOps;
 		readonly HashSet<EnumValue> ignoredCodes;
 
-		public InstructionGroups() {
-			legacyToOpKind = EncoderTypes.LegacyOpHandlers.ToDictionary(a => (LegacyOpKind)a.legacyOpKind.Value, a => (OpCodeOperandKind)a.opCodeOperandKind.Value);
-			vexToOpKind = EncoderTypes.VexOpHandlers.ToDictionary(a => (VexOpKind)a.vexOpKind.Value, a => (OpCodeOperandKind)a.opCodeOperandKind.Value);
-			xopToOpKind = EncoderTypes.XopOpHandlers.ToDictionary(a => (XopOpKind)a.xopOpKind.Value, a => (OpCodeOperandKind)a.opCodeOperandKind.Value);
-			evexToOpKind = EncoderTypes.EvexOpHandlers.ToDictionary(a => (EvexOpKind)a.evexOpKind.Value, a => (OpCodeOperandKind)a.opCodeOperandKind.Value);
+		public InstructionGroups(GenTypes genTypes) {
+			this.genTypes = genTypes;
+			var encoderTypes = genTypes.GetObject<EncoderTypes>(TypeIds.EncoderTypes);
+			legacyToOpKind = encoderTypes.LegacyOpHandlers.ToDictionary(a => (LegacyOpKind)a.legacyOpKind.Value, a => (OpCodeOperandKind)a.opCodeOperandKind.Value);
+			vexToOpKind = encoderTypes.VexOpHandlers.ToDictionary(a => (VexOpKind)a.vexOpKind.Value, a => (OpCodeOperandKind)a.opCodeOperandKind.Value);
+			xopToOpKind = encoderTypes.XopOpHandlers.ToDictionary(a => (XopOpKind)a.xopOpKind.Value, a => (OpCodeOperandKind)a.opCodeOperandKind.Value);
+			evexToOpKind = encoderTypes.EvexOpHandlers.ToDictionary(a => (EvexOpKind)a.evexOpKind.Value, a => (OpCodeOperandKind)a.opCodeOperandKind.Value);
 			d3nowOps = new OpCodeOperandKind[] {
 				OpCodeOperandKind.mm_reg,
 				OpCodeOperandKind.mm_or_mem,
 			};
-			var code = CodeEnum.Instance;
+			var code = genTypes[TypeIds.Code];
 			ignoredCodes = new HashSet<EnumValue> {
 				code[nameof(Code.INVALID)],
 				code[nameof(Code.DeclareByte)],
@@ -287,15 +291,15 @@ namespace Generator.Encoder {
 		public InstructionGroup[] GetGroups() {
 			var groups = new Dictionary<InstructionOperand[], InstructionGroup>(new OpComparer());
 
-			foreach (var info in OpCodeInfoTable.Data) {
-				if (ignoredCodes.Contains(info.Code))
+			foreach (var def in genTypes.GetObject<InstructionDefs>(TypeIds.InstructionDefs).Table) {
+				if (ignoredCodes.Contains(def.OpCodeInfo.Code))
 					continue;
 
-				var opKinds = GetOperands(info);
+				var opKinds = GetOperands(def.OpCodeInfo);
 				foreach (var ops in GetOperands(opKinds)) {
 					if (!groups.TryGetValue(ops, out var group))
 						groups.Add(ops, group = new InstructionGroup(ops));
-					group.OpCodes.Add(info);
+					group.OpCodes.Add(def.OpCodeInfo);
 				}
 			}
 

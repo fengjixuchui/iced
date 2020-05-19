@@ -21,6 +21,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+using System.Collections.Generic;
 using System.IO;
 using Generator.Enums;
 using Generator.IO;
@@ -29,41 +30,54 @@ namespace Generator.Tables.CSharp {
 	[Generator(TargetLanguage.CSharp, GeneratorNames.Dictionaries)]
 	sealed class CSharpDictGenerator {
 		readonly IdentifierConverter idConverter;
-		readonly GeneratorOptions generatorOptions;
+		readonly GeneratorContext generatorContext;
 
-		public CSharpDictGenerator(GeneratorOptions generatorOptions) {
+		public CSharpDictGenerator(GeneratorContext generatorContext) {
 			idConverter = CSharpIdentifierConverter.Create();
-			this.generatorOptions = generatorOptions;
+			this.generatorContext = generatorContext;
 		}
 
 		public void Generate() {
-			new FileUpdater(TargetLanguage.CSharp, "Dicts", Path.Combine(generatorOptions.CSharpTestsDir, "Intel", "InstructionInfoTests", "InstructionInfoConstants.cs")).Generate(writer => {
-				WriteDict(writer, InstrInfoDictConstants.OpAccessConstants, "ToAccess");
-				WriteDict(writer, InstrInfoDictConstants.MemorySizeFlagsTable, "MemorySizeFlagsTable");
-				WriteDict(writer, InstrInfoDictConstants.RegisterFlagsTable, "RegisterFlagsTable");
+			var genTypes = generatorContext.Types;
+			new FileUpdater(TargetLanguage.CSharp, "Dicts", Path.Combine(generatorContext.CSharpTestsDir, "Intel", "InstructionInfoTests", "InstructionInfoConstants.cs")).Generate(writer => {
+				WriteDict(writer, InstrInfoDictConstants.OpAccessConstants(genTypes), "ToAccess");
+				WriteDict(writer, InstrInfoDictConstants.MemorySizeFlagsTable(genTypes), "MemorySizeFlagsTable");
+				WriteDict(writer, InstrInfoDictConstants.RegisterFlagsTable(genTypes), "RegisterFlagsTable");
 			});
-			new FileUpdater(TargetLanguage.CSharp, "Dicts", Path.Combine(generatorOptions.CSharpTestsDir, "Intel", "EncoderTests", "OpCodeInfoConstants.cs")).Generate(writer => {
-				WriteDict(writer, EncoderConstants.EncodingKindTable, "ToEncodingKind");
-				WriteDict(writer, EncoderConstants.MandatoryPrefixTable, "ToMandatoryPrefix");
-				WriteDict(writer, EncoderConstants.OpCodeTableKindTable, "ToOpCodeTableKind");
+			new FileUpdater(TargetLanguage.CSharp, "Dicts", Path.Combine(generatorContext.CSharpTestsDir, "Intel", "EncoderTests", "OpCodeInfoConstants.cs")).Generate(writer => {
+				WriteDict(writer, EncoderConstants.EncodingKindTable(genTypes), "ToEncodingKind");
+				WriteDict(writer, EncoderConstants.MandatoryPrefixTable(genTypes), "ToMandatoryPrefix");
+				WriteDict(writer, EncoderConstants.OpCodeTableKindTable(genTypes), "ToOpCodeTableKind");
 			});
-			new FileUpdater(TargetLanguage.CSharp, "Dicts", Path.Combine(generatorOptions.CSharpTestsDir, "Intel", "FormatterTests", "Masm", "SymbolOptionsTests.cs")).Generate(writer => {
-				WriteDict(writer, MasmSymbolOptionsConstants.SymbolTestFlagsTable, "ToSymbolTestFlags");
+			new FileUpdater(TargetLanguage.CSharp, "Dicts", Path.Combine(generatorContext.CSharpTestsDir, "Intel", "FormatterTests", "Masm", "SymbolOptionsTests.cs")).Generate(writer => {
+				WriteDict(writer, MasmSymbolOptionsConstants.SymbolTestFlagsTable(genTypes), "ToSymbolTestFlags");
 			});
-			new FileUpdater(TargetLanguage.CSharp, "Dicts", Path.Combine(generatorOptions.CSharpTestsDir, "Intel", "FormatterTests", "MnemonicOptionsTestsReader.cs")).Generate(writer => {
-				WriteDict(writer, FormatMnemonicOptionsConstants.FormatMnemonicOptionsTable, "ToFormatMnemonicOptions");
+			new FileUpdater(TargetLanguage.CSharp, "Dicts", Path.Combine(generatorContext.CSharpTestsDir, "Intel", "FormatterTests", "MnemonicOptionsTestsReader.cs")).Generate(writer => {
+				WriteDict(writer, FormatMnemonicOptionsConstants.FormatMnemonicOptionsTable(genTypes), "ToFormatMnemonicOptions");
 			});
-			new FileUpdater(TargetLanguage.CSharp, "Dicts", Path.Combine(generatorOptions.CSharpTestsDir, "Intel", "FormatterTests", "SymbolResolverTestsReader.cs")).Generate(writer => {
-				WriteDict(writer, SymbolFlagsConstants.SymbolFlagsTable, "ToSymbolFlags");
+			new FileUpdater(TargetLanguage.CSharp, "Dicts", Path.Combine(generatorContext.CSharpTestsDir, "Intel", "FormatterTests", "SymbolResolverTestsReader.cs")).Generate(writer => {
+				WriteDict(writer, SymbolFlagsConstants.SymbolFlagsTable(genTypes), "ToSymbolFlags");
+			});
+			new FileUpdater(TargetLanguage.CSharp, "IgnoredCode", Path.Combine(generatorContext.CSharpTestsDir, "Intel", "CodeUtils.cs")).Generate(writer => {
+				WriteHash(writer, genTypes.GetObject<HashSet<EnumValue>>(TypeIds.RemovedCodeValues), "ignored", false);
 			});
 		}
 
-		void WriteDict(FileWriter writer, (string name, EnumValue value)[] constants, string fieldName) {
+		void WriteDict(FileWriter writer, (string name, EnumValue value)[] constants, string fieldName, bool publicField = true) {
 			var declTypeStr = constants[0].value.DeclaringType.Name(idConverter);
-			writer.WriteLine($"internal static readonly Dictionary<string, {declTypeStr}> {fieldName} = new Dictionary<string, {declTypeStr}>(StringComparer.Ordinal) {{");
+			writer.WriteLine($"{(publicField ? "internal " : string.Empty)}static readonly Dictionary<string, {declTypeStr}> {fieldName} = new Dictionary<string, {declTypeStr}>({constants.Length}, StringComparer.Ordinal) {{");
 			using (writer.Indent()) {
 				foreach (var constant in constants)
 					writer.WriteLine($"{{ \"{constant.name}\", {declTypeStr}.{constant.value.Name(idConverter)} }},");
+			}
+			writer.WriteLine("};");
+		}
+
+		void WriteHash(FileWriter writer, HashSet<EnumValue> constants, string fieldName, bool publicField = true) {
+			writer.WriteLine($"{(publicField ? "internal " : string.Empty)}static readonly HashSet<string> {fieldName} = new HashSet<string>({constants.Count}, StringComparer.Ordinal) {{");
+			using (writer.Indent()) {
+				foreach (var constant in constants)
+					writer.WriteLine($"{{ \"{constant.RawName}\" }},");
 			}
 			writer.WriteLine("};");
 		}

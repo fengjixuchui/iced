@@ -28,6 +28,7 @@ using System.Text;
 using Generator.Constants;
 using Generator.Enums;
 using Generator.Enums.InstructionInfo;
+using Generator.Tables;
 
 namespace Generator.InstructionInfo {
 	[Flags]
@@ -73,9 +74,14 @@ namespace Generator.InstructionInfo {
 		public ConstantsType? InstrInfoConstants;
 		public (EnumValue cpuidInternal, EnumValue[] cpuidFeatures)[]? CpuidFeatures;
 		public (EnumValue value, (RflagsBits read, RflagsBits undefined, RflagsBits written, RflagsBits cleared, RflagsBits set) rflags)[]? RflagsInfos;
-		public readonly InstrInfo[] InstrInfos;
+		readonly InstructionDef[] defs;
 
-		public InstrInfoTypesGen() => InstrInfos = InstrInfoTable.Data;
+		readonly GenTypes genTypes;
+
+		public InstrInfoTypesGen(GenTypes genTypes) {
+			this.genTypes = genTypes;
+			defs = genTypes.GetObject<InstructionDefs>(TypeIds.InstructionDefs).Table;
+		}
 
 		public void Generate() {
 			GenerateCodeInfo();
@@ -119,7 +125,8 @@ namespace Generator.InstructionInfo {
 		void GenerateCpuidFeatureInternal() {
 			var cpuidToInternalDict = new Dictionary<EnumValue[], EnumValue>(new EnumValueArrayComparer());
 			var cpuidFeatures = new List<(EnumValue cpuidInternal, EnumValue[] cpuidFeatures)>();
-			foreach (var info in InstrInfos) {
+			foreach (var def in defs) {
+				var info = def.InstrInfo;
 				if (!cpuidToInternalDict.ContainsKey(info.Cpuid)) {
 					var name = string.Join("_and_", info.Cpuid.Select(a => a.RawName));
 					var internalEnumValue = new EnumValue(0, name, null);
@@ -131,8 +138,10 @@ namespace Generator.InstructionInfo {
 
 			EnumCpuidFeatureInternal = new EnumType(TypeIds.CpuidFeatureInternal, null, cpuidFeatures.Select(a => a.cpuidInternal).ToArray(), EnumTypeFlags.None);
 			CpuidFeatures = cpuidFeatures.ToArray();
-			foreach (var info in InstrInfos)
+			foreach (var def in defs) {
+				var info = def.InstrInfo;
 				info.CpuidInternal = cpuidToInternalDict[info.Cpuid];
+			}
 		}
 
 		static int CompareCpuidInternalEnums((EnumValue cpuidInternal, EnumValue[] cpuidFeatures) x, (EnumValue cpuidInternal, EnumValue[] cpuidFeatures) y) {
@@ -164,8 +173,10 @@ namespace Generator.InstructionInfo {
 				// Needed by CodeInfo.Clear_rflags
 				(RflagsBits.None, RflagsBits.AF, RflagsBits.None, RflagsBits.CF | RflagsBits.OF | RflagsBits.SF, RflagsBits.PF | RflagsBits.ZF),
 			};
-			foreach (var info in InstrInfos)
+			foreach (var def in defs) {
+				var info = def.InstrInfo;
 				rflagsHashSet.Add((info.RflagsRead, info.RflagsUndefined, info.RflagsWritten, info.RflagsCleared, info.RflagsSet));
+			}
 			var rflags = new List<(RflagsBits read, RflagsBits undefined, RflagsBits written, RflagsBits cleared, RflagsBits set)>(rflagsHashSet);
 			rflags.Sort((a, b) => Compare(a, b));
 			// None must be first
@@ -189,8 +200,10 @@ namespace Generator.InstructionInfo {
 				values[i] = RflagsInfos[i].value;
 			if (values.Select(a => a.RawName).Distinct(StringComparer.Ordinal).Count() != values.Length)
 				throw new InvalidOperationException("Dupe names");
-			foreach (var info in InstrInfos)
+			foreach (var def in defs) {
+				var info = def.InstrInfo;
 				info.RflagsInfo = toRflagsInfo[(info.RflagsRead, info.RflagsUndefined, info.RflagsWritten, info.RflagsCleared, info.RflagsSet)];
+			}
 			EnumRflagsInfo = new EnumType(TypeIds.RflagsInfo, null, values, EnumTypeFlags.None);
 		}
 
@@ -256,7 +269,8 @@ namespace Generator.InstructionInfo {
 			var opInfoHashes = new HashSet<OpInfo>[IcedConstants.MaxOpCount];
 			for (int i = 0; i < opInfoHashes.Length; i++)
 				opInfoHashes[i] = new HashSet<OpInfo>();
-			foreach (var info in InstrInfos) {
+			foreach (var def in defs) {
+				var info = def.InstrInfo;
 				bool foundNone = false;
 				for (int i = 0; i < info.OpInfo.Length; i++) {
 					var opInfo = info.OpInfo[i];
@@ -287,7 +301,8 @@ namespace Generator.InstructionInfo {
 				var values = opInfos[i].Select(a => new EnumValue((uint)a, a.ToString(), null)).ToArray();
 				EnumOpInfos[i] = new EnumType(typeIds[i], null, values, EnumTypeFlags.None);
 			}
-			foreach (var info in InstrInfos) {
+			foreach (var def in defs) {
+				var info = def.InstrInfo;
 				for (int i = 0; i < info.OpInfo.Length; i++)
 					info.OpInfoEnum[i] = EnumOpInfos[i][info.OpInfo[i].ToString()];
 			}
@@ -318,9 +333,9 @@ namespace Generator.InstructionInfo {
 			var enumCodeInfo = EnumCodeInfo ?? throw new InvalidOperationException();
 			if ((uint)enumCodeInfo.Values.Length - 1 > (uint)InfoFlags1.CodeInfoMask)
 				throw new InvalidOperationException();
-			if ((uint)EncodingKindEnum.Instance.Values.Length - 1 > (uint)InfoFlags2.EncodingMask)
+			if ((uint)genTypes[TypeIds.EncodingKind].Values.Length - 1 > (uint)InfoFlags2.EncodingMask)
 				throw new InvalidOperationException();
-			if ((uint)FlowControlEnum.Instance.Values.Length - 1 > (uint)InfoFlags2.FlowControlMask)
+			if ((uint)genTypes[TypeIds.FlowControl].Values.Length - 1 > (uint)InfoFlags2.FlowControlMask)
 				throw new InvalidOperationException();
 			var enumCpuidFeatureInternal = EnumCpuidFeatureInternal ?? throw new InvalidOperationException();
 			if ((uint)enumCpuidFeatureInternal.Values.Length - 1 > (uint)InfoFlags2.CpuidFeatureInternalMask)

@@ -27,21 +27,22 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Generator.Enums;
-using Generator.Enums.Encoder;
 using Generator.Enums.Rust;
 using Generator.IO;
+using Generator.Tables;
 
 namespace Generator.Encoder.Rust {
 	[Generator(TargetLanguage.Rust, GeneratorNames.Encoder)]
 	sealed class RustEncoderGenerator : EncoderGenerator {
+		readonly GeneratorContext generatorContext;
 		readonly IdentifierConverter idConverter;
-		readonly GeneratorOptions generatorOptions;
 		readonly RustEnumsGenerator enumGenerator;
 
-		public RustEncoderGenerator(GeneratorOptions generatorOptions) {
+		public RustEncoderGenerator(GeneratorContext generatorContext)
+			: base(generatorContext.Types) {
+			this.generatorContext = generatorContext;
 			idConverter = RustIdentifierConverter.Create();
-			this.generatorOptions = generatorOptions;
-			enumGenerator = new RustEnumsGenerator(generatorOptions);
+			enumGenerator = new RustEnumsGenerator(generatorContext);
 		}
 
 		protected override void Generate(EnumType enumType) => enumGenerator.Generate(enumType);
@@ -87,7 +88,7 @@ namespace Generator.Encoder.Rust {
 		}
 
 		void GenerateOpCodeOperandKindTables((EnumValue opCodeOperandKind, EnumValue legacyOpKind, OpHandlerKind opHandlerKind, object[] args)[] legacy, (EnumValue opCodeOperandKind, EnumValue vexOpKind, OpHandlerKind opHandlerKind, object[] args)[] vex, (EnumValue opCodeOperandKind, EnumValue xopOpKind, OpHandlerKind opHandlerKind, object[] args)[] xop, (EnumValue opCodeOperandKind, EnumValue evexOpKind, OpHandlerKind opHandlerKind, object[] args)[] evex) {
-			var filename = Path.Combine(generatorOptions.RustDir, "encoder", "op_kind_tables.rs");
+			var filename = Path.Combine(generatorContext.RustDir, "encoder", "op_kind_tables.rs");
 			using (var writer = new FileWriter(TargetLanguage.Rust, FileUtils.OpenWrite(filename))) {
 				writer.WriteFileHeader();
 
@@ -99,7 +100,7 @@ namespace Generator.Encoder.Rust {
 			}
 
 			void Generate(FileWriter writer, string name, (EnumValue opCodeOperandKind, EnumValue opKind, OpHandlerKind opHandlerKind, object[] args)[] table) {
-				var declTypeStr = OpCodeOperandKindEnum.Instance.Name(idConverter);
+				var declTypeStr = genTypes[TypeIds.OpCodeOperandKind].Name(idConverter);
 				writer.WriteLine();
 				writer.WriteLine(RustConstants.AttributeNoRustFmt);
 				writer.WriteLine($"pub(super) static {name}: [{declTypeStr}; {table.Length}] = [");
@@ -125,7 +126,7 @@ namespace Generator.Encoder.Rust {
 					throw new InvalidOperationException();
 			}
 
-			var filename = Path.Combine(generatorOptions.RustDir, "encoder", "ops_tables.rs");
+			var filename = Path.Combine(generatorContext.RustDir, "encoder", "ops_tables.rs");
 			using (var writer = new FileWriter(TargetLanguage.Rust, FileUtils.OpenWrite(filename))) {
 				writer.WriteFileHeader();
 				writer.WriteLine(RustConstants.AttributeNoRustFmtInner);
@@ -312,33 +313,33 @@ namespace Generator.Encoder.Rust {
 			}
 		}
 
-		protected override void Generate(OpCodeInfo[] opCodes) {
-			GenerateTable(opCodes);
-			GenerateNonZeroOpMaskRegisterCode(opCodes);
+		protected override void GenerateOpCodeInfo(InstructionDef[] defs) {
+			GenerateTable(defs);
+			GenerateNonZeroOpMaskRegisterCode(defs);
 		}
 
-		void GenerateTable(OpCodeInfo[] opCodes) {
-			var filename = Path.Combine(generatorOptions.RustDir, "encoder", "op_code_data.rs");
+		void GenerateTable(InstructionDef[] defs) {
+			var filename = Path.Combine(generatorContext.RustDir, "encoder", "op_code_data.rs");
 			using (var writer = new FileWriter(TargetLanguage.Rust, FileUtils.OpenWrite(filename))) {
 				writer.WriteFileHeader();
 				writer.WriteLine(RustConstants.AttributeNoRustFmt);
-				writer.WriteLine($"pub(super) static OP_CODE_DATA: [u32; {opCodes.Length} * 3] = [");
+				writer.WriteLine($"pub(super) static OP_CODE_DATA: [u32; {defs.Length} * 3] = [");
 				using (writer.Indent()) {
-					foreach (var info in GetData(opCodes))
+					foreach (var info in GetData(defs))
 						writer.WriteLine($"{NumberFormatter.FormatHexUInt32WithSep(info.dword1)}, {NumberFormatter.FormatHexUInt32WithSep(info.dword2)}, {NumberFormatter.FormatHexUInt32WithSep(info.dword3)},// {info.opCode.Code.Name(idConverter)}");
 				}
 				writer.WriteLine("];");
 			}
 		}
 
-		void GenerateNonZeroOpMaskRegisterCode(OpCodeInfo[] opCodes) {
-			var filename = Path.Combine(generatorOptions.RustDir, "encoder", "op_code.rs");
+		void GenerateNonZeroOpMaskRegisterCode(InstructionDef[] defs) {
+			var filename = Path.Combine(generatorContext.RustDir, "encoder", "op_code.rs");
 			new FileUpdater(TargetLanguage.Rust, "NonZeroOpMaskRegister", filename).Generate(writer => {
-				var codeStr = CodeEnum.Instance.Name(idConverter);
+				var codeStr = genTypes[TypeIds.Code].Name(idConverter);
 				var bar = string.Empty;
-				foreach (var opCode in opCodes) {
-					if ((opCode.Flags & OpCodeFlags.NonZeroOpMaskRegister) != 0) {
-						writer.WriteLine($"{bar}{codeStr}::{opCode.Code.Name(idConverter)}");
+				foreach (var def in defs) {
+					if ((def.OpCodeInfo.Flags & OpCodeFlags.NonZeroOpMaskRegister) != 0) {
+						writer.WriteLine($"{bar}{codeStr}::{def.OpCodeInfo.Code.Name(idConverter)}");
 						bar = "| ";
 					}
 				}
@@ -346,7 +347,7 @@ namespace Generator.Encoder.Rust {
 		}
 
 		protected override void Generate((EnumValue value, uint size)[] immSizes) {
-			var filename = Path.Combine(generatorOptions.RustDir, "encoder", "mod.rs");
+			var filename = Path.Combine(generatorContext.RustDir, "encoder", "mod.rs");
 			new FileUpdater(TargetLanguage.Rust, "ImmSizes", filename).Generate(writer => {
 				writer.WriteLine(RustConstants.AttributeNoRustFmt);
 				writer.WriteLine($"static IMM_SIZES: [u32; {immSizes.Length}] = [");
@@ -359,7 +360,7 @@ namespace Generator.Encoder.Rust {
 		}
 
 		protected override void Generate((EnumValue allowedPrefixes, OpCodeFlags prefixes)[] infos, (EnumValue value, OpCodeFlags flag)[] flagsInfos) {
-			var filename = Path.Combine(generatorOptions.RustDir, "encoder", "op_code.rs");
+			var filename = Path.Combine(generatorContext.RustDir, "encoder", "op_code.rs");
 			new FileUpdater(TargetLanguage.Rust, "AllowedPrefixes", filename).Generate(writer => {
 				foreach (var info in infos) {
 					writer.Write($"{info.allowedPrefixes.DeclaringType.Name(idConverter)}::{info.allowedPrefixes.Name(idConverter)} => ");
@@ -388,7 +389,7 @@ namespace Generator.Encoder.Rust {
 		}
 
 		protected override void GenerateInstructionFormatter((EnumValue code, string result)[] notInstrStrings, EnumValue[] opMaskIsK1, EnumValue[] incVecIndex, EnumValue[] noVecIndex, EnumValue[] swapVecIndex12, EnumValue[] fpuStartOpIndex1) {
-			var filename = Path.Combine(generatorOptions.RustDir, "encoder", "instruction_fmt.rs");
+			var filename = Path.Combine(generatorContext.RustDir, "encoder", "instruction_fmt.rs");
 			GenerateNotInstrCases(filename, "InstrFmtNotInstructionString", notInstrStrings, true);
 			GenerateCases(filename, "OpMaskIsK1", opMaskIsK1);
 			GenerateCases(filename, "IncVecIndex", incVecIndex);
@@ -399,7 +400,7 @@ namespace Generator.Encoder.Rust {
 		}
 
 		protected override void GenerateOpCodeFormatter((EnumValue code, string result)[] notInstrStrings, EnumValue[] hasModRM, EnumValue[] hasVsib) {
-			var filename = Path.Combine(generatorOptions.RustDir, "encoder", "op_code_fmt.rs");
+			var filename = Path.Combine(generatorContext.RustDir, "encoder", "op_code_fmt.rs");
 			GenerateNotInstrCases(filename, "OpCodeFmtNotInstructionString", notInstrStrings, false);
 			GenerateCases(filename, "HasModRM", hasModRM);
 			GenerateCases(filename, "HasVsib", hasVsib);
@@ -409,8 +410,8 @@ namespace Generator.Encoder.Rust {
 			GenerateMnemonicStringTable();
 
 		void GenerateMnemonicStringTable() {
-			var values = MnemonicEnum.Instance.Values;
-			var filename = Path.Combine(generatorOptions.RustDir, "encoder", "mnemonic_str_tbl.rs");
+			var values = genTypes[TypeIds.Mnemonic].Values;
+			var filename = Path.Combine(generatorContext.RustDir, "encoder", "mnemonic_str_tbl.rs");
 			using (var writer = new FileWriter(TargetLanguage.Rust, FileUtils.OpenWrite(filename))) {
 				writer.WriteFileHeader();
 				writer.WriteLine(RustConstants.AttributeNoRustFmt);
@@ -424,7 +425,7 @@ namespace Generator.Encoder.Rust {
 		}
 
 		protected override void GenerateInstrSwitch(EnumValue[] jccInstr, EnumValue[] simpleBranchInstr, EnumValue[] callInstr, EnumValue[] jmpInstr, EnumValue[] xbeginInstr) {
-			var filename = Path.Combine(generatorOptions.RustDir, "block_enc", "instr", "mod.rs");
+			var filename = Path.Combine(generatorContext.RustDir, "block_enc", "instr", "mod.rs");
 			GenerateCases(filename, "JccInstr", jccInstr);
 			GenerateCases(filename, "SimpleBranchInstr", simpleBranchInstr);
 			GenerateCases(filename, "CallInstr", callInstr);
@@ -433,7 +434,7 @@ namespace Generator.Encoder.Rust {
 		}
 
 		protected override void GenerateVsib(EnumValue[] vsib32, EnumValue[] vsib64) {
-			var filename = Path.Combine(generatorOptions.RustDir, "instruction.rs");
+			var filename = Path.Combine(generatorContext.RustDir, "instruction.rs");
 			GenerateCases(filename, "Vsib32", vsib32);
 			GenerateCases(filename, "Vsib64", vsib64);
 		}

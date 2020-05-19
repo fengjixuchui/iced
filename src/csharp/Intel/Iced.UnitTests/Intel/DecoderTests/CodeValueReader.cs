@@ -37,6 +37,8 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 				if (line.Length == 0 || line[0] == '#')
 					continue;
 				var value = line.Trim();
+				if (CodeUtils.IsIgnored(value))
+					continue;
 				if (!ToEnumConverter.TryCode(value, out var code))
 					throw new InvalidOperationException($"Error parsing Code file '{filename}', line {lineNumber}: Invalid value: {value}");
 				hash.Add(code);

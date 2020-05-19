@@ -79,7 +79,7 @@ jobs:
       - uses: actions/upload-artifact@v1
         with:
           name: coverage.info
-          path: src/csharp/Intel/Iced.UnitTests/coverage.info
+          path: src/csharp/Intel/Iced.UnitTests/coverage.netcoreapp3.1.info
 
       - name: Upload coverage report
         shell: bash

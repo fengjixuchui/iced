@@ -24,25 +24,27 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 using System;
 using System.IO;
 using Generator.Constants;
-using Generator.Enums;
 using Generator.IO;
+using Generator.Tables;
 
 namespace Generator.Decoder.CSharp {
 	[Generator(TargetLanguage.CSharp, GeneratorNames.Code_MemorySize)]
 	sealed class CSharpInstructionMemorySizesGenerator {
 		readonly IdentifierConverter idConverter;
-		readonly GeneratorOptions generatorOptions;
+		readonly GeneratorContext generatorContext;
 
-		public CSharpInstructionMemorySizesGenerator(GeneratorOptions generatorOptions) {
+		public CSharpInstructionMemorySizesGenerator(GeneratorContext generatorContext) {
 			idConverter = CSharpIdentifierConverter.Create();
-			this.generatorOptions = generatorOptions;
+			this.generatorContext = generatorContext;
 		}
 
 		public void Generate() {
-			var data = InstructionMemorySizesTable.Table;
+			var genTypes = generatorContext.Types;
+			var icedConstants = genTypes.GetConstantsType(TypeIds.IcedConstants);
+			var defs = genTypes.GetObject<InstructionDefs>(TypeIds.InstructionDefs).Table;
 			const string ClassName = "InstructionMemorySizes";
-			var memSizeName = MemorySizeEnum.Instance.Name(idConverter);
-			using (var writer = new FileWriter(TargetLanguage.CSharp, FileUtils.OpenWrite(Path.Combine(CSharpConstants.GetDirectory(generatorOptions, CSharpConstants.IcedNamespace), ClassName + ".g.cs")))) {
+			var memSizeName = genTypes[TypeIds.MemorySize].Name(idConverter);
+			using (var writer = new FileWriter(TargetLanguage.CSharp, FileUtils.OpenWrite(Path.Combine(CSharpConstants.GetDirectory(generatorContext, CSharpConstants.IcedNamespace), ClassName + ".g.cs")))) {
 				writer.WriteFileHeader();
 
 				writer.WriteLine($"namespace {CSharpConstants.IcedNamespace} {{");
@@ -52,30 +54,30 @@ namespace Generator.Decoder.CSharp {
 						writer.WriteCommentLine("0 = memory size");
 						writer.WriteCommentLine("1 = broadcast memory size");
 						writer.WriteLineNoIndent($"#if {CSharpConstants.HasSpanDefine}");
-						writer.WriteLine($"internal static System.ReadOnlySpan<byte> Sizes => new byte[{IcedConstantsType.Instance.Name(idConverter)}.{IcedConstantsType.Instance[IcedConstants.NumberOfCodeValuesName].Name(idConverter)} * 2] {{");
+						writer.WriteLine($"internal static System.ReadOnlySpan<byte> Sizes => new byte[{icedConstants.Name(idConverter)}.{icedConstants[IcedConstants.NumberOfCodeValuesName].Name(idConverter)} * 2] {{");
 						writer.WriteLineNoIndent("#else");
-						writer.WriteLine($"internal static readonly byte[] Sizes = new byte[{IcedConstantsType.Instance.Name(idConverter)}.{IcedConstantsType.Instance[IcedConstants.NumberOfCodeValuesName].Name(idConverter)} * 2] {{");
+						writer.WriteLine($"internal static readonly byte[] Sizes = new byte[{icedConstants.Name(idConverter)}.{icedConstants[IcedConstants.NumberOfCodeValuesName].Name(idConverter)} * 2] {{");
 						writer.WriteLineNoIndent("#endif");
 						using (writer.Indent()) {
-							foreach (var d in data) {
-								if (d.mem.Value > byte.MaxValue)
+							foreach (var def in defs) {
+								if (def.Mem.Value > byte.MaxValue)
 									throw new InvalidOperationException();
 								string value;
-								if (d.mem.Value == 0)
+								if (def.Mem.Value == 0)
 									value = "0";
 								else
-									value = $"(byte){memSizeName}.{d.mem.Name(idConverter)}";
-								writer.WriteLine($"{value},// {d.codeEnum.Name(idConverter)}");
+									value = $"(byte){memSizeName}.{def.Mem.Name(idConverter)}";
+								writer.WriteLine($"{value},// {def.OpCodeInfo.Code.Name(idConverter)}");
 							}
-							foreach (var d in data) {
-								if (d.bcst.Value > byte.MaxValue)
+							foreach (var def in defs) {
+								if (def.Bcst.Value > byte.MaxValue)
 									throw new InvalidOperationException();
 								string value;
-								if (d.bcst.Value == 0)
+								if (def.Bcst.Value == 0)
 									value = "0";
 								else
-									value = $"(byte){memSizeName}.{d.bcst.Name(idConverter)}";
-								writer.WriteLine($"{value},// {d.codeEnum.Name(idConverter)}");
+									value = $"(byte){memSizeName}.{def.Bcst.Name(idConverter)}";
+								writer.WriteLine($"{value},// {def.OpCodeInfo.Code.Name(idConverter)}");
 							}
 						}
 						writer.WriteLine("};");
