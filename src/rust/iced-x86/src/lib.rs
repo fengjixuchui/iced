@@ -27,18 +27,18 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //! [![Minimum rustc version](https://img.shields.io/badge/rustc-1.20.0+-yellow.svg)](#minimum-supported-rustc-version)
 //! ![License](https://img.shields.io/crates/l/iced-x86.svg)
 //!
-//! iced-x86 is a high performance x86 (16/32/64-bit) instruction decoder, disassembler and assembler written in Rust.
+//! iced-x86 is a high performance and correct x86 (16/32/64-bit) instruction decoder, disassembler and assembler written in Rust.
 //!
 //! It can be used for static analysis of x86/x64 binaries, to rewrite code (eg. remove garbage instructions), to relocate code or as a disassembler.
 //!
 //! - ✔️Supports all Intel and AMD instructions
+//! - ✔️Correct: All instructions are tested and iced has been tested against other disassemblers/assemblers (xed, gas, objdump, masm, dumpbin, nasm, ndisasm) and fuzzed
 //! - ✔️100% Rust code
 //! - ✔️The formatter supports masm, nasm, gas (AT&T), Intel (XED) and there are many options to customize the output
 //! - ✔️The decoder is 4x+ faster than other similar libraries and doesn't allocate any memory
 //! - ✔️Small decoded instructions, only 32 bytes
 //! - ✔️The encoder can be used to re-encode decoded instructions at any address
 //! - ✔️API to get instruction info, eg. read/written registers, memory and rflags bits; CPUID feature flag, flow control info, etc
-//! - ✔️All instructions are tested (decode, encode, format, instruction info)
 //! - ✔️Supports `#![no_std]` and `WebAssembly`
 //! - ✔️Supports `rustc` `1.20.0` or later
 //! - ✔️Few dependencies (`static_assertions` and `lazy_static`)
@@ -50,14 +50,14 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //!
 //! ```toml
 //! [dependencies]
-//! iced-x86 = "1.1.0"
+//! iced-x86 = "1.8.0"
 //! ```
 //!
 //! Or to customize which features to use:
 //!
 //! ```toml
 //! [dependencies.iced-x86]
-//! version = "1.1.0"
+//! version = "1.8.0"
 //! default-features = false
 //! # See below for all features
 //! features = ["std", "decoder", "masm"]
@@ -86,6 +86,24 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //! - `std`: (✔️Enabled by default) Enables the `std` crate. `std` or `no_std` must be defined, but not both.
 //! - `no_std`: Enables `#![no_std]`. `std` or `no_std` must be defined, but not both. This feature uses the `alloc` crate (`rustc` `1.36.0+`) and the `hashbrown` crate.
 //! - `exhaustive_enums`: Enables exhaustive enums, i.e., no enum has the `#[non_exhaustive]` attribute
+//! - `no_vex`: Disables all `VEX` instructions. See below for more info.
+//! - `no_evex`: Disables all `EVEX` instructions. See below for more info.
+//! - `no_xop`: Disables all `XOP` instructions. See below for more info.
+//! - `no_d3now`: Disables all `3DNow!` instructions. See below for more info.
+//!
+//! If you use `no_vex`, `no_evex`, `no_xop` or `no_d3now`, you should run the generator again (before building iced) to generate even smaller output.
+//!
+//! [.NET Core](https://dotnet.microsoft.com/download) is required. Help:
+//!
+//! ```sh
+//! dotnet run -p src/csharp/Intel/Generator/Generator.csproj -- --help
+//! ```
+//!
+//! No VEX, EVEX, XOP, 3DNow!:
+//!
+//! ```sh
+//! dotnet run -p src/csharp/Intel/Generator/Generator.csproj -- --no-vex --no-evex --no-xop --no-3dnow
+//! ```
 //!
 //! [`BlockEncoder`]: struct.BlockEncoder.html
 //! [`OpCodeInfo`]: struct.OpCodeInfo.html
@@ -1038,6 +1056,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //!     let mut decoder = Decoder::new(64, bytes, DecoderOptions::NONE);
 //!     let instr = decoder.decode();
 //!
+//!     // There's also try_virtual_address() which returns an Option<u64>
 //!     let va = instr.virtual_address(0, 0, |register, _element_index, _element_size| {
 //!         match register {
 //!             // The base address of ES, CS, SS and DS is always 0 in 64-bit mode
@@ -1068,7 +1087,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //! Bumping the minimum supported version of `rustc` is considered a minor breaking change. The minor version of iced-x86 will be incremented.
 
 #![doc(html_logo_url = "https://raw.githubusercontent.com/0xd4d/iced/master/logo.png")]
-#![doc(html_root_url = "https://docs.rs/iced-x86/1.1.0")]
+#![doc(html_root_url = "https://docs.rs/iced-x86/1.8.0")]
 #![allow(unknown_lints)]
 #![allow(bare_trait_objects)] // Not supported if < 1.27.0
 #![warn(absolute_paths_not_starting_with_crate)]
@@ -1099,7 +1118,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #![cfg_attr(feature = "cargo-clippy", allow(clippy::type_complexity))]
 #![cfg_attr(feature = "cargo-clippy", allow(clippy::verbose_bit_mask))]
 #![cfg_attr(feature = "cargo-clippy", allow(clippy::wrong_self_convention))]
-#![cfg_attr(feature = "cargo-clippy", warn(clippy::cargo_common_metadata))]
 #![cfg_attr(feature = "cargo-clippy", warn(clippy::clone_on_ref_ptr))]
 #![cfg_attr(feature = "cargo-clippy", warn(clippy::dbg_macro))]
 #![cfg_attr(feature = "cargo-clippy", warn(clippy::debug_assert_with_mut_call))]

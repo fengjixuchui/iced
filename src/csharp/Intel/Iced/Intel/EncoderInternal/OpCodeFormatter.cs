@@ -67,10 +67,26 @@ namespace Iced.Intel.EncoderInternal {
 
 			return opCode.Encoding switch {
 				EncodingKind.Legacy => Format_Legacy(),
+#if !NO_VEX
 				EncodingKind.VEX => Format_VEX_XOP_EVEX("VEX"),
+#else
+				EncodingKind.VEX => string.Empty,
+#endif
+#if !NO_EVEX
 				EncodingKind.EVEX => Format_VEX_XOP_EVEX("EVEX"),
+#else
+				EncodingKind.EVEX => string.Empty,
+#endif
+#if !NO_XOP
 				EncodingKind.XOP => Format_VEX_XOP_EVEX("XOP"),
+#else
+				EncodingKind.XOP => string.Empty,
+#endif
+#if !NO_D3NOW
 				EncodingKind.D3NOW => Format_3DNow(),
+#else
+				EncodingKind.D3NOW => string.Empty,
+#endif
 				_ => throw new InvalidOperationException(),
 			};
 		}
@@ -192,8 +208,13 @@ namespace Iced.Intel.EncoderInternal {
 				case OpCodeOperandKind.dr_reg:
 				case OpCodeOperandKind.tr_reg:
 				case OpCodeOperandKind.bnd_reg:
-				// GENERATOR-END: HasModRM
+				case OpCodeOperandKind.sibmem:
+				case OpCodeOperandKind.tmm_reg:
+				case OpCodeOperandKind.tmm_rm:
 					return true;
+				// GENERATOR-END: HasModRM
+				default:
+					break;
 				}
 			}
 			return false;
@@ -211,8 +232,10 @@ namespace Iced.Intel.EncoderInternal {
 				case OpCodeOperandKind.mem_vsib64y:
 				case OpCodeOperandKind.mem_vsib32z:
 				case OpCodeOperandKind.mem_vsib64z:
-				// GENERATOR-END: HasVsib
 					return true;
+				// GENERATOR-END: HasVsib
+				default:
+					break;
 				}
 			}
 			return false;
@@ -233,16 +256,76 @@ namespace Iced.Intel.EncoderInternal {
 			return OpCodeOperandKind.None;
 		}
 
-		void AppendRest() {
-			bool isVsib = opCode.Encoding == EncodingKind.EVEX && HasVsib();
-			if (opCode.IsGroup) {
-				sb.Append(" /");
-				sb.Append(opCode.GroupIndex);
+		bool TryGetModrmInfo(out bool isRegOnly, out int rrr, out int bbb) {
+			isRegOnly = true;
+			rrr = opCode.GroupIndex;
+			bbb = opCode.RmGroupIndex;
+			bool hasModrmInfo = bbb >= 0;
+			switch (opCode.Code) {
+#if !NO_VEX
+			case Code.VEX_Ldtilecfg_m512:
+			case Code.VEX_Sttilecfg_m512:
+				hasModrmInfo = true;
+				break;
+#endif
+			default:
+				break;
 			}
-			else if (!isVsib && HasModRM())
-				sb.Append(" /r");
-			if (isVsib)
-				sb.Append(" /vsib");
+			int opCount = opCode.OpCount;
+			for (int i = 0; i < opCount; i++) {
+				switch (opCode.GetOpKind(i)) {
+				case OpCodeOperandKind.mem:
+					isRegOnly = false;
+					break;
+				case OpCodeOperandKind.sibmem:
+					hasModrmInfo = true;
+					isRegOnly = false;
+					bbb = 4;
+					break;
+				case OpCodeOperandKind.tmm_reg:
+				case OpCodeOperandKind.tmm_rm:
+				case OpCodeOperandKind.tmm_vvvv:
+					hasModrmInfo = true;
+					break;
+				}
+			}
+			return hasModrmInfo;
+		}
+
+		void AppendBits(string name, int bits, int numBits) {
+			if (bits < 0)
+				sb.Append(name);
+			else {
+				for (int i = numBits - 1; i >= 0; i--) {
+					if (((bits >> i) & 1) != 0)
+						sb.Append("1");
+					else
+						sb.Append("0");
+				}
+			}
+		}
+
+		void AppendRest() {
+			if (TryGetModrmInfo(out var isRegOnly, out var rrr, out var bbb)) {
+				if (isRegOnly)
+					sb.Append(" 11:");
+				else
+					sb.Append(" !(11):");
+				AppendBits("rrr", rrr, 3);
+				sb.Append(":");
+				AppendBits("bbb", bbb, 3);
+			}
+			else {
+				bool isVsib = opCode.Encoding == EncodingKind.EVEX && HasVsib();
+				if (opCode.IsGroup) {
+					sb.Append(" /");
+					sb.Append(opCode.GroupIndex);
+				}
+				else if (!isVsib && HasModRM())
+					sb.Append(" /r");
+				if (isVsib)
+					sb.Append(" /vsib");
+			}
 
 			int opCount = opCode.OpCount;
 			for (int i = 0; i < opCount; i++) {
@@ -416,6 +499,7 @@ namespace Iced.Intel.EncoderInternal {
 			return sb.ToString();
 		}
 
+#if !NO_D3NOW
 		string Format_3DNow() {
 			sb.Length = 0;
 
@@ -426,7 +510,9 @@ namespace Iced.Intel.EncoderInternal {
 
 			return sb.ToString();
 		}
+#endif
 
+#if !NO_VEX || !NO_XOP || !NO_EVEX
 		string Format_VEX_XOP_EVEX(string encodingName) {
 			sb.Length = 0;
 
@@ -486,6 +572,7 @@ namespace Iced.Intel.EncoderInternal {
 
 			return sb.ToString();
 		}
+#endif
 	}
 }
 #endif

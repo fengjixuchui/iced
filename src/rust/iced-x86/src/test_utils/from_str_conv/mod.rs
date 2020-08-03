@@ -28,7 +28,8 @@ mod code_table;
 mod condition_code_table;
 #[cfg(feature = "instr_info")]
 mod cpuid_feature_table;
-#[cfg(any(feature = "gas", feature = "intel", feature = "masm", feature = "nasm"))]
+mod decoder_error_table;
+#[cfg(any(feature = "instr_info", feature = "gas", feature = "intel", feature = "masm", feature = "nasm"))]
 mod decoder_options_table;
 #[cfg(feature = "instr_info")]
 mod encoding_kind_table;
@@ -56,7 +57,8 @@ use self::code_table::*;
 use self::condition_code_table::*;
 #[cfg(feature = "instr_info")]
 use self::cpuid_feature_table::*;
-#[cfg(any(feature = "gas", feature = "intel", feature = "masm", feature = "nasm"))]
+use self::decoder_error_table::*;
+#[cfg(any(feature = "instr_info", feature = "gas", feature = "intel", feature = "masm", feature = "nasm"))]
 use self::decoder_options_table::*;
 #[cfg(feature = "instr_info")]
 use self::encoding_kind_table::*;
@@ -239,6 +241,24 @@ pub(crate) fn to_code(value: &str) -> Result<Code, String> {
 
 pub(crate) fn is_ignored_code(value: &str) -> bool {
 	let value = value.trim();
+	if !cfg!(feature = "db") {
+		match value {
+			"DeclareByte" | "DeclareWord" | "DeclareDword" | "DeclareQword" => return true,
+			_ => {}
+		}
+	}
+	if cfg!(feature = "no_vex") && value.starts_with("VEX_") {
+		return true;
+	}
+	if cfg!(feature = "no_evex") && value.starts_with("EVEX_") {
+		return true;
+	}
+	if cfg!(feature = "no_xop") && value.starts_with("XOP_") {
+		return true;
+	}
+	if cfg!(feature = "no_d3now") && value.starts_with("D3NOW_") {
+		return true;
+	}
 	IGNORED_CODE_HASH.contains(value)
 }
 
@@ -281,7 +301,15 @@ pub(crate) fn to_memory_size(value: &str) -> Result<MemorySize, String> {
 	}
 }
 
-#[cfg(any(feature = "gas", feature = "intel", feature = "masm", feature = "nasm"))]
+pub(crate) fn to_decoder_error(value: &str) -> Result<DecoderError, String> {
+	let value = value.trim();
+	match TO_DECODER_ERROR_HASH.get(value) {
+		Some(decoder_error) => Ok(*decoder_error),
+		None => Err(format!("Invalid DecoderError value: {}", value)),
+	}
+}
+
+#[cfg(any(feature = "instr_info", feature = "gas", feature = "intel", feature = "masm", feature = "nasm"))]
 pub(crate) fn to_decoder_options(value: &str) -> Result<u32, String> {
 	let value = value.trim();
 	match TO_DECODER_OPTIONS_HASH.get(value) {

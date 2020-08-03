@@ -1,4 +1,4 @@
-#if ENCODER && BLOCK_ENCODER
+#if ENCODER && BLOCK_ENCODER && CODE_ASSEMBLER
 using System;
 using Iced.Intel;
 using Iced.UnitTests.Intel.EncoderTests;
@@ -84,6 +84,7 @@ namespace Iced.UnitTests.Intel.AssemblerTests {
 			Assert.Empty(result.Result);
 		}
 
+#if !NO_EVEX
 		[Fact]
 		void Test_opmask_registers() {
 			TestAssembler(c => c.vmovups(zmm0.k1, zmm1), ApplyK(Instruction.Create(Code.EVEX_Vmovups_zmm_k1z_zmmm512, zmm0, zmm1), Register.K1), LocalOpCodeFlags.PreferEvex);
@@ -93,6 +94,61 @@ namespace Iced.UnitTests.Intel.AssemblerTests {
 			TestAssembler(c => c.vmovups(zmm0.k5, zmm1), ApplyK(Instruction.Create(Code.EVEX_Vmovups_zmm_k1z_zmmm512, zmm0, zmm1), Register.K5), LocalOpCodeFlags.PreferEvex);
 			TestAssembler(c => c.vmovups(zmm0.k6, zmm1), ApplyK(Instruction.Create(Code.EVEX_Vmovups_zmm_k1z_zmmm512, zmm0, zmm1), Register.K6), LocalOpCodeFlags.PreferEvex);
 			TestAssembler(c => c.vmovups(zmm0.k7, zmm1), ApplyK(Instruction.Create(Code.EVEX_Vmovups_zmm_k1z_zmmm512, zmm0, zmm1), Register.K7), LocalOpCodeFlags.PreferEvex);
+		}
+#endif
+
+		[Fact]
+		public void TestDeclareData_db_array() {
+			TestAssemblerDeclareData(c => c.db(Array.Empty<byte>()), Array.Empty<byte>());
+			TestAssemblerDeclareData(c => c.db(new byte[] { 1 }), new byte[] { 1 });
+			TestAssemblerDeclareData(c => c.db(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 }), new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 });
+			TestAssemblerDeclareData(c => c.db(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17 }), new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17 });
+			TestAssemblerDeclareData(c => c.db(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32 }), new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32 });
+			TestAssemblerDeclareData(c => c.db(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33 }), new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33 });
+		}
+
+#if HAS_SPAN
+		[Fact]
+		public void TestDeclareData_db_span() {
+			TestAssemblerDeclareData(c => c.db(Array.Empty<byte>().AsSpan()), Array.Empty<byte>());
+			TestAssemblerDeclareData(c => c.db(new byte[] { 1 }.AsSpan()), new byte[] { 1 });
+			TestAssemblerDeclareData(c => c.db(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 }.AsSpan()), new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 });
+			TestAssemblerDeclareData(c => c.db(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17 }.AsSpan()), new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17 });
+			TestAssemblerDeclareData(c => c.db(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32 }.AsSpan()), new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32 });
+			TestAssemblerDeclareData(c => c.db(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33 }.AsSpan()), new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33 });
+		}
+#endif
+
+		[Fact]
+		public void TestDeclareData_db_array_index_length() {
+			TestAssemblerDeclareData(c => c.db(new byte[] { 97, 98, 1, 99, 100, 101 }, 2, 1), new byte[] { 1 });
+			TestAssemblerDeclareData(c => c.db(new byte[] { 97, 98, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 99, 100, 101 }, 2, 16), new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 });
+			TestAssemblerDeclareData(c => c.db(new byte[] { 97, 98, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 99, 100, 101 }, 2, 17), new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17 });
+			TestAssemblerDeclareData(c => c.db(new byte[] { 97, 98, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 99, 100, 101 }, 2, 32), new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32 });
+			TestAssemblerDeclareData(c => c.db(new byte[] { 97, 98, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 99, 100, 101 }, 2, 33), new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33 });
+		}
+
+		[Fact]
+		public void TestDeclareData_db_array_throws_if_null_array() {
+			var assembler = new Assembler(Bitness);
+			Assert.Throws<ArgumentNullException>(() => assembler.db(null));
+		}
+
+		[Fact]
+		public void TestDeclareData_db_array_index_length_throws() {
+			var assembler = new Assembler(Bitness);
+			Assert.Throws<ArgumentNullException>(() => assembler.db(null, 0, 0));
+			Assert.Throws<ArgumentNullException>(() => assembler.db(null, 1, 2));
+			Assert.Throws<ArgumentOutOfRangeException>(() => assembler.db(new byte[] { }, 1, 0));
+			Assert.Throws<ArgumentOutOfRangeException>(() => assembler.db(new byte[] { }, 0, 1));
+			Assert.Throws<ArgumentOutOfRangeException>(() => assembler.db(new byte[] { 1, 2, 3 }, -1, 0));
+			Assert.Throws<ArgumentOutOfRangeException>(() => assembler.db(new byte[] { 1, 2, 3 }, 0, -1));
+			Assert.Throws<ArgumentOutOfRangeException>(() => assembler.db(new byte[] { 1, 2, 3 }, -1, -1));
+			Assert.Throws<ArgumentOutOfRangeException>(() => assembler.db(new byte[] { 1, 2, 3 }, 0, 4));
+			Assert.Throws<ArgumentOutOfRangeException>(() => assembler.db(new byte[] { 1, 2, 3 }, 1, 3));
+			Assert.Throws<ArgumentOutOfRangeException>(() => assembler.db(new byte[] { 1, 2, 3 }, 3, 1));
+			Assert.Throws<ArgumentOutOfRangeException>(() => assembler.db(new byte[] { 1, 2, 3 }, 4, 0));
+			Assert.Throws<ArgumentOutOfRangeException>(() => assembler.db(new byte[] { 1, 2, 3 }, 4, -1));
 		}
 
 		[Fact]
@@ -221,6 +277,7 @@ namespace Iced.UnitTests.Intel.AssemblerTests {
 			}
 		}
 
+#if !NO_EVEX
 		[Fact]
 		public void TestOperandModifiers() {
 			{
@@ -305,6 +362,7 @@ namespace Iced.UnitTests.Intel.AssemblerTests {
 				TestAssembler(c => c.vaddpd(zmm1.k3.z, zmm2, zmm3.rz_sae), inst);
 			}
 		}
+#endif
 	}
 }
 #endif

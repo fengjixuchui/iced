@@ -80,7 +80,7 @@ namespace Generator.InstructionInfo {
 
 		public InstrInfoTypesGen(GenTypes genTypes) {
 			this.genTypes = genTypes;
-			defs = genTypes.GetObject<InstructionDefs>(TypeIds.InstructionDefs).Table;
+			defs = genTypes.GetObject<InstructionDefs>(TypeIds.InstructionDefs).Defs;
 		}
 
 		public void Generate() {
@@ -93,7 +93,7 @@ namespace Generator.InstructionInfo {
 		}
 
 		void GenerateCodeInfo() {
-			var values = typeof(CodeInfo).GetFields().Where(a => a.IsLiteral).Select(a => new EnumValue((uint)(CodeInfo)a.GetValue(null)!, a.Name, CommentAttribute.GetDocumentation(a))).ToArray();
+			var values = typeof(CodeInfo).GetFields().Where(a => a.IsLiteral).Select(a => new EnumValue((uint)(CodeInfo)a.GetValue(null)!, a.Name, CommentAttribute.GetDocumentation(a), DeprecatedAttribute.GetDeprecatedInfo(a))).ToArray();
 			EnumCodeInfo = new EnumType(TypeIds.CodeInfo, null, values, EnumTypeFlags.NoInitialize);
 		}
 
@@ -122,18 +122,23 @@ namespace Generator.InstructionInfo {
 			}
 		}
 
+		static void Add(Dictionary<EnumValue[], EnumValue> cpuidToInternalDict, List<(EnumValue cpuidInternal, EnumValue[] cpuidFeatures)> cpuidFeatures, EnumValue[] cpuid) {
+			if (!cpuidToInternalDict.ContainsKey(cpuid)) {
+				var name = string.Join("_and_", cpuid.Select(a => a.RawName));
+				var internalEnumValue = new EnumValue(0, name, null);
+				cpuidFeatures.Add((internalEnumValue, cpuid));
+				cpuidToInternalDict.Add(cpuid, internalEnumValue);
+			}
+		}
+
 		void GenerateCpuidFeatureInternal() {
 			var cpuidToInternalDict = new Dictionary<EnumValue[], EnumValue>(new EnumValueArrayComparer());
 			var cpuidFeatures = new List<(EnumValue cpuidInternal, EnumValue[] cpuidFeatures)>();
-			foreach (var def in defs) {
-				var info = def.InstrInfo;
-				if (!cpuidToInternalDict.ContainsKey(info.Cpuid)) {
-					var name = string.Join("_and_", info.Cpuid.Select(a => a.RawName));
-					var internalEnumValue = new EnumValue(0, name, null);
-					cpuidFeatures.Add((internalEnumValue, info.Cpuid));
-					cpuidToInternalDict.Add(info.Cpuid, internalEnumValue);
-				}
-			}
+			foreach (var def in defs)
+				Add(cpuidToInternalDict, cpuidFeatures, def.InstrInfo.Cpuid);
+			// Always include AVX2 since we have code that checks AVX2_Check and it references CpuidFeature.AVX2
+			Add(cpuidToInternalDict, cpuidFeatures, new[] { genTypes[TypeIds.CpuidFeature][nameof(CpuidFeature.AVX2)] });
+
 			cpuidFeatures.Sort(CompareCpuidInternalEnums);
 
 			EnumCpuidFeatureInternal = new EnumType(TypeIds.CpuidFeatureInternal, null, cpuidFeatures.Select(a => a.cpuidInternal).ToArray(), EnumTypeFlags.None);
@@ -170,8 +175,10 @@ namespace Generator.InstructionInfo {
 			var rflagsHashSet = new HashSet<(RflagsBits read, RflagsBits undefined, RflagsBits written, RflagsBits cleared, RflagsBits set)> {
 				// None must always be present
 				default,
-				// Needed by CodeInfo.Clear_rflags
+				// Needed by CodeInfo.Clear_rflags (xor)
 				(RflagsBits.None, RflagsBits.AF, RflagsBits.None, RflagsBits.CF | RflagsBits.OF | RflagsBits.SF, RflagsBits.PF | RflagsBits.ZF),
+				// Needed by CodeInfo.Clear_rflags (sub)
+				(RflagsBits.None, RflagsBits.None, RflagsBits.None, RflagsBits.AF | RflagsBits.CF | RflagsBits.OF | RflagsBits.SF, RflagsBits.PF | RflagsBits.ZF),
 			};
 			foreach (var def in defs) {
 				var info = def.InstrInfo;
@@ -281,6 +288,34 @@ namespace Generator.InstructionInfo {
 					opInfoHashes[i].Add(opInfo);
 				}
 			}
+
+			// Referenced by code in InstructionInfoFactory
+			opInfoHashes[0].Add(OpInfo.None);
+			opInfoHashes[0].Add(OpInfo.CondWrite);
+			opInfoHashes[0].Add(OpInfo.CondWrite32_ReadWrite64);
+			opInfoHashes[0].Add(OpInfo.NoMemAccess);
+			opInfoHashes[0].Add(OpInfo.Read);
+			opInfoHashes[0].Add(OpInfo.ReadCondWrite);
+			opInfoHashes[0].Add(OpInfo.ReadWrite);
+			opInfoHashes[0].Add(OpInfo.Write);
+			opInfoHashes[0].Add(OpInfo.WriteVmm);
+			opInfoHashes[0].Add(OpInfo.ReadWriteVmm);
+			opInfoHashes[0].Add(OpInfo.WriteForce);
+			opInfoHashes[0].Add(OpInfo.WriteMem_ReadWriteReg);
+			opInfoHashes[1].Add(OpInfo.ReadP3);
+
+			// InstructionInfoFactory assumes these have exactly two values: None, Read.
+			// It can be less than that if some instructions were filtered out.
+			foreach (var i in new[] { 3, 4 }) {
+				var opInfoHash = opInfoHashes[i];
+				if (opInfoHash.Count != 2)
+					opInfoHash.Add(OpInfo.Read);
+				if (opInfoHash.Count != 2)
+					throw new InvalidOperationException();
+				if (!opInfoHash.Contains(OpInfo.None) || !opInfoHash.Contains(OpInfo.Read))
+					throw new InvalidOperationException();
+			}
+
 			var opInfos = new OpInfo[opInfoHashes.Length][];
 			for (int i = 0; i < opInfos.Length; i++) {
 				var array = opInfoHashes[i].ToArray();
@@ -310,8 +345,8 @@ namespace Generator.InstructionInfo {
 
 		void GenerateInfoFlags() {
 			var enumOpInfos = EnumOpInfos ?? throw new InvalidOperationException();
-			var values1 = typeof(InfoFlags1).GetFields().Where(a => a.IsLiteral && a.Name != nameof(InfoFlags1.FirstUsedBit)).Select(a => new EnumValue((uint)(InfoFlags1)a.GetValue(null)!, a.Name, CommentAttribute.GetDocumentation(a))).ToList();
-			var values2 = typeof(InfoFlags2).GetFields().Where(a => a.IsLiteral).Select(a => new EnumValue((uint)(InfoFlags2)a.GetValue(null)!, a.Name, CommentAttribute.GetDocumentation(a))).ToArray();
+			var values1 = typeof(InfoFlags1).GetFields().Where(a => a.IsLiteral && a.Name != nameof(InfoFlags1.FirstUsedBit)).Select(a => new EnumValue((uint)(InfoFlags1)a.GetValue(null)!, a.Name, CommentAttribute.GetDocumentation(a), DeprecatedAttribute.GetDeprecatedInfo(a))).ToList();
+			var values2 = typeof(InfoFlags2).GetFields().Where(a => a.IsLiteral).Select(a => new EnumValue((uint)(InfoFlags2)a.GetValue(null)!, a.Name, CommentAttribute.GetDocumentation(a), DeprecatedAttribute.GetDeprecatedInfo(a))).ToArray();
 
 			uint shift = 0;
 			for (int i = 0; i < enumOpInfos.Length; i++) {

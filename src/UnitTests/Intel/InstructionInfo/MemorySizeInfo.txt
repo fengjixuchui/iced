@@ -43,8 +43,8 @@ SegPtr64, 10, 10, SegPtr64, 1,
 WordOffset, 2, 2, WordOffset, 1,
 DwordOffset, 4, 4, DwordOffset, 1,
 QwordOffset, 8, 8, QwordOffset, 1,
-Bound16_WordWord, 4, 4, Bound16_WordWord, 1,
-Bound32_DwordDword, 8, 8, Bound32_DwordDword, 1,
+Bound16_WordWord, 4, 2, UInt16, 2, packed
+Bound32_DwordDword, 8, 4, UInt32, 2, packed
 Bnd32, 8, 8, Bnd32, 1,
 Bnd64, 16, 16, Bnd64, 1,
 Fword6, 6, 6, Fword6, 1,
@@ -64,6 +64,8 @@ Fxsave64_512Byte, 512, 512, Fxsave64_512Byte, 1,
 Xsave, 0, 0, Xsave, 1,
 Xsave64, 0, 0, Xsave64, 1,
 Bcd, 10, 10, Bcd, 1, signed
+Tilecfg, 64, 64, Tilecfg, 1,
+Tile, 0, 0, Tile, 1,
 Packed16_UInt8, 2, 1, UInt8, 2, packed
 Packed16_Int8, 2, 1, Int8, 2, packed signed
 Packed32_UInt8, 4, 1, UInt8, 4, packed

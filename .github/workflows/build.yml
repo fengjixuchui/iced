@@ -1,5 +1,14 @@
 name: GitHub CI
-on: push
+on:
+  push:
+    paths:
+      - '.github/workflows/**'
+      - 'src/**'
+      - '!**/*.md'
+    branches:
+      - master
+  release:
+    types: released
 
 jobs:
   build-csharp-windows:
@@ -28,12 +37,18 @@ jobs:
               "DECODER",
               "ENCODER",
               "ENCODER;BLOCK_ENCODER",
+              "ENCODER;BLOCK_ENCODER;CODE_ASSEMBLER",
               "ENCODER;OPCODE_INFO",
               "INSTR_INFO",
               "GAS",
               "INTEL",
               "MASM",
-              "NASM"
+              "NASM",
+              "DECODER;ENCODER;BLOCK_ENCODER;OPCODE_INFO;INSTR_INFO;GAS;INTEL;MASM;NASM;NO_VEX",
+              "DECODER;ENCODER;BLOCK_ENCODER;OPCODE_INFO;INSTR_INFO;GAS;INTEL;MASM;NASM;NO_EVEX",
+              "DECODER;ENCODER;BLOCK_ENCODER;OPCODE_INFO;INSTR_INFO;GAS;INTEL;MASM;NASM;NO_XOP",
+              "DECODER;ENCODER;BLOCK_ENCODER;OPCODE_INFO;INSTR_INFO;GAS;INTEL;MASM;NASM;NO_D3NOW",
+              "DECODER;ENCODER;BLOCK_ENCODER;OPCODE_INFO;INSTR_INFO;GAS;INTEL;MASM;NASM;NO_VEX;NO_EVEX;NO_XOP;NO_D3NOW"
               ) {
             git clean -xdf
             if ($LASTEXITCODE) { exit $LASTEXITCODE }
@@ -45,12 +60,18 @@ jobs:
               "DECODER",
               "DECODER;ENCODER",
               "DECODER;ENCODER;BLOCK_ENCODER",
+              "DECODER;ENCODER;BLOCK_ENCODER;CODE_ASSEMBLER",
               "DECODER;ENCODER;OPCODE_INFO",
               "DECODER;INSTR_INFO",
               "DECODER;GAS",
               "DECODER;INTEL",
               "DECODER;MASM",
-              "DECODER;NASM"
+              "DECODER;NASM",
+              "DECODER;ENCODER;BLOCK_ENCODER;OPCODE_INFO;INSTR_INFO;GAS;INTEL;MASM;NASM;NO_VEX",
+              "DECODER;ENCODER;BLOCK_ENCODER;OPCODE_INFO;INSTR_INFO;GAS;INTEL;MASM;NASM;NO_EVEX",
+              "DECODER;ENCODER;BLOCK_ENCODER;OPCODE_INFO;INSTR_INFO;GAS;INTEL;MASM;NASM;NO_XOP",
+              "DECODER;ENCODER;BLOCK_ENCODER;OPCODE_INFO;INSTR_INFO;GAS;INTEL;MASM;NASM;NO_D3NOW",
+              "DECODER;ENCODER;BLOCK_ENCODER;OPCODE_INFO;INSTR_INFO;GAS;INTEL;MASM;NASM;NO_VEX;NO_EVEX;NO_XOP;NO_D3NOW"
               ) {
             git clean -xdf
             if ($LASTEXITCODE) { exit $LASTEXITCODE }
@@ -63,30 +84,35 @@ jobs:
       - name: Build, test
         shell: pwsh
         run: |
-          .\build.ps1
+          ./build.ps1
 
       - name: upload-artifact doesn't support wildcards
+        if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')
         shell: pwsh
         run: |
           New-Item -ItemType Directory nuget_files > $null
-          Copy-Item src\csharp\Intel\Iced\bin\Release\*.*nupkg nuget_files
+          Copy-Item src/csharp/Intel/Iced/bin/Release/*.*nupkg nuget_files
 
       - uses: actions/upload-artifact@v1
+        if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')
         with:
           name: nupkg
           path: nuget_files
 
       - uses: actions/upload-artifact@v1
+        if: github.ref == 'refs/heads/master'
         with:
           name: coverage.info
           path: src/csharp/Intel/Iced.UnitTests/coverage.netcoreapp3.1.info
 
       - name: Upload coverage report
+        if: github.ref == 'refs/heads/master'
         shell: bash
+        continue-on-error: true
         run: |
           curl https://codecov.io/bash -o codecov
           chmod +x codecov
-          ./codecov -f src/csharp/Intel/Iced.UnitTests/coverage.info
+          ./codecov -f src/csharp/Intel/Iced.UnitTests/coverage.netcoreapp3.1.info
         env:
           CODECOV_TOKEN: ${{secrets.CODECOV_TOKEN}}
 
@@ -95,7 +121,7 @@ jobs:
         shell: pwsh
         run: |
           Invoke-WebRequest -Uri https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -UseBasicParsing -OutFile nuget.exe
-          Get-ChildItem src\csharp\Intel\Iced\bin\Release\Iced.*.nupkg | ForEach-Object { .\nuget.exe push $_.FullName -ApiKey ${{secrets.NUGET_APIKEY}} -NonInteractive -Source https://api.nuget.org/v3/index.json }
+          Get-ChildItem src/csharp/Intel/Iced/bin/Release/Iced.*.nupkg | ForEach-Object { ./nuget.exe push $_.FullName -ApiKey ${{secrets.NUGET_APIKEY}} -NonInteractive -Source https://api.nuget.org/v3/index.json }
 
   # Make sure it builds on Linux too
   build-csharp:
@@ -144,6 +170,14 @@ jobs:
           rustup toolchain install 1.20.0 --no-self-update
           rustup toolchain install nightly --no-self-update
           rustup target add wasm32-unknown-unknown
+          
+          # 1.45.0 crashes with a stack overflow when compiling iced-x86-js
+          rustup toolchain install 1.44.1 --no-self-update
+          rustup target add wasm32-unknown-unknown --toolchain 1.44.1
+          rustup component add clippy --toolchain 1.44.1
+          rustup component add rustfmt --toolchain 1.44.1
+          # 1.45 workaround
+          
           rustup update --no-self-update
 
       - name: Install Node.js
@@ -155,6 +189,42 @@ jobs:
         shell: bash
         run: |
           npm install -g wasm-pack
+
+      - uses: actions/setup-dotnet@v1
+        if: matrix.os == 'ubuntu-latest'
+        with:
+          dotnet-version: '3.1.100'
+      - name: Test valid/invalid instructions
+        shell: bash
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          export PATH="$HOME/.cargo/bin:$PATH"
+          export RUSTFLAGS="-D warnings"
+          echo dotnet version
+          dotnet --version
+          valid_file=$(mktemp)
+          invalid_file=$(mktemp)
+          
+          for bitness in 16 32 64; do
+              echo ==== ${bitness}-bit: Generating valid/invalid files ====
+              dotnet run -c:Release -p src/csharp/Intel/IcedFuzzer/IcedFuzzer/IcedFuzzer.csproj -- -$bitness -oil $invalid_file -ovlc $valid_file
+              echo ==== ${bitness}-bit: Testing valid instructions ====
+              cargo run --color always --release --manifest-path src/rust/Cargo.toml -p iced-x86-fzgt -- -b $bitness -f $valid_file
+              echo ==== ${bitness}-bit: Testing invalid instructions ====
+              cargo run --color always --release --manifest-path src/rust/Cargo.toml -p iced-x86-fzgt -- -b $bitness -f $invalid_file --invalid
+          done
+          
+          for bitness in 16 32 64; do
+              echo "==== ${bitness}-bit (AMD): Generating valid/invalid files ===="
+              dotnet run -c:Release -p src/csharp/Intel/IcedFuzzer/IcedFuzzer/IcedFuzzer.csproj -- -$bitness -oil $invalid_file -ovlc $valid_file --amd
+              echo "==== ${bitness}-bit (AMD): Testing valid instructions ===="
+              cargo run --color always --release --manifest-path src/rust/Cargo.toml -p iced-x86-fzgt -- -b $bitness -f $valid_file --amd
+              echo "==== ${bitness}-bit (AMD): Testing invalid instructions ===="
+              cargo run --color always --release --manifest-path src/rust/Cargo.toml -p iced-x86-fzgt -- -b $bitness -f $invalid_file --invalid --amd
+          done
+          
+          rm $valid_file
+          rm $invalid_file
 
       - name: Build no_std
         shell: bash
@@ -194,6 +264,18 @@ jobs:
           done
           
           allFeatures=(
+              "no_vex"
+              "no_evex"
+              "no_xop"
+              "no_d3now"
+              "no_vex no_evex no_xop no_d3now"
+          )
+          for features in "${allFeatures[@]}"; do
+              echo ==== $features ====
+              cargo check --color always --features "$features"
+          done
+          
+          allFeatures=(
               "no_std decoder"
               "no_std encoder"
               "no_std encoder block_encoder"
@@ -225,6 +307,18 @@ jobs:
               cargo check --color always --tests --no-default-features --features "$features"
           done
           
+          allFeatures=(
+              "no_vex"
+              "no_evex"
+              "no_xop"
+              "no_d3now"
+              "no_vex no_evex no_xop no_d3now"
+          )
+          for features in "${allFeatures[@]}"; do
+              echo ==== TEST $features ====
+              cargo check --color always --tests --features "$features"
+          done
+          
           cd ..
           git clean -xdf
 
@@ -238,9 +332,9 @@ jobs:
           echo ==== FORMAT CHECK ====
           cargo fmt -- --color always --check
           echo ==== CLIPPY instr_api decoder encoder block_encoder instr_create op_code_info instr_info gas intel masm nasm ====
-          cargo clippy --color always --target wasm32-unknown-unknown --no-default-features --features "instr_api decoder encoder block_encoder instr_create op_code_info instr_info gas intel masm nasm"
+          cargo +1.44.1 clippy --color always --target wasm32-unknown-unknown --no-default-features --features "instr_api decoder encoder block_encoder instr_create op_code_info instr_info gas intel masm nasm"
           echo ==== CLIPPY instr_api decoder encoder block_encoder instr_create op_code_info instr_info gas intel masm nasm bigint ====
-          cargo clippy --color always --target wasm32-unknown-unknown --no-default-features --features "instr_api decoder encoder block_encoder instr_create op_code_info instr_info gas intel masm nasm bigint"
+          cargo +1.44.1 clippy --color always --target wasm32-unknown-unknown --no-default-features --features "instr_api decoder encoder block_encoder instr_create op_code_info instr_info gas intel masm nasm bigint"
           
           allFeatures=(
               "decoder"
@@ -262,20 +356,38 @@ jobs:
           )
           for features in "${allFeatures[@]}"; do
               echo ==== $features ====
-              cargo check --color always --target wasm32-unknown-unknown --no-default-features --features "$features"
+              cargo +1.44.1 check --color always --target wasm32-unknown-unknown --no-default-features --features "$features"
+          done
+          
+          allFeatures=(
+              "no_vex"
+              "no_evex"
+              "no_xop"
+              "no_d3now"
+              "no_vex no_evex no_xop no_d3now"
+          )
+          for features in "${allFeatures[@]}"; do
+              echo ==== $features ====
+              cargo +1.44.1 check --color always --target wasm32-unknown-unknown --features "$features"
           done
           
           cd ..
           git clean -xdf
 
       - name: iced-x86-js tests
+        # Disable this for now: https://github.com/rustwasm/wasm-pack/issues/886
+        continue-on-error: true
         shell: bash
         run: |
           export PATH="$HOME/.cargo/bin:$PATH"
           export RUSTFLAGS="-D warnings"
           
           cd src/rust/iced-x86-js
+          # 1.45.0 can't build it without a stack overflow
+          rustup default 1.44.1
           wasm-pack build --mode force --target nodejs
+          # Restore default toolchain
+          rustup default stable
           cd src/tests
           npm install
           npm test
@@ -299,10 +411,6 @@ jobs:
           echo ==== DOC ====
           # Use nightly since that's what docs.rs uses
           cargo +nightly doc --color always
-          echo ==== BUILD DEBUG ====
-          cargo build --color always --features "db"
-          echo ==== TEST DEBUG ====
-          cargo test --color always --features "db"
           echo ==== BUILD RELEASE ====
           cargo build --color always --features "db" --release
           echo ==== TEST RELEASE ====
@@ -322,14 +430,12 @@ jobs:
           export PATH="$HOME/.cargo/bin:$PATH"
           export RUSTFLAGS="-D warnings"
           cd src/rust/iced-x86
+          sed -i -e 's/"iced-x86-fzgt",/#"iced-x86-fzgt",/' ../Cargo.toml
           echo ==== UPDATE Cargo.lock ====
           cargo +1.20.0 generate-lockfile
           cargo +1.20.0 update --package lazy_static --precise 1.1.1
-          echo ==== BUILD DEBUG ====
-          cargo +1.20.0 build --color always --features "db"
-          echo ==== TEST DEBUG ====
-          cargo +1.20.0 test --color always --features "db" -- --skip "lib.rs"
           echo ==== BUILD RELEASE ====
           cargo +1.20.0 build --color always --features "db" --release
           echo ==== TEST RELEASE ====
           cargo +1.20.0 test --color always --features "db" --release -- --skip "lib.rs"
+          git checkout ../Cargo.toml

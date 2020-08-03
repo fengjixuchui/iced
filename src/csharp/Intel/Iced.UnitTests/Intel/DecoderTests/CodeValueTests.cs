@@ -21,7 +21,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-using System.Linq;
+using System;
 using System.Text;
 using Iced.Intel;
 using Xunit;
@@ -63,7 +63,7 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 					16 => T16,
 					32 => T32,
 					64 => T64,
-					_ => throw new System.InvalidOperationException(),
+					_ => throw new InvalidOperationException(),
 				};
 			}
 
@@ -73,7 +73,7 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 					16 => T16,
 					32 => T32,
 					64 => T64,
-					_ => throw new System.InvalidOperationException(),
+					_ => throw new InvalidOperationException(),
 				};
 			}
 #else
@@ -109,7 +109,7 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 			var sb32 = new StringBuilder();
 			var sb64 = new StringBuilder();
 			int missing16 = 0, missing32 = 0, missing64 = 0;
-			var codeNames = ToEnumConverter.GetCodeNames().ToArray();
+			var codeNames = ToEnumConverter.GetCodeNames();
 			Assert.Equal(tested.Length, codeNames.Length);
 			for (int i = 0; i < tested.Length; i++) {
 				if (tested[i] != (T16 | T32 | T64) && !CodeUtils.IsIgnored(codeNames[i])) {

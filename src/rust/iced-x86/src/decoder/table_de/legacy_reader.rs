@@ -24,10 +24,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 use super::super::handlers::OpCodeHandler;
 use super::super::handlers::*;
 use super::super::handlers_3dnow::*;
-use super::super::handlers_evex::OpCodeHandler_EVEX;
 use super::super::handlers_fpu::*;
 use super::super::handlers_legacy::*;
-use super::super::handlers_vex::{OpCodeHandler_VEX2, OpCodeHandler_VEX3, OpCodeHandler_XOP};
 use super::super::Code;
 use super::enums::*;
 use super::TableDeserializer;
@@ -70,7 +68,7 @@ pub(super) fn read_handlers(deserializer: &mut TableDeserializer, result: &mut V
 
 		OpCodeHandlerKind::Null => &NULL_HANDLER as *const _ as *const OpCodeHandler,
 		OpCodeHandlerKind::HandlerReference => deserializer.read_handler_reference(),
-		OpCodeHandlerKind::ArrayReference => unreachable!(),
+		OpCodeHandlerKind::ArrayReference | OpCodeHandlerKind::Unused1 => unreachable!(),
 
 		OpCodeHandlerKind::RM => {
 			Box::into_raw(Box::new(OpCodeHandler_RM::new(deserializer.read_handler(), deserializer.read_handler()))) as *const OpCodeHandler
@@ -123,20 +121,12 @@ pub(super) fn read_handlers(deserializer: &mut TableDeserializer, result: &mut V
 			deserializer.read_handler(),
 		))) as *const OpCodeHandler,
 
-		OpCodeHandlerKind::MandatoryPrefix_F3_F2 => Box::into_raw(Box::new(OpCodeHandler_MandatoryPrefix_F3_F2::new(
+		OpCodeHandlerKind::MandatoryPrefix4 => Box::into_raw(Box::new(OpCodeHandler_MandatoryPrefix4::new(
 			deserializer.read_handler(),
 			deserializer.read_handler(),
-			true,
-			deserializer.read_handler(),
-			true,
-		))) as *const OpCodeHandler,
-
-		OpCodeHandlerKind::LegacyMandatoryPrefix_F3_F2 => Box::into_raw(Box::new(OpCodeHandler_MandatoryPrefix_F3_F2::new(
 			deserializer.read_handler(),
 			deserializer.read_handler(),
-			deserializer.read_boolean(),
-			deserializer.read_handler(),
-			deserializer.read_boolean(),
+			deserializer.read_u32(),
 		))) as *const OpCodeHandler,
 
 		OpCodeHandlerKind::MandatoryPrefix_NoModRM => Box::into_raw(Box::new(OpCodeHandler_MandatoryPrefix::new(
@@ -178,7 +168,7 @@ pub(super) fn read_handlers(deserializer: &mut TableDeserializer, result: &mut V
 
 		OpCodeHandlerKind::B_Ev => {
 			code = deserializer.read_code();
-			Box::into_raw(Box::new(OpCodeHandler_B_Ev::new(code, code + 1))) as *const OpCodeHandler
+			Box::into_raw(Box::new(OpCodeHandler_B_Ev::new(code, code + 1, deserializer.read_boolean()))) as *const OpCodeHandler
 		}
 
 		OpCodeHandlerKind::B_MIB => Box::into_raw(Box::new(OpCodeHandler_B_MIB::new(deserializer.read_code()))) as *const OpCodeHandler,
@@ -344,8 +334,7 @@ pub(super) fn read_handlers(deserializer: &mut TableDeserializer, result: &mut V
 
 		OpCodeHandlerKind::Ev_REXW => {
 			code = deserializer.read_code();
-			Box::into_raw(Box::new(OpCodeHandler_Ev_REXW::new(code, code + 1, deserializer.read_boolean(), deserializer.read_boolean())))
-				as *const OpCodeHandler
+			Box::into_raw(Box::new(OpCodeHandler_Ev_REXW::new(code, code + 1, deserializer.read_u32()))) as *const OpCodeHandler
 		}
 
 		OpCodeHandlerKind::Ev_Sw => {
@@ -797,6 +786,12 @@ pub(super) fn read_handlers(deserializer: &mut TableDeserializer, result: &mut V
 		OpCodeHandlerKind::Simple4 => {
 			code = deserializer.read_code();
 			Box::into_raw(Box::new(OpCodeHandler_Simple4::new(code, code + 1))) as *const OpCodeHandler
+		}
+
+		OpCodeHandlerKind::Simple4b => {
+			code = deserializer.read_code();
+			let code2 = deserializer.read_code();
+			Box::into_raw(Box::new(OpCodeHandler_Simple4::new(code, code2))) as *const OpCodeHandler
 		}
 
 		OpCodeHandlerKind::Simple5 => {

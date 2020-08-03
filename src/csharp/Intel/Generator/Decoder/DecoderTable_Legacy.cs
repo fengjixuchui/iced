@@ -25,10 +25,10 @@ using Generator.Enums;
 using Generator.Enums.Decoder;
 
 namespace Generator.Decoder {
-	static class OpCodeHandlersTables_Legacy {
+	static class DecoderTable_Legacy {
 		public const string OneByteHandlers = nameof(OneByteHandlers);
 
-		public static (string name, object?[] handlers)[] GetHandlers(GenTypes genTypes) {
+		public static (string name, object?[] handlers)[] CreateHandlers(GenTypes genTypes) {
 			var legacyEnum = genTypes[TypeIds.OpCodeHandlerKind];
 			var codeEnum = genTypes[TypeIds.Code];
 			var decoderOptionsEnum = genTypes[TypeIds.DecoderOptions];
@@ -804,10 +804,22 @@ namespace Generator.Decoder {
 
 				("handlers_Grp_0F01_lo",
 				new object[8] {
-					new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ms)], codeEnum[nameof(Code.Sgdt_m1632_16)], codeEnum[nameof(Code.Sgdt_m1632)], codeEnum[nameof(Code.Sgdt_m1664)] },
-					new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ms)], codeEnum[nameof(Code.Sidt_m1632_16)], codeEnum[nameof(Code.Sidt_m1632)], codeEnum[nameof(Code.Sidt_m1664)] },
-					new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ms)], codeEnum[nameof(Code.Lgdt_m1632_16)], codeEnum[nameof(Code.Lgdt_m1632)], codeEnum[nameof(Code.Lgdt_m1664)] },
-					new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ms)], codeEnum[nameof(Code.Lidt_m1632_16)], codeEnum[nameof(Code.Lidt_m1632)], codeEnum[nameof(Code.Lidt_m1664)] },
+					new object[] { legacyEnum[nameof(OpCodeHandlerKind.RM)],
+						invalid,
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ms)], codeEnum[nameof(Code.Sgdt_m1632_16)], codeEnum[nameof(Code.Sgdt_m1632)], codeEnum[nameof(Code.Sgdt_m1664)] },
+					},
+					new object[] { legacyEnum[nameof(OpCodeHandlerKind.RM)],
+						invalid,
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ms)], codeEnum[nameof(Code.Sidt_m1632_16)], codeEnum[nameof(Code.Sidt_m1632)], codeEnum[nameof(Code.Sidt_m1664)] },
+					},
+					new object[] { legacyEnum[nameof(OpCodeHandlerKind.RM)],
+						invalid,
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ms)], codeEnum[nameof(Code.Lgdt_m1632_16)], codeEnum[nameof(Code.Lgdt_m1632)], codeEnum[nameof(Code.Lgdt_m1664)] },
+					},
+					new object[] { legacyEnum[nameof(OpCodeHandlerKind.RM)],
+						invalid,
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ms)], codeEnum[nameof(Code.Lidt_m1632_16)], codeEnum[nameof(Code.Lidt_m1632)], codeEnum[nameof(Code.Lidt_m1664)] },
+					},
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.Evw)], codeEnum[nameof(Code.Smsw_rm16)], codeEnum[nameof(Code.Smsw_r32m16)], codeEnum[nameof(Code.Smsw_r64m16)] },
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix)],
 						invalid,
@@ -938,7 +950,12 @@ namespace Generator.Decoder {
 
 					// D8
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple5)], codeEnum[nameof(Code.Vmrunw)], codeEnum[nameof(Code.Vmrund)], codeEnum[nameof(Code.Vmrunq)] },
-					new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple)], codeEnum[nameof(Code.Vmmcall)] },
+					new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix_NoModRM)],
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple)], codeEnum[nameof(Code.Vmmcall)] },
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple)], codeEnum[nameof(Code.Vmmcall)] },
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple)], codeEnum[nameof(Code.Vmgexit)] },
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple)], codeEnum[nameof(Code.Vmgexit)] },
+					},
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple5)], codeEnum[nameof(Code.Vmloadw)], codeEnum[nameof(Code.Vmloadd)], codeEnum[nameof(Code.Vmloadq)] },
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple5)], codeEnum[nameof(Code.Vmsavew)], codeEnum[nameof(Code.Vmsaved)], codeEnum[nameof(Code.Vmsaveq)] },
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple)], codeEnum[nameof(Code.Stgi)] },
@@ -1013,7 +1030,12 @@ namespace Generator.Decoder {
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple)], codeEnum[nameof(Code.Mcommit)] },
 						invalid_NoModRM,
 					},
-					new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple)], codeEnum[nameof(Code.Mwaitx)] },
+					new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix_NoModRM)],
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple)], codeEnum[nameof(Code.Mwaitx)] },
+						invalid_NoModRM,
+						invalid_NoModRM,
+						invalid_NoModRM,
+					},
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple5)], codeEnum[nameof(Code.Clzerow)], codeEnum[nameof(Code.Clzerod)], codeEnum[nameof(Code.Clzeroq)] },
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple)], codeEnum[nameof(Code.Rdpru)] },
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix_NoModRM)],
@@ -1261,7 +1283,7 @@ namespace Generator.Decoder {
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix)],
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.RM)],
 							invalid,
-							new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Xsaves_mem)], codeEnum[nameof(Code.Xsaves64_mem)], false, true },
+							new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Xsaves_mem)], codeEnum[nameof(Code.Xsaves64_mem)], 0x02 },
 						},
 						invalid,
 						invalid,
@@ -1575,7 +1597,7 @@ namespace Generator.Decoder {
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Bitness_DontReadModRM)],
 							invalid,
 							new object[] { legacyEnum[nameof(OpCodeHandlerKind.RM)],
-								new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Rdfsbase_r32)], codeEnum[nameof(Code.Rdfsbase_r64)], true, false },
+								new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Rdfsbase_r32)], codeEnum[nameof(Code.Rdfsbase_r64)], 0x01 },
 								invalid,
 							},
 						},
@@ -1587,7 +1609,7 @@ namespace Generator.Decoder {
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Bitness_DontReadModRM)],
 							invalid,
 							new object[] { legacyEnum[nameof(OpCodeHandlerKind.RM)],
-								new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Rdgsbase_r32)], codeEnum[nameof(Code.Rdgsbase_r64)], true, false },
+								new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Rdgsbase_r32)], codeEnum[nameof(Code.Rdgsbase_r64)], 0x01 },
 								invalid,
 							},
 						},
@@ -1599,7 +1621,7 @@ namespace Generator.Decoder {
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Bitness_DontReadModRM)],
 							invalid,
 							new object[] { legacyEnum[nameof(OpCodeHandlerKind.RM)],
-								new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Wrfsbase_r32)], codeEnum[nameof(Code.Wrfsbase_r64)], true, false },
+								new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Wrfsbase_r32)], codeEnum[nameof(Code.Wrfsbase_r64)], 0x01 },
 								invalid,
 							},
 						},
@@ -1611,7 +1633,7 @@ namespace Generator.Decoder {
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Bitness_DontReadModRM)],
 							invalid,
 							new object[] { legacyEnum[nameof(OpCodeHandlerKind.RM)],
-								new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Wrgsbase_r32)], codeEnum[nameof(Code.Wrgsbase_r64)], true, false },
+								new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Wrgsbase_r32)], codeEnum[nameof(Code.Wrgsbase_r64)], 0x01 },
 								invalid,
 							},
 						},
@@ -1620,7 +1642,7 @@ namespace Generator.Decoder {
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix)],
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.M_2)], codeEnum[nameof(Code.Xsave_mem)], codeEnum[nameof(Code.Xsave64_mem)] },
 						invalid,
-						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Ptwrite_rm32)], codeEnum[nameof(Code.Ptwrite_rm64)], true, true },
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Ptwrite_rm32)], codeEnum[nameof(Code.Ptwrite_rm64)], 0x07 },
 						invalid,
 					},
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix)],
@@ -1699,100 +1721,100 @@ namespace Generator.Decoder {
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix)],
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple_ModRM)], codeEnum[nameof(Code.Lfence)] },
 						invalid,
-						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Incsspd_r32)], codeEnum[nameof(Code.Incsspq_r64)], true, false },
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Incsspd_r32)], codeEnum[nameof(Code.Incsspq_r64)], 0x01 },
 						invalid,
 					},
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix)],
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple_ModRM)], codeEnum[nameof(Code.Lfence_E9)] },
 						invalid,
-						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Incsspd_r32)], codeEnum[nameof(Code.Incsspq_r64)], true, false },
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Incsspd_r32)], codeEnum[nameof(Code.Incsspq_r64)], 0x01 },
 						invalid,
 					},
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix)],
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple_ModRM)], codeEnum[nameof(Code.Lfence_EA)] },
 						invalid,
-						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Incsspd_r32)], codeEnum[nameof(Code.Incsspq_r64)], true, false },
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Incsspd_r32)], codeEnum[nameof(Code.Incsspq_r64)], 0x01 },
 						invalid,
 					},
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix)],
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple_ModRM)], codeEnum[nameof(Code.Lfence_EB)] },
 						invalid,
-						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Incsspd_r32)], codeEnum[nameof(Code.Incsspq_r64)], true, false },
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Incsspd_r32)], codeEnum[nameof(Code.Incsspq_r64)], 0x01 },
 						invalid,
 					},
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix)],
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple_ModRM)], codeEnum[nameof(Code.Lfence_EC)] },
 						invalid,
-						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Incsspd_r32)], codeEnum[nameof(Code.Incsspq_r64)], true, false },
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Incsspd_r32)], codeEnum[nameof(Code.Incsspq_r64)], 0x01 },
 						invalid,
 					},
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix)],
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple_ModRM)], codeEnum[nameof(Code.Lfence_ED)] },
 						invalid,
-						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Incsspd_r32)], codeEnum[nameof(Code.Incsspq_r64)], true, false },
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Incsspd_r32)], codeEnum[nameof(Code.Incsspq_r64)], 0x01 },
 						invalid,
 					},
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix)],
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple_ModRM)], codeEnum[nameof(Code.Lfence_EE)] },
 						invalid,
-						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Incsspd_r32)], codeEnum[nameof(Code.Incsspq_r64)], true, false },
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Incsspd_r32)], codeEnum[nameof(Code.Incsspq_r64)], 0x01 },
 						invalid,
 					},
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix)],
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple_ModRM)], codeEnum[nameof(Code.Lfence_EF)] },
 						invalid,
-						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Incsspd_r32)], codeEnum[nameof(Code.Incsspq_r64)], true, false },
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Incsspd_r32)], codeEnum[nameof(Code.Incsspq_r64)], 0x01 },
 						invalid,
 					},
 
 					// F0
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix)],
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple_ModRM)], codeEnum[nameof(Code.Mfence)] },
-						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Tpause_r32)], codeEnum[nameof(Code.Tpause_r64)], true, false },
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Tpause_r32)], codeEnum[nameof(Code.Tpause_r64)], 0x01 },
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple5_ModRM_as)], codeEnum[nameof(Code.Umonitor_r16)], codeEnum[nameof(Code.Umonitor_r32)], codeEnum[nameof(Code.Umonitor_r64)] },
-						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Umwait_r32)], codeEnum[nameof(Code.Umwait_r64)], true, false }
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Umwait_r32)], codeEnum[nameof(Code.Umwait_r64)], 0x01 }
 					},
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix)],
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple_ModRM)], codeEnum[nameof(Code.Mfence_F1)] },
-						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Tpause_r32)], codeEnum[nameof(Code.Tpause_r64)], true, false },
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Tpause_r32)], codeEnum[nameof(Code.Tpause_r64)], 0x01 },
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple5_ModRM_as)], codeEnum[nameof(Code.Umonitor_r16)], codeEnum[nameof(Code.Umonitor_r32)], codeEnum[nameof(Code.Umonitor_r64)] },
-						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Umwait_r32)], codeEnum[nameof(Code.Umwait_r64)], true, false }
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Umwait_r32)], codeEnum[nameof(Code.Umwait_r64)], 0x01 }
 					},
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix)],
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple_ModRM)], codeEnum[nameof(Code.Mfence_F2)] },
-						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Tpause_r32)], codeEnum[nameof(Code.Tpause_r64)], true, false },
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Tpause_r32)], codeEnum[nameof(Code.Tpause_r64)], 0x01 },
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple5_ModRM_as)], codeEnum[nameof(Code.Umonitor_r16)], codeEnum[nameof(Code.Umonitor_r32)], codeEnum[nameof(Code.Umonitor_r64)] },
-						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Umwait_r32)], codeEnum[nameof(Code.Umwait_r64)], true, false }
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Umwait_r32)], codeEnum[nameof(Code.Umwait_r64)], 0x01 }
 					},
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix)],
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple_ModRM)], codeEnum[nameof(Code.Mfence_F3)] },
-						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Tpause_r32)], codeEnum[nameof(Code.Tpause_r64)], true, false },
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Tpause_r32)], codeEnum[nameof(Code.Tpause_r64)], 0x01 },
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple5_ModRM_as)], codeEnum[nameof(Code.Umonitor_r16)], codeEnum[nameof(Code.Umonitor_r32)], codeEnum[nameof(Code.Umonitor_r64)] },
-						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Umwait_r32)], codeEnum[nameof(Code.Umwait_r64)], true, false }
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Umwait_r32)], codeEnum[nameof(Code.Umwait_r64)], 0x01 }
 					},
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix)],
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple_ModRM)], codeEnum[nameof(Code.Mfence_F4)] },
-						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Tpause_r32)], codeEnum[nameof(Code.Tpause_r64)], true, false },
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Tpause_r32)], codeEnum[nameof(Code.Tpause_r64)], 0x01 },
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple5_ModRM_as)], codeEnum[nameof(Code.Umonitor_r16)], codeEnum[nameof(Code.Umonitor_r32)], codeEnum[nameof(Code.Umonitor_r64)] },
-						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Umwait_r32)], codeEnum[nameof(Code.Umwait_r64)], true, false }
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Umwait_r32)], codeEnum[nameof(Code.Umwait_r64)], 0x01 }
 					},
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix)],
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple_ModRM)], codeEnum[nameof(Code.Mfence_F5)] },
-						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Tpause_r32)], codeEnum[nameof(Code.Tpause_r64)], true, false },
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Tpause_r32)], codeEnum[nameof(Code.Tpause_r64)], 0x01 },
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple5_ModRM_as)], codeEnum[nameof(Code.Umonitor_r16)], codeEnum[nameof(Code.Umonitor_r32)], codeEnum[nameof(Code.Umonitor_r64)] },
-						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Umwait_r32)], codeEnum[nameof(Code.Umwait_r64)], true, false }
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Umwait_r32)], codeEnum[nameof(Code.Umwait_r64)], 0x01 }
 					},
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix)],
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple_ModRM)], codeEnum[nameof(Code.Mfence_F6)] },
-						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Tpause_r32)], codeEnum[nameof(Code.Tpause_r64)], true, false },
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Tpause_r32)], codeEnum[nameof(Code.Tpause_r64)], 0x01 },
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple5_ModRM_as)], codeEnum[nameof(Code.Umonitor_r16)], codeEnum[nameof(Code.Umonitor_r32)], codeEnum[nameof(Code.Umonitor_r64)] },
-						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Umwait_r32)], codeEnum[nameof(Code.Umwait_r64)], true, false }
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Umwait_r32)], codeEnum[nameof(Code.Umwait_r64)], 0x01 }
 					},
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix)],
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple_ModRM)], codeEnum[nameof(Code.Mfence_F7)] },
-						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Tpause_r32)], codeEnum[nameof(Code.Tpause_r64)], true, false },
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Tpause_r32)], codeEnum[nameof(Code.Tpause_r64)], 0x01 },
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple5_ModRM_as)], codeEnum[nameof(Code.Umonitor_r16)], codeEnum[nameof(Code.Umonitor_r32)], codeEnum[nameof(Code.Umonitor_r64)] },
-						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Umwait_r32)], codeEnum[nameof(Code.Umwait_r64)], true, false }
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Umwait_r32)], codeEnum[nameof(Code.Umwait_r64)], 0x01 }
 					},
 
 					// F8
@@ -1864,15 +1886,15 @@ namespace Generator.Decoder {
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.M_1)], codeEnum[nameof(Code.Prefetch_m8)] },
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.M_1)], codeEnum[nameof(Code.Prefetchw_m8)] },
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.M_1)], codeEnum[nameof(Code.Prefetchwt1_m8)] },
-					"reservedNop_0F0D",
-					"reservedNop_0F0D",
-					"reservedNop_0F0D",
-					"reservedNop_0F0D",
-					"reservedNop_0F0D",
+					new object[] { legacyEnum[nameof(OpCodeHandlerKind.M_1)], codeEnum[nameof(Code.PrefetchReserved3_m8)] },
+					new object[] { legacyEnum[nameof(OpCodeHandlerKind.M_1)], codeEnum[nameof(Code.PrefetchReserved4_m8)] },
+					new object[] { legacyEnum[nameof(OpCodeHandlerKind.M_1)], codeEnum[nameof(Code.PrefetchReserved5_m8)] },
+					new object[] { legacyEnum[nameof(OpCodeHandlerKind.M_1)], codeEnum[nameof(Code.PrefetchReserved6_m8)] },
+					new object[] { legacyEnum[nameof(OpCodeHandlerKind.M_1)], codeEnum[nameof(Code.PrefetchReserved7_m8)] },
 				}),
 				("grp0F0D", new object[] { legacyEnum[nameof(OpCodeHandlerKind.RM)],
 					"reservedNop_0F0D",
-					new object[] { legacyEnum[nameof(OpCodeHandlerKind.RM)], "reservedNop_0F0D", new object[] { legacyEnum[nameof(OpCodeHandlerKind.Group)], "handlers_Grp_0F0D_mem" } }
+					new object[] { legacyEnum[nameof(OpCodeHandlerKind.Group)], "handlers_Grp_0F0D_mem" }
 				}),
 
 				("handlers_Grp_0F18_mem",
@@ -1890,17 +1912,18 @@ namespace Generator.Decoder {
 					"reservedNop_0F18",
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.RM)],
 						"reservedNop_0F18",
-						new object[] { legacyEnum[nameof(OpCodeHandlerKind.RM)], "reservedNop_0F18", new object[] { legacyEnum[nameof(OpCodeHandlerKind.Group)], "handlers_Grp_0F18_mem" } }
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Group)], "handlers_Grp_0F18_mem" }
 					}
 				}),
 
 				("handlers_Grp_0F1C_mem",
 				new object[8] {
-					new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix)],
+					new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix4)],
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.M_1)], codeEnum[nameof(Code.Cldemote_m8)] },
-						invalid,
-						invalid,
-						invalid,
+						"reservedNop_0F1C",
+						"reservedNop_0F1C",
+						"reservedNop_0F1C",
+						0,
 					},
 					"reservedNop_0F1C",
 					"reservedNop_0F1C",
@@ -1914,7 +1937,7 @@ namespace Generator.Decoder {
 					"reservedNop_0F1C",
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.RM)],
 						"reservedNop_0F1C",
-						new object[] { legacyEnum[nameof(OpCodeHandlerKind.RM)], "reservedNop_0F1C", new object[] { legacyEnum[nameof(OpCodeHandlerKind.Group)], "handlers_Grp_0F1C_mem" } }
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Group)], "handlers_Grp_0F1C_mem" }
 					}
 				}),
 
@@ -1933,7 +1956,7 @@ namespace Generator.Decoder {
 					"reservedNop_0F1E",
 					"reservedNop_0F1E",
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.RM)],
-						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Rdsspd_r32)], codeEnum[nameof(Code.Rdsspq_r64)], true, false },
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_REXW)], codeEnum[nameof(Code.Rdsspd_r32)], codeEnum[nameof(Code.Rdsspq_r64)], 0x01 },
 						"reservedNop_0F1E"
 					},
 					"reservedNop_0F1E"
@@ -2014,16 +2037,16 @@ namespace Generator.Decoder {
 					null,
 					null,
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix)],
-						invalid,
-						invalid,
+						"reservedNop_0F1E",
+						"reservedNop_0F1E",
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple_ModRM)], codeEnum[nameof(Code.Endbr64)] },
-						invalid,
+						"reservedNop_0F1E",
 					},
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix)],
-						invalid,
-						invalid,
+						"reservedNop_0F1E",
+						"reservedNop_0F1E",
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple_ModRM)], codeEnum[nameof(Code.Endbr32)] },
-						invalid,
+						"reservedNop_0F1E",
 					},
 					null,
 					null,
@@ -2683,15 +2706,19 @@ namespace Generator.Decoder {
 					invalid,
 
 					// F0
-					new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix_F3_F2)],
+					new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix4)],
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Gv_Mv)], codeEnum[nameof(Code.Movbe_r16_m16)], codeEnum[nameof(Code.Movbe_r32_m32)], codeEnum[nameof(Code.Movbe_r64_m64)] },
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Gv_Mv)], codeEnum[nameof(Code.Movbe_r16_m16)], codeEnum[nameof(Code.Movbe_r32_m32)], codeEnum[nameof(Code.Movbe_r64_m64)] },
 						invalid,
-						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Gv_Eb_REX)], codeEnum[nameof(Code.Crc32_r32_rm8)], codeEnum[nameof(Code.Crc32_r64_rm8)] }
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Gv_Eb_REX)], codeEnum[nameof(Code.Crc32_r32_rm8)], codeEnum[nameof(Code.Crc32_r64_rm8)] },
+						0x1C,
 					},
-					new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix_F3_F2)],
+					new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix4)],
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Mv_Gv)], codeEnum[nameof(Code.Movbe_m16_r16)], codeEnum[nameof(Code.Movbe_m32_r32)], codeEnum[nameof(Code.Movbe_m64_r64)] },
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Mv_Gv)], codeEnum[nameof(Code.Movbe_m16_r16)], codeEnum[nameof(Code.Movbe_m32_r32)], codeEnum[nameof(Code.Movbe_m64_r64)] },
 						invalid,
-						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Gdq_Ev)], codeEnum[nameof(Code.Crc32_r32_rm16)], codeEnum[nameof(Code.Crc32_r32_rm32)], codeEnum[nameof(Code.Crc32_r64_rm64)] }
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Gdq_Ev)], codeEnum[nameof(Code.Crc32_r32_rm16)], codeEnum[nameof(Code.Crc32_r32_rm32)], codeEnum[nameof(Code.Crc32_r64_rm64)] },
+						0x1C,
 					},
 					invalid,
 					invalid,
@@ -3235,10 +3262,7 @@ namespace Generator.Decoder {
 							invalid,
 							new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple)], codeEnum[nameof(Code.Cl1invmb)] }, decoderOptionsEnum[nameof(DecoderOptions.Cl1invmb)]
 						},
-						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Options3)],
-							invalid,
-							new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple)], codeEnum[nameof(Code.Cl1invmb)] }, decoderOptionsEnum[nameof(DecoderOptions.Cl1invmb)],
-						},
+						invalid,
 					},
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple)], codeEnum[nameof(Code.Ud2)] },
 					invalid,
@@ -3348,29 +3372,35 @@ namespace Generator.Decoder {
 					"reservedNop_0F19",
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.ReservedNop)],
 						"reservedNop_0F1A",
-						new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix)],
-							new object[] { legacyEnum[nameof(OpCodeHandlerKind.RM)],
-								"reservedNop_0F1A",
-								new object[] { legacyEnum[nameof(OpCodeHandlerKind.B_MIB)], codeEnum[nameof(Code.Bndldx_bnd_mib)] }
-							},
-							new object[] { legacyEnum[nameof(OpCodeHandlerKind.B_BM)], codeEnum[nameof(Code.Bndmov_bnd_bndm64)], codeEnum[nameof(Code.Bndmov_bnd_bndm128)] },
-							new object[] { legacyEnum[nameof(OpCodeHandlerKind.B_Ev)], codeEnum[nameof(Code.Bndcl_bnd_rm32)], codeEnum[nameof(Code.Bndcl_bnd_rm64)] },
-							new object[] { legacyEnum[nameof(OpCodeHandlerKind.B_Ev)], codeEnum[nameof(Code.Bndcu_bnd_rm32)], codeEnum[nameof(Code.Bndcu_bnd_rm64)] }
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Options_DontReadModRM)],
+							"reservedNop_0F1A",
+							new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix)],
+								new object[] { legacyEnum[nameof(OpCodeHandlerKind.RM)],
+									"reservedNop_0F1A",
+									new object[] { legacyEnum[nameof(OpCodeHandlerKind.B_MIB)], codeEnum[nameof(Code.Bndldx_bnd_mib)] }
+								},
+								new object[] { legacyEnum[nameof(OpCodeHandlerKind.B_BM)], codeEnum[nameof(Code.Bndmov_bnd_bndm64)], codeEnum[nameof(Code.Bndmov_bnd_bndm128)] },
+								new object[] { legacyEnum[nameof(OpCodeHandlerKind.B_Ev)], codeEnum[nameof(Code.Bndcl_bnd_rm32)], codeEnum[nameof(Code.Bndcl_bnd_rm64)], true },
+								new object[] { legacyEnum[nameof(OpCodeHandlerKind.B_Ev)], codeEnum[nameof(Code.Bndcu_bnd_rm32)], codeEnum[nameof(Code.Bndcu_bnd_rm64)], true }
+							}, decoderOptionsEnum[nameof(DecoderOptions.MPX)]
 						}
 					},
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.ReservedNop)],
 						"reservedNop_0F1B",
-						new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix)],
-							new object[] { legacyEnum[nameof(OpCodeHandlerKind.RM)],
-								"reservedNop_0F1B",
-								new object[] { legacyEnum[nameof(OpCodeHandlerKind.MIB_B)], codeEnum[nameof(Code.Bndstx_mib_bnd)] }
-							},
-							new object[] { legacyEnum[nameof(OpCodeHandlerKind.BM_B)], codeEnum[nameof(Code.Bndmov_bndm64_bnd)], codeEnum[nameof(Code.Bndmov_bndm128_bnd)] },
-							new object[] { legacyEnum[nameof(OpCodeHandlerKind.RM)],
-								"reservedNop_0F1B",
-								new object[] { legacyEnum[nameof(OpCodeHandlerKind.B_Ev)], codeEnum[nameof(Code.Bndmk_bnd_m32)], codeEnum[nameof(Code.Bndmk_bnd_m64)] }
-							},
-							new object[] { legacyEnum[nameof(OpCodeHandlerKind.B_Ev)], codeEnum[nameof(Code.Bndcn_bnd_rm32)], codeEnum[nameof(Code.Bndcn_bnd_rm64)] }
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Options_DontReadModRM)],
+							"reservedNop_0F1B",
+							new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix)],
+								new object[] { legacyEnum[nameof(OpCodeHandlerKind.RM)],
+									"reservedNop_0F1B",
+									new object[] { legacyEnum[nameof(OpCodeHandlerKind.MIB_B)], codeEnum[nameof(Code.Bndstx_mib_bnd)] }
+								},
+								new object[] { legacyEnum[nameof(OpCodeHandlerKind.BM_B)], codeEnum[nameof(Code.Bndmov_bndm64_bnd)], codeEnum[nameof(Code.Bndmov_bndm128_bnd)] },
+								new object[] { legacyEnum[nameof(OpCodeHandlerKind.RM)],
+									"reservedNop_0F1B",
+									new object[] { legacyEnum[nameof(OpCodeHandlerKind.B_Ev)], codeEnum[nameof(Code.Bndmk_bnd_m32)], codeEnum[nameof(Code.Bndmk_bnd_m64)], false }
+								},
+								new object[] { legacyEnum[nameof(OpCodeHandlerKind.B_Ev)], codeEnum[nameof(Code.Bndcn_bnd_rm32)], codeEnum[nameof(Code.Bndcn_bnd_rm64)], true }
+							}, decoderOptionsEnum[nameof(DecoderOptions.MPX)]
 						}
 					},
 					"grp0F1C",
@@ -3459,7 +3489,7 @@ namespace Generator.Decoder {
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple4)], codeEnum[nameof(Code.Sysexitd)], codeEnum[nameof(Code.Sysexitq)] },
 					invalid,
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix_NoModRM)],
-						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple)], codeEnum[nameof(Code.Getsec)] },
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple4b)], codeEnum[nameof(Code.Getsecd)], codeEnum[nameof(Code.Getsecq)] },
 						invalid_NoModRM,
 						invalid_NoModRM,
 						invalid_NoModRM,
@@ -3856,17 +3886,21 @@ namespace Generator.Decoder {
 
 					// B8
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.Options3)],
-						new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix_F3_F2)],
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix4)],
+							invalid,
 							invalid,
 							new object[] { legacyEnum[nameof(OpCodeHandlerKind.Gv_Ev_3a)], codeEnum[nameof(Code.Popcnt_r16_rm16)], codeEnum[nameof(Code.Popcnt_r32_rm32)], codeEnum[nameof(Code.Popcnt_r64_rm64)] },
 							invalid,
+							0x1C,
 						},
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Bitness)],
 							new object[] { legacyEnum[nameof(OpCodeHandlerKind.Jdisp)], codeEnum[nameof(Code.Jmpe_disp16)], codeEnum[nameof(Code.Jmpe_disp32)] },
-							new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix_F3_F2)],
+							new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix4)],
+								invalid,
 								invalid,
 								new object[] { legacyEnum[nameof(OpCodeHandlerKind.Gv_Ev_3a)], codeEnum[nameof(Code.Popcnt_r16_rm16)], codeEnum[nameof(Code.Popcnt_r32_rm32)], codeEnum[nameof(Code.Popcnt_r64_rm64)] },
 								invalid,
+								0x1C,
 							},
 						}, decoderOptionsEnum[nameof(DecoderOptions.Jmpe)]
 					},
@@ -3874,18 +3908,22 @@ namespace Generator.Decoder {
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.Group)], "handlers_Grp_0FBA" },
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.Ev_Gv_4)], codeEnum[nameof(Code.Btc_rm16_r16)], codeEnum[nameof(Code.Btc_rm32_r32)], codeEnum[nameof(Code.Btc_rm64_r64)], new OrEnumValue(handlerFlagsEnum, nameof(HandlerFlags.Xacquire), nameof(HandlerFlags.Xrelease), nameof(HandlerFlags.Lock)) },
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.Options3)],
-						new object[] { legacyEnum[nameof(OpCodeHandlerKind.LegacyMandatoryPrefix_F3_F2)],
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix4)],
 							new object[] { legacyEnum[nameof(OpCodeHandlerKind.Gv_Ev_3a)], codeEnum[nameof(Code.Bsf_r16_rm16)], codeEnum[nameof(Code.Bsf_r32_rm32)], codeEnum[nameof(Code.Bsf_r64_rm64)] },
-							new object[] { legacyEnum[nameof(OpCodeHandlerKind.Gv_Ev_3a)], codeEnum[nameof(Code.Tzcnt_r16_rm16)], codeEnum[nameof(Code.Tzcnt_r32_rm32)], codeEnum[nameof(Code.Tzcnt_r64_rm64)] }, true,
-							new object[] { legacyEnum[nameof(OpCodeHandlerKind.Gv_Ev_3a)], codeEnum[nameof(Code.Bsf_r16_rm16)], codeEnum[nameof(Code.Bsf_r32_rm32)], codeEnum[nameof(Code.Bsf_r64_rm64)] }, false,
+							new object[] { legacyEnum[nameof(OpCodeHandlerKind.Gv_Ev_3a)], codeEnum[nameof(Code.Bsf_r16_rm16)], codeEnum[nameof(Code.Bsf_r32_rm32)], codeEnum[nameof(Code.Bsf_r64_rm64)] },
+							new object[] { legacyEnum[nameof(OpCodeHandlerKind.Gv_Ev_3a)], codeEnum[nameof(Code.Tzcnt_r16_rm16)], codeEnum[nameof(Code.Tzcnt_r32_rm32)], codeEnum[nameof(Code.Tzcnt_r64_rm64)] },
+							new object[] { legacyEnum[nameof(OpCodeHandlerKind.Gv_Ev_3a)], codeEnum[nameof(Code.Bsf_r16_rm16)], codeEnum[nameof(Code.Bsf_r32_rm32)], codeEnum[nameof(Code.Bsf_r64_rm64)] },
+							0x14,
 						},
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Gv_Ev_3a)], codeEnum[nameof(Code.Bsf_r16_rm16)], codeEnum[nameof(Code.Bsf_r32_rm32)], codeEnum[nameof(Code.Bsf_r64_rm64)] }, decoderOptionsEnum[nameof(DecoderOptions.NoMPFX_0FBC)]
 					},
 					new object[] { legacyEnum[nameof(OpCodeHandlerKind.Options3)],
-						new object[] { legacyEnum[nameof(OpCodeHandlerKind.LegacyMandatoryPrefix_F3_F2)],
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.MandatoryPrefix4)],
 							new object[] { legacyEnum[nameof(OpCodeHandlerKind.Gv_Ev_3a)], codeEnum[nameof(Code.Bsr_r16_rm16)], codeEnum[nameof(Code.Bsr_r32_rm32)], codeEnum[nameof(Code.Bsr_r64_rm64)] },
-							new object[] { legacyEnum[nameof(OpCodeHandlerKind.Gv_Ev_3a)], codeEnum[nameof(Code.Lzcnt_r16_rm16)], codeEnum[nameof(Code.Lzcnt_r32_rm32)], codeEnum[nameof(Code.Lzcnt_r64_rm64)] }, true,
-							new object[] { legacyEnum[nameof(OpCodeHandlerKind.Gv_Ev_3a)], codeEnum[nameof(Code.Bsr_r16_rm16)], codeEnum[nameof(Code.Bsr_r32_rm32)], codeEnum[nameof(Code.Bsr_r64_rm64)] }, false,
+							new object[] { legacyEnum[nameof(OpCodeHandlerKind.Gv_Ev_3a)], codeEnum[nameof(Code.Bsr_r16_rm16)], codeEnum[nameof(Code.Bsr_r32_rm32)], codeEnum[nameof(Code.Bsr_r64_rm64)] },
+							new object[] { legacyEnum[nameof(OpCodeHandlerKind.Gv_Ev_3a)], codeEnum[nameof(Code.Lzcnt_r16_rm16)], codeEnum[nameof(Code.Lzcnt_r32_rm32)], codeEnum[nameof(Code.Lzcnt_r64_rm64)] },
+							new object[] { legacyEnum[nameof(OpCodeHandlerKind.Gv_Ev_3a)], codeEnum[nameof(Code.Bsr_r16_rm16)], codeEnum[nameof(Code.Bsr_r32_rm32)], codeEnum[nameof(Code.Bsr_r64_rm64)] },
+							0x14,
 						},
 						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Gv_Ev_3a)], codeEnum[nameof(Code.Bsr_r16_rm16)], codeEnum[nameof(Code.Bsr_r32_rm32)], codeEnum[nameof(Code.Bsr_r64_rm64)] }, decoderOptionsEnum[nameof(DecoderOptions.NoMPFX_0FBD)]
 					},
@@ -4233,7 +4271,10 @@ namespace Generator.Decoder {
 						invalid,
 						invalid,
 					},
-					new object[] { legacyEnum[nameof(OpCodeHandlerKind.Gv_Ev_3a)], codeEnum[nameof(Code.Ud0_r16_rm16)], codeEnum[nameof(Code.Ud0_r32_rm32)], codeEnum[nameof(Code.Ud0_r64_rm64)] },
+					new object[] { legacyEnum[nameof(OpCodeHandlerKind.Options3)],
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Gv_Ev_3a)], codeEnum[nameof(Code.Ud0_r16_rm16)], codeEnum[nameof(Code.Ud0_r32_rm32)], codeEnum[nameof(Code.Ud0_r64_rm64)] },
+						new object[] { legacyEnum[nameof(OpCodeHandlerKind.Simple)], codeEnum[nameof(Code.Ud0)] }, decoderOptionsEnum[nameof(DecoderOptions.AMD)]
+					},
 				}),
 
 				(OneByteHandlers,

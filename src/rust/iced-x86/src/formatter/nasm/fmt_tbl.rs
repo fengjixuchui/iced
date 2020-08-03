@@ -341,6 +341,7 @@ fn read() -> Vec<Box<InstrInfo + Sync + Send>> {
 			}
 
 			CtorKind::Reg16 => Box::new(SimpleInstrInfo_Reg16::new(s)),
+			CtorKind::Reg32 => Box::new(SimpleInstrInfo_Reg32::new(s)),
 			CtorKind::reverse2 => Box::new(SimpleInstrInfo_reverse2::new(s)),
 
 			CtorKind::sae => {
@@ -410,11 +411,6 @@ fn read() -> Vec<Box<InstrInfo + Sync + Send>> {
 			CtorKind::STIG2_2b => {
 				v = reader.read_compressed_u32();
 				Box::new(SimpleInstrInfo_STIG2::with_flags(s, v))
-			}
-
-			CtorKind::xbegin => {
-				v = reader.read_compressed_u32();
-				Box::new(SimpleInstrInfo_xbegin::new(v, s))
 			}
 
 			CtorKind::XLAT => Box::new(SimpleInstrInfo_XLAT::new(s)),

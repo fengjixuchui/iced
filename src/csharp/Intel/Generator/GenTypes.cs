@@ -82,7 +82,7 @@ namespace Generator {
 					flags |= EnumTypeFlags.NoInitialize;
 				if (ca.Flags)
 					flags |= EnumTypeFlags.Flags;
-				var values = type.GetFields().Where(a => a.IsLiteral).Select(a => new EnumValue(GetValue(a.GetValue(null)), a.Name, CommentAttribute.GetDocumentation(a))).ToArray();
+				var values = type.GetFields().Where(a => a.IsLiteral).Select(a => new EnumValue(GetValue(a.GetValue(null)), a.Name, CommentAttribute.GetDocumentation(a), DeprecatedAttribute.GetDeprecatedInfo(a))).ToArray();
 				var enumType = new EnumType(ca.Name, ca.TypeId, ca.Documentation, values, flags);
 				enums.Add(ca.TypeId, enumType);
 			}
@@ -140,7 +140,8 @@ namespace Generator {
 			canGetCodeEnum = true;
 			CallTypeGens(created, typeGens, ref index, order => order < TypeGenOrders.CreatedInstructions);
 
-			var (removedCodeHash, codeHash) = FilterCode();
+			var (origCodeValues, removedCodeHash, codeHash) = FilterCode();
+			AddObject(TypeIds.OrigCodeValues, origCodeValues);
 			AddObject(TypeIds.RemovedCodeValues, removedCodeHash);
 			for (int i = 0; i < index; i++) {
 				if (created[i] is ICreatedInstructions createdInstrs)
@@ -177,8 +178,8 @@ namespace Generator {
 			}
 		}
 
-		(HashSet<EnumValue> removedCodeHash, HashSet<EnumValue> codeHash) FilterCode() {
-			var defs = GetObject<InstructionDefs>(TypeIds.InstructionDefs).Table;
+		(EnumValue[] origCodeValues, HashSet<EnumValue> removedCodeHash, HashSet<EnumValue> codeHash) FilterCode() {
+			var defs = GetObject<InstructionDefs>(TypeIds.InstructionDefs).GetDefsPreFiltered();
 
 			var newCodeValues = new List<EnumValue>();
 			var removedCodeHash = new HashSet<EnumValue>();
@@ -190,12 +191,50 @@ namespace Generator {
 			}
 
 			var code = this[TypeIds.Code];
+			var origCodeValues = code.Values.ToArray();
 			code.ResetValues(newCodeValues.ToArray());
 
-			return (removedCodeHash, newCodeValues.ToHashSet());
+			return (origCodeValues, removedCodeHash, newCodeValues.ToHashSet());
 		}
 
 		bool ShouldInclude(InstructionDef def) {
+			switch (def.OpCodeInfo.Encoding) {
+			case EncodingKind.Legacy:
+				break;
+			case EncodingKind.VEX:
+				if (!Options.IncludeVEX)
+					return false;
+				break;
+			case EncodingKind.EVEX:
+				if (!Options.IncludeEVEX)
+					return false;
+				break;
+			case EncodingKind.XOP:
+				if (!Options.IncludeXOP)
+					return false;
+				break;
+			case EncodingKind.D3NOW:
+				if (!Options.Include3DNow)
+					return false;
+				break;
+			default:
+				throw new InvalidOperationException();
+			}
+
+			if (Options.IncludeCpuid.Count != 0) {
+				foreach (var cpuid in def.InstrInfo.Cpuid) {
+					if (Options.IncludeCpuid.Contains(cpuid.RawName))
+						return true;
+				}
+				return false;
+			}
+			if (Options.ExcludeCpuid.Count != 0) {
+				foreach (var cpuid in def.InstrInfo.Cpuid) {
+					if (Options.ExcludeCpuid.Contains(cpuid.RawName))
+						return false;
+				}
+			}
+
 			return true;
 		}
 
@@ -213,6 +252,12 @@ namespace Generator {
 				throw new InvalidOperationException($"{id} is not a {typeof(T).FullName}");
 			}
 			throw new InvalidOperationException($"{id} doesn't exist");
+		}
+
+		public EnumValue[] GetKeptCodeValues(params Code[] values) {
+			var origCode = GetObject<EnumValue[]>(TypeIds.OrigCodeValues);
+			var removed = GetObject<HashSet<EnumValue>>(TypeIds.RemovedCodeValues);
+			return values.Select(a => origCode[(int)a]).Where(a => !removed.Contains(a)).ToArray();
 		}
 	}
 }

@@ -70,7 +70,8 @@ pub(crate) enum CtorKind {
 	pblendvb,
 	pclmulqdq,
 	pops,
-	Reg16,
+	os_mem16,
+	Reg32,
 	sae,
 	sae_pops,
 	ST_STi,
@@ -78,7 +79,6 @@ pub(crate) enum CtorKind {
 	STi_ST2,
 	STIG_1a,
 	STIG_1b,
-	xbegin,
 }
 #[cfg_attr(feature = "cargo-fmt", rustfmt::skip)]
 static GEN_DEBUG_CTOR_KIND: [&str; 50] = [
@@ -123,7 +123,8 @@ static GEN_DEBUG_CTOR_KIND: [&str; 50] = [
 	"pblendvb",
 	"pclmulqdq",
 	"pops",
-	"Reg16",
+	"os_mem16",
+	"Reg32",
 	"sae",
 	"sae_pops",
 	"ST_STi",
@@ -131,7 +132,6 @@ static GEN_DEBUG_CTOR_KIND: [&str; 50] = [
 	"STi_ST2",
 	"STIG_1a",
 	"STIG_1b",
-	"xbegin",
 ];
 impl fmt::Debug for CtorKind {
 	#[inline]

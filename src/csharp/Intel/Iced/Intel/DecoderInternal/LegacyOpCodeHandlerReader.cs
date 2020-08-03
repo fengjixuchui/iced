@@ -67,6 +67,7 @@ namespace Iced.Intel.DecoderInternal {
 				return 1;
 
 			case OpCodeHandlerKind.ArrayReference:
+			case OpCodeHandlerKind.Unused1:
 				throw new InvalidOperationException();
 
 			case OpCodeHandlerKind.RM:
@@ -105,12 +106,8 @@ namespace Iced.Intel.DecoderInternal {
 				elem = new OpCodeHandler_MandatoryPrefix(deserializer.ReadHandler(), deserializer.ReadHandler(), deserializer.ReadHandler(), deserializer.ReadHandler());
 				return 1;
 
-			case OpCodeHandlerKind.MandatoryPrefix_F3_F2:
-				elem = new OpCodeHandler_MandatoryPrefix_F3_F2(deserializer.ReadHandler(), deserializer.ReadHandler(), true, deserializer.ReadHandler(), true);
-				return 1;
-
-			case OpCodeHandlerKind.LegacyMandatoryPrefix_F3_F2:
-				elem = new OpCodeHandler_MandatoryPrefix_F3_F2(deserializer.ReadHandler(), deserializer.ReadHandler(), deserializer.ReadBoolean(), deserializer.ReadHandler(), deserializer.ReadBoolean());
+			case OpCodeHandlerKind.MandatoryPrefix4:
+				elem = new OpCodeHandler_MandatoryPrefix4(deserializer.ReadHandler(), deserializer.ReadHandler(), deserializer.ReadHandler(), deserializer.ReadHandler(), (uint)deserializer.ReadInt32());
 				return 1;
 
 			case OpCodeHandlerKind.MandatoryPrefix_NoModRM:
@@ -157,7 +154,7 @@ namespace Iced.Intel.DecoderInternal {
 
 			case OpCodeHandlerKind.B_Ev:
 				code = deserializer.ReadCode();
-				elem = new OpCodeHandler_B_Ev(code, code + 1);
+				elem = new OpCodeHandler_B_Ev(code, code + 1, deserializer.ReadBoolean());
 				return 1;
 
 			case OpCodeHandlerKind.B_MIB:
@@ -335,7 +332,7 @@ namespace Iced.Intel.DecoderInternal {
 
 			case OpCodeHandlerKind.Ev_REXW:
 				code = deserializer.ReadCode();
-				elem = new OpCodeHandler_Ev_REXW(code, code + 1, deserializer.ReadBoolean(), deserializer.ReadBoolean());
+				elem = new OpCodeHandler_Ev_REXW(code, code + 1, (uint)deserializer.ReadInt32());
 				return 1;
 
 			case OpCodeHandlerKind.Ev_Sw:
@@ -806,6 +803,12 @@ namespace Iced.Intel.DecoderInternal {
 			case OpCodeHandlerKind.Simple4:
 				code = deserializer.ReadCode();
 				elem = new OpCodeHandler_Simple4(code, code + 1);
+				return 1;
+
+			case OpCodeHandlerKind.Simple4b:
+				code = deserializer.ReadCode();
+				var code2 = deserializer.ReadCode();
+				elem = new OpCodeHandler_Simple4(code, code2);
 				return 1;
 
 			case OpCodeHandlerKind.Simple5:

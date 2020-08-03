@@ -139,8 +139,6 @@ retw -0x5aa6
 ret -0x5aa6
 retw
 ret
-rep retw -0x5aa6
-rep ret -0x5aa6
 rep retw
 rep ret
 les bx, [eax]
@@ -312,7 +310,7 @@ a16 scasw
 scasw
 a16 scasd
 scasd
-xbegin word 0x7fffa54f
+xbegin 0x7fffa54f
 xbegin 0xb412a550
 o16 enter -0x5aa6, -0x5a
 o16 leave
@@ -612,7 +610,7 @@ jmpe edx
 jmpe dword [eax]
 loadallreset286
 loadall286
-loadall386
+loadall
 umov dh, cl
 umov [eax], bl
 umov si, cx
@@ -709,3 +707,4 @@ xresldtrk
 a16 invlpgb
 invlpgb
 tlbsync
+cl1invmb

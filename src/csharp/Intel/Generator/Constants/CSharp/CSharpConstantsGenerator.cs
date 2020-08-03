@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Generator.Documentation;
 using Generator.Documentation.CSharp;
 using Generator.IO;
 
@@ -35,6 +36,7 @@ namespace Generator.Constants.CSharp {
 		readonly Dictionary<TypeId, FullConstantsFileInfo> toFullFileInfo;
 		readonly Dictionary<TypeId, PartialConstantsFileInfo?> toPartialFileInfo;
 		readonly CSharpDocCommentWriter docWriter;
+		readonly DeprecatedWriter deprecatedWriter;
 
 		sealed class FullConstantsFileInfo {
 			public readonly string Filename;
@@ -62,6 +64,7 @@ namespace Generator.Constants.CSharp {
 			: base(generatorContext.Types) {
 			idConverter = CSharpIdentifierConverter.Create();
 			docWriter = new CSharpDocCommentWriter(idConverter);
+			deprecatedWriter = new CSharpDeprecatedWriter(idConverter);
 
 			var baseDir = CSharpConstants.GetDirectory(generatorContext, CSharpConstants.IcedNamespace);
 			toFullFileInfo = new Dictionary<TypeId, FullConstantsFileInfo>();
@@ -73,7 +76,6 @@ namespace Generator.Constants.CSharp {
 			toPartialFileInfo.Add(TypeIds.InstrInfoConstants, new PartialConstantsFileInfo("InstrInfoConstants", Path.Combine(CSharpConstants.GetDirectory(generatorContext, CSharpConstants.InstructionInfoNamespace), "InfoHandlerFlags.cs")));
 			toPartialFileInfo.Add(TypeIds.MiscInstrInfoTestConstants, new PartialConstantsFileInfo("MiscConstants", Path.Combine(generatorContext.CSharpTestsDir, "Intel", "InstructionInfoTests", "InstructionInfoConstants.cs")));
 			toPartialFileInfo.Add(TypeIds.InstructionInfoKeys, new PartialConstantsFileInfo("KeysConstants", Path.Combine(generatorContext.CSharpTestsDir, "Intel", "InstructionInfoTests", "InstructionInfoConstants.cs")));
-			toPartialFileInfo.Add(TypeIds.InstructionInfoDecoderOptions, new PartialConstantsFileInfo("DecoderOptionsConstants", Path.Combine(generatorContext.CSharpTestsDir, "Intel", "InstructionInfoTests", "InstructionInfoConstants.cs")));
 			toPartialFileInfo.Add(TypeIds.RflagsBitsConstants, new PartialConstantsFileInfo("RflagsBitsConstants", Path.Combine(generatorContext.CSharpTestsDir, "Intel", "InstructionInfoTests", "InstructionInfoConstants.cs")));
 			toPartialFileInfo.Add(TypeIds.MiscSectionNames, new PartialConstantsFileInfo("MiscSectionNames", Path.Combine(generatorContext.CSharpTestsDir, "Intel", "InstructionInfoTests", "MiscTestsData.cs")));
 			toPartialFileInfo.Add(TypeIds.OpCodeInfoKeys, new PartialConstantsFileInfo("OpCodeInfoKeys", Path.Combine(generatorContext.CSharpTestsDir, "Intel", "EncoderTests", "OpCodeInfoConstants.cs")));
@@ -95,7 +97,7 @@ namespace Generator.Constants.CSharp {
 			using (var writer = new FileWriter(TargetLanguage.CSharp, FileUtils.OpenWrite(info.Filename))) {
 				writer.WriteFileHeader();
 				if (!(info.Define is null))
-					writer.WriteLine($"#if {info.Define}");
+					writer.WriteLineNoIndent($"#if {info.Define}");
 
 				writer.WriteLine($"namespace {info.Namespace} {{");
 
@@ -106,7 +108,7 @@ namespace Generator.Constants.CSharp {
 				writer.WriteLine("}");
 
 				if (!(info.Define is null))
-					writer.WriteLine("#endif");
+					writer.WriteLineNoIndent("#endif");
 			}
 		}
 
@@ -118,6 +120,7 @@ namespace Generator.Constants.CSharp {
 			using (writer.Indent()) {
 				foreach (var constant in constantsType.Constants) {
 					docWriter.WriteSummary(writer, constant.Documentation, constantsType.RawName);
+					deprecatedWriter.WriteDeprecated(writer, constant);
 					writer.Write(constant.IsPublic ? "public " : "internal ");
 					writer.Write("const ");
 					writer.Write(GetType(constant.Kind));

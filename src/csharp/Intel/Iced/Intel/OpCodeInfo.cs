@@ -76,6 +76,7 @@ namespace Iced.Intel {
 		readonly byte table;
 		readonly byte mandatoryPrefix;
 		readonly sbyte groupIndex;
+		readonly sbyte rmGroupIndex;
 		readonly byte op0Kind;
 		readonly byte op1Kind;
 		readonly byte op2Kind;
@@ -97,6 +98,8 @@ namespace Iced.Intel {
 			byte[] opKinds;
 #endif
 			encoding = (byte)((dword1 >> (int)EncFlags1.EncodingShift) & (uint)EncFlags1.EncodingMask);
+			string? toOpCodeStringValue = null;
+			string? toInstructionStringValue = null;
 			switch ((EncodingKind)encoding) {
 			case EncodingKind.Legacy:
 				opKinds = OpCodeOperandKinds.LegacyOpKinds;
@@ -122,6 +125,7 @@ namespace Iced.Intel {
 				};
 
 				groupIndex = (sbyte)((dword2 & (uint)LegacyFlags.HasGroupIndex) == 0 ? -1 : (int)((dword2 >> (int)LegacyFlags.GroupShift) & 7));
+				rmGroupIndex = -1;
 				tupleType = (byte)TupleType.None;
 
 				if (!IsInstruction)
@@ -174,6 +178,7 @@ namespace Iced.Intel {
 				break;
 
 			case EncodingKind.VEX:
+#if !NO_VEX
 				opKinds = OpCodeOperandKinds.VexOpKinds;
 				op0Kind = opKinds[(int)((dword3 >> (int)VexFlags3.Op0Shift) & (uint)VexFlags3.OpMask)];
 				op1Kind = opKinds[(int)((dword3 >> (int)VexFlags3.Op1Shift) & (uint)VexFlags3.OpMask)];
@@ -197,6 +202,7 @@ namespace Iced.Intel {
 				};
 
 				groupIndex = (sbyte)((dword2 & (uint)VexFlags.HasGroupIndex) == 0 ? -1 : (int)((dword2 >> (int)VexFlags.GroupShift) & 7));
+				rmGroupIndex = (sbyte)((dword2 & (uint)VexFlags.HasRmGroupIndex) == 0 ? -1 : (int)((dword2 >> (int)VexFlags.GroupShift) & 7));
 				tupleType = (byte)TupleType.None;
 
 				flags |= (Encodable)((dword2 >> (int)VexFlags.EncodableShift) & (uint)VexFlags.EncodableMask) switch {
@@ -249,8 +255,15 @@ namespace Iced.Intel {
 					break;
 				}
 				break;
+#else
+				op4Kind = (byte)OpCodeOperandKind.None;
+				toOpCodeStringValue = string.Empty;
+				toInstructionStringValue = string.Empty;
+				break;
+#endif
 
 			case EncodingKind.EVEX:
+#if !NO_EVEX
 				opKinds = OpCodeOperandKinds.EvexOpKinds;
 				op0Kind = opKinds[(int)((dword3 >> (int)EvexFlags3.Op0Shift) & (uint)EvexFlags3.OpMask)];
 				op1Kind = opKinds[(int)((dword3 >> (int)EvexFlags3.Op1Shift) & (uint)EvexFlags3.OpMask)];
@@ -273,6 +286,7 @@ namespace Iced.Intel {
 				};
 
 				groupIndex = (sbyte)((dword2 & (uint)EvexFlags.HasGroupIndex) == 0 ? -1 : (int)((dword2 >> (int)EvexFlags.GroupShift) & 7));
+				rmGroupIndex = -1;
 				tupleType = (byte)((dword2 >> (int)EvexFlags.TupleTypeShift) & (uint)EvexFlags.TupleTypeMask);
 
 				flags |= (Encodable)((dword2 >> (int)EvexFlags.EncodableShift) & (uint)EvexFlags.EncodableMask) switch {
@@ -376,13 +390,21 @@ namespace Iced.Intel {
 				case Code.EVEX_Vscatterpf0qpd_vm64z_k1:
 				case Code.EVEX_Vscatterpf1qps_vm64z_k1:
 				case Code.EVEX_Vscatterpf1qpd_vm64z_k1:
-				// GENERATOR-END: NonZeroOpMaskRegister
 					flags |= Flags.NonZeroOpMaskRegister;
+					break;
+				// GENERATOR-END: NonZeroOpMaskRegister
+				default:
 					break;
 				}
 				break;
+#else
+				toOpCodeStringValue = string.Empty;
+				toInstructionStringValue = string.Empty;
+				break;
+#endif
 
 			case EncodingKind.XOP:
+#if !NO_XOP
 				opKinds = OpCodeOperandKinds.XopOpKinds;
 				op0Kind = opKinds[(int)((dword3 >> (int)XopFlags3.Op0Shift) & (uint)XopFlags3.OpMask)];
 				op1Kind = opKinds[(int)((dword3 >> (int)XopFlags3.Op1Shift) & (uint)XopFlags3.OpMask)];
@@ -405,6 +427,7 @@ namespace Iced.Intel {
 				};
 
 				groupIndex = (sbyte)((dword2 & (uint)XopFlags.HasGroupIndex) == 0 ? -1 : (int)((dword2 >> (int)XopFlags.GroupShift) & 7));
+				rmGroupIndex = -1;
 				tupleType = (byte)TupleType.None;
 
 				flags |= (Encodable)((dword2 >> (int)XopFlags.EncodableShift) & (uint)XopFlags.EncodableMask) switch {
@@ -448,13 +471,20 @@ namespace Iced.Intel {
 					throw new InvalidOperationException();
 				}
 				break;
+#else
+				toOpCodeStringValue = string.Empty;
+				toInstructionStringValue = string.Empty;
+				break;
+#endif
 
 			case EncodingKind.D3NOW:
+#if !NO_D3NOW
 				op0Kind = (byte)OpCodeOperandKind.mm_reg;
 				op1Kind = (byte)OpCodeOperandKind.mm_or_mem;
 				mandatoryPrefix = (byte)MandatoryPrefix.None;
 				table = (byte)OpCodeTableKind.T0F;
 				groupIndex = -1;
+				rmGroupIndex = -1;
 				tupleType = (byte)TupleType.None;
 
 				flags |= (Encodable)((dword2 >> (int)D3nowFlags.EncodableShift) & (uint)D3nowFlags.EncodableMask) switch {
@@ -468,13 +498,18 @@ namespace Iced.Intel {
 				l = 0;
 				lkind = LKind.None;
 				break;
+#else
+				toOpCodeStringValue = string.Empty;
+				toInstructionStringValue = string.Empty;
+				break;
+#endif
 
 			default:
 				throw new InvalidOperationException();
 			}
 
-			toOpCodeStringValue = new OpCodeFormatter(this, sb, lkind).Format();
-			toInstructionStringValue = new InstructionFormatter(this, sb).Format();
+			this.toOpCodeStringValue = toOpCodeStringValue ?? new OpCodeFormatter(this, sb, lkind).Format();
+			this.toInstructionStringValue = toInstructionStringValue ?? new InstructionFormatter(this, sb).Format();
 		}
 
 		/// <summary>
@@ -651,6 +686,16 @@ namespace Iced.Intel {
 		/// Group index (0-7) or -1. If it's 0-7, it's stored in the <c>reg</c> field of the <c>modrm</c> byte.
 		/// </summary>
 		public int GroupIndex => groupIndex;
+
+		/// <summary>
+		/// <see langword="true"/> if it's part of a modrm.rm group
+		/// </summary>
+		public bool IsRmGroup => RmGroupIndex >= 0;
+
+		/// <summary>
+		/// modrm.rm group index (0-7) or -1. If it's 0-7, it's stored in the <c>rm</c> field of the <c>modrm</c> byte.
+		/// </summary>
+		public int RmGroupIndex => rmGroupIndex;
 
 		/// <summary>
 		/// Gets the number of operands

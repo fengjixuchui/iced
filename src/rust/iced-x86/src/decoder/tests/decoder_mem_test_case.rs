@@ -42,5 +42,5 @@ pub(crate) struct DecoderMemoryTestCase {
 	pub(crate) encoded_hex_bytes: String,
 	pub(crate) decoder_options: u32,
 	pub(crate) line_number: u32,
-	pub(crate) can_encode: bool,
+	pub(crate) test_options: u32,
 }

@@ -69,7 +69,8 @@ namespace Iced.Intel.GasFormatterInternal {
 		pblendvb,
 		pclmulqdq,
 		pops,
-		Reg16,
+		os_mem16,
+		Reg32,
 		sae,
 		sae_pops,
 		ST_STi,
@@ -77,7 +78,6 @@ namespace Iced.Intel.GasFormatterInternal {
 		STi_ST2,
 		STIG_1a,
 		STIG_1b,
-		xbegin,
 	}
 }
 #endif

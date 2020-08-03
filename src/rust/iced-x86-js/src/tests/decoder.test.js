@@ -21,7 +21,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-const { Code, Decoder, DecoderOptions, Instruction, OpKind, Register } = require("iced-x86");
+const { Code, Decoder, DecoderError, DecoderOptions, Instruction, OpKind, Register } = require("iced-x86");
 
 test("Create a Decoder with no bytes", () => {
 	const bytes = new Uint8Array([]);
@@ -29,7 +29,7 @@ test("Create a Decoder with no bytes", () => {
 	expect(decoder.canDecode).toBe(false);
 	const instr = decoder.decode();
 	expect(instr.code).toBe(Code.INVALID);
-	expect(decoder.invalidNoMoreBytes).toBe(true);
+	expect(decoder.lastError).toBe(DecoderError.NoMoreBytes);
 	instr.free();
 	decoder.free();
 });
@@ -80,10 +80,10 @@ test("Create a 64-bit Decoder", () => {
 });
 
 test("Decode multiple instructions", () => {
-	const bytes = new Uint8Array([0x86, 0x64, 0x32, 0x16, 0xF0, 0xF2, 0x83, 0x00, 0x5A, 0x62, 0xC1, 0xFE, 0xCB, 0x6F, 0xD3]);
+	const bytes = new Uint8Array([0x86, 0x64, 0x32, 0x16, 0xF0, 0xF2, 0x83, 0x00, 0x5A]);
 	const decoder = new Decoder(64, bytes, DecoderOptions.None);
 
-	expect(decoder.maxPosition).toBe(15);
+	expect(decoder.maxPosition).toBe(9);
 	expect(decoder.canDecode).toBe(true);
 	expect(decoder.position).toBe(0);
 	const instr1 = decoder.decode();
@@ -92,26 +92,21 @@ test("Decode multiple instructions", () => {
 	expect(decoder.position).toBe(4);
 	const instr2 = decoder.decode();
 	expect(instr2.code).toBe(Code.Add_rm32_imm8);
-	expect(decoder.canDecode).toBe(true);
+	expect(decoder.canDecode).toBe(false);
 	expect(decoder.position).toBe(9);
 	const instr3 = decoder.decode();
-	expect(instr3.code).toBe(Code.EVEX_Vmovdqu64_zmm_k1z_zmmm512);
+	expect(instr3.code).toBe(Code.INVALID);
 	expect(decoder.canDecode).toBe(false);
-	expect(decoder.position).toBe(15);
-	const instr4 = decoder.decode();
-	expect(instr4.code).toBe(Code.INVALID);
-	expect(decoder.canDecode).toBe(false);
-	expect(decoder.position).toBe(15);
+	expect(decoder.position).toBe(9);
 
 	decoder.free();
 	instr1.free();
 	instr2.free();
 	instr3.free();
-	instr4.free();
 });
 
 test("Decode with decodeOut()", () => {
-	const bytes = new Uint8Array([0x86, 0x64, 0x32, 0x16, 0xF0, 0xF2, 0x83, 0x00, 0x5A, 0x62, 0xC1, 0xFE, 0xCB, 0x6F, 0xD3]);
+	const bytes = new Uint8Array([0x86, 0x64, 0x32, 0x16, 0xF0, 0xF2, 0x83, 0x00, 0x5A, 0x48, 0x89, 0xCE]);
 	const decodera = new Decoder(64, bytes, DecoderOptions.None);
 	const decoderb = new Decoder(64, bytes, DecoderOptions.None);
 	const instr = new Instruction();
@@ -142,7 +137,7 @@ test("Decode with decodeOut()", () => {
 });
 
 test("Decode all instructions", () => {
-	const bytes = new Uint8Array([0x86, 0x64, 0x32, 0x16, 0xF0, 0xF2, 0x83, 0x00, 0x5A, 0x62, 0xC1, 0xFE, 0xCB, 0x6F, 0xD3]);
+	const bytes = new Uint8Array([0x86, 0x64, 0x32, 0x16, 0xF0, 0xF2, 0x83, 0x00, 0x5A, 0x48, 0x89, 0xCE]);
 	const decodera = new Decoder(64, bytes, DecoderOptions.None);
 	const decoderb = new Decoder(64, bytes, DecoderOptions.None);
 	const decoderc = new Decoder(64, bytes, DecoderOptions.None);
@@ -191,7 +186,7 @@ test("Decode with DecoderOptions.NoInvalidCheck", () => {
 	const instra = decodera.decode();
 	const instrb = decoderb.decode();
 	expect(instra.code).toBe(Code.INVALID);
-	expect(decodera.invalidNoMoreBytes).toBe(false);
+	expect(decodera.lastError).toBe(DecoderError.InvalidInstruction);
 	expect(instrb.code).toBe(Code.Add_r8_rm8);
 
 	decodera.free();
@@ -200,10 +195,10 @@ test("Decode with DecoderOptions.NoInvalidCheck", () => {
 	instrb.free();
 });
 
-test("Decode with DecoderOptions.AmdBranches", () => {
+test("Decode with DecoderOptions.AMD", () => {
 	const bytes = new Uint8Array([0x66, 0x70, 0x5A]);
 	const decodera = new Decoder(64, bytes, DecoderOptions.None);
-	const decoderb = new Decoder(64, bytes, DecoderOptions.AmdBranches);
+	const decoderb = new Decoder(64, bytes, DecoderOptions.AMD);
 
 	const instra = decodera.decode();
 	const instrb = decoderb.decode();
@@ -222,7 +217,7 @@ test("Creating a Decoder with an invalid bitness throws", () => {
 
 // Make sure it's not an enum arg in the Rust code since it's a flags enum. It must be a u32 in the method sig.
 test("Create a Decoder with multiple options", () => {
-	const decoder = new Decoder(64, new Uint8Array([0xF3, 0x90]), DecoderOptions.AmdBranches | DecoderOptions.NoPause);
+	const decoder = new Decoder(64, new Uint8Array([0xF3, 0x90]), DecoderOptions.AMD | DecoderOptions.NoPause);
 	const instr = decoder.decode();
 	expect(instr.code).toBe(Code.Nopd);
 	decoder.free();
@@ -246,7 +241,7 @@ test("Decoder.IP prop", () => {
 });
 
 test("Set Decoder position", () => {
-	const bytes = new Uint8Array([0x86, 0x64, 0x32, 0x16, 0xF0, 0xF2, 0x83, 0x00, 0x5A, 0x62, 0xC1, 0xFE, 0xCB, 0x6F, 0xD3]);
+	const bytes = new Uint8Array([0x86, 0x64, 0x32, 0x16, 0xF0, 0xF2, 0x83, 0x00, 0x5A, 0x48, 0x89, 0xCE]);
 	const decoder = new Decoder(64, bytes, DecoderOptions.None);
 
 	const instrs1 = decoder.decodeAll();
@@ -279,16 +274,16 @@ test("Set Decoder position", () => {
 	instrs6.forEach(a => a.free());
 });
 
-test("Decoder invalidNoMoreBytes prop", () => {
+test("Decoder lastError prop", () => {
 	const bytes = new Uint8Array([0xF0, 0x00, 0xCE, 0xF3]);
 	const decoder = new Decoder(64, bytes, DecoderOptions.None);
 
 	const instr1 = decoder.decode();
 	expect(instr1.code).toBe(Code.INVALID);
-	expect(decoder.invalidNoMoreBytes).toBe(false);
+	expect(decoder.lastError).toBe(DecoderError.InvalidInstruction);
 	const instr2 = decoder.decode();
 	expect(instr2.code).toBe(Code.INVALID);
-	expect(decoder.invalidNoMoreBytes).toBe(true);
+	expect(decoder.lastError).toBe(DecoderError.NoMoreBytes);
 
 	decoder.free();
 	instr1.free();

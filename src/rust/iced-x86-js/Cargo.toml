@@ -1,10 +1,10 @@
 [package]
 name = "iced-x86"
 # The version number can't be the same as iced-x86's version number or cargo build will fail
-version = "1.1.1000"
+version = "1.8.1000"
 authors = ["0xd4d <de4dot@gmail.com>"]
 license = "MIT"
-description = "iced-x86 is an x86/x64 disassembler, assembler and instruction decoder written in Rust and compiled to WebAssembly"
+description = "iced-x86 is a high performance and correct x86/x64 disassembler, assembler and instruction decoder written in Rust and compiled to WebAssembly"
 homepage = "https://github.com/0xd4d/iced"
 repository = "https://github.com/0xd4d/iced"
 readme = "README.md"
@@ -31,6 +31,10 @@ intel = ["base", "iced-x86-rust/intel"]
 masm = ["base", "iced-x86-rust/masm"]
 nasm = ["base", "iced-x86-rust/nasm"]
 bigint = ["base"]
+no_vex = ["iced-x86-rust/no_vex"]
+no_evex = ["iced-x86-rust/no_evex"]
+no_xop = ["iced-x86-rust/no_xop"]
+no_d3now = ["iced-x86-rust/no_d3now"]
 
 [dependencies]
 static_assertions = "1.1.0"
@@ -38,7 +42,7 @@ wasm-bindgen = { version = "0.2.61", features = ["strict-macro"] }
 js-sys = "0.3.37"
 
 [dependencies.iced-x86-rust]
-version = "1.1.0"
+version = "1.8.0"
 package = "iced-x86"
 path = "../iced-x86"
 default-features = false

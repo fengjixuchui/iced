@@ -50,6 +50,9 @@ namespace Generator.InstructionInfo {
 		ReadP3,
 		ReadWrite,
 		Write,
+		// Writes to zmm, can get converted to rcw
+		WriteVmm,
+		ReadWriteVmm,
 		// Don't convert Write to ReadWrite, eg. EVEX_Vblendmpd_xmm_k1z_xmm_xmmm128b64 since it always overwrites dest
 		WriteForce,
 		WriteMem_ReadWriteReg,
@@ -120,12 +123,12 @@ namespace Generator.InstructionInfo {
 		R_ST0_RW_ST1,
 		R_ST0_ST1,
 		R_XMM0,
-		Read_Reg8_Op0,
-		Read_Reg8_Op1,
-		Read_Reg8_Op2,
-		Read_Reg16_Op0,
-		Read_Reg16_Op1,
-		Read_Reg16_Op2,
+		Read_Reg8_OpM1,
+		Read_Reg8_OpM1_imm,
+		Read_Reg16_OpM1,
+		Read_Reg16_OpM1_imm,
+		R_EAX_EDX_Op0_GPR32,
+		Invlpgb,
 		RW_AL,
 		RW_AX,
 		RW_CR0,
@@ -157,7 +160,10 @@ namespace Generator.InstructionInfo {
 		Rmpupdate,
 		Psmash,
 		Pvalidate,
-		Invlpgb,
+		CW_EAX,
+		Arpl,
+		Lea,
+		Tilerelease,
 	}
 
 	sealed class InstrInfo {

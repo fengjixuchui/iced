@@ -558,7 +558,7 @@ pub enum FlowControl {
 	ConditionalBranch = 3,
 	/// It's a return instruction: `RET NEAR`, `RET FAR`, `IRET`, `SYSRET`, `SYSEXIT`, `RSM`, `VMLAUNCH`, `VMRESUME`, `VMRUN`, `SKINIT`
 	Return = 4,
-	/// It's a call instruction: `CALL NEAR`, `CALL FAR`, `SYSCALL`, `SYSENTER`, `VMCALL`, `VMMCALL`
+	/// It's a call instruction: `CALL NEAR`, `CALL FAR`, `SYSCALL`, `SYSENTER`, `VMCALL`, `VMMCALL`, `VMGEXIT`
 	Call = 5,
 	/// It's an indirect call instruction: `CALL NEAR reg`, `CALL NEAR [mem]`, `CALL FAR [mem]`
 	IndirectCall = 6,
@@ -625,7 +625,7 @@ pub enum OpCodeOperandKind {
 	///
 	/// 16/32-bit mode: must be 32-bit addressing
 	///
-	/// 64-bit mode: 64-bit addressing is forced
+	/// 64-bit mode: 64-bit addressing is forced and must not be RIP relative
 	mem_mpx = 5,
 	/// Memory (modrm), MPX:
 	///
@@ -829,10 +829,18 @@ pub enum OpCodeOperandKind {
 	brdisp_2 = 103,
 	/// 4-byte branch offset (`JMPE` instruction)
 	brdisp_4 = 104,
+	/// Memory (modrm) and the sib byte must be present
+	sibmem = 105,
+	/// TMM register encoded in the `reg` field of the modrm byte
+	tmm_reg = 106,
+	/// TMM register encoded in the `mod + r/m` fields of the modrm byte
+	tmm_rm = 107,
+	/// TMM register encoded in the the `V'vvvv` field (VEX/EVEX/XOP)
+	tmm_vvvv = 108,
 }
 #[cfg(all(feature = "encoder", feature = "op_code_info"))]
 #[cfg_attr(feature = "cargo-fmt", rustfmt::skip)]
-static GEN_DEBUG_OP_CODE_OPERAND_KIND: [&str; 105] = [
+static GEN_DEBUG_OP_CODE_OPERAND_KIND: [&str; 109] = [
 	"None",
 	"farbr2_2",
 	"farbr4_2",
@@ -938,6 +946,10 @@ static GEN_DEBUG_OP_CODE_OPERAND_KIND: [&str; 105] = [
 	"xbegin_4",
 	"brdisp_2",
 	"brdisp_4",
+	"sibmem",
+	"tmm_reg",
+	"tmm_rm",
+	"tmm_vvvv",
 ];
 #[cfg(all(feature = "encoder", feature = "op_code_info"))]
 impl fmt::Debug for OpCodeOperandKind {
@@ -1003,7 +1015,7 @@ pub enum CpuidFeature {
 	AVX512_4FMAPS = 17,
 	/// CPUID.(EAX=07H, ECX=0H):EDX.AVX512_4VNNIW\[bit 2\]
 	AVX512_4VNNIW = 18,
-	/// CPUID.(EAX=07H, ECX=1H):EAX\[bit 5\]
+	/// CPUID.(EAX=07H, ECX=1H):EAX.AVX512_BF16\[bit 5\]
 	AVX512_BF16 = 19,
 	/// CPUID.(EAX=07H, ECX=0H):ECX.AVX512_BITALG\[bit 12\]
 	AVX512_BITALG = 20,
@@ -1015,7 +1027,7 @@ pub enum CpuidFeature {
 	AVX512_VBMI2 = 23,
 	/// CPUID.(EAX=07H, ECX=0H):ECX.AVX512_VNNI\[bit 11\]
 	AVX512_VNNI = 24,
-	/// CPUID.(EAX=07H, ECX=0H):EDX\[bit 08\]
+	/// CPUID.(EAX=07H, ECX=0H):EDX.AVX512_VP2INTERSECT\[bit 08\]
 	AVX512_VP2INTERSECT = 25,
 	/// CPUID.(EAX=07H, ECX=0H):ECX.AVX512_VPOPCNTDQ\[bit 14\]
 	AVX512_VPOPCNTDQ = 26,
@@ -1067,7 +1079,7 @@ pub enum CpuidFeature {
 	D3NOWEXT = 49,
 	/// CPUID.(EAX=12H, ECX=0H):EAX.OSS\[bit 5\]
 	ENCLV = 50,
-	/// CPUID.(EAX=07H, ECX=0H):ECX\[bit 29\]
+	/// CPUID.(EAX=07H, ECX=0H):ECX.ENQCMD\[bit 29\]
 	ENQCMD = 51,
 	/// CPUID.01H:ECX.F16C\[bit 29\]
 	F16C = 52,
@@ -1243,10 +1255,16 @@ pub enum CpuidFeature {
 	TSXLDTRK = 132,
 	/// CPUID.80000001H:EDX.INVLPGB\[bit ??\]
 	INVLPGB = 133,
+	/// CPUID.(EAX=07H, ECX=0H):EDX.AMX-BF16\[bit 22\]
+	AMX_BF16 = 134,
+	/// CPUID.(EAX=07H, ECX=0H):EDX.AMX-TILE\[bit 24\]
+	AMX_TILE = 135,
+	/// CPUID.(EAX=07H, ECX=0H):EDX.AMX-INT8\[bit 25\]
+	AMX_INT8 = 136,
 }
 #[cfg(feature = "instr_info")]
 #[cfg_attr(feature = "cargo-fmt", rustfmt::skip)]
-static GEN_DEBUG_CPUID_FEATURE: [&str; 134] = [
+static GEN_DEBUG_CPUID_FEATURE: [&str; 137] = [
 	"INTEL8086",
 	"INTEL8086_ONLY",
 	"INTEL186",
@@ -1381,6 +1399,9 @@ static GEN_DEBUG_CPUID_FEATURE: [&str; 134] = [
 	"SERIALIZE",
 	"TSXLDTRK",
 	"INVLPGB",
+	"AMX_BF16",
+	"AMX_TILE",
+	"AMX_INT8",
 ];
 #[cfg(feature = "instr_info")]
 impl fmt::Debug for CpuidFeature {
@@ -1443,7 +1464,7 @@ pub enum OpAccess {
 	ReadWrite = 5,
 	/// The value is read and sometimes written
 	ReadCondWrite = 6,
-	/// The memory operand doesn't refer to memory (eg. `LEA` instruction) or it's an instruction that doesn't read the data to a register or doesn't write to the memory location, it just prefetches/invalidates it, eg. `INVLPG`, `PREFETCHNTA`, `VGATHERPF0DPS`, etc.
+	/// The memory operand doesn't refer to memory (eg. `LEA` instruction) or it's an instruction that doesn't read the data to a register or doesn't write to the memory location, it just prefetches/invalidates it, eg. `INVLPG`, `PREFETCHNTA`, `VGATHERPF0DPS`, etc. Some of those instructions still check if the code can access the memory location.
 	NoMemAccess = 7,
 }
 #[cfg(feature = "instr_info")]

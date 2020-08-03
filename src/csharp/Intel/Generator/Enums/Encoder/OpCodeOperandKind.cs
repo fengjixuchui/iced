@@ -34,7 +34,7 @@ namespace Generator.Enums.Encoder {
 		mem_offs,
 		[Comment("Memory (modrm)")]
 		mem,
-		[Comment("Memory (modrm), MPX:#(p:)#16/32-bit mode: must be 32-bit addressing#(p:)#64-bit mode: 64-bit addressing is forced")]
+		[Comment("Memory (modrm), MPX:#(p:)#16/32-bit mode: must be 32-bit addressing#(p:)#64-bit mode: 64-bit addressing is forced and must not be RIP relative")]
 		mem_mpx,
 		[Comment("Memory (modrm), MPX:#(p:)#16/32-bit mode: must be 32-bit addressing#(p:)#64-bit mode: 64-bit addressing is forced and must not be RIP relative")]
 		mem_mib,
@@ -234,5 +234,13 @@ namespace Generator.Enums.Encoder {
 		brdisp_2,
 		[Comment("4-byte branch offset (#(c:JMPE)# instruction)")]
 		brdisp_4,
+		[Comment("Memory (modrm) and the sib byte must be present")]
+		sibmem,
+		[Comment("TMM register encoded in the #(c:reg)# field of the modrm byte")]
+		tmm_reg,
+		[Comment("TMM register encoded in the #(c:mod + r/m)# fields of the modrm byte")]
+		tmm_rm,
+		[Comment("TMM register encoded in the the #(c:V'vvvv)# field (VEX/EVEX/XOP)")]
+		tmm_vvvv,
 	}
 }

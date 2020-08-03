@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <Copyright>Copyright (C) 2018-2020 de4dot@gmail.com</Copyright>
-    <Version>1.6.0</Version>
+    <Version>1.8.0</Version>
     <Authors>0xd4d</Authors>
     <InformationalVersion>$(Version)</InformationalVersion>
 
@@ -11,7 +11,7 @@
     <Features>strict;nullablePublicOnly</Features>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)Iced.snk</AssemblyOriginatorKeyFile>
-    <IcedFeatureFlags>DECODER;ENCODER;BLOCK_ENCODER;OPCODE_INFO;INSTR_INFO;GAS;INTEL;MASM;NASM</IcedFeatureFlags>
+    <IcedFeatureFlags>DECODER;ENCODER;BLOCK_ENCODER;CODE_ASSEMBLER;OPCODE_INFO;INSTR_INFO;GAS;INTEL;MASM;NASM</IcedFeatureFlags>
     <DefineConstants>$(IcedDefineConstants);$(IcedFeatureFlags)</DefineConstants>
   </PropertyGroup>
 

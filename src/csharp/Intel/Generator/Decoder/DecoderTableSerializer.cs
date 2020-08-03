@@ -23,7 +23,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Generator.Enums;
 using Generator.Enums.Decoder;
@@ -33,6 +32,7 @@ namespace Generator.Decoder {
 	sealed class DecoderTableSerializerInfo {
 		public readonly (string name, object?[] handlers)[] TablesToSerialize;
 		public readonly string[] TableIndexNames;
+		public readonly string Define;
 		public object NullValue => nullValue ?? throw new InvalidOperationException();
 		readonly object? nullValue;
 		public readonly object HandlerReferenceValue;
@@ -40,9 +40,10 @@ namespace Generator.Decoder {
 		public readonly object Invalid2Value;
 		public readonly object DupValue;
 
-		DecoderTableSerializerInfo((string name, object?[] handlers)[] tablesToSerialize, string[] tableIndexNames, object? nullValue, object handlerReferenceValue, object arrayReferenceValue, object invalid2Value, object dupValue) {
+		DecoderTableSerializerInfo((string name, object?[] handlers)[] tablesToSerialize, string[] tableIndexNames, string define, object? nullValue, object handlerReferenceValue, object arrayReferenceValue, object invalid2Value, object dupValue) {
 			TablesToSerialize = tablesToSerialize;
 			TableIndexNames = tableIndexNames;
+			Define = define;
 			this.nullValue = nullValue;
 			HandlerReferenceValue = handlerReferenceValue;
 			ArrayReferenceValue = arrayReferenceValue;
@@ -52,8 +53,9 @@ namespace Generator.Decoder {
 
 		public static DecoderTableSerializerInfo Legacy(GenTypes genTypes) {
 			var enumType = genTypes[TypeIds.OpCodeHandlerKind];
-			return new DecoderTableSerializerInfo(OpCodeHandlersTables_Legacy.GetHandlers(genTypes),
-				new string[] { OpCodeHandlersTables_Legacy.OneByteHandlers },
+			return new DecoderTableSerializerInfo(genTypes.GetObject<DecoderTables>(TypeIds.DecoderTables).Legacy,
+				new string[] { DecoderTable_Legacy.OneByteHandlers },
+				CSharpConstants.DecoderDefine,
 				enumType[nameof(OpCodeHandlerKind.Null)],
 				enumType[nameof(OpCodeHandlerKind.HandlerReference)],
 				enumType[nameof(OpCodeHandlerKind.ArrayReference)],
@@ -63,9 +65,10 @@ namespace Generator.Decoder {
 
 		public static DecoderTableSerializerInfo Vex(GenTypes genTypes) {
 			var enumType = genTypes[TypeIds.VexOpCodeHandlerKind];
-			return new DecoderTableSerializerInfo(OpCodeHandlersTables_VEX.GetHandlers(genTypes),
-				new string[] { OpCodeHandlersTables_VEX.ThreeByteHandlers_0F38XX, OpCodeHandlersTables_VEX.ThreeByteHandlers_0F3AXX, OpCodeHandlersTables_VEX.TwoByteHandlers_0FXX },
-				null,
+			return new DecoderTableSerializerInfo(genTypes.GetObject<DecoderTables>(TypeIds.DecoderTables).VEX,
+				new string[] { DecoderTable_VEX.ThreeByteHandlers_0F38XX, DecoderTable_VEX.ThreeByteHandlers_0F3AXX, DecoderTable_VEX.TwoByteHandlers_0FXX },
+				CSharpConstants.DecoderVexDefine,
+				enumType[nameof(VexOpCodeHandlerKind.Null)],
 				enumType[nameof(VexOpCodeHandlerKind.HandlerReference)],
 				enumType[nameof(VexOpCodeHandlerKind.ArrayReference)],
 				enumType[nameof(VexOpCodeHandlerKind.Invalid2)],
@@ -74,8 +77,9 @@ namespace Generator.Decoder {
 
 		public static DecoderTableSerializerInfo Xop(GenTypes genTypes) {
 			var enumType = genTypes[TypeIds.VexOpCodeHandlerKind];
-			return new DecoderTableSerializerInfo(OpCodeHandlersTables_XOP.GetHandlers(genTypes),
-				new string[] { OpCodeHandlersTables_XOP.XOP8, OpCodeHandlersTables_XOP.XOP9, OpCodeHandlersTables_XOP.XOPA },
+			return new DecoderTableSerializerInfo(genTypes.GetObject<DecoderTables>(TypeIds.DecoderTables).XOP,
+				new string[] { DecoderTable_XOP.XOP8, DecoderTable_XOP.XOP9, DecoderTable_XOP.XOPA },
+				CSharpConstants.DecoderXopDefine,
 				null,
 				enumType[nameof(VexOpCodeHandlerKind.HandlerReference)],
 				enumType[nameof(VexOpCodeHandlerKind.ArrayReference)],
@@ -85,8 +89,9 @@ namespace Generator.Decoder {
 
 		public static DecoderTableSerializerInfo Evex(GenTypes genTypes) {
 			var enumType = genTypes[TypeIds.EvexOpCodeHandlerKind];
-			return new DecoderTableSerializerInfo(OpCodeHandlersTables_EVEX.GetHandlers(genTypes),
-				new string[] { OpCodeHandlersTables_EVEX.ThreeByteHandlers_0F38XX, OpCodeHandlersTables_EVEX.ThreeByteHandlers_0F3AXX, OpCodeHandlersTables_EVEX.TwoByteHandlers_0FXX },
+			return new DecoderTableSerializerInfo(genTypes.GetObject<DecoderTables>(TypeIds.DecoderTables).EVEX,
+				new string[] { DecoderTable_EVEX.ThreeByteHandlers_0F38XX, DecoderTable_EVEX.ThreeByteHandlers_0F3AXX, DecoderTable_EVEX.TwoByteHandlers_0FXX },
+				CSharpConstants.DecoderEvexDefine,
 				null,
 				enumType[nameof(EvexOpCodeHandlerKind.HandlerReference)],
 				enumType[nameof(EvexOpCodeHandlerKind.ArrayReference)],
@@ -133,7 +138,7 @@ namespace Generator.Decoder {
 			for (int i = 0; i < tables.Length; i++) {
 				var name = tables[i].name;
 				var handlers = tables[i].handlers;
-				bool isHandler = IsHandler(handlers);
+				bool isHandler = DecoderTableUtils.IsHandler(handlers);
 				infos.Add(name, new Info((uint)i, isHandler ? InfoKind.Handler : InfoKind.Handlers));
 
 				if (i != 0)
@@ -144,28 +149,8 @@ namespace Generator.Decoder {
 			}
 		}
 
-		bool IsInvalid(object?[] handler) {
-			var data = handler[0];
-			bool isInvalid =
-				data is IEnumValue enumValue &&
-				((enumValue.DeclaringType.TypeId == TypeIds.OpCodeHandlerKind && enumValue == genTypes[TypeIds.OpCodeHandlerKind][nameof(OpCodeHandlerKind.Invalid)]) ||
-				(enumValue.DeclaringType.TypeId == TypeIds.VexOpCodeHandlerKind && enumValue == genTypes[TypeIds.VexOpCodeHandlerKind][nameof(VexOpCodeHandlerKind.Invalid)]) ||
-				(enumValue.DeclaringType.TypeId == TypeIds.EvexOpCodeHandlerKind && enumValue == genTypes[TypeIds.EvexOpCodeHandlerKind][nameof(EvexOpCodeHandlerKind.Invalid)]));
-			if (isInvalid && handler.Length != 1)
-				throw new InvalidOperationException();
-			return isInvalid;
-		}
-
-		static bool IsHandler(object?[] handlers) =>
-			IsHandler(handlers, out _);
-
-		static bool IsHandler(object?[] handlers, [NotNullWhen(true)] out EnumValue? enumValue) {
-			enumValue = handlers[0] as EnumValue;
-			return !(enumValue is null);
-		}
-
 		void SerializeHandlers(FileWriter writer, object?[] handlers, bool writeKind = false) {
-			if (IsHandler(handlers)) {
+			if (DecoderTableUtils.IsHandler(handlers)) {
 				if (writeKind)
 					Write(writer, genTypes[TypeIds.SerializedDataKind][nameof(SerializedDataKind.HandlerReference)]);
 				SerializeHandler(writer, handlers);
@@ -250,7 +235,7 @@ namespace Generator.Decoder {
 		int CountInvalid(object?[] handlers, int index) {
 			int count = 0;
 			for (int i = index; i < handlers.Length; i++) {
-				if (!(handlers[i] is object?[] h) || !IsInvalid(h))
+				if (!(handlers[i] is object?[] h) || !DecoderTableUtils.IsInvalid(genTypes, h))
 					break;
 				count++;
 			}
@@ -533,7 +518,7 @@ namespace Generator.Decoder {
 
 			case int value:
 				writer.WriteCompressedUInt32((uint)value);
-				writer.WriteCommentLine("0x" + value.ToString());
+				writer.WriteCommentLine("0x" + value.ToString("X"));
 				break;
 
 			default:

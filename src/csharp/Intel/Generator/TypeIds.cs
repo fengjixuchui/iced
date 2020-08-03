@@ -23,6 +23,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 namespace Generator {
 	static class TypeIds {
+		public static readonly TypeId OrigCodeValues = new TypeId(nameof(OrigCodeValues));
 		public static readonly TypeId RemovedCodeValues = new TypeId(nameof(RemovedCodeValues));
 		public static readonly TypeId InstructionDefs = new TypeId(nameof(InstructionDefs));
 		public static readonly TypeId EncoderTypes = new TypeId(nameof(EncoderTypes));
@@ -33,6 +34,7 @@ namespace Generator {
 		public static readonly TypeId NasmCtorInfos = new TypeId(nameof(NasmCtorInfos));
 		public static readonly TypeId MemorySizeInfoTable = new TypeId(nameof(MemorySizeInfoTable));
 		public static readonly TypeId RegisterInfoTable = new TypeId(nameof(RegisterInfoTable));
+		public static readonly TypeId DecoderTables = new TypeId(nameof(DecoderTables));
 
 		public static readonly TypeId IcedConstants = new TypeId(nameof(IcedConstants));
 		public static readonly TypeId DecoderTestParserConstants = new TypeId(nameof(DecoderTestParserConstants));
@@ -42,7 +44,9 @@ namespace Generator {
 		public static readonly TypeId CodeSize = new TypeId(nameof(CodeSize));
 		public static readonly TypeId CpuidFeature = new TypeId(nameof(CpuidFeature));
 		public static readonly TypeId CpuidFeatureInternal = new TypeId(nameof(CpuidFeatureInternal));
+		public static readonly TypeId DecoderError = new TypeId(nameof(DecoderError));
 		public static readonly TypeId DecoderOptions = new TypeId(nameof(DecoderOptions));
+		public static readonly TypeId DecoderTestOptions = new TypeId(nameof(DecoderTestOptions));
 		public static readonly TypeId EvexOpCodeHandlerKind = new TypeId(nameof(EvexOpCodeHandlerKind));
 		public static readonly TypeId HandlerFlags = new TypeId(nameof(HandlerFlags));
 		public static readonly TypeId LegacyHandlerFlags = new TypeId(nameof(LegacyHandlerFlags));
@@ -96,7 +100,6 @@ namespace Generator {
 		public static readonly TypeId ConditionCode = new TypeId(nameof(ConditionCode));
 		public static readonly TypeId MiscInstrInfoTestConstants = new TypeId(nameof(MiscInstrInfoTestConstants));
 		public static readonly TypeId InstructionInfoKeys = new TypeId(nameof(InstructionInfoKeys));
-		public static readonly TypeId InstructionInfoDecoderOptions = new TypeId(nameof(InstructionInfoDecoderOptions));
 		public static readonly TypeId RflagsBitsConstants = new TypeId(nameof(RflagsBitsConstants));
 		public static readonly TypeId MemorySizeFlags = new TypeId(nameof(MemorySizeFlags));
 		public static readonly TypeId RegisterFlags = new TypeId(nameof(RegisterFlags));

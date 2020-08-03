@@ -21,7 +21,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#if ENCODER && BLOCK_ENCODER
+#if ENCODER && BLOCK_ENCODER && CODE_ASSEMBLER
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -30,7 +30,7 @@ namespace Iced.Intel {
 	/// <summary>
 	/// Defines an assembly memory operand used with <see cref="Assembler"/>.
 	/// </summary>
-	[DebuggerDisplay("{Base} + {Index} * {Scale} + {Displacement}")]
+	[DebuggerDisplay("{" + nameof(Base) + "} + {" + nameof(Index) + "} * {" + nameof(Scale) + "} + {" + nameof(Displacement) + "}")]
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	public readonly struct AssemblerMemoryOperand : IEquatable<AssemblerMemoryOperand> {
 		/// <summary>

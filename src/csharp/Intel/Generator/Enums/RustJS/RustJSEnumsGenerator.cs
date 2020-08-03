@@ -24,7 +24,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Generator.Documentation;
 using Generator.Documentation.Rust;
+using Generator.Documentation.RustJS;
 using Generator.IO;
 
 namespace Generator.Enums.RustJS {
@@ -33,6 +35,7 @@ namespace Generator.Enums.RustJS {
 		readonly IdentifierConverter idConverter;
 		readonly Dictionary<TypeId, PartialEnumFileInfo?> toPartialFileInfo;
 		readonly RustDocCommentWriter docWriter;
+		readonly DeprecatedWriter deprecatedWriter;
 
 		sealed class PartialEnumFileInfo {
 			public readonly string Id;
@@ -56,6 +59,7 @@ namespace Generator.Enums.RustJS {
 			: base(generatorContext.Types) {
 			idConverter = RustJSIdentifierConverter.Create();
 			docWriter = new RustDocCommentWriter(idConverter, ".");
+			deprecatedWriter = new RustJSDeprecatedWriter(idConverter);
 
 			var dir = generatorContext.RustJSDir;
 			toPartialFileInfo = new Dictionary<TypeId, PartialEnumFileInfo?>();
@@ -76,6 +80,7 @@ namespace Generator.Enums.RustJS {
 			toPartialFileInfo.Add(TypeIds.CodeSize, new PartialEnumFileInfo("Enum", Path.Combine(dir, "code_size.rs"), RustConstants.AttributeCopyClone));
 			toPartialFileInfo.Add(TypeIds.ConditionCode, new PartialEnumFileInfo("Enum", Path.Combine(dir, "condition_code.rs"), new[] { RustConstants.AttributeCopyClone, RustConstants.AttributeAllowNonCamelCaseTypes }));
 			toPartialFileInfo.Add(TypeIds.CpuidFeature, new PartialEnumFileInfo("Enum", Path.Combine(dir, "cpuid_feature.rs"), new[] { RustConstants.AttributeCopyClone, RustConstants.AttributeAllowNonCamelCaseTypes }));
+			toPartialFileInfo.Add(TypeIds.DecoderError, new PartialEnumFileInfo("Enum", Path.Combine(dir, "decoder_error.rs"), new[] { RustConstants.AttributeCopyClone, RustConstants.AttributeAllowNonCamelCaseTypes }));
 			toPartialFileInfo.Add(TypeIds.DecoderOptions, new PartialEnumFileInfo("Enum", Path.Combine(dir, "decoder_options.rs"), new[] { RustConstants.AttributeCopyClone, RustConstants.AttributeAllowNonCamelCaseTypes }));
 			toPartialFileInfo.Add(TypeIds.EncodingKind, new PartialEnumFileInfo("Enum", Path.Combine(dir, "encoding_kind.rs"), new[] { RustConstants.AttributeCopyClone }));
 			toPartialFileInfo.Add(TypeIds.FlowControl, new PartialEnumFileInfo("Enum", Path.Combine(dir, "flow_control.rs"), new[] { RustConstants.AttributeCopyClone }));
@@ -123,8 +128,12 @@ namespace Generator.Enums.RustJS {
 			using (writer.Indent()) {
 				uint expectedValue = 0;
 				foreach (var value in enumType.Values) {
+					// Identical enum values aren't allowed so just remove it
+					if (value.DeprecatedInfo.IsDeprecated)
+						continue;
 					if (writeComments)
 						docWriter.WriteSummary(writer, value.Documentation, enumType.RawName);
+					deprecatedWriter.WriteDeprecated(writer, value);
 					if (enumType.IsFlags)
 						writer.WriteLine($"{value.Name(idConverter)} = {NumberFormatter.FormatHexUInt32WithSep(value.Value)},");
 					else if (expectedValue != value.Value || enumType.IsPublic)

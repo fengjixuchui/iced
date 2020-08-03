@@ -93,8 +93,8 @@ popaw
 popal
 boundw bx, (eax)
 boundl ebx, (eax)
-arpl si, dx
-arpl bx, (eax)
+arplw si, dx
+arplw bx, (eax)
 pushl $0x3412a55a
 pushl $-0x5b
 data16 jo 0x004d
@@ -139,8 +139,6 @@ retw $-0x5aa6
 retl $-0x5aa6
 retw
 retl
-rep retw $-0x5aa6
-rep retl $-0x5aa6
 rep retw
 rep retl
 lesw (eax), bx
@@ -261,9 +259,9 @@ outsw (esi), dx
 outsl (si), dx
 outsl (esi), dx
 movw si, fs
-data16 mov (eax), ds
+movw (eax), ds
 movl esi, fs
-mov (eax), ds
+movw (eax), ds
 popw si
 popw (eax)
 xchgw ax, ax
@@ -312,7 +310,7 @@ scasw (di), ax
 scasw (edi), ax
 scasl (di), eax
 scasl (edi), eax
-data16 xbegin 0x7fffa54f
+xbegin 0x7fffa54f
 xbegin 0xb412a550
 enterw $-0x5aa6, $-0x5a
 leavew
@@ -364,9 +362,9 @@ sarw cl, ax
 sarw cl, (eax)
 sarl cl, eax
 sarl cl, (eax)
-fldcw (eax)
-fnstcw (eax)
-fnstsw (eax)
+fldcww (eax)
+fnstcww (eax)
+fnstsww (eax)
 lcallw *(eax)
 lcalll *(eax)
 ljmpw *(eax)
@@ -436,16 +434,16 @@ movzbw dh, cx
 movzbw (eax), bx
 movzbl dh, ecx
 movzbl (eax), ebx
-movzww si, cx
-movzww (eax), bx
+movzxw si, cx
+movzxw (eax), bx
 movzwl si, ecx
 movzwl (eax), ebx
 movsbw dh, cx
 movsbw (eax), bx
 movsbl dh, ecx
 movsbl (eax), ebx
-movsww si, cx
-movsww (eax), bx
+movsxw si, cx
+movsxw (eax), bx
 movswl si, ecx
 movswl (eax), ebx
 cmpxchg8b (eax)
@@ -482,13 +480,13 @@ xlatb (ebx)
 aam $-6
 aad $-6
 fldenvs (eax)
-fldenv (eax)
+fldenvl (eax)
 fnstenvs (eax)
-fnstenv (eax)
+fnstenvl (eax)
 frstors (eax)
-frstor (eax)
+frstorl (eax)
 fnsaves (eax)
-fnsave (eax)
+fnsavel (eax)
 addr16 monitor
 monitor
 mwait
@@ -660,7 +658,7 @@ movl tr5, eax
 movl tr6, eax
 movl tr7, eax
 syscall
-sysret
+sysretl
 addr16 fs monitor
 addr16 fs monitorx
 addr16 fs clzero
@@ -709,3 +707,4 @@ xresldtrk
 addr16 invlpgb
 invlpgb
 tlbsync
+cl1invmb

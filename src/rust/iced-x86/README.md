@@ -4,18 +4,18 @@ iced-x86
 [![Minimum rustc version](https://img.shields.io/badge/rustc-1.20.0+-yellow.svg)](#minimum-supported-rustc-version)
 ![License](https://img.shields.io/crates/l/iced-x86.svg)
 
-iced-x86 is a high performance x86 (16/32/64-bit) instruction decoder, disassembler and assembler written in Rust.
+iced-x86 is a high performance and correct x86 (16/32/64-bit) instruction decoder, disassembler and assembler written in Rust.
 
 It can be used for static analysis of x86/x64 binaries, to rewrite code (eg. remove garbage instructions), to relocate code or as a disassembler.
 
 - ✔️Supports all Intel and AMD instructions
+- ✔️Correct: All instructions are tested and iced has been tested against other disassemblers/assemblers (xed, gas, objdump, masm, dumpbin, nasm, ndisasm) and fuzzed
 - ✔️100% Rust code
 - ✔️The formatter supports masm, nasm, gas (AT&T), Intel (XED) and there are many options to customize the output
 - ✔️The decoder is 4x+ faster than other similar libraries and doesn't allocate any memory
 - ✔️Small decoded instructions, only 32 bytes
 - ✔️The encoder can be used to re-encode decoded instructions at any address
 - ✔️API to get instruction info, eg. read/written registers, memory and rflags bits; CPUID feature flag, flow control info, etc
-- ✔️All instructions are tested (decode, encode, format, instruction info)
 - ✔️Supports `#![no_std]` and `WebAssembly`
 - ✔️Supports `rustc` `1.20.0` or later
 - ✔️Few dependencies (`static_assertions` and `lazy_static`)
@@ -27,14 +27,14 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-iced-x86 = "1.1.0"
+iced-x86 = "1.8.0"
 ```
 
 Or to customize which features to use:
 
 ```toml
 [dependencies.iced-x86]
-version = "1.1.0"
+version = "1.8.0"
 default-features = false
 # See below for all features
 features = ["std", "decoder", "masm"]
@@ -63,9 +63,27 @@ You can enable/disable these in your `Cargo.toml` file.
 - `std`: (✔️Enabled by default) Enables the `std` crate. `std` or `no_std` must be defined, but not both.
 - `no_std`: Enables `#![no_std]`. `std` or `no_std` must be defined, but not both. This feature uses the `alloc` crate (`rustc` `1.36.0+`) and the `hashbrown` crate.
 - `exhaustive_enums`: Enables exhaustive enums, i.e., no enum has the `#[non_exhaustive]` attribute
+- `no_vex`: Disables all `VEX` instructions. See below for more info.
+- `no_evex`: Disables all `EVEX` instructions. See below for more info.
+- `no_xop`: Disables all `XOP` instructions. See below for more info.
+- `no_d3now`: Disables all `3DNow!` instructions. See below for more info.
 
-[`BlockEncoder`]: https://docs.rs/iced-x86/1.1.0/iced_x86/struct.BlockEncoder.html
-[`OpCodeInfo`]: https://docs.rs/iced-x86/1.1.0/iced_x86/struct.OpCodeInfo.html
+If you use `no_vex`, `no_evex`, `no_xop` or `no_d3now`, you should run the generator again (before building iced) to generate even smaller output.
+
+[.NET Core](https://dotnet.microsoft.com/download) is required. Help:
+
+```sh
+dotnet run -p src/csharp/Intel/Generator/Generator.csproj -- --help
+```
+
+No VEX, EVEX, XOP, 3DNow!:
+
+```sh
+dotnet run -p src/csharp/Intel/Generator/Generator.csproj -- --no-vex --no-evex --no-xop --no-3dnow
+```
+
+[`BlockEncoder`]: https://docs.rs/iced-x86/1.8.0/iced_x86/struct.BlockEncoder.html
+[`OpCodeInfo`]: https://docs.rs/iced-x86/1.8.0/iced_x86/struct.OpCodeInfo.html
 
 ## How-tos
 
@@ -82,12 +100,12 @@ You can enable/disable these in your `Cargo.toml` file.
 This example uses a [`Decoder`] and one of the [`Formatter`]s to decode and format the code,
 eg. [`GasFormatter`], [`IntelFormatter`], [`MasmFormatter`], [`NasmFormatter`].
 
-[`Decoder`]: https://docs.rs/iced-x86/1.1.0/iced_x86/struct.Decoder.html
-[`Formatter`]: https://docs.rs/iced-x86/1.1.0/iced_x86/trait.Formatter.html
-[`GasFormatter`]: https://docs.rs/iced-x86/1.1.0/iced_x86/struct.GasFormatter.html
-[`IntelFormatter`]: https://docs.rs/iced-x86/1.1.0/iced_x86/struct.IntelFormatter.html
-[`MasmFormatter`]: https://docs.rs/iced-x86/1.1.0/iced_x86/struct.MasmFormatter.html
-[`NasmFormatter`]: https://docs.rs/iced-x86/1.1.0/iced_x86/struct.NasmFormatter.html
+[`Decoder`]: https://docs.rs/iced-x86/1.8.0/iced_x86/struct.Decoder.html
+[`Formatter`]: https://docs.rs/iced-x86/1.8.0/iced_x86/trait.Formatter.html
+[`GasFormatter`]: https://docs.rs/iced-x86/1.8.0/iced_x86/struct.GasFormatter.html
+[`IntelFormatter`]: https://docs.rs/iced-x86/1.8.0/iced_x86/struct.IntelFormatter.html
+[`MasmFormatter`]: https://docs.rs/iced-x86/1.8.0/iced_x86/struct.MasmFormatter.html
+[`NasmFormatter`]: https://docs.rs/iced-x86/1.8.0/iced_x86/struct.NasmFormatter.html
 
 ```rust
 use iced_x86::{Decoder, DecoderOptions, Formatter, Instruction, NasmFormatter};
@@ -172,8 +190,8 @@ static EXAMPLE_CODE: &[u8] = &[
 
 This example uses a [`BlockEncoder`] to encode created [`Instruction`]s. This example needs the `db` feature because it creates `db` "instructions".
 
-[`BlockEncoder`]: https://docs.rs/iced-x86/1.1.0/iced_x86/struct.BlockEncoder.html
-[`Instruction`]: https://docs.rs/iced-x86/1.1.0/iced_x86/struct.Instruction.html
+[`BlockEncoder`]: https://docs.rs/iced-x86/1.8.0/iced_x86/struct.BlockEncoder.html
+[`Instruction`]: https://docs.rs/iced-x86/1.8.0/iced_x86/struct.Instruction.html
 
 ```rust
 use iced_x86::{
@@ -304,8 +322,8 @@ Output:
 
 Creates a custom [`SymbolResolver`] that is called by a [`Formatter`].
 
-[`SymbolResolver`]: https://docs.rs/iced-x86/1.1.0/iced_x86/trait.SymbolResolver.html
-[`Formatter`]: https://docs.rs/iced-x86/1.1.0/iced_x86/trait.Formatter.html
+[`SymbolResolver`]: https://docs.rs/iced-x86/1.8.0/iced_x86/trait.SymbolResolver.html
+[`Formatter`]: https://docs.rs/iced-x86/1.8.0/iced_x86/trait.Formatter.html
 
 ```rust
 use iced_x86::{
@@ -361,8 +379,8 @@ Creates a custom [`FormatterOutput`] that is called by a [`Formatter`].
 
 This example will fail to compile unless you install the `colored` crate, see below.
 
-[`FormatterOutput`]: https://docs.rs/iced-x86/1.1.0/iced_x86/trait.FormatterOutput.html
-[`Formatter`]: https://docs.rs/iced-x86/1.1.0/iced_x86/trait.Formatter.html
+[`FormatterOutput`]: https://docs.rs/iced-x86/1.8.0/iced_x86/trait.FormatterOutput.html
+[`Formatter`]: https://docs.rs/iced-x86/1.8.0/iced_x86/trait.Formatter.html
 
 ```rust compile_fail
 // This example uses crate colored = "1.9.2"
@@ -627,8 +645,8 @@ static EXAMPLE_CODE: &[u8] = &[
 Shows how to get used registers/memory and other info. It uses [`Instruction`] methods
 and an [`InstructionInfoFactory`] to get this info.
 
-[`Instruction`]: https://docs.rs/iced-x86/1.1.0/iced_x86/struct.Instruction.html
-[`InstructionInfoFactory`]: https://docs.rs/iced-x86/1.1.0/iced_x86/struct.InstructionInfoFactory.html
+[`Instruction`]: https://docs.rs/iced-x86/1.8.0/iced_x86/struct.Instruction.html
+[`InstructionInfoFactory`]: https://docs.rs/iced-x86/1.8.0/iced_x86/struct.InstructionInfoFactory.html
 
 ```rust
 use iced_x86::{
@@ -1015,6 +1033,7 @@ pub(crate) fn how_to_get_virtual_address() {
     let mut decoder = Decoder::new(64, bytes, DecoderOptions::NONE);
     let instr = decoder.decode();
 
+    // There's also try_virtual_address() which returns an Option<u64>
     let va = instr.virtual_address(0, 0, |register, _element_index, _element_size| {
         match register {
             // The base address of ES, CS, SS and DS is always 0 in 64-bit mode

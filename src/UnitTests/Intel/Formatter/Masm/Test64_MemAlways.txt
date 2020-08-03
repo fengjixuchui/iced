@@ -706,7 +706,6 @@ sar r8, -5Bh
 sar qword ptr [rax], -5Bh
 ret -5AA6h
 ret
-rep ret -5AA6h
 rep ret
 mov cl, 5Ah
 mov byte ptr [rax], 5Ah
@@ -1124,27 +1123,27 @@ str rdx
 str word ptr [rax]
 lldt bx
 lldt word ptr [rax]
-lldt ebx
+lldt bx
 lldt word ptr [rax]
-lldt rbx
+lldt bx
 lldt word ptr [rax]
 ltr sp
 ltr word ptr [rax]
-ltr esp
+ltr sp
 ltr word ptr [rax]
-ltr rsp
+ltr sp
 ltr word ptr [rax]
 verr bp
 verr word ptr [rax]
-verr ebp
+verr bp
 verr word ptr [rax]
-verr rbp
+verr bp
 verr word ptr [rax]
 verw si
 verw word ptr [rax]
-verw esi
+verw si
 verw word ptr [rax]
-verw rsi
+verw si
 verw word ptr [rax]
 sgdt fword ptr [rax]
 sidt fword ptr [rax]
@@ -1158,9 +1157,9 @@ smsw rbp
 smsw word ptr [rax]
 lmsw si
 lmsw word ptr [rax]
-lmsw esi
+lmsw si
 lmsw word ptr [rax]
-lmsw rsi
+lmsw si
 lmsw word ptr [rax]
 invlpg [rax]
 enclv
@@ -1605,6 +1604,7 @@ sysenter
 sysexit
 sysexitq
 getsec
+getsecq
 cmovo cx, si
 cmovo bx, word ptr [rax]
 cmovo ecx, esi
@@ -3421,11 +3421,11 @@ pinsrw xmm1, rbp, -5Bh
 pinsrw xmm1, word ptr [rax], -5Bh
 vpinsrw xmm2, xmm6, ebx, -5Bh
 vpinsrw xmm2, xmm6, word ptr [rax], -5Bh
-vpinsrw xmm2, xmm6, rbx, -5Bh
+vpinsrw xmm2, xmm6, ebx, -5Bh
 vpinsrw xmm2, xmm6, word ptr [rax], -5Bh
 vpinsrw xmm2, xmm6, ebx, -5Bh
 vpinsrw xmm2, xmm6, word ptr [rax+2], -5Bh
-vpinsrw xmm2, xmm6, rbx, -5Bh
+vpinsrw xmm2, xmm6, ebx, -5Bh
 vpinsrw xmm2, xmm6, word ptr [rax+2], -5Bh
 pextrw ecx, mm5, -5Bh
 pextrw rcx, mm5, -5Bh
@@ -6667,15 +6667,15 @@ vpextrq rbx, xmm2, -5Bh
 vpextrq qword ptr [rax+8], xmm2, -5Bh
 extractps ebp, xmm1, -5Bh
 extractps dword ptr [rax+1], xmm1, -5Bh
-extractps rbp, xmm1, -5Bh
+extractps ebp, xmm1, -5Bh
 extractps dword ptr [rax+1], xmm1, -5Bh
 vextractps ebx, xmm2, -5Bh
 vextractps dword ptr [rax+1], xmm2, -5Bh
-vextractps rbx, xmm2, -5Bh
+vextractps ebx, xmm2, -5Bh
 vextractps dword ptr [rax+1], xmm2, -5Bh
 vextractps ebx, xmm2, -5Bh
 vextractps dword ptr [rax+4], xmm2, -5Bh
-vextractps rbx, xmm2, -5Bh
+vextractps ebx, xmm2, -5Bh
 vextractps dword ptr [rax+4], xmm2, -5Bh
 vinsertf128 ymm2, ymm6, xmm3, -5Bh
 vinsertf128 ymm2, ymm6, xmmword ptr [rax], -5Bh
@@ -6757,11 +6757,11 @@ pinsrb xmm1, rbp, -5Bh
 pinsrb xmm1, byte ptr [rax], -5Bh
 vpinsrb xmm2, xmm6, ebx, -5Bh
 vpinsrb xmm2, xmm6, byte ptr [rax], -5Bh
-vpinsrb xmm2, xmm6, rbx, -5Bh
+vpinsrb xmm2, xmm6, ebx, -5Bh
 vpinsrb xmm2, xmm6, byte ptr [rax], -5Bh
 vpinsrb xmm2, xmm6, ebx, -5Bh
 vpinsrb xmm2, xmm6, byte ptr [rax+1], -5Bh
-vpinsrb xmm2, xmm6, rbx, -5Bh
+vpinsrb xmm2, xmm6, ebx, -5Bh
 vpinsrb xmm2, xmm6, byte ptr [rax+1], -5Bh
 insertps xmm1, xmm5, -5Bh
 insertps xmm1, dword ptr [rax], -5Bh
@@ -7921,61 +7921,60 @@ pconfig
 setssbsy
 saveprevssp
 wbnoinvd
-cl1invmb
-reserved-nop si, cx
-reserved-nop word ptr [rax], bx
-reserved-nop esi, ecx
-reserved-nop dword ptr [rax], ebx
-reserved-nop rsi, rcx
-reserved-nop qword ptr [rax], rbx
-reserved-nop si, cx
-reserved-nop word ptr [rax], bx
-reserved-nop esi, ecx
-reserved-nop dword ptr [rax], ebx
-reserved-nop rsi, rcx
-reserved-nop qword ptr [rax], rbx
-reserved-nop si, cx
-reserved-nop word ptr [rax], bx
-reserved-nop esi, ecx
-reserved-nop dword ptr [rax], ebx
-reserved-nop rsi, rcx
-reserved-nop qword ptr [rax], rbx
-reserved-nop si, cx
-reserved-nop word ptr [rax], bx
-reserved-nop esi, ecx
-reserved-nop dword ptr [rax], ebx
-reserved-nop rsi, rcx
-reserved-nop qword ptr [rax], rbx
-reserved-nop si, cx
-reserved-nop word ptr [rax], bx
-reserved-nop esi, ecx
-reserved-nop dword ptr [rax], ebx
-reserved-nop rsi, rcx
-reserved-nop qword ptr [rax], rbx
-reserved-nop si, cx
-reserved-nop word ptr [rax], bx
-reserved-nop esi, ecx
-reserved-nop dword ptr [rax], ebx
-reserved-nop rsi, rcx
-reserved-nop qword ptr [rax], rbx
-reserved-nop si, cx
-reserved-nop word ptr [rax], bx
-reserved-nop esi, ecx
-reserved-nop dword ptr [rax], ebx
-reserved-nop rsi, rcx
-reserved-nop qword ptr [rax], rbx
-reserved-nop si, cx
-reserved-nop word ptr [rax], bx
-reserved-nop esi, ecx
-reserved-nop dword ptr [rax], ebx
-reserved-nop rsi, rcx
-reserved-nop qword ptr [rax], rbx
-reserved-nop si, cx
-reserved-nop word ptr [rax], bx
-reserved-nop esi, ecx
-reserved-nop dword ptr [rax], ebx
-reserved-nop rsi, rcx
-reserved-nop qword ptr [rax], rbx
+nop si, cx
+nop word ptr [rax], bx
+nop esi, ecx
+nop dword ptr [rax], ebx
+nop rsi, rcx
+nop qword ptr [rax], rbx
+nop si, cx
+nop word ptr [rax], bx
+nop esi, ecx
+nop dword ptr [rax], ebx
+nop rsi, rcx
+nop qword ptr [rax], rbx
+nop si, cx
+nop word ptr [rax], bx
+nop esi, ecx
+nop dword ptr [rax], ebx
+nop rsi, rcx
+nop qword ptr [rax], rbx
+nop si, cx
+nop word ptr [rax], bx
+nop esi, ecx
+nop dword ptr [rax], ebx
+nop rsi, rcx
+nop qword ptr [rax], rbx
+nop si, cx
+nop word ptr [rax], bx
+nop esi, ecx
+nop dword ptr [rax], ebx
+nop rsi, rcx
+nop qword ptr [rax], rbx
+nop si, cx
+nop word ptr [rax], bx
+nop esi, ecx
+nop dword ptr [rax], ebx
+nop rsi, rcx
+nop qword ptr [rax], rbx
+nop si, cx
+nop word ptr [rax], bx
+nop esi, ecx
+nop dword ptr [rax], ebx
+nop rsi, rcx
+nop qword ptr [rax], rbx
+nop si, cx
+nop word ptr [rax], bx
+nop esi, ecx
+nop dword ptr [rax], ebx
+nop rsi, rcx
+nop qword ptr [rax], rbx
+nop si, cx
+nop word ptr [rax], bx
+nop esi, ecx
+nop dword ptr [rax], ebx
+nop rsi, rcx
+nop qword ptr [rax], rbx
 cldemote byte ptr [rax]
 rdsspd ecx
 rdsspq rcx
@@ -7984,12 +7983,12 @@ endbr32
 incsspd ebp
 incsspq rbp
 tpause ebp
-tpause rbp
+tpause ebp
 clrssbsy qword ptr [rax]
 umonitor ebp
 umonitor rbp
 umwait ebp
-umwait rbp
+umwait ebp
 pcommit
 vpdpbusd xmm18{k3}, xmm14, xmm3
 vpdpbusd xmm2, xmm6, xmmword ptr [rax+10h]
@@ -8348,17 +8347,6 @@ vcvtne2ps2bf16 ymm2{k5}{z}, ymm6, dword bcst [rax+4]
 vcvtne2ps2bf16 zmm2{k3}{z}, zmm6, zmm3
 vcvtne2ps2bf16 zmm2, zmm6, zmmword ptr [rax+40h]
 vcvtne2ps2bf16 zmm2{k5}{z}, zmm6, dword bcst [rax+4]
-# The CPU ignores the rounding control, but the formatter should still show it.
-# It's similar to showing useless prefixes: it's useful to someone reading it
-# and can indicate that it's data and not code.
-vcvtsi2sd xmm18, xmm14, ebx {rn-sae}
-vcvtsi2sd xmm10, xmm22, ebx {rd-sae}
-vcvtsi2sd xmm2, xmm6, r11d {ru-sae}
-vcvtsi2sd xmm2, xmm6, ebx {rz-sae}
-vcvtusi2sd xmm18, xmm14, ebx {rn-sae}
-vcvtusi2sd xmm10, xmm22, ebx {rd-sae}
-vcvtusi2sd xmm2, xmm6, r11d {ru-sae}
-vcvtusi2sd xmm2, xmm6, ebx {rz-sae}
 rmpadjust
 rmpupdate
 psmash
@@ -8370,3 +8358,28 @@ xresldtrk
 invlpgb
 invlpgb
 tlbsync
+prefetchw byte ptr [rax]
+prefetch byte ptr [rax]
+prefetch byte ptr [rax]
+prefetch byte ptr [rax]
+prefetch byte ptr [rax]
+ud0
+vmgexit
+ldtilecfg [rax]
+tilerelease
+sttilecfg [rax]
+tilezero tmm2
+tileloaddt1 tmm2, [rcx+rdx*4]
+tileloaddt1 tmm2, [rsp]
+tilestored [rcx+rdx*4], tmm2
+tilestored [rsp], tmm2
+tileloadd tmm2, [rcx+rdx*4]
+tileloadd tmm2, [rsp]
+tdpbf16ps tmm2, tmm3, tmm4
+tdpbuud tmm2, tmm3, tmm4
+tdpbusd tmm2, tmm3, tmm4
+tdpbsud tmm2, tmm3, tmm4
+tdpbssd tmm2, tmm3, tmm4
+tdpbf16ps tmm0, tmm1, tmm2
+tdpbf16ps tmm3, tmm4, tmm5
+tdpbf16ps tmm6, tmm7, tmm0

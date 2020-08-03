@@ -24,10 +24,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 namespace Generator {
 	static class RustConstants {
 		// "cargo-fmt" can be anything, rustfmt always sees the attribute
-		const string attrNoRustFmt = "[cfg_attr(feature = \"cargo-fmt\", rustfmt::skip)]";
-
-		public const string AttributeNoRustFmt = "#" + attrNoRustFmt;
-		public const string AttributeNoRustFmtInner = "#!" + attrNoRustFmt;
+		public const string AttributeNoRustFmt = "#[cfg_attr(feature = \"cargo-fmt\", rustfmt::skip)]";
 		public const string AttributeCopyClone = "#[derive(Copy, Clone)]";
 		public const string AttributeCopyEq = "#[derive(Copy, Clone, Eq, PartialEq)]";
 		public const string AttributeCopyEqOrdHash = "#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]";
@@ -50,6 +47,17 @@ namespace Generator {
 		public const string FeatureInstrInfo = "#[cfg(feature = \"instr_info\")]";
 		public const string FeatureEncoder = "#[cfg(feature = \"encoder\")]";
 		public const string FeatureOpCodeInfo = "#[cfg(all(feature = \"encoder\", feature = \"op_code_info\"))]";
+		public const string Vex = "not(feature = \"no_vex\")";
+		public const string Evex = "not(feature = \"no_evex\")";
+		public const string Xop = "not(feature = \"no_xop\")";
+		public const string FeatureVex = "#[cfg(not(feature = \"no_vex\"))]";
+		public const string FeatureXop = "#[cfg(not(feature = \"no_xop\"))]";
+		public const string FeatureVexOrXop = "#[cfg(any(not(feature = \"no_vex\"), not(feature = \"no_xop\")))]";
+		public const string FeatureVexOrXopOrEvex = "#[cfg(any(not(feature = \"no_vex\"), not(feature = \"no_xop\"), not(feature = \"no_evex\")))]";
+		public const string FeatureEvex = "#[cfg(not(feature = \"no_evex\"))]";
+		public const string FeatureD3now = "#[cfg(not(feature = \"no_d3now\"))]";
+		public const string FeatureEncodingOne = "#[cfg({0})]";
+		public const string FeatureEncodingMany = "#[cfg(any({0}))]";
 		public const string FeatureDecoderOrEncoder = "#[cfg(any(feature = \"decoder\", feature = \"encoder\"))]";
 		public const string FeatureDecoderOrEncoderOrInstrInfo = "#[cfg(any(feature = \"decoder\", feature = \"encoder\", feature = \"instr_info\"))]";
 		public const string FeatureBigInt = "#[cfg(feature = \"bigint\")]";

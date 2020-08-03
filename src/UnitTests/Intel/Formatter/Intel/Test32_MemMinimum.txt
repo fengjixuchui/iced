@@ -139,8 +139,6 @@ data16 ret -0x5aa6
 ret -0x5aa6
 data16 ret
 ret
-data16 rep ret -0x5aa6
-rep ret -0x5aa6
 data16 rep ret
 rep ret
 les bx, [eax]
@@ -261,8 +259,8 @@ outsw dx, [esi]
 outsd dx, [si]
 outsd dx, [esi]
 mov fs, si
-data16 mov ds, [eax]
-mov fs, esi
+mov ds, [eax]
+mov fs, si
 mov ds, [eax]
 pop si
 pop word ptr [eax]
@@ -312,7 +310,7 @@ scasw [di]
 scasw [edi]
 scasd [di]
 scasd [edi]
-data16 xbegin 0x7fffa54f
+xbegin 0x7fffa54f
 xbegin 0xb412a550
 data16 enter -0x5aa6, -0x5a
 data16 leave
@@ -709,3 +707,4 @@ xresldtrk
 invlpgb ax
 invlpgb eax
 tlbsync
+cl1invmb

@@ -1804,6 +1804,34 @@ impl Formatter {
 		self.formatter.options_mut().set_prefer_st0(value);
 	}
 
+	/// Show useless prefixes. If it has useless prefixes, it could be data and not code.
+	///
+	/// Default | Value | Example
+	/// --------|-------|--------
+	/// - | `true` | `es rep add eax,ecx`
+	/// ✔️ | `false` | `add eax,ecx`
+	#[wasm_bindgen(getter)]
+	#[wasm_bindgen(js_name = "showUselessPrefixes")]
+	pub fn show_useless_prefixes(&self) -> bool {
+		self.formatter.options().show_useless_prefixes()
+	}
+
+	/// Show useless prefixes. If it has useless prefixes, it could be data and not code.
+	///
+	/// Default | Value | Example
+	/// --------|-------|--------
+	/// - | `true` | `es rep add eax,ecx`
+	/// ✔️ | `false` | `add eax,ecx`
+	///
+	/// # Arguments
+	///
+	/// * `value`: New value
+	#[wasm_bindgen(setter)]
+	#[wasm_bindgen(js_name = "showUselessPrefixes")]
+	pub fn set_show_useless_prefixes(&mut self, value: bool) {
+		self.formatter.options_mut().set_show_useless_prefixes(value)
+	}
+
 	/// Mnemonic condition code selector (eg. `JB` / `JC` / `JNAE`)
 	///
 	/// The value is a [`CC_b`] enum value.
@@ -1870,7 +1898,7 @@ impl Formatter {
 	///
 	/// [`CC_e`]: enum.CC_e.html
 	///
-	/// Default: `JE`, `CMOVE`, `SETE`, `LOOPE`
+	/// Default: `JE`, `CMOVE`, `SETE`, `LOOPE`, `REPE`
 	#[wasm_bindgen(getter)]
 	#[wasm_bindgen(js_name = "cc_e")]
 	pub fn cc_e(&self) -> CC_e {
@@ -1883,7 +1911,7 @@ impl Formatter {
 	///
 	/// [`CC_e`]: enum.CC_e.html
 	///
-	/// Default: `JE`, `CMOVE`, `SETE`, `LOOPE`
+	/// Default: `JE`, `CMOVE`, `SETE`, `LOOPE`, `REPE`
 	///
 	/// # Arguments
 	///
@@ -1900,7 +1928,7 @@ impl Formatter {
 	///
 	/// [`CC_ne`]: enum.CC_ne.html
 	///
-	/// Default: `JNE`, `CMOVNE`, `SETNE`, `LOOPNE`
+	/// Default: `JNE`, `CMOVNE`, `SETNE`, `LOOPNE`, `REPNE`
 	#[wasm_bindgen(getter)]
 	#[wasm_bindgen(js_name = "cc_ne")]
 	pub fn cc_ne(&self) -> CC_ne {
@@ -1913,7 +1941,7 @@ impl Formatter {
 	///
 	/// [`CC_ne`]: enum.CC_ne.html
 	///
-	/// Default: `JNE`, `CMOVNE`, `SETNE`, `LOOPNE`
+	/// Default: `JNE`, `CMOVNE`, `SETNE`, `LOOPNE`, `REPNE`
 	///
 	/// # Arguments
 	///

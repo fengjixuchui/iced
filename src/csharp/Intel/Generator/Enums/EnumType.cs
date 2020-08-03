@@ -39,7 +39,8 @@ namespace Generator.Enums {
 		public string RawName { get; }
 		public string Name(IdentifierConverter idConverter) => idConverter.Type(RawName);
 		public string? Documentation { get; }
-		public EnumValue[] Values { get; }
+		public EnumValue[] Values => values;
+		EnumValue[] values;
 		readonly bool initialized;
 		readonly Dictionary<string, EnumValue> toEnumValue;
 
@@ -85,38 +86,53 @@ namespace Generator.Enums {
 			TypeId = typeId;
 			RawName = name;
 			Documentation = documentation;
-			Values = values;
+			this.values = values;
 			initialized = (flags & EnumTypeFlags.NoInitialize) == 0;
 			Initialize(values);
 		}
 
 		void Initialize(EnumValue[] values) {
 			toEnumValue.Clear();
+			this.values = values;
+			foreach (var value in values) {
+				value.DeclaringType = this;
+				toEnumValue.Add(value.RawName, value);
+			}
 			if (initialized) {
 				if (IsFlags) {
 					uint value = 0;
-					for (int i = 0; i < values.Length; i++) {
-						if (values[i].RawName == "None")
-							values[i].Value = 0;
+					foreach (var enumValue in values) {
+						if (enumValue.DeprecatedInfo.IsDeprecated)
+							continue;
+						if (enumValue.RawName == "None")
+							enumValue.Value = 0;
 						else {
 							if (value == 0)
 								value = 1;
 							else if (value == 0x80000000)
-								throw new InvalidOperationException("Too many enum value");
+								throw new InvalidOperationException("Too many enum values");
 							else
 								value <<= 1;
-							values[i].Value = value;
+							enumValue.Value = value;
 						}
 					}
 				}
 				else {
-					for (int i = 0; i < values.Length; i++)
+					for (int i = 0; i < values.Length; i++) {
+						if (values[i].DeprecatedInfo.IsDeprecated)
+							continue;
 						values[i].Value = (uint)i;
+					}
 				}
 			}
-			foreach (var value in values) {
-				value.DeclaringType = this;
-				toEnumValue.Add(value.RawName, value);
+			foreach (var enumValue in values) {
+				if (!enumValue.DeprecatedInfo.IsDeprecated)
+					continue;
+				if (!toEnumValue.TryGetValue(enumValue.DeprecatedInfo.NewName, out var newValue))
+					throw new InvalidOperationException($"Couldn't find enum {enumValue.RawName}");
+				enumValue.Value = newValue.Value;
+				if (enumValue.Documentation is null)
+					enumValue.Documentation = newValue.Documentation;
 			}
 		}
 
@@ -130,7 +146,7 @@ namespace Generator.Enums {
 			var constants = new Constant[Values.Length];
 			for (int i = 0; i < constants.Length; i++) {
 				var value = Values[i];
-				var constant = new Constant(constantKind, value.RawName, value.Value, flags, value.Documentation);
+				var constant = new Constant(constantKind, value.RawName, value.Value, flags, value.Documentation, value.DeprecatedInfo);
 				constants[i] = constant;
 			}
 
@@ -191,12 +207,18 @@ namespace Generator.Enums {
 		public string Name(IdentifierConverter idConverter) => idConverter.EnumField(RawName);
 		public string ToStringValue(IdentifierConverter idConverter) => idConverter.EnumField(RawName);
 		public string? Documentation { get; internal set; }
+		public DeprecatedInfo DeprecatedInfo { get; }
 
-		public EnumValue(uint value, string name, string? documentation) {
+		public EnumValue(uint value, string name, string? documentation)
+			: this(value, name, documentation, default) {
+		}
+
+		public EnumValue(uint value, string name, string? documentation, DeprecatedInfo deprecatedInfo) {
 			DeclaringType = null!;
 			Value = value;
 			RawName = name;
 			Documentation = documentation;
+			DeprecatedInfo = deprecatedInfo;
 		}
 	}
 }

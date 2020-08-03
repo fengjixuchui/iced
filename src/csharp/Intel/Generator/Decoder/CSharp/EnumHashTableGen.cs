@@ -22,6 +22,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 using System.IO;
+using System.Linq;
 using Generator.Enums;
 using Generator.IO;
 
@@ -41,6 +42,7 @@ namespace Generator.Decoder.CSharp {
 			var infos = new (string id, EnumType enumType, bool lowerCase, string filename)[] {
 				("CodeHash", genTypes[TypeIds.Code], false, "Intel/ToEnumConverter.Code.cs"),
 				("CpuidFeatureHash", genTypes[TypeIds.CpuidFeature], false, "Intel/ToEnumConverter.CpuidFeature.cs"),
+				("DecoderErrorHash", genTypes[TypeIds.DecoderError], false, "Intel/ToEnumConverter.DecoderError.cs"),
 				("DecoderOptionsHash", genTypes[TypeIds.DecoderOptions], false, "Intel/ToEnumConverter.DecoderOptions.cs"),
 				("EncodingKindHash", genTypes[TypeIds.EncodingKind], false, "Intel/ToEnumConverter.EncodingKind.cs"),
 				("FlowControlHash", genTypes[TypeIds.FlowControl], false, "Intel/ToEnumConverter.FlowControl.cs"),
@@ -74,9 +76,12 @@ namespace Generator.Decoder.CSharp {
 
 		void WriteHash(FileWriter writer, bool lowerCase, EnumType enumType) {
 			var enumStr = enumType.Name(idConverter);
-			writer.WriteLine($"new Dictionary<string, {enumStr}>({enumType.Values.Length}, StringComparer.Ordinal) {{");
+			var enumValues = enumType.Values.Where(a => !a.DeprecatedInfo.IsDeprecated).ToArray();
+			writer.WriteLine($"new Dictionary<string, {enumStr}>({enumValues.Length}, StringComparer.Ordinal) {{");
 			using (writer.Indent()) {
-				foreach (var value in enumType.Values) {
+				foreach (var value in enumValues) {
+					if (value.DeprecatedInfo.IsDeprecated)
+						continue;
 					var name = value.Name(idConverter);
 					var key = value.RawName;
 					if (lowerCase)

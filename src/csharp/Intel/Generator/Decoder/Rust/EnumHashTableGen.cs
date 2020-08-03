@@ -22,6 +22,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 using System.IO;
+using System.Linq;
 using Generator.Enums;
 using Generator.IO;
 
@@ -41,6 +42,7 @@ namespace Generator.Decoder.Rust {
 			var infos = new (string id, EnumType enumType, bool lowerCase, string filename)[] {
 				("CodeHash", genTypes[TypeIds.Code], false, "test_utils/from_str_conv/code_table.rs"),
 				("CpuidFeatureHash", genTypes[TypeIds.CpuidFeature], false, "test_utils/from_str_conv/cpuid_feature_table.rs"),
+				("DecoderErrorHash", genTypes[TypeIds.DecoderError], false, "test_utils/from_str_conv/decoder_error_table.rs"),
 				("DecoderOptionsHash", genTypes[TypeIds.DecoderOptions], false, "test_utils/from_str_conv/decoder_options_table.rs"),
 				("EncodingKindHash", genTypes[TypeIds.EncodingKind], false, "test_utils/from_str_conv/encoding_kind_table.rs"),
 				("FlowControlHash", genTypes[TypeIds.FlowControl], false, "test_utils/from_str_conv/flow_control_table.rs"),
@@ -73,12 +75,15 @@ namespace Generator.Decoder.Rust {
 		}
 
 		void WriteHash(FileWriter writer, bool lowerCase, EnumType enumType) {
-			if (enumType.Values.Length == 0)
+			var enumValues = enumType.Values.Where(a => !a.DeprecatedInfo.IsDeprecated).ToArray();
+			if (enumValues.Length == 0)
 				writer.WriteLine($"let h = HashMap::new();");
 			else
-				writer.WriteLine($"let mut h = HashMap::with_capacity({enumType.Values.Length});");
+				writer.WriteLine($"let mut h = HashMap::with_capacity({enumValues.Length});");
 			var enumStr = enumType.Name(idConverter);
-			foreach (var value in enumType.Values) {
+			foreach (var value in enumValues) {
+				if (value.DeprecatedInfo.IsDeprecated)
+					continue;
 				string name;
 				if (enumType.IsFlags)
 					name = idConverter.Constant(value.RawName);

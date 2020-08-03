@@ -21,6 +21,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Generator.Enums;
@@ -28,15 +29,31 @@ using Generator.Enums;
 namespace Generator.Tables {
 	[TypeGen(TypeGenOrders.PreCreateInstructions)]
 	sealed class InstructionDefs : ICreatedInstructions {
-		public InstructionDef[] Table => defs;
+		public InstructionDef[] Defs {
+			get {
+				if (!filtered)
+					throw new InvalidOperationException();
+				return defs;
+			}
+		}
+
 		InstructionDef[] defs;
+		bool filtered;
 
 		InstructionDefs(GenTypes genTypes) {
 			defs = InstructionDefsData.CreateTable(genTypes);
 			genTypes.AddObject(TypeIds.InstructionDefs, this);
 		}
 
-		void ICreatedInstructions.OnCreatedInstructions(GenTypes genTypes, HashSet<EnumValue> filteredCodeValues) =>
+		public InstructionDef[] GetDefsPreFiltered() {
+			if (filtered)
+				throw new InvalidOperationException();
+			return defs;
+		}
+
+		void ICreatedInstructions.OnCreatedInstructions(GenTypes genTypes, HashSet<EnumValue> filteredCodeValues) {
 			defs = defs.Where(a => filteredCodeValues.Contains(a.OpCodeInfo.Code)).ToArray();
+			filtered = true;
+		}
 	}
 }

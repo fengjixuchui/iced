@@ -389,7 +389,7 @@ namespace Iced.Intel.MasmFormatterInternal {
 				CodeSize.Code64 => OpKind.MemoryESRDI,
 				_ => throw new InvalidOperationException(),
 			};
-			bool shortForm = instruction.Op0Kind == shortFormOpKind && instruction.SegmentPrefix == Register.None;
+			bool shortForm = instruction.Op0Kind == shortFormOpKind;
 			if (!shortForm)
 				info = new InstrOpInfo(mnemonic_args, instruction, flags);
 			else {
@@ -419,7 +419,8 @@ namespace Iced.Intel.MasmFormatterInternal {
 				CodeSize.Code64 => OpKind.MemorySegRSI,
 				_ => throw new InvalidOperationException(),
 			};
-			bool shortForm = instruction.Op1Kind == shortFormOpKind && instruction.SegmentPrefix == Register.None;
+			bool shortForm = instruction.Op1Kind == shortFormOpKind &&
+				(instruction.SegmentPrefix == Register.None || !FormatterUtils.ShowSegmentPrefix(Register.DS, instruction, options));
 			if (!shortForm)
 				info = new InstrOpInfo(mnemonic_args, instruction, flags);
 			else {
@@ -449,7 +450,8 @@ namespace Iced.Intel.MasmFormatterInternal {
 				CodeSize.Code64 => OpKind.MemoryESRDI,
 				_ => throw new InvalidOperationException(),
 			};
-			bool shortForm = instruction.Op0Kind == shortFormOpKind && instruction.SegmentPrefix == Register.None;
+			bool shortForm = instruction.Op0Kind == shortFormOpKind &&
+				(instruction.SegmentPrefix == Register.None || !FormatterUtils.ShowSegmentPrefix(Register.DS, instruction, options));
 			if (!shortForm)
 				info = new InstrOpInfo(mnemonic_args, instruction, flags);
 			else {
@@ -479,7 +481,8 @@ namespace Iced.Intel.MasmFormatterInternal {
 				CodeSize.Code64 => OpKind.MemoryESRDI,
 				_ => throw new InvalidOperationException(),
 			};
-			bool shortForm = instruction.Op1Kind == shortFormOpKind && instruction.SegmentPrefix == Register.None;
+			bool shortForm = instruction.Op1Kind == shortFormOpKind &&
+				(instruction.SegmentPrefix == Register.None || !FormatterUtils.ShowSegmentPrefix(Register.DS, instruction, options));
 			if (!shortForm)
 				info = new InstrOpInfo(mnemonic_args, instruction, flags);
 			else {
@@ -509,7 +512,7 @@ namespace Iced.Intel.MasmFormatterInternal {
 				CodeSize.Code64 => OpKind.MemoryESRDI,
 				_ => throw new InvalidOperationException(),
 			};
-			bool shortForm = instruction.Op0Kind == shortFormOpKind && instruction.SegmentPrefix == Register.None;
+			bool shortForm = instruction.Op0Kind == shortFormOpKind;
 			if (!shortForm) {
 				info = default;
 				info.Flags = flags;
@@ -544,7 +547,8 @@ namespace Iced.Intel.MasmFormatterInternal {
 				CodeSize.Code64 => OpKind.MemorySegRSI,
 				_ => throw new InvalidOperationException(),
 			};
-			bool shortForm = instruction.Op1Kind == shortFormOpKind && instruction.SegmentPrefix == Register.None;
+			bool shortForm = instruction.Op1Kind == shortFormOpKind &&
+				(instruction.SegmentPrefix == Register.None || !FormatterUtils.ShowSegmentPrefix(Register.DS, instruction, options));
 			if (!shortForm) {
 				info = default;
 				info.Flags = flags;
@@ -580,7 +584,8 @@ namespace Iced.Intel.MasmFormatterInternal {
 				CodeSize.Code64 => OpKind.MemoryESRDI,
 				_ => throw new InvalidOperationException(),
 			};
-			bool shortForm = instruction.Op1Kind == shortFormOpKind && instruction.SegmentPrefix == Register.None;
+			bool shortForm = instruction.Op1Kind == shortFormOpKind &&
+				(instruction.SegmentPrefix == Register.None || !FormatterUtils.ShowSegmentPrefix(Register.DS, instruction, options));
 			if (!shortForm) {
 				info = default;
 				info.Flags = flags;
@@ -614,7 +619,8 @@ namespace Iced.Intel.MasmFormatterInternal {
 				CodeSize.Code64 => Register.RBX,
 				_ => throw new InvalidOperationException(),
 			};
-			bool shortForm = instruction.MemoryBase == baseReg && instruction.SegmentPrefix == Register.None;
+			bool shortForm = instruction.MemoryBase == baseReg &&
+				(instruction.SegmentPrefix == Register.None || !FormatterUtils.ShowSegmentPrefix(Register.DS, instruction, options));
 			if (!shortForm)
 				info = new InstrOpInfo(mnemonic_args, instruction, InstrOpInfoFlags.ShowNoMemSize_ForceSize | InstrOpInfoFlags.IgnoreIndexReg);
 			else {
@@ -688,9 +694,8 @@ namespace Iced.Intel.MasmFormatterInternal {
 	sealed class SimpleInstrInfo_STi_ST2 : InstrInfo {
 		readonly FormatterString mnemonic;
 
-		public SimpleInstrInfo_STi_ST2(string mnemonic) {
+		public SimpleInstrInfo_STi_ST2(string mnemonic) =>
 			this.mnemonic = new FormatterString(mnemonic);
-		}
 
 		public override void GetOpInfo(FormatterOptions options, in Instruction instruction, out InstrOpInfo info) {
 			const InstrOpInfoFlags flags = 0;
@@ -710,9 +715,8 @@ namespace Iced.Intel.MasmFormatterInternal {
 	sealed class SimpleInstrInfo_ST_STi : InstrInfo {
 		readonly FormatterString mnemonic;
 
-		public SimpleInstrInfo_ST_STi(string mnemonic) {
+		public SimpleInstrInfo_ST_STi(string mnemonic) =>
 			this.mnemonic = new FormatterString(mnemonic);
-		}
 
 		public override void GetOpInfo(FormatterOptions options, in Instruction instruction, out InstrOpInfo info) {
 			info = new InstrOpInfo(mnemonic, instruction, InstrOpInfoFlags.None);
@@ -725,9 +729,8 @@ namespace Iced.Intel.MasmFormatterInternal {
 	sealed class SimpleInstrInfo_STi_ST : InstrInfo {
 		readonly FormatterString mnemonic;
 
-		public SimpleInstrInfo_STi_ST(string mnemonic) {
+		public SimpleInstrInfo_STi_ST(string mnemonic) =>
 			this.mnemonic = new FormatterString(mnemonic);
-		}
 
 		public override void GetOpInfo(FormatterOptions options, in Instruction instruction, out InstrOpInfo info) {
 			info = new InstrOpInfo(mnemonic, instruction, InstrOpInfoFlags.None);
@@ -875,7 +878,8 @@ namespace Iced.Intel.MasmFormatterInternal {
 				CodeSize.Code64 => OpKind.MemorySegRDI,
 				_ => throw new InvalidOperationException(),
 			};
-			bool shortForm = instruction.Op0Kind == shortFormOpKind && instruction.SegmentPrefix == Register.None;
+			bool shortForm = instruction.Op0Kind == shortFormOpKind &&
+				(instruction.SegmentPrefix == Register.None || !FormatterUtils.ShowSegmentPrefix(Register.DS, instruction, options));
 			if (!shortForm)
 				info = new InstrOpInfo(mnemonic, instruction, flags);
 			else {
@@ -980,7 +984,7 @@ namespace Iced.Intel.MasmFormatterInternal {
 			if (instruction.CodeSize == codeSize)
 				mnemonics = this.mnemonics;
 			else
-				mnemonics = this.mnemonics_other;
+				mnemonics = mnemonics_other;
 			var mnemonic = MnemonicCC.GetMnemonicCC(options, ccIndex, mnemonics);
 			info = new InstrOpInfo(mnemonic, instruction, InstrOpInfoFlags.None);
 		}
@@ -1180,9 +1184,8 @@ namespace Iced.Intel.MasmFormatterInternal {
 	sealed class SimpleInstrInfo_imul : InstrInfo {
 		readonly FormatterString mnemonic;
 
-		public SimpleInstrInfo_imul(string mnemonic) {
+		public SimpleInstrInfo_imul(string mnemonic) =>
 			this.mnemonic = new FormatterString(mnemonic);
-		}
 
 		public override void GetOpInfo(FormatterOptions options, in Instruction instruction, out InstrOpInfo info) {
 			info = new InstrOpInfo(mnemonic, instruction, InstrOpInfoFlags.None);
@@ -1199,20 +1202,44 @@ namespace Iced.Intel.MasmFormatterInternal {
 
 	sealed class SimpleInstrInfo_Reg16 : InstrInfo {
 		readonly FormatterString mnemonic;
+		readonly InstrOpInfoFlags flags;
 
-		public SimpleInstrInfo_Reg16(string mnemonic) =>
+		public SimpleInstrInfo_Reg16(string mnemonic, InstrOpInfoFlags flags) {
 			this.mnemonic = new FormatterString(mnemonic);
+			this.flags = flags;
+		}
 
 		public override void GetOpInfo(FormatterOptions options, in Instruction instruction, out InstrOpInfo info) {
-			const InstrOpInfoFlags flags = InstrOpInfoFlags.None;
 			info = new InstrOpInfo(mnemonic, instruction, flags);
-			if (Register.EAX <= (Register)info.Op0Register && (Register)info.Op0Register <= Register.R15D) {
+			if (Register.EAX <= (Register)info.Op0Register && (Register)info.Op0Register <= Register.R15) {
 				Static.Assert(InstrOpInfo.TEST_RegisterBits == 8 ? 0 : -1);
-				info.Op0Register = (byte)((Register)info.Op0Register - Register.EAX + Register.AX);
+				info.Op0Register = (byte)((((Register)info.Op0Register - Register.EAX) & 0xF) + Register.AX);
 			}
-			if (Register.EAX <= (Register)info.Op1Register && (Register)info.Op1Register <= Register.R15D) {
+			if (Register.EAX <= (Register)info.Op1Register && (Register)info.Op1Register <= Register.R15) {
 				Static.Assert(InstrOpInfo.TEST_RegisterBits == 8 ? 0 : -1);
-				info.Op1Register = (byte)((Register)info.Op1Register - Register.EAX + Register.AX);
+				info.Op1Register = (byte)((((Register)info.Op1Register - Register.EAX) & 0xF) + Register.AX);
+			}
+		}
+	}
+
+	sealed class SimpleInstrInfo_Reg32 : InstrInfo {
+		readonly FormatterString mnemonic;
+		readonly InstrOpInfoFlags flags;
+
+		public SimpleInstrInfo_Reg32(string mnemonic, InstrOpInfoFlags flags) {
+			this.mnemonic = new FormatterString(mnemonic);
+			this.flags = flags;
+		}
+
+		public override void GetOpInfo(FormatterOptions options, in Instruction instruction, out InstrOpInfo info) {
+			info = new InstrOpInfo(mnemonic, instruction, flags);
+			if (Register.RAX <= (Register)info.Op0Register && (Register)info.Op0Register <= Register.R15) {
+				Static.Assert(InstrOpInfo.TEST_RegisterBits == 8 ? 0 : -1);
+				info.Op0Register = (byte)((Register)info.Op0Register - Register.RAX + Register.EAX);
+			}
+			if (Register.RAX <= (Register)info.Op2Register && (Register)info.Op2Register <= Register.R15) {
+				Static.Assert(InstrOpInfo.TEST_RegisterBits == 8 ? 0 : -1);
+				info.Op2Register = (byte)((Register)info.Op2Register - Register.RAX + Register.EAX);
 			}
 		}
 	}

@@ -23,6 +23,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Iced.Intel;
 using Xunit;
 
@@ -201,11 +202,15 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 
 		[Fact]
 		void Test_Decoder_Create_throws() {
-			foreach (var bitness in BitnessUtils.GetInvalidBitnessValues())
+			foreach (var bitness in BitnessUtils.GetInvalidBitnessValues()) {
 				Assert.Throws<ArgumentOutOfRangeException>(() => Decoder.Create(bitness, new ByteArrayCodeReader("90"), DecoderOptions.None));
+				Assert.Throws<ArgumentOutOfRangeException>(() => Decoder.Create(bitness, new byte[] { 0x90 }, DecoderOptions.None));
+			}
 
-			foreach (var bitness in new[] { 16, 32, 64 })
-				Assert.Throws<ArgumentNullException>(() => Decoder.Create(bitness, null, DecoderOptions.None));
+			foreach (var bitness in new[] { 16, 32, 64 }) {
+				Assert.Throws<ArgumentNullException>(() => Decoder.Create(bitness, (CodeReader)null, DecoderOptions.None));
+				Assert.Throws<ArgumentNullException>(() => Decoder.Create(bitness, (byte[])null, DecoderOptions.None));
+			}
 		}
 
 #if ENCODER
@@ -231,9 +236,100 @@ namespace Iced.UnitTests.Intel.DecoderTests {
 					decoder.Decode(out var instr);
 					Assert.Equal(0x1000UL + (ulong)i, decoder.IP);
 					Assert.Equal(Code.INVALID, instr.Code);
-					Assert.True(decoder.InvalidNoMoreBytes);
+					Assert.Equal(DecoderError.NoMoreBytes, decoder.LastError);
 				}
 			}
+		}
+
+		[Fact]
+		void Decode_ctor_with_byte_array_arg() {
+			var decoder = Decoder.Create(16, new byte[] { 0x01, 0xCE }, DecoderOptions.None);
+			Assert.Equal(16, decoder.Bitness);
+			decoder.Decode(out var instr);
+			Assert.Equal(Code.Add_rm16_r16, instr.Code);
+
+			decoder = Decoder.Create(32, new byte[] { 0x01, 0xCE }, DecoderOptions.None);
+			Assert.Equal(32, decoder.Bitness);
+			decoder.Decode(out instr);
+			Assert.Equal(Code.Add_rm32_r32, instr.Code);
+
+			decoder = Decoder.Create(64, new byte[] { 0x48, 0x01, 0xCE }, DecoderOptions.None);
+			Assert.Equal(64, decoder.Bitness);
+			decoder.Decode(out instr);
+			Assert.Equal(Code.Add_rm64_r64, instr.Code);
+		}
+
+		InstructionList EnumeratorDecode(Decoder decoder) {
+			var list = new InstructionList();
+			foreach (var instr in decoder)
+				list.Add(instr);
+			return list;
+		}
+
+		[Fact]
+		void Decode_enumerator_empty() {
+			var data = Array.Empty<byte>();
+			var decoder = Decoder.Create(64, data);
+			var list = EnumeratorDecode(decoder);
+			Assert.Equal(0, list.Count);
+
+			decoder = Decoder.Create(64, data);
+			var array = decoder.ToArray();
+			Assert.Equal(list, array);
+		}
+
+		[Fact]
+		void Decode_enumerator_one() {
+			var data = new byte[] { 0x00, 0xCE };
+			var decoder = Decoder.Create(64, data);
+			var list = EnumeratorDecode(decoder);
+			Assert.Equal(1, list.Count);
+			Assert.Equal(Code.Add_rm8_r8, list[0].Code);
+
+			decoder = Decoder.Create(64, data);
+			var array = decoder.ToArray();
+			Assert.Equal(list, array);
+		}
+
+		[Fact]
+		void Decode_enumerator_two() {
+			var data = new byte[] { 0x00, 0xCE, 0x66, 0x09, 0xCE };
+			var decoder = Decoder.Create(64, data);
+			var list = EnumeratorDecode(decoder);
+			Assert.Equal(2, list.Count);
+			Assert.Equal(Code.Add_rm8_r8, list[0].Code);
+			Assert.Equal(Code.Or_rm16_r16, list[1].Code);
+
+			decoder = Decoder.Create(64, data);
+			var array = decoder.ToArray();
+			Assert.Equal(list, array);
+		}
+
+		[Fact]
+		void Decode_enumerator_incomplete_instruction_one() {
+			var data = new byte[] { 0x66 };
+			var decoder = Decoder.Create(64, data);
+			var list = EnumeratorDecode(decoder);
+			Assert.Equal(1, list.Count);
+			Assert.Equal(Code.INVALID, list[0].Code);
+
+			decoder = Decoder.Create(64, data);
+			var array = decoder.ToArray();
+			Assert.Equal(list, array);
+		}
+
+		[Fact]
+		void Decode_enumerator_incomplete_instruction_two() {
+			var data = new byte[] { 0x00, 0xCE, 0x66, 0x09 };
+			var decoder = Decoder.Create(64, data);
+			var list = EnumeratorDecode(decoder);
+			Assert.Equal(2, list.Count);
+			Assert.Equal(Code.Add_rm8_r8, list[0].Code);
+			Assert.Equal(Code.INVALID, list[1].Code);
+
+			decoder = Decoder.Create(64, data);
+			var array = decoder.ToArray();
+			Assert.Equal(list, array);
 		}
 	}
 }

@@ -53,9 +53,14 @@ impl Op for InvalidOpHandler {
 }
 
 #[allow(non_camel_case_types)]
-pub(super) struct OpModRM_rm_mem_only;
+pub(super) struct OpModRM_rm_mem_only {
+	pub(super) must_use_sib: bool,
+}
 impl Op for OpModRM_rm_mem_only {
 	fn encode(&self, encoder: &mut Encoder, instruction: &Instruction, operand: u32) {
+		if self.must_use_sib {
+			encoder.encoder_flags |= EncoderFlags::MUST_USE_SIB;
+		}
 		encoder.add_reg_or_mem(instruction, operand, Register::None, Register::None, true, false);
 	}
 }
@@ -125,11 +130,13 @@ impl Op for OpModRM_regF0 {
 	fn encode(&self, encoder: &mut Encoder, instruction: &Instruction, operand: u32) {
 		if encoder.bitness() != 64
 			&& instruction.op_kind(operand) == OpKind::Register
-			&& instruction.op_register(operand) as u32 == self.reg_lo as u32 + 8
+			&& instruction.op_register(operand) as u32 >= self.reg_lo as u32 + 8
+			&& instruction.op_register(operand) as u32 <= self.reg_lo as u32 + 15
 		{
 			encoder.encoder_flags |= EncoderFlags::PF0;
-			let reg = unsafe { mem::transmute(self.reg_lo as u8 + 8) };
-			encoder.add_mod_rm_register(instruction, operand, reg, reg);
+			let reg_lo = unsafe { mem::transmute(self.reg_lo as u8 + 8) };
+			let reg_hi = unsafe { mem::transmute(self.reg_lo as u8 + 15) };
+			encoder.add_mod_rm_register(instruction, operand, reg_lo, reg_hi);
 		} else {
 			encoder.add_mod_rm_register(instruction, operand, self.reg_lo, self.reg_hi);
 		}
@@ -528,13 +535,16 @@ impl Op for OpHx {
 	}
 }
 
+#[cfg(any(not(feature = "no_vex"), not(feature = "no_evex")))]
 #[allow(non_camel_case_types)]
 pub(super) struct OpVMx {
 	pub(super) vsib_index_reg_lo: Register,
 	pub(super) vsib_index_reg_hi: Register,
 }
+#[cfg(any(not(feature = "no_vex"), not(feature = "no_evex")))]
 impl Op for OpVMx {
 	fn encode(&self, encoder: &mut Encoder, instruction: &Instruction, operand: u32) {
+		encoder.encoder_flags |= EncoderFlags::MUST_USE_SIB;
 		encoder.add_reg_or_mem_full(
 			instruction,
 			operand,
@@ -548,11 +558,13 @@ impl Op for OpVMx {
 	}
 }
 
+#[cfg(any(not(feature = "no_vex"), not(feature = "no_xop")))]
 #[allow(non_camel_case_types)]
 pub(super) struct OpIs4x {
 	pub(super) reg_lo: Register,
 	pub(super) reg_hi: Register,
 }
+#[cfg(any(not(feature = "no_vex"), not(feature = "no_xop")))]
 impl Op for OpIs4x {
 	fn encode(&self, encoder: &mut Encoder, instruction: &Instruction, operand: u32) {
 		if !encoder.verify_op_kind(operand, OpKind::Register, instruction.op_kind(operand)) {

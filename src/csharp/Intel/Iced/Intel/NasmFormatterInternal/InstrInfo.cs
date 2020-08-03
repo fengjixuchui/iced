@@ -352,6 +352,10 @@ namespace Iced.Intel.NasmFormatterInternal {
 			info = new InstrOpInfo(mnemonic, instruction, flags);
 			if (memSize != MemorySize.Unknown)
 				info.MemorySize = memSize;
+			if (Register.RAX <= (Register)info.Op1Register && (Register)info.Op1Register <= Register.R15) {
+				Static.Assert(InstrOpInfo.TEST_RegisterBits == 8 ? 0 : -1);
+				info.Op1Register = (byte)((Register)info.Op1Register - Register.RAX + Register.EAX);
+			}
 		}
 	}
 
@@ -1144,6 +1148,11 @@ namespace Iced.Intel.NasmFormatterInternal {
 				}
 				flags |= (InstrOpInfoFlags)((int)branchInfo << (int)InstrOpInfoFlags.BranchSizeInfoShift);
 			}
+			var prefixSeg = instruction.SegmentPrefix;
+			if (prefixSeg == Register.CS)
+				flags |= InstrOpInfoFlags.JccNotTaken;
+			else if (prefixSeg == Register.DS)
+				flags |= InstrOpInfoFlags.JccTaken;
 			if (instruction.HasRepnePrefix)
 				flags |= InstrOpInfoFlags.BndPrefix;
 			var mnemonic = MnemonicCC.GetMnemonicCC(options, ccIndex, mnemonics);
@@ -1272,37 +1281,6 @@ namespace Iced.Intel.NasmFormatterInternal {
 		}
 	}
 
-	sealed class SimpleInstrInfo_xbegin : InstrInfo {
-		readonly int bitnessFlags;
-		readonly FormatterString mnemonic;
-
-		public SimpleInstrInfo_xbegin(int bitnessFlags, string mnemonic) {
-			this.bitnessFlags = bitnessFlags;
-			this.mnemonic = new FormatterString(mnemonic);
-		}
-
-		public override void GetOpInfo(FormatterOptions options, in Instruction instruction, out InstrOpInfo info) {
-			var flags = InstrOpInfoFlags.None;
-			var branchInfo = BranchSizeInfo.None;
-			int instrBitness = GetBitness(instruction.CodeSize);
-			if (instrBitness == 0) {
-				// Nothing
-			}
-			else if (instrBitness == 64) {
-				if ((bitnessFlags & 16) != 0)
-					flags |= InstrOpInfoFlags.OpSize16;
-			}
-			else if ((instrBitness & bitnessFlags) == 0) {
-				if ((bitnessFlags & 16) != 0)
-					branchInfo = BranchSizeInfo.Word;
-				else if ((bitnessFlags & 32) != 0)
-					branchInfo = BranchSizeInfo.Dword;
-			}
-			flags |= (InstrOpInfoFlags)((int)branchInfo << (int)InstrOpInfoFlags.BranchSizeInfoShift);
-			info = new InstrOpInfo(mnemonic, instruction, flags);
-		}
-	}
-
 	sealed class SimpleInstrInfo_movabs : InstrInfo {
 		readonly int memOpNumber;
 		readonly FormatterString mnemonic;
@@ -1361,6 +1339,8 @@ namespace Iced.Intel.NasmFormatterInternal {
 			info = new InstrOpInfo(mnemonic, instruction, flags);
 			var rc = instruction.RoundingControl;
 			if (rc != RoundingControl.None) {
+				if (!FormatterUtils.CanShowRoundingControl(instruction, options))
+					return;
 				InstrOpKind rcOpKind;
 				switch (rc) {
 				case RoundingControl.RoundToNearest:	rcOpKind = InstrOpKind.RnSae; break;
@@ -1594,6 +1574,30 @@ namespace Iced.Intel.NasmFormatterInternal {
 			if (Register.EAX <= (Register)info.Op1Register && (Register)info.Op1Register <= Register.R15D) {
 				Static.Assert(InstrOpInfo.TEST_RegisterBits == 8 ? 0 : -1);
 				info.Op1Register = (byte)((Register)info.Op1Register - Register.EAX + Register.AX);
+			}
+		}
+	}
+
+	sealed class SimpleInstrInfo_Reg32 : InstrInfo {
+		readonly FormatterString mnemonic;
+
+		public SimpleInstrInfo_Reg32(string mnemonic) =>
+			this.mnemonic = new FormatterString(mnemonic);
+
+		public override void GetOpInfo(FormatterOptions options, in Instruction instruction, out InstrOpInfo info) {
+			const InstrOpInfoFlags flags = InstrOpInfoFlags.None;
+			info = new InstrOpInfo(mnemonic, instruction, flags);
+			if (Register.RAX <= (Register)info.Op0Register && (Register)info.Op0Register <= Register.R15) {
+				Static.Assert(InstrOpInfo.TEST_RegisterBits == 8 ? 0 : -1);
+				info.Op0Register = (byte)((Register)info.Op0Register - Register.RAX + Register.EAX);
+			}
+			if (Register.RAX <= (Register)info.Op1Register && (Register)info.Op1Register <= Register.R15) {
+				Static.Assert(InstrOpInfo.TEST_RegisterBits == 8 ? 0 : -1);
+				info.Op1Register = (byte)((Register)info.Op1Register - Register.RAX + Register.EAX);
+			}
+			if (Register.RAX <= (Register)info.Op2Register && (Register)info.Op2Register <= Register.R15) {
+				Static.Assert(InstrOpInfo.TEST_RegisterBits == 8 ? 0 : -1);
+				info.Op2Register = (byte)((Register)info.Op2Register - Register.RAX + Register.EAX);
 			}
 		}
 	}

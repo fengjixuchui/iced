@@ -139,7 +139,7 @@ namespace Generator.Encoder {
 		void GenerateAllowedPrefixes() {
 			var maskHash = new HashSet<OpCodeFlags>();
 			maskHash.Add(OpCodeFlags.None);
-			foreach (var def in genTypes.GetObject<InstructionDefs>(TypeIds.InstructionDefs).Table) {
+			foreach (var def in genTypes.GetObject<InstructionDefs>(TypeIds.InstructionDefs).Defs) {
 				maskHash.Add(def.OpCodeInfo.Flags & PrefixesMask);
 			}
 
@@ -277,6 +277,7 @@ namespace Generator.Encoder {
 			AddMaskShift(values, ref bit, "GroupShift", 3);// group index: 0-7
 			AddMaskShift<VexVectorLength>(values, ref bit, "VexVectorLengthMask", "VexVectorLengthShift");
 			AddMaskShift<WBit>(values, ref bit, "WBitMask", "WBitShift");
+			AddFlag(values, ref bit, "HasRmGroupIndex");
 
 			VerifyBit(bit);
 			VexFlags = new EnumType(TypeIds.VexFlags, null, values.ToArray(), EnumTypeFlags.Flags | EnumTypeFlags.NoInitialize);

@@ -139,8 +139,6 @@ retw $0xa55a
 ret $0xa55a
 retw
 ret
-rep retw $0xa55a
-rep ret $0xa55a
 rep retw
 rep ret
 les (%eax),%bx
@@ -261,7 +259,7 @@ outsw (%esi),%dx
 outsl (%si),%dx
 outsl (%esi),%dx
 mov %si,%fs
-data16 mov (%eax),%ds
+mov (%eax),%ds
 mov %esi,%fs
 mov (%eax),%ds
 pop %si
@@ -312,7 +310,7 @@ scas (%di),%ax
 scas (%edi),%ax
 scas (%di),%eax
 scas (%edi),%eax
-data16 xbegin 0x7fffa54f
+xbegin 0x7fffa54f
 xbegin 0xb412a550
 enterw $0xa55a,$0xa6
 leavew
@@ -436,16 +434,16 @@ movzbw %dh,%cx
 movzbw (%eax),%bx
 movzbl %dh,%ecx
 movzbl (%eax),%ebx
-movzww %si,%cx
-movzww (%eax),%bx
+movzxw %si,%cx
+movzxw (%eax),%bx
 movzwl %si,%ecx
 movzwl (%eax),%ebx
 movsbw %dh,%cx
 movsbw (%eax),%bx
 movsbl %dh,%ecx
 movsbl (%eax),%ebx
-movsww %si,%cx
-movsww (%eax),%bx
+movsxw %si,%cx
+movsxw (%eax),%bx
 movswl %si,%ecx
 movswl (%eax),%ebx
 cmpxchg8b (%eax)
@@ -709,3 +707,4 @@ xresldtrk
 addr16 invlpgb
 invlpgb
 tlbsync
+cl1invmb

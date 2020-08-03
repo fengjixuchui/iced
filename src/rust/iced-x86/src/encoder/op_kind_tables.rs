@@ -151,7 +151,8 @@ pub(super) static LEGACY_OP_KINDS: [OpCodeOperandKind; 121] = [
 ];
 
 #[cfg_attr(feature = "cargo-fmt", rustfmt::skip)]
-pub(super) static VEX_OP_KINDS: [OpCodeOperandKind; 39] = [
+#[cfg(not(feature = "no_vex"))]
+pub(super) static VEX_OP_KINDS: [OpCodeOperandKind; 43] = [
 	OpCodeOperandKind::None,// None
 	OpCodeOperandKind::r32_or_mem,// Ed
 	OpCodeOperandKind::r64_or_mem,// Eq
@@ -191,9 +192,14 @@ pub(super) static VEX_OP_KINDS: [OpCodeOperandKind; 39] = [
 	OpCodeOperandKind::k_or_mem,// WK
 	OpCodeOperandKind::xmm_or_mem,// WX
 	OpCodeOperandKind::ymm_or_mem,// WY
+	OpCodeOperandKind::sibmem,// Sibmem
+	OpCodeOperandKind::tmm_reg,// VT
+	OpCodeOperandKind::tmm_rm,// RT
+	OpCodeOperandKind::tmm_vvvv,// HT
 ];
 
 #[cfg_attr(feature = "cargo-fmt", rustfmt::skip)]
+#[cfg(not(feature = "no_xop"))]
 pub(super) static XOP_OP_KINDS: [OpCodeOperandKind; 19] = [
 	OpCodeOperandKind::None,// None
 	OpCodeOperandKind::r32_or_mem,// Ed
@@ -217,6 +223,7 @@ pub(super) static XOP_OP_KINDS: [OpCodeOperandKind; 19] = [
 ];
 
 #[cfg_attr(feature = "cargo-fmt", rustfmt::skip)]
+#[cfg(not(feature = "no_evex"))]
 pub(super) static EVEX_OP_KINDS: [OpCodeOperandKind; 36] = [
 	OpCodeOperandKind::None,// None
 	OpCodeOperandKind::r32_or_mem,// Ed

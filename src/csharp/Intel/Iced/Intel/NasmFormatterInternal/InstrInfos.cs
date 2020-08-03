@@ -348,6 +348,10 @@ namespace Iced.Intel.NasmFormatterInternal {
 					instrInfo = new SimpleInstrInfo_Reg16(s);
 					break;
 
+				case CtorKind.Reg32:
+					instrInfo = new SimpleInstrInfo_Reg32(s);
+					break;
+
 				case CtorKind.reverse2:
 					instrInfo = new SimpleInstrInfo_reverse2(s);
 					break;
@@ -419,11 +423,6 @@ namespace Iced.Intel.NasmFormatterInternal {
 				case CtorKind.STIG2_2b:
 					v = reader.ReadCompressedUInt32();
 					instrInfo = new SimpleInstrInfo_STIG2(s, (InstrOpInfoFlags)v);
-					break;
-
-				case CtorKind.xbegin:
-					v = reader.ReadCompressedUInt32();
-					instrInfo = new SimpleInstrInfo_xbegin((int)v, s);
 					break;
 
 				case CtorKind.XLAT:

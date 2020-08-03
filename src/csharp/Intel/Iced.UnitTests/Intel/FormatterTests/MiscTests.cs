@@ -24,7 +24,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #if GAS || INTEL || MASM || NASM
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Iced.Intel;
 using Iced.UnitTests.Intel.DecoderTests;
@@ -59,7 +58,7 @@ namespace Iced.UnitTests.Intel.FormatterTests {
 
 			var sb = new StringBuilder();
 			int missing = 0;
-			var codeNames = ToEnumConverter.GetCodeNames().ToArray();
+			var codeNames = ToEnumConverter.GetCodeNames();
 			for (int i = 0; i < tested.Length; i++) {
 				if (tested[i] != 1 && !CodeUtils.IsIgnored(codeNames[i])) {
 					sb.Append(codeNames[i] + " ");
@@ -350,6 +349,7 @@ namespace Iced.UnitTests.Intel.FormatterTests {
 			Assert.Equal(CC_ge.ge, options.CC_ge);
 			Assert.Equal(CC_le.le, options.CC_le);
 			Assert.Equal(CC_g.g, options.CC_g);
+			Assert.False(options.ShowUselessPrefixes);
 			Assert.False(options.GasNakedRegisters);
 			Assert.False(options.GasShowMnemonicSizeSuffix);
 			Assert.False(options.GasSpaceAfterMemoryOperandComma);

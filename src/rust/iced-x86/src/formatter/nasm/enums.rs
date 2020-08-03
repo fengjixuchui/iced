@@ -80,6 +80,7 @@ pub(crate) enum CtorKind {
 	pops_2,
 	pops_3,
 	Reg16,
+	Reg32,
 	reverse2,
 	sae,
 	sae_pops,
@@ -93,7 +94,6 @@ pub(crate) enum CtorKind {
 	STIG1_2,
 	STIG2_2a,
 	STIG2_2b,
-	xbegin,
 	XLAT,
 	XY,
 	YA,
@@ -153,6 +153,7 @@ static GEN_DEBUG_CTOR_KIND: [&str; 70] = [
 	"pops_2",
 	"pops_3",
 	"Reg16",
+	"Reg32",
 	"reverse2",
 	"sae",
 	"sae_pops",
@@ -166,7 +167,6 @@ static GEN_DEBUG_CTOR_KIND: [&str; 70] = [
 	"STIG1_2",
 	"STIG2_2a",
 	"STIG2_2b",
-	"xbegin",
 	"XLAT",
 	"XY",
 	"YA",
@@ -335,8 +335,10 @@ impl InstrOpInfoFlags {
 	pub(crate) const REGISTER_TO: u32 = 0x0002_0000;
 	pub(crate) const BND_PREFIX: u32 = 0x0004_0000;
 	pub(crate) const MNEMONIC_IS_DIRECTIVE: u32 = 0x0008_0000;
+	pub(crate) const JCC_NOT_TAKEN: u32 = 0x0010_0000;
+	pub(crate) const JCC_TAKEN: u32 = 0x0020_0000;
 	pub(crate) const MEMORY_SIZE_BITS: u32 = 0x0000_0008;
-	pub(crate) const MEMORY_SIZE_SHIFT: u32 = 0x0000_0014;
+	pub(crate) const MEMORY_SIZE_SHIFT: u32 = 0x0000_0016;
 	pub(crate) const MEMORY_SIZE_MASK: u32 = 0x0000_00FF;
 }
 // GENERATOR-END: InstrOpInfoFlags

@@ -31,8 +31,7 @@ namespace Generator.Constants {
 
 		static Constant[] GetConstants() =>
 			new Constant[] {
-				new Constant(ConstantKind.String, "NoEncode", "noencode", ConstantsTypeFlags.None),
-				new Constant(ConstantKind.String, "InvalidNoMoreBytes", "nobytes", ConstantsTypeFlags.None),
+				new Constant(ConstantKind.String, "DecoderError", "err", ConstantsTypeFlags.None),
 				new Constant(ConstantKind.String, "Broadcast", "bcst", ConstantsTypeFlags.None),
 				new Constant(ConstantKind.String, "Xacquire", "xacquire", ConstantsTypeFlags.None),
 				new Constant(ConstantKind.String, "Xrelease", "xrelease", ConstantsTypeFlags.None),
@@ -54,7 +53,8 @@ namespace Generator.Constants {
 				new Constant(ConstantKind.String, "Op3Kind", "op3", ConstantsTypeFlags.None),
 				new Constant(ConstantKind.String, "Op4Kind", "op4", ConstantsTypeFlags.None),
 				new Constant(ConstantKind.String, "EncodedHexBytes", "enc", ConstantsTypeFlags.None),
-				new Constant(ConstantKind.String, "DecoderOptions_AmdBranches", "amdbr", ConstantsTypeFlags.None),
+				new Constant(ConstantKind.String, "Code", "code", ConstantsTypeFlags.None),
+				new Constant(ConstantKind.String, "DecoderOptions_AMD", "amd", ConstantsTypeFlags.None),
 				new Constant(ConstantKind.String, "DecoderOptions_ForceReservedNop", "resnop", ConstantsTypeFlags.None),
 				new Constant(ConstantKind.String, "DecoderOptions_Umov", "umov", ConstantsTypeFlags.None),
 				new Constant(ConstantKind.String, "DecoderOptions_Xbts", "xbts", ConstantsTypeFlags.None),
@@ -73,6 +73,7 @@ namespace Generator.Constants {
 				new Constant(ConstantKind.String, "DecoderOptions_NoMPFX_0FBD", "nompfx_0fbd", ConstantsTypeFlags.None),
 				new Constant(ConstantKind.String, "DecoderOptions_NoLahfSahf64", "nolahfsahf64", ConstantsTypeFlags.None),
 				new Constant(ConstantKind.String, "DecoderOptions_NoInvalidCheck", "noinvalidcheck", ConstantsTypeFlags.None),
+				new Constant(ConstantKind.String, "DecoderOptions_MPX", "mpx", ConstantsTypeFlags.None),
 				new Constant(ConstantKind.String, "SegmentPrefix_ES", "es:", ConstantsTypeFlags.None),
 				new Constant(ConstantKind.String, "SegmentPrefix_CS", "cs:", ConstantsTypeFlags.None),
 				new Constant(ConstantKind.String, "SegmentPrefix_SS", "ss:", ConstantsTypeFlags.None),
@@ -113,6 +114,8 @@ namespace Generator.Constants {
 				new Constant(ConstantKind.String, "OpKind_MemoryESRDI", "esrdi", ConstantsTypeFlags.None),
 				new Constant(ConstantKind.String, "OpKind_Memory64", "m64", ConstantsTypeFlags.None),
 				new Constant(ConstantKind.String, "OpKind_Memory", "m", ConstantsTypeFlags.None),
+				new Constant(ConstantKind.String, "DecoderTestOptions_NoEncode", "noencode", ConstantsTypeFlags.None),
+				new Constant(ConstantKind.String, "DecoderTestOptions_NoOptDisableTest", "no_opt_disable_test", ConstantsTypeFlags.None),
 			};
 	}
 }

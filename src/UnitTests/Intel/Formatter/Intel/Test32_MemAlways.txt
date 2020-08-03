@@ -139,8 +139,6 @@ data16 ret -0x5aa6
 ret -0x5aa6
 data16 ret
 ret
-data16 rep ret -0x5aa6
-rep ret -0x5aa6
 data16 rep ret
 rep ret
 les bx, dword ptr [eax]
@@ -187,13 +185,13 @@ jmp dword ptr [eax]
 push esi
 push dword ptr [eax]
 bndmov bnd1, bnd2
-bndmov bnd1, [eax]
+bndmov bnd1, qword ptr [eax]
 bndcl bnd1, edx
 bndcl bnd1, [eax]
 bndcu bnd1, edx
 bndcu bnd1, [eax]
 bndmov bnd2, bnd1
-bndmov [eax], bnd1
+bndmov qword ptr [eax], bnd1
 bndmk bnd1, [eax]
 bndcn bnd1, edx
 bndcn bnd1, [eax]
@@ -261,8 +259,8 @@ outsw dx, word ptr [esi]
 outsd dx, dword ptr [si]
 outsd dx, dword ptr [esi]
 mov fs, si
-data16 mov ds, word ptr [eax]
-mov fs, esi
+mov ds, word ptr [eax]
+mov fs, si
 mov ds, word ptr [eax]
 pop si
 pop word ptr [eax]
@@ -312,7 +310,7 @@ scasw word ptr [di]
 scasw word ptr [edi]
 scasd dword ptr [di]
 scasd dword ptr [edi]
-data16 xbegin 0x7fffa54f
+xbegin 0x7fffa54f
 xbegin 0xb412a550
 data16 enter -0x5aa6, -0x5a
 data16 leave
@@ -709,3 +707,4 @@ xresldtrk
 invlpgb ax
 invlpgb eax
 tlbsync
+cl1invmb

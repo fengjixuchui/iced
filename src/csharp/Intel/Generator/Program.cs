@@ -29,11 +29,12 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Generator.Enums.InstructionInfo;
 
 namespace Generator {
 	sealed class GeneratorInfoComparer : IComparer<GeneratorInfo> {
-		public int Compare(GeneratorInfo x, GeneratorInfo y) {
-			int c = GetOrder(x.Language).CompareTo(GetOrder(y.Language));
+		public int Compare([AllowNull] GeneratorInfo x, [AllowNull] GeneratorInfo y) {
+			int c = GetOrder(x!.Language).CompareTo(GetOrder(y!.Language));
 			if (c != 0)
 				return c;
 			return StringComparer.OrdinalIgnoreCase.Compare(x.Name, y.Name);
@@ -74,6 +75,8 @@ namespace Generator {
 	sealed class CommandLineOptions {
 		public readonly HashSet<TargetLanguage> Languages = new HashSet<TargetLanguage>();
 		public GeneratorFlags GeneratorFlags = GeneratorFlags.None;
+		public readonly HashSet<string> IncludeCpuid = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		public readonly HashSet<string> ExcludeCpuid = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 	}
 
 	static class Program {
@@ -88,7 +91,7 @@ namespace Generator {
 					return 1;
 				}
 
-				var generatorContext = CreateGeneratorContext(options.GeneratorFlags);
+				var generatorContext = CreateGeneratorContext(options.GeneratorFlags, options.IncludeCpuid, options.ExcludeCpuid);
 				CodeComments.AddComments(generatorContext.Types, generatorContext.UnitTestsDir);
 
 				// It's not much of an improvement in speed at the moment.
@@ -142,14 +145,29 @@ Options:
         rsjs (Rust + JS)
 --no-formatter
     Don't include any formatter
---no-gas-formatter
+--no-gas
     Don't include the gas (AT&T) formatter
---no-intel-formatter
+--no-intel
     Don't include the Intel (XED) formatter
---no-masm-formatter
+--no-masm
     Don't include the masm formatter
---no-nasm-formatter
+--no-nasm
     Don't include the nasm formatter
+--no-vex
+    Don't include VEX instructions
+--no-evex
+    Don't include EVEX instructions
+--no-xop
+    Don't include XOP instructions
+--no-3dnow
+    Don't include 3DNow! instructions
+--no-via
+    Don't include VIA instructions
+--include-cpuid <name>
+    Include instructions with these CPUID features, remove everything else
+    eg. --include-cpuid intel8086;intel186;intel286;intel386;intel486;x64;wbnoinvd
+--exclude-cpuid <name>
+    Don't include instructions with CPUID feature <name>, ;-separated. See CpuidFeature enum
 ");
 		}
 
@@ -193,20 +211,65 @@ Options:
 					options.GeneratorFlags |= GeneratorFlags.NoFormatter;
 					break;
 
-				case "--no-gas-formatter":
+				case "--no-gas":
 					options.GeneratorFlags |= GeneratorFlags.NoGasFormatter;
 					break;
 
-				case "--no-intel-formatter":
+				case "--no-intel":
 					options.GeneratorFlags |= GeneratorFlags.NoIntelFormatter;
 					break;
 
-				case "--no-masm-formatter":
+				case "--no-masm":
 					options.GeneratorFlags |= GeneratorFlags.NoMasmFormatter;
 					break;
 
-				case "--no-nasm-formatter":
+				case "--no-nasm":
 					options.GeneratorFlags |= GeneratorFlags.NoNasmFormatter;
+					break;
+
+				case "--no-vex":
+					options.GeneratorFlags |= GeneratorFlags.NoVEX;
+					break;
+
+				case "--no-evex":
+					options.GeneratorFlags |= GeneratorFlags.NoEVEX;
+					break;
+
+				case "--no-xop":
+					options.GeneratorFlags |= GeneratorFlags.NoXOP;
+					break;
+
+				case "--no-3dnow":
+					options.GeneratorFlags |= GeneratorFlags.No3DNow;
+					// Remove FEMMS too
+					options.ExcludeCpuid.Add(nameof(CpuidFeature.D3NOW));
+					break;
+
+				case "--no-via":
+					options.ExcludeCpuid.Add(nameof(CpuidFeature.PADLOCK_ACE));
+					options.ExcludeCpuid.Add(nameof(CpuidFeature.PADLOCK_PHE));
+					options.ExcludeCpuid.Add(nameof(CpuidFeature.PADLOCK_PMM));
+					options.ExcludeCpuid.Add(nameof(CpuidFeature.PADLOCK_RNG));
+					break;
+
+				case "--include-cpuid":
+					if (value is null) {
+						error = "Missing cpuid feature name";
+						return false;
+					}
+					i++;
+					foreach (var v in value.Split(seps, StringSplitOptions.RemoveEmptyEntries))
+						options.IncludeCpuid.Add(v);
+					break;
+
+				case "--exclude-cpuid":
+					if (value is null) {
+						error = "Missing cpuid feature name";
+						return false;
+					}
+					i++;
+					foreach (var v in value.Split(seps, StringSplitOptions.RemoveEmptyEntries))
+						options.ExcludeCpuid.Add(v);
 					break;
 
 				default:
@@ -217,12 +280,13 @@ Options:
 			error = null;
 			return true;
 		}
+		static readonly char[] seps = new char[] { ',', ';' };
 
-		static GeneratorContext CreateGeneratorContext(GeneratorFlags flags) {
+		static GeneratorContext CreateGeneratorContext(GeneratorFlags flags, HashSet<string> includeCpuid, HashSet<string> excludeCpuid) {
 			var dir = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(typeof(Program).Assembly.Location)))))));
 			if (dir is null || !File.Exists(Path.Combine(dir, "csharp", "Iced.sln")))
 				throw new InvalidOperationException();
-			return new GeneratorContext(dir, flags);
+			return new GeneratorContext(dir, flags, includeCpuid, excludeCpuid);
 		}
 
 		static List<GeneratorInfo> GetGenerators() {

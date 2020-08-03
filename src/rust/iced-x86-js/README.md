@@ -1,8 +1,9 @@
-iced-x86 JavaScript bindings (Rust -> WebAssembly) ![License](https://img.shields.io/crates/l/iced-x86.svg)
+iced-x86 JavaScript bindings (Rust -> WebAssembly) [![npm](https://img.shields.io/npm/v/iced-x86.svg)](https://www.npmjs.com/package/iced-x86) [![GitHub builds](https://github.com/0xd4d/iced/workflows/GitHub%20CI/badge.svg)](https://github.com/0xd4d/iced/actions) ![Minimum rustc version](https://img.shields.io/badge/rustc-1.20.0+-yellow.svg) ![License](https://img.shields.io/crates/l/iced-x86.svg)
 
-x86/x64 disassembler for JavaScript (WebAssembly).
+iced-x86 is a high performance and correct x86 (16/32/64-bit) disassembler for JavaScript (WebAssembly).
 
 - ✔️Supports all Intel and AMD instructions
+- ✔️Correct: All instructions are tested and iced has been tested against other disassemblers/assemblers (xed, gas, objdump, masm, dumpbin, nasm, ndisasm) and fuzzed
 - ✔️The formatter supports masm, nasm, gas (AT&T), Intel (XED) and there are many options to customize the output
 - ✔️The encoder can be used to re-encode decoded instructions at any address
 - ✔️API to get instruction info, eg. read/written registers, memory and rflags bits; CPUID feature flag, flow control info, etc
@@ -17,6 +18,7 @@ Prerequisites:
 
 - `Rust`: https://www.rust-lang.org/tools/install
 - `wasm-pack`: https://rustwasm.github.io/wasm-pack/installer/
+- Add wasm32 target: `rustup target add wasm32-unknown-unknown`
 
 You can override which features to build to reduce the size of the wasm/ts/js files, see [Feature flags](#feature-flags).
 
@@ -78,10 +80,28 @@ Here's a list of all features you can enable when building the wasm file
 - `masm`: (✔️Enabled by default) Enables the masm formatter
 - `nasm`: (✔️Enabled by default) Enables the nasm formatter
 - `bigint`: Enables public APIs with `i64`/`u64` arguments and return values (requires JavaScript `BigInt` type, eg. Node.js >= 10.4.0)
+- `no_vex`: Disables all `VEX` instructions. See below for more info.
+- `no_evex`: Disables all `EVEX` instructions. See below for more info.
+- `no_xop`: Disables all `XOP` instructions. See below for more info.
+- `no_d3now`: Disables all `3DNow!` instructions. See below for more info.
 
 `"decoder masm"` is all you need to disassemble code.
 
 `"decoder masm instr_api instr_info"` if you want to analyze the code and disassemble it. Add `encoder` and optionally `block_encoder` if you want to re-encode the decoded instructions.
+
+If you use `no_vex`, `no_evex`, `no_xop` or `no_d3now`, you should run the generator again (before building iced) to generate even smaller output.
+
+[.NET Core](https://dotnet.microsoft.com/download) is required. Help:
+
+```sh
+dotnet run -p src/csharp/Intel/Generator/Generator.csproj -- --help
+```
+
+No VEX, EVEX, XOP, 3DNow!:
+
+```sh
+dotnet run -p src/csharp/Intel/Generator/Generator.csproj -- --no-vex --no-evex --no-xop --no-3dnow
+```
 
 ## How-tos
 

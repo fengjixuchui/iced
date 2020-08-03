@@ -23,6 +23,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 mod decoder_mem_test_case;
 mod decoder_test_case;
+pub(crate) mod enums;
 mod mem_test_parser;
 mod misc_tests;
 mod test_cases;
@@ -110,7 +111,7 @@ fn decode_test(bitness: u32, tc: &DecoderTestCase) {
 	assert_eq!(bytes.len(), decoder.max_position());
 	let rip = decoder.ip();
 	let instr = decoder.decode();
-	assert_eq!(tc.invalid_no_more_bytes, decoder.invalid_no_more_bytes());
+	assert_eq!(tc.decoder_error, decoder.last_error());
 	assert_eq!(len, decoder.position());
 	assert_eq!(can_read, decoder.can_decode());
 	assert_eq!(tc.code, instr.code());
@@ -282,7 +283,7 @@ fn decode_mem_test(bitness: u32, tc: &DecoderMemoryTestCase) {
 	assert_eq!(0, decoder.position());
 	assert_eq!(bytes.len(), decoder.max_position());
 	let instr = decoder.decode();
-	assert!(!decoder.invalid_no_more_bytes());
+	assert_eq!(DecoderError::None, decoder.last_error());
 	assert_eq!(len, decoder.position());
 	assert_eq!(can_read, decoder.can_decode());
 

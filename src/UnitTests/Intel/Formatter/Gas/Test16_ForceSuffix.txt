@@ -192,9 +192,9 @@ outsw (si), dx
 outsl (esi), dx
 outsl (si), dx
 movw si, fs
-mov (bx,si), ds
+movw (bx,si), ds
 movl esi, fs
-data32 mov (bx,si), ds
+movw (bx,si), ds
 popw si
 popw (bx,si)
 nop
@@ -244,7 +244,7 @@ scasw (di), ax
 scasl (edi), eax
 scasl (di), eax
 xbegin 0x0000254e
-data32 xbegin 0x34132551
+xbegin 0x34132551
 enterw $-0x5aa6, $-0x5a
 leavew
 lretw $-0x5aa6
@@ -295,9 +295,9 @@ sarw cl, ax
 sarw cl, (bx,si)
 sarl cl, eax
 sarl cl, (bx,si)
-fldcw (bx,si)
-fnstcw (bx,si)
-fnstsw (bx,si)
+fldcww (bx,si)
+fnstcww (bx,si)
+fnstsww (bx,si)
 lcallw *(bx,si)
 lcalll *(bx,si)
 ljmpw *(bx,si)
@@ -367,16 +367,16 @@ movzbw dh, cx
 movzbw (bx,si), bx
 movzbl dh, ecx
 movzbl (bx,si), ebx
-movzww si, cx
-movzww (bx,si), bx
+movzxw si, cx
+movzxw (bx,si), bx
 movzwl si, ecx
 movzwl (bx,si), ebx
 movsbw dh, cx
 movsbw (bx,si), bx
 movsbl dh, ecx
 movsbl (bx,si), ebx
-movsww si, cx
-movsww (bx,si), bx
+movsxw si, cx
+movsxw (bx,si), bx
 movswl si, ecx
 movswl (bx,si), ebx
 cmpxchg8b (bx,si)
@@ -414,14 +414,14 @@ aam
 aad
 aam $-6
 aad $-6
-fldenv (bx,si)
 fldenvs (bx,si)
-fnstenv (bx,si)
+fldenvl (bx,si)
 fnstenvs (bx,si)
-frstor (bx,si)
+fnstenvl (bx,si)
 frstors (bx,si)
-fnsave (bx,si)
+frstorl (bx,si)
 fnsaves (bx,si)
+fnsavel (bx,si)
 monitor
 addr32 monitor
 mwait
@@ -519,8 +519,8 @@ movb fs:0x1234(si), cl
 movb fs:0x1234(di), cl
 movb fs:0x1234(bp), cl
 movb fs:0x1234(bx), cl
-arpl si, dx
-arpl bx, (bx,si)
+arplw si, dx
+arplw bx, (bx,si)
 vmrun
 addr32 vmrun
 vmload

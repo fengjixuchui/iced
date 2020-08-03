@@ -23,8 +23,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 const {
 	CC_a, CC_ae, CC_b, CC_be, CC_e, CC_g, CC_ge, CC_l, CC_le, CC_ne, CC_np, CC_p,
-	Decoder, DecoderOptions, Formatter, FormatterSyntax, FormatMnemonicOptions, MemorySizeOptions,
-	Register
+	Decoder, DecoderOptions, Formatter, FormatterSyntax, FormatMnemonicOptions, getIcedFeatures,
+	MemorySizeOptions, Register
 } = require("iced-x86");
 
 test("Default gas formatter options", () => {
@@ -93,6 +93,7 @@ test("Default gas formatter options", () => {
 	expect(formatter.cc_ge).toBe(CC_ge.ge);
 	expect(formatter.cc_le).toBe(CC_le.le);
 	expect(formatter.cc_g).toBe(CC_g.g);
+	expect(formatter.showUselessPrefixes).toBe(false);
 
 	formatter.free();
 });
@@ -163,6 +164,7 @@ test("Default Intel formatter options", () => {
 	expect(formatter.cc_ge).toBe(CC_ge.ge);
 	expect(formatter.cc_le).toBe(CC_le.le);
 	expect(formatter.cc_g).toBe(CC_g.g);
+	expect(formatter.showUselessPrefixes).toBe(false);
 
 	formatter.free();
 });
@@ -233,6 +235,7 @@ test("Default masm formatter options", () => {
 	expect(formatter.cc_ge).toBe(CC_ge.ge);
 	expect(formatter.cc_le).toBe(CC_le.le);
 	expect(formatter.cc_g).toBe(CC_g.g);
+	expect(formatter.showUselessPrefixes).toBe(false);
 
 	formatter.free();
 });
@@ -303,11 +306,15 @@ test("Default nasm formatter options", () => {
 	expect(formatter.cc_ge).toBe(CC_ge.ge);
 	expect(formatter.cc_le).toBe(CC_le.le);
 	expect(formatter.cc_g).toBe(CC_g.g);
+	expect(formatter.showUselessPrefixes).toBe(false);
 
 	formatter.free();
 });
 
 test("Format instruction: gas", () => {
+	// Check if EVEX has been disabled
+	if ((getIcedFeatures() & 2) == 0)
+		return;
 	const formatter = new Formatter(FormatterSyntax.Gas);
 	const bytes = new Uint8Array([0x62, 0xF2, 0x4F, 0xDD, 0x72, 0x50, 0x01, 0xF0, 0x00, 0x18]);
 	const decoder = new Decoder(64, bytes, DecoderOptions.None);
@@ -355,6 +362,9 @@ test("Format instruction: gas", () => {
 });
 
 test("Format instruction: Intel", () => {
+	// Check if EVEX has been disabled
+	if ((getIcedFeatures() & 2) == 0)
+		return;
 	const formatter = new Formatter(FormatterSyntax.Intel);
 	const bytes = new Uint8Array([0x62, 0xF2, 0x4F, 0xDD, 0x72, 0x50, 0x01, 0xF0, 0x00, 0x18]);
 	const decoder = new Decoder(64, bytes, DecoderOptions.None);
@@ -402,6 +412,9 @@ test("Format instruction: Intel", () => {
 });
 
 test("Format instruction: masm", () => {
+	// Check if EVEX has been disabled
+	if ((getIcedFeatures() & 2) == 0)
+		return;
 	const formatter = new Formatter(FormatterSyntax.Masm);
 	const bytes = new Uint8Array([0x62, 0xF2, 0x4F, 0xDD, 0x72, 0x50, 0x01, 0xF0, 0x00, 0x18]);
 	const decoder = new Decoder(64, bytes, DecoderOptions.None);
@@ -449,6 +462,9 @@ test("Format instruction: masm", () => {
 });
 
 test("Format instruction: nasm", () => {
+	// Check if EVEX has been disabled
+	if ((getIcedFeatures() & 2) == 0)
+		return;
 	const formatter = new Formatter(FormatterSyntax.Nasm);
 	const bytes = new Uint8Array([0x62, 0xF2, 0x4F, 0xDD, 0x72, 0x50, 0x01, 0xF0, 0x00, 0x18]);
 	const decoder = new Decoder(64, bytes, DecoderOptions.None);

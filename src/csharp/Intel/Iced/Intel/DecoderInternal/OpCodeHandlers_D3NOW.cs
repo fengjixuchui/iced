@@ -25,6 +25,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 using System.Diagnostics;
 
 namespace Iced.Intel.DecoderInternal {
+#if !NO_D3NOW
 	sealed class OpCodeHandler_D3NOW : OpCodeHandlerModRM {
 		internal static readonly Code[] CodeValues = CreateCodeValues();
 
@@ -71,23 +72,28 @@ namespace Iced.Intel.DecoderInternal {
 			Static.Assert(OpKind.Register == 0 ? 0 : -1);
 			//instruction.InternalOp0Kind = OpKind.Register;
 			instruction.InternalOp0Register = (int)state.reg + Register.MM0;
-			uint ib;
 			if (state.mod == 3) {
 				Static.Assert(OpKind.Register == 0 ? 0 : -1);
 				//instruction.InternalOp1Kind = OpKind.Register;
 				instruction.InternalOp1Register = (int)state.rm + Register.MM0;
-				ib = decoder.ReadByte();
 			}
 			else {
 				instruction.InternalOp1Kind = OpKind.Memory;
 				decoder.ReadOpMem(ref instruction);
-				ib = decoder.ReadByte();
 			}
-			var code = codeValues[(int)ib];
+			var code = codeValues[(int)decoder.ReadByte()];
 			instruction.InternalCode = code;
 			if (code == Code.INVALID)
 				decoder.SetInvalidInstruction();
 		}
 	}
+#else
+	sealed class OpCodeHandler_D3NOW : OpCodeHandlerModRM {
+		public override void Decode(Decoder decoder, ref Instruction instruction) {
+			Debug.Assert(decoder.state.Encoding == EncodingKind.Legacy);
+			decoder.SetInvalidInstruction();
+		}
+	}
+#endif
 }
 #endif

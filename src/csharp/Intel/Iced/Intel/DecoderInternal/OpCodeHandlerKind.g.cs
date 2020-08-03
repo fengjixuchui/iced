@@ -46,8 +46,8 @@ namespace Iced.Intel.DecoderInternal {
 		Group8x64,
 		Group8x8,
 		MandatoryPrefix,
-		MandatoryPrefix_F3_F2,
-		LegacyMandatoryPrefix_F3_F2,
+		MandatoryPrefix4,
+		Unused1,
 		MandatoryPrefix_NoModRM,
 		MandatoryPrefix3,
 		D3NOW,
@@ -227,6 +227,7 @@ namespace Iced.Intel.DecoderInternal {
 		Yv_Reg,
 		Yv_Reg2,
 		Yv_Xv,
+		Simple4b,
 	}
 }
 #endif

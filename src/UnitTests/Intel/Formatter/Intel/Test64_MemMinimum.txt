@@ -440,20 +440,20 @@ mov ebx, [rax]
 mov rcx, rsi
 mov rbx, [rax]
 mov si, cs
-data16 mov [rax], ds
+mov [rax], ds
 mov esi, cs
 mov [rax], ds
 mov rsi, cs
-data64 mov [rax], ds
+mov [rax], ds
 lea bx, [rax]
 lea ebx, [rax]
 lea rbx, [rax]
 mov fs, si
-data16 mov ds, [rax]
-mov fs, esi
 mov ds, [rax]
-mov fs, rsi
-data64 mov ds, [rax]
+mov fs, si
+mov ds, [rax]
+mov fs, si
+mov ds, [rax]
 pop si
 pop word ptr [rax]
 pop rsi
@@ -706,7 +706,6 @@ sar r8, -0x5b
 sar qword ptr [rax], -0x5b
 ret -0x5aa6
 ret
-rep ret -0x5aa6
 rep ret
 mov cl, 0x5a
 mov byte ptr [rax], 0x5a
@@ -717,7 +716,7 @@ mov ecx, 0x3412a55a
 mov dword ptr [rax], 0x3412a55a
 mov rcx, -0x7bed5aa6
 mov qword ptr [rax], -0x7bed5aa6
-data16 xbegin 0x7fffffffffffa54f
+xbegin 0x7fffffffffffa54f
 xbegin 0x800000003412a550
 xbegin 0x800000003412a551
 data16 enter -0x5aa6, -0x5a
@@ -725,10 +724,10 @@ enter -0x5aa6, -0x5a
 data16 leave
 leave
 data16 ret far -0x5aa6
-data32 ret far -0x5aa6
+ret far -0x5aa6
 data64 ret far -0x5aa6
 data16 ret far
-data32 ret far
+ret far
 data64 ret far
 int3
 int 0x5a
@@ -1124,27 +1123,27 @@ str rdx
 str [rax]
 lldt bx
 lldt [rax]
-lldt ebx
+lldt bx
 lldt [rax]
-lldt rbx
+lldt bx
 lldt [rax]
 ltr sp
 ltr [rax]
-ltr esp
+ltr sp
 ltr [rax]
-ltr rsp
+ltr sp
 ltr [rax]
 verr bp
 verr [rax]
-verr ebp
+verr bp
 verr [rax]
-verr rbp
+verr bp
 verr [rax]
 verw si
 verw [rax]
-verw esi
+verw si
 verw [rax]
-verw rsi
+verw si
 verw [rax]
 sgdt [rax]
 sidt [rax]
@@ -1158,9 +1157,9 @@ smsw rbp
 smsw [rax]
 lmsw si
 lmsw [rax]
-lmsw esi
+lmsw si
 lmsw [rax]
-lmsw rsi
+lmsw si
 lmsw [rax]
 invlpg [rax]
 enclv
@@ -1605,6 +1604,7 @@ sysenter
 sysexit
 sysexitq
 getsec
+getsecq
 cmovo cx, si
 cmovo bx, [rax]
 cmovo ecx, esi
@@ -1733,17 +1733,17 @@ kunpckwd k2, k6, k3
 kunpckdq k2, k6, k3
 kunpckbw k2, k6, k3
 movmskps ecx, xmm5
-movmskps rcx, xmm5
+movmskps ecx, xmm5
 vmovmskps edx, xmm3
-vmovmskps rdx, xmm3
+vmovmskps edx, xmm3
 vmovmskps edx, ymm3
-vmovmskps rdx, ymm3
+vmovmskps edx, ymm3
 movmskpd ecx, xmm5
-movmskpd rcx, xmm5
+movmskpd ecx, xmm5
 vmovmskpd edx, xmm3
-vmovmskpd rdx, xmm3
+vmovmskpd edx, xmm3
 vmovmskpd edx, ymm3
-vmovmskpd rdx, ymm3
+vmovmskpd edx, ymm3
 sqrtps xmm1, xmm5
 sqrtps xmm1, [rax]
 vsqrtps xmm2, xmm3
@@ -3413,28 +3413,28 @@ movnti [rax], ebx
 movnti [rax], rbx
 pinsrw mm1, ebp, -0x5b
 pinsrw mm1, [rax], -0x5b
-pinsrw mm1, rbp, -0x5b
+pinsrw mm1, ebp, -0x5b
 pinsrw mm1, [rax], -0x5b
 pinsrw xmm1, ebp, -0x5b
 pinsrw xmm1, [rax], -0x5b
-pinsrw xmm1, rbp, -0x5b
+pinsrw xmm1, ebp, -0x5b
 pinsrw xmm1, [rax], -0x5b
 vpinsrw xmm2, xmm6, ebx, -0x5b
 vpinsrw xmm2, xmm6, [rax], -0x5b
-vpinsrw xmm2, xmm6, rbx, -0x5b
+vpinsrw xmm2, xmm6, ebx, -0x5b
 vpinsrw xmm2, xmm6, [rax], -0x5b
 vpinsrw xmm2, xmm6, ebx, -0x5b
 vpinsrw xmm2, xmm6, [rax+2], -0x5b
-vpinsrw xmm2, xmm6, rbx, -0x5b
+vpinsrw xmm2, xmm6, ebx, -0x5b
 vpinsrw xmm2, xmm6, [rax+2], -0x5b
 pextrw ecx, mm5, -0x5b
-pextrw rcx, mm5, -0x5b
+pextrw ecx, mm5, -0x5b
 pextrw ecx, xmm5, -0x5b
-pextrw rcx, xmm5, -0x5b
+pextrw ecx, xmm5, -0x5b
 vpextrw edx, xmm3, -0x5b
-vpextrw rdx, xmm3, -0x5b
 vpextrw edx, xmm3, -0x5b
-vpextrw rdx, xmm3, -0x5b
+vpextrw edx, xmm3, -0x5b
+vpextrw edx, xmm3, -0x5b
 shufps xmm1, xmm5, -0x5b
 shufps xmm1, [rax], -0x5b
 vshufps xmm2, xmm6, xmm3, -0x5b
@@ -3626,13 +3626,13 @@ vmovq [rax+8], xmm2
 movq2dq xmm1, mm5
 movdq2q mm1, xmm5
 pmovmskb ecx, mm5
-pmovmskb rcx, mm5
+pmovmskb ecx, mm5
 pmovmskb ecx, xmm5
-pmovmskb rcx, xmm5
+pmovmskb ecx, xmm5
 vpmovmskb ecx, xmm5
-vpmovmskb rcx, xmm5
+vpmovmskb ecx, xmm5
 vpmovmskb ecx, ymm5
-vpmovmskb rcx, ymm5
+vpmovmskb ecx, ymm5
 psubusb mm1, mm5
 psubusb mm1, [rax]
 psubusb xmm1, xmm5
@@ -6631,27 +6631,27 @@ vpalignr zmm2{k3}, zmm6, zmm3, -0x5b
 vpalignr zmm2{k3}, zmm6, [rax+0x40], -0x5b
 pextrb ebp, xmm1, -0x5b
 pextrb [rax+1], xmm1, -0x5b
-pextrb rbp, xmm1, -0x5b
+pextrb ebp, xmm1, -0x5b
 pextrb [rax+1], xmm1, -0x5b
 vpextrb ebx, xmm2, -0x5b
 vpextrb [rax+1], xmm2, -0x5b
-vpextrb rbx, xmm2, -0x5b
+vpextrb ebx, xmm2, -0x5b
 vpextrb [rax+1], xmm2, -0x5b
 vpextrb ebx, xmm2, -0x5b
 vpextrb [rax+1], xmm2, -0x5b
-vpextrb rbx, xmm2, -0x5b
+vpextrb ebx, xmm2, -0x5b
 vpextrb [rax+1], xmm2, -0x5b
 pextrw ebp, xmm1, -0x5b
 pextrw [rax+1], xmm1, -0x5b
-pextrw rbp, xmm1, -0x5b
+pextrw ebp, xmm1, -0x5b
 pextrw [rax+1], xmm1, -0x5b
 vpextrw ebx, xmm2, -0x5b
 vpextrw [rax+1], xmm2, -0x5b
-vpextrw rbx, xmm2, -0x5b
+vpextrw ebx, xmm2, -0x5b
 vpextrw [rax+1], xmm2, -0x5b
 vpextrw ebx, xmm2, -0x5b
 vpextrw [rax+2], xmm2, -0x5b
-vpextrw rbx, xmm2, -0x5b
+vpextrw ebx, xmm2, -0x5b
 vpextrw [rax+2], xmm2, -0x5b
 pextrd ebp, xmm1, -0x5b
 pextrd [rax+1], xmm1, -0x5b
@@ -6667,15 +6667,15 @@ vpextrq rbx, xmm2, -0x5b
 vpextrq [rax+8], xmm2, -0x5b
 extractps ebp, xmm1, -0x5b
 extractps [rax+1], xmm1, -0x5b
-extractps rbp, xmm1, -0x5b
+extractps ebp, xmm1, -0x5b
 extractps [rax+1], xmm1, -0x5b
 vextractps ebx, xmm2, -0x5b
 vextractps [rax+1], xmm2, -0x5b
-vextractps rbx, xmm2, -0x5b
+vextractps ebx, xmm2, -0x5b
 vextractps [rax+1], xmm2, -0x5b
 vextractps ebx, xmm2, -0x5b
 vextractps [rax+4], xmm2, -0x5b
-vextractps rbx, xmm2, -0x5b
+vextractps ebx, xmm2, -0x5b
 vextractps [rax+4], xmm2, -0x5b
 vinsertf128 ymm2, ymm6, xmm3, -0x5b
 vinsertf128 ymm2, ymm6, [rax], -0x5b
@@ -6753,15 +6753,15 @@ vpcmpq k2{k3}, zmm6, [rax+0x40], -0x5b
 vpcmpq k2{k5}, zmm6, [rax+8]{1to8}, -0x5b
 pinsrb xmm1, ebp, -0x5b
 pinsrb xmm1, [rax], -0x5b
-pinsrb xmm1, rbp, -0x5b
+pinsrb xmm1, ebp, -0x5b
 pinsrb xmm1, [rax], -0x5b
 vpinsrb xmm2, xmm6, ebx, -0x5b
 vpinsrb xmm2, xmm6, [rax], -0x5b
-vpinsrb xmm2, xmm6, rbx, -0x5b
+vpinsrb xmm2, xmm6, ebx, -0x5b
 vpinsrb xmm2, xmm6, [rax], -0x5b
 vpinsrb xmm2, xmm6, ebx, -0x5b
 vpinsrb xmm2, xmm6, [rax+1], -0x5b
-vpinsrb xmm2, xmm6, rbx, -0x5b
+vpinsrb xmm2, xmm6, ebx, -0x5b
 vpinsrb xmm2, xmm6, [rax+1], -0x5b
 insertps xmm1, xmm5, -0x5b
 insertps xmm1, [rax], -0x5b
@@ -7872,30 +7872,30 @@ pswapd mm1, mm5
 pswapd mm1, [rax-0x5aa5edcc]
 pavgusb mm1, mm5
 pavgusb mm1, [rax-0x5aa5edcc]
-sal bh, 0x5a
-sal byte ptr [rax], 0x5a
-sal di, 0x5a
-sal word ptr [rax], 0x5a
-sal edi, 0x5a
-sal dword ptr [rax], 0x5a
-sal rdi, 0x5a
-sal qword ptr [rax], 0x5a
-sal bh, 1
-sal byte ptr [rax], 1
-sal di, 1
-sal word ptr [rax], 1
-sal edi, 1
-sal dword ptr [rax], 1
-sal rdi, 1
-sal qword ptr [rax], 1
-sal bh, cl
-sal byte ptr [rax], cl
-sal di, cl
-sal word ptr [rax], cl
-sal edi, cl
-sal dword ptr [rax], cl
-sal rdi, cl
-sal qword ptr [rax], cl
+shl bh, 0x5a
+shl byte ptr [rax], 0x5a
+shl di, 0x5a
+shl word ptr [rax], 0x5a
+shl edi, 0x5a
+shl dword ptr [rax], 0x5a
+shl rdi, 0x5a
+shl qword ptr [rax], 0x5a
+shl bh, 1
+shl byte ptr [rax], 1
+shl di, 1
+shl word ptr [rax], 1
+shl edi, 1
+shl dword ptr [rax], 1
+shl rdi, 1
+shl qword ptr [rax], 1
+shl bh, cl
+shl byte ptr [rax], cl
+shl di, cl
+shl word ptr [rax], cl
+shl edi, cl
+shl dword ptr [rax], cl
+shl rdi, cl
+shl qword ptr [rax], cl
 fstpnce st(3), st
 fneni
 fndisi
@@ -7921,61 +7921,60 @@ pconfig
 setssbsy
 saveprevssp
 wbnoinvd
-cl1invmb
-reserved-nop si, cx
-reserved-nop [rax], bx
-reserved-nop esi, ecx
-reserved-nop [rax], ebx
-reserved-nop rsi, rcx
-reserved-nop [rax], rbx
-reserved-nop si, cx
-reserved-nop [rax], bx
-reserved-nop esi, ecx
-reserved-nop [rax], ebx
-reserved-nop rsi, rcx
-reserved-nop [rax], rbx
-reserved-nop si, cx
-reserved-nop [rax], bx
-reserved-nop esi, ecx
-reserved-nop [rax], ebx
-reserved-nop rsi, rcx
-reserved-nop [rax], rbx
-reserved-nop si, cx
-reserved-nop [rax], bx
-reserved-nop esi, ecx
-reserved-nop [rax], ebx
-reserved-nop rsi, rcx
-reserved-nop [rax], rbx
-reserved-nop si, cx
-reserved-nop [rax], bx
-reserved-nop esi, ecx
-reserved-nop [rax], ebx
-reserved-nop rsi, rcx
-reserved-nop [rax], rbx
-reserved-nop si, cx
-reserved-nop [rax], bx
-reserved-nop esi, ecx
-reserved-nop [rax], ebx
-reserved-nop rsi, rcx
-reserved-nop [rax], rbx
-reserved-nop si, cx
-reserved-nop [rax], bx
-reserved-nop esi, ecx
-reserved-nop [rax], ebx
-reserved-nop rsi, rcx
-reserved-nop [rax], rbx
-reserved-nop si, cx
-reserved-nop [rax], bx
-reserved-nop esi, ecx
-reserved-nop [rax], ebx
-reserved-nop rsi, rcx
-reserved-nop [rax], rbx
-reserved-nop si, cx
-reserved-nop [rax], bx
-reserved-nop esi, ecx
-reserved-nop [rax], ebx
-reserved-nop rsi, rcx
-reserved-nop [rax], rbx
+nop si, cx
+nop [rax], bx
+nop esi, ecx
+nop [rax], ebx
+nop rsi, rcx
+nop [rax], rbx
+nop si, cx
+nop [rax], bx
+nop esi, ecx
+nop [rax], ebx
+nop rsi, rcx
+nop [rax], rbx
+nop si, cx
+nop [rax], bx
+nop esi, ecx
+nop [rax], ebx
+nop rsi, rcx
+nop [rax], rbx
+nop si, cx
+nop [rax], bx
+nop esi, ecx
+nop [rax], ebx
+nop rsi, rcx
+nop [rax], rbx
+nop si, cx
+nop [rax], bx
+nop esi, ecx
+nop [rax], ebx
+nop rsi, rcx
+nop [rax], rbx
+nop si, cx
+nop [rax], bx
+nop esi, ecx
+nop [rax], ebx
+nop rsi, rcx
+nop [rax], rbx
+nop si, cx
+nop [rax], bx
+nop esi, ecx
+nop [rax], ebx
+nop rsi, rcx
+nop [rax], rbx
+nop si, cx
+nop [rax], bx
+nop esi, ecx
+nop [rax], ebx
+nop rsi, rcx
+nop [rax], rbx
+nop si, cx
+nop [rax], bx
+nop esi, ecx
+nop [rax], ebx
+nop rsi, rcx
+nop [rax], rbx
 cldemote [rax]
 rdsspd ecx
 rdsspq rcx
@@ -8348,14 +8347,6 @@ vcvtne2ps2bf16 ymm2{k5}{z}, ymm6, [rax+4]{1to8}
 vcvtne2ps2bf16 zmm2{k3}{z}, zmm6, zmm3
 vcvtne2ps2bf16 zmm2, zmm6, [rax+0x40]
 vcvtne2ps2bf16 zmm2{k5}{z}, zmm6, [rax+4]{1to16}
-vcvtsi2sd xmm18{rne-sae}, xmm14, ebx
-vcvtsi2sd xmm10{rd-sae}, xmm22, ebx
-vcvtsi2sd xmm2{ru-sae}, xmm6, r11d
-vcvtsi2sd xmm2{rz-sae}, xmm6, ebx
-vcvtusi2sd xmm18{rne-sae}, xmm14, ebx
-vcvtusi2sd xmm10{rd-sae}, xmm22, ebx
-vcvtusi2sd xmm2{ru-sae}, xmm6, r11d
-vcvtusi2sd xmm2{rz-sae}, xmm6, ebx
 rmpadjust
 rmpupdate
 psmash
@@ -8367,3 +8358,28 @@ xresldtrk
 invlpgb eax
 invlpgb rax
 tlbsync
+prefetchw [rax]
+prefetch_reserved [rax]
+prefetch_reserved [rax]
+prefetch_reserved [rax]
+prefetch_reserved [rax]
+ud0
+vmgexit
+ldtilecfg [rax]
+tilerelease
+sttilecfg [rax]
+tilezero tmm2
+tileloaddt1 tmm2, [rcx+rdx*4]
+tileloaddt1 tmm2, [rsp]
+tilestored [rcx+rdx*4], tmm2
+tilestored [rsp], tmm2
+tileloadd tmm2, [rcx+rdx*4]
+tileloadd tmm2, [rsp]
+tdpbf16ps tmm2, tmm3, tmm4
+tdpbuud tmm2, tmm3, tmm4
+tdpbusd tmm2, tmm3, tmm4
+tdpbsud tmm2, tmm3, tmm4
+tdpbssd tmm2, tmm3, tmm4
+tdpbf16ps tmm0, tmm1, tmm2
+tdpbf16ps tmm3, tmm4, tmm5
+tdpbf16ps tmm6, tmm7, tmm0

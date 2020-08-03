@@ -245,10 +245,10 @@ popw di
 popw r15w
 popq rdi
 popq r15
-movslq si, cx
-movslq (rax), bx
-movslq esi, ecx
-movslq (rax), ebx
+movsxd si, cx
+movsxd (rax), bx
+movsxd esi, ecx
+movsxd (rax), ebx
 movslq esi, rcx
 movslq (rax), rbx
 pushw $-0x5aa6
@@ -440,20 +440,20 @@ movl (rax), ebx
 movq rsi, rcx
 movq (rax), rbx
 movw cs, si
-data16 mov ds, (rax)
+movw ds, (rax)
 movl cs, esi
-mov ds, (rax)
+movw ds, (rax)
 movq cs, rsi
-rex.w mov ds, (rax)
+movw ds, (rax)
 leaw (rax), bx
 leal (rax), ebx
 leaq (rax), rbx
 movw si, fs
-data16 mov (rax), ds
+movw (rax), ds
 movl esi, fs
-mov (rax), ds
+movw (rax), ds
 movq rsi, fs
-rex.w mov (rax), ds
+movw (rax), ds
 popw si
 popw (rax)
 popq rsi
@@ -706,7 +706,6 @@ sarq $-0x5b, r8
 sarq $-0x5b, (rax)
 retq $-0x5aa6
 retq
-rep retq $-0x5aa6
 rep retq
 movb $0x5a, cl
 movb $0x5a, (rax)
@@ -717,7 +716,7 @@ movl $0x3412a55a, ecx
 movl $0x3412a55a, (rax)
 movq $-0x7bed5aa6, rcx
 movq $-0x7bed5aa6, (rax)
-data16 xbegin 0x7fffffffffffa54f
+xbegin 0x7fffffffffffa54f
 xbegin 0x800000003412a550
 xbegin 0x800000003412a551
 enterw $-0x5aa6, $-0x5a
@@ -868,11 +867,11 @@ flds (rax)
 fsts (rax)
 fstps (rax)
 fldenvs (rax)
-fldenv (rax)
-fldcw (rax)
+fldenvl (rax)
+fldcww (rax)
 fnstenvs (rax)
-fnstenv (rax)
-fnstcw (rax)
+fnstenvl (rax)
+fnstcww (rax)
 fld st(3)
 fxch st(3)
 fnop
@@ -949,10 +948,10 @@ fisttpll (rax)
 fstl (rax)
 fstpl (rax)
 frstors (rax)
-frstor (rax)
+frstorl (rax)
 fnsaves (rax)
-fnsave (rax)
-fnstsw (rax)
+fnsavel (rax)
+fnstsww (rax)
 ffree st(3)
 fst st(3)
 fstp st(3)
@@ -1111,57 +1110,57 @@ pushw (rax)
 pushq rsi
 pushq (rax)
 sldtw cx
-data16 sldt (rax)
+sldtw (rax)
 sldtl ecx
-sldt (rax)
+sldtw (rax)
 sldtq rcx
-rex.w sldt (rax)
+sldtw (rax)
 strw dx
-data16 str (rax)
+strw (rax)
 strl edx
-str (rax)
+strw (rax)
 strq rdx
-rex.w str (rax)
-data16 lldt bx
-data16 lldt (rax)
-lldt bx
-lldt (rax)
-rex.w lldt bx
-rex.w lldt (rax)
-data16 ltr sp
-data16 ltr (rax)
-ltr sp
-ltr (rax)
-rex.w ltr sp
-rex.w ltr (rax)
-data16 verr bp
-data16 verr (rax)
-verr bp
-verr (rax)
-rex.w verr bp
-rex.w verr (rax)
-data16 verw si
-data16 verw (rax)
-verw si
-verw (rax)
-rex.w verw si
-rex.w verw (rax)
+strw (rax)
+lldtw bx
+lldtw (rax)
+lldtw bx
+lldtw (rax)
+lldtw bx
+lldtw (rax)
+ltrw sp
+ltrw (rax)
+ltrw sp
+ltrw (rax)
+ltrw sp
+ltrw (rax)
+verrw bp
+verrw (rax)
+verrw bp
+verrw (rax)
+verrw bp
+verrw (rax)
+verww si
+verww (rax)
+verww si
+verww (rax)
+verww si
+verww (rax)
 sgdtq (rax)
 sidtq (rax)
 lgdtq (rax)
 lidtq (rax)
 smsww bp
-data16 smsw (rax)
+smsww (rax)
 smswl ebp
-smsw (rax)
+smsww (rax)
 smswq rbp
-rex.w smsw (rax)
-data16 lmsw si
-data16 lmsw (rax)
-lmsw si
-lmsw (rax)
-rex.w lmsw si
-rex.w lmsw (rax)
+smsww (rax)
+lmsww si
+lmsww (rax)
+lmsww si
+lmsww (rax)
+lmsww si
+lmsww (rax)
 invlpg (rax)
 enclv
 vmcall
@@ -1197,7 +1196,7 @@ lslq rsi, rcx
 lslq (rax), rbx
 syscall
 clts
-sysret
+sysretl
 sysretq
 invd
 wbinvd
@@ -1605,6 +1604,7 @@ sysenter
 sysexit
 rex.w sysexit
 getsec
+rex.w getsec
 cmovow si, cx
 cmovow (rax), bx
 cmovol esi, ecx
@@ -3256,7 +3256,7 @@ cmpxchgq rcx, rsi
 cmpxchgq rbx, (rax)
 lssw (rax), bx
 lssl (rax), ebx
-lss (rax), rbx
+lssq (rax), rbx
 btrw cx, si
 btrw bx, (rax)
 btrl ecx, esi
@@ -3265,18 +3265,18 @@ btrq rcx, rsi
 btrq rbx, (rax)
 lfsw (rax), bx
 lfsl (rax), ebx
-lfs (rax), rbx
+lfsq (rax), rbx
 lgsw (rax), bx
 lgsl (rax), ebx
-lgs (rax), rbx
+lgsq (rax), rbx
 movzbw dh, cx
 movzbw (rax), bx
 movzbl dh, ecx
 movzbl (rax), ebx
 movzbq sil, rcx
 movzbq (rax), rbx
-movzww si, cx
-movzww (rax), bx
+movzxw si, cx
+movzxw (rax), bx
 movzwl si, ecx
 movzwl (rax), ebx
 movzwq si, rcx
@@ -3341,8 +3341,8 @@ movsbl dh, ecx
 movsbl (rax), ebx
 movsbq sil, rcx
 movsbq (rax), rbx
-movsww si, cx
-movsww (rax), bx
+movsxw si, cx
+movsxw (rax), bx
 movswl si, ecx
 movswl (rax), ebx
 movswq si, rcx
@@ -7013,20 +7013,20 @@ vreducesd $-0x5b, xmm3, xmm6, xmm2{k3}{z}
 vreducesd $-0x5b, 8(rax), xmm6, xmm2{k3}
 pcmpestrm $-0x5b, xmm5, xmm1
 pcmpestrm $-0x5b, (rax), xmm1
-pcmpestrm64 $-0x5b, xmm5, xmm1
-pcmpestrm64 $-0x5b, (rax), xmm1
+pcmpestrmq $-0x5b, xmm5, xmm1
+pcmpestrmq $-0x5b, (rax), xmm1
 vpcmpestrm $-0x5b, xmm3, xmm2
 vpcmpestrm $-0x5b, (rax), xmm2
-vpcmpestrm64 $-0x5b, xmm3, xmm2
-vpcmpestrm64 $-0x5b, (rax), xmm2
+vpcmpestrmq $-0x5b, xmm3, xmm2
+vpcmpestrmq $-0x5b, (rax), xmm2
 pcmpestri $-0x5b, xmm5, xmm1
 pcmpestri $-0x5b, (rax), xmm1
-pcmpestri64 $-0x5b, xmm5, xmm1
-pcmpestri64 $-0x5b, (rax), xmm1
+pcmpestriq $-0x5b, xmm5, xmm1
+pcmpestriq $-0x5b, (rax), xmm1
 vpcmpestri $-0x5b, xmm3, xmm2
 vpcmpestri $-0x5b, (rax), xmm2
-vpcmpestri64 $-0x5b, xmm3, xmm2
-vpcmpestri64 $-0x5b, (rax), xmm2
+vpcmpestriq $-0x5b, xmm3, xmm2
+vpcmpestriq $-0x5b, (rax), xmm2
 pcmpistrm $-0x5b, xmm5, xmm1
 pcmpistrm $-0x5b, (rax), xmm1
 vpcmpistrm $-0x5b, xmm3, xmm2
@@ -7921,61 +7921,60 @@ pconfig
 setssbsy
 saveprevssp
 wbnoinvd
-cl1invmb
-reserved-nopw cx, si
-reserved-nopw bx, (rax)
-reserved-nopl ecx, esi
-reserved-nopl ebx, (rax)
-reserved-nopq rcx, rsi
-reserved-nopq rbx, (rax)
-reserved-nopw cx, si
-reserved-nopw bx, (rax)
-reserved-nopl ecx, esi
-reserved-nopl ebx, (rax)
-reserved-nopq rcx, rsi
-reserved-nopq rbx, (rax)
-reserved-nopw cx, si
-reserved-nopw bx, (rax)
-reserved-nopl ecx, esi
-reserved-nopl ebx, (rax)
-reserved-nopq rcx, rsi
-reserved-nopq rbx, (rax)
-reserved-nopw cx, si
-reserved-nopw bx, (rax)
-reserved-nopl ecx, esi
-reserved-nopl ebx, (rax)
-reserved-nopq rcx, rsi
-reserved-nopq rbx, (rax)
-reserved-nopw cx, si
-reserved-nopw bx, (rax)
-reserved-nopl ecx, esi
-reserved-nopl ebx, (rax)
-reserved-nopq rcx, rsi
-reserved-nopq rbx, (rax)
-reserved-nopw cx, si
-reserved-nopw bx, (rax)
-reserved-nopl ecx, esi
-reserved-nopl ebx, (rax)
-reserved-nopq rcx, rsi
-reserved-nopq rbx, (rax)
-reserved-nopw cx, si
-reserved-nopw bx, (rax)
-reserved-nopl ecx, esi
-reserved-nopl ebx, (rax)
-reserved-nopq rcx, rsi
-reserved-nopq rbx, (rax)
-reserved-nopw cx, si
-reserved-nopw bx, (rax)
-reserved-nopl ecx, esi
-reserved-nopl ebx, (rax)
-reserved-nopq rcx, rsi
-reserved-nopq rbx, (rax)
-reserved-nopw cx, si
-reserved-nopw bx, (rax)
-reserved-nopl ecx, esi
-reserved-nopl ebx, (rax)
-reserved-nopq rcx, rsi
-reserved-nopq rbx, (rax)
+nopw cx, si
+nopw bx, (rax)
+nopl ecx, esi
+nopl ebx, (rax)
+nopq rcx, rsi
+nopq rbx, (rax)
+nopw cx, si
+nopw bx, (rax)
+nopl ecx, esi
+nopl ebx, (rax)
+nopq rcx, rsi
+nopq rbx, (rax)
+nopw cx, si
+nopw bx, (rax)
+nopl ecx, esi
+nopl ebx, (rax)
+nopq rcx, rsi
+nopq rbx, (rax)
+nopw cx, si
+nopw bx, (rax)
+nopl ecx, esi
+nopl ebx, (rax)
+nopq rcx, rsi
+nopq rbx, (rax)
+nopw cx, si
+nopw bx, (rax)
+nopl ecx, esi
+nopl ebx, (rax)
+nopq rcx, rsi
+nopq rbx, (rax)
+nopw cx, si
+nopw bx, (rax)
+nopl ecx, esi
+nopl ebx, (rax)
+nopq rcx, rsi
+nopq rbx, (rax)
+nopw cx, si
+nopw bx, (rax)
+nopl ecx, esi
+nopl ebx, (rax)
+nopq rcx, rsi
+nopq rbx, (rax)
+nopw cx, si
+nopw bx, (rax)
+nopl ecx, esi
+nopl ebx, (rax)
+nopq rcx, rsi
+nopq rbx, (rax)
+nopw cx, si
+nopw bx, (rax)
+nopl ecx, esi
+nopl ebx, (rax)
+nopq rcx, rsi
+nopq rbx, (rax)
 cldemote (rax)
 rdsspd ecx
 rdsspq rcx
@@ -7984,12 +7983,12 @@ endbr32
 incsspd ebp
 incsspq rbp
 tpause ebp
-tpause rbp
+tpause ebp
 clrssbsy (rax)
 umonitor ebp
 umonitor rbp
 umwait ebp
-umwait rbp
+umwait ebp
 pcommit
 vpdpbusd xmm3, xmm14, xmm18{k3}
 vpdpbusd 0x10(rax), xmm6, xmm2
@@ -8189,8 +8188,8 @@ enqcmds (eax), ebx
 enqcmds (rax), rbx
 enqcmd (eax), ebx
 enqcmd (rax), rbx
-movdiri ebx, (rax)
-movdiri rbx, (rax)
+movdiril ebx, (rax)
+movdiriq rbx, (rax)
 vpclmulqdq $-0x5b, ymm3, ymm6, ymm2
 vpclmulqdq $-0x5b, (rax), ymm6, ymm2
 vpclmulqdq $-0x5b, xmm3, xmm6, xmm2
@@ -8348,14 +8347,6 @@ vcvtne2ps2bf16 4(rax){1to8}, ymm6, ymm2{k5}{z}
 vcvtne2ps2bf16 zmm3, zmm6, zmm2{k3}{z}
 vcvtne2ps2bf16 0x40(rax), zmm6, zmm2
 vcvtne2ps2bf16 4(rax){1to16}, zmm6, zmm2{k5}{z}
-vcvtsi2sdl ebx, {rn-sae}, xmm14, xmm18
-vcvtsi2sdl ebx, {rd-sae}, xmm22, xmm10
-vcvtsi2sdl r11d, {ru-sae}, xmm6, xmm2
-vcvtsi2sdl ebx, {rz-sae}, xmm6, xmm2
-vcvtusi2sdl ebx, {rn-sae}, xmm14, xmm18
-vcvtusi2sdl ebx, {rd-sae}, xmm22, xmm10
-vcvtusi2sdl r11d, {ru-sae}, xmm6, xmm2
-vcvtusi2sdl ebx, {rz-sae}, xmm6, xmm2
 rmpadjust
 rmpupdate
 psmash
@@ -8367,3 +8358,28 @@ xresldtrk
 addr32 invlpgb
 invlpgb
 tlbsync
+prefetchw (rax)
+prefetch (rax)
+prefetch (rax)
+prefetch (rax)
+prefetch (rax)
+ud0
+vmgexit
+ldtilecfg (rax)
+tilerelease
+sttilecfg (rax)
+tilezero tmm2
+tileloaddt1 (rcx,rdx,4), tmm2
+tileloaddt1 (rsp), tmm2
+tilestored tmm2, (rcx,rdx,4)
+tilestored tmm2, (rsp)
+tileloadd (rcx,rdx,4), tmm2
+tileloadd (rsp), tmm2
+tdpbf16ps tmm4, tmm3, tmm2
+tdpbuud tmm4, tmm3, tmm2
+tdpbusd tmm4, tmm3, tmm2
+tdpbsud tmm4, tmm3, tmm2
+tdpbssd tmm4, tmm3, tmm2
+tdpbf16ps tmm2, tmm1, tmm0
+tdpbf16ps tmm5, tmm4, tmm3
+tdpbf16ps tmm0, tmm7, tmm6
