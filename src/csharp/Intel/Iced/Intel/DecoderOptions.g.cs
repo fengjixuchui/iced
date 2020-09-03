@@ -60,7 +60,7 @@ namespace Iced.Intel {
 		Loadall386 = 0x00000200,
 		/// <summary>Decode <c>CL1INVMB</c></summary>
 		Cl1invmb = 0x00000400,
-		/// <summary>Decode <c>MOV r32,tr</c> and <c>Mov tr,r32</c></summary>
+		/// <summary>Decode <c>MOV r32,tr</c> and <c>MOV tr,r32</c></summary>
 		MovTr = 0x00000800,
 		/// <summary>Decode <c>JMPE</c> instructions</summary>
 		Jmpe = 0x00001000,
@@ -69,6 +69,10 @@ namespace Iced.Intel {
 		/// <summary>Don&apos;t decode <c>WBNOINVD</c>, decode <c>WBINVD</c> instead</summary>
 		NoWbnoinvd = 0x00004000,
 		/// <summary>Don&apos;t decode <c>LOCK MOV CR0</c> as <c>MOV CR8</c> (AMD)</summary>
+		NoLockMovCR = 0x00008000,
+		/// <summary>Don&apos;t decode <c>LOCK MOV CR0</c> as <c>MOV CR8</c> (AMD)</summary>
+		[System.Obsolete("Use " + nameof(NoLockMovCR) + " instead", true)]
+		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		NoLockMovCR0 = 0x00008000,
 		/// <summary>Don&apos;t decode <c>TZCNT</c>, decode <c>BSF</c> instead</summary>
 		NoMPFX_0FBC = 0x00010000,
@@ -78,6 +82,14 @@ namespace Iced.Intel {
 		NoLahfSahf64 = 0x00040000,
 		/// <summary>Decode <c>MPX</c> instructions</summary>
 		MPX = 0x00080000,
+		/// <summary>Decode most Cyrix instructions: <c>FPU</c>, <c>EMMI</c>, <c>SMM</c>, <c>DDI</c></summary>
+		Cyrix = 0x00100000,
+		/// <summary>Decode Cyrix <c>SMINT 0F7E</c> (Cyrix 6x86 or earlier)</summary>
+		Cyrix_SMINT_0F7E = 0x00200000,
+		/// <summary>Decode Cyrix <c>DMI</c> instructions (AMD Geode GX/LX)</summary>
+		Cyrix_DMI = 0x00400000,
+		/// <summary>Decode Centaur <c>ALTINST</c></summary>
+		ALTINST = 0x00800000,
 	}
 }
 #endif

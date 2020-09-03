@@ -58,7 +58,7 @@ pub enum DecoderOptions {
 	Loadall386 = 0x0000_0200,
 	/// Decode `CL1INVMB`
 	Cl1invmb = 0x0000_0400,
-	/// Decode `MOV r32,tr` and `Mov tr,r32`
+	/// Decode `MOV r32,tr` and `MOV tr,r32`
 	MovTr = 0x0000_0800,
 	/// Decode `JMPE` instructions
 	Jmpe = 0x0000_1000,
@@ -67,7 +67,7 @@ pub enum DecoderOptions {
 	/// Don't decode `WBNOINVD`, decode `WBINVD` instead
 	NoWbnoinvd = 0x0000_4000,
 	/// Don't decode `LOCK MOV CR0` as `MOV CR8` (AMD)
-	NoLockMovCR0 = 0x0000_8000,
+	NoLockMovCR = 0x0000_8000,
 	/// Don't decode `TZCNT`, decode `BSF` instead
 	NoMPFX_0FBC = 0x0001_0000,
 	/// Don't decode `LZCNT`, decode `BSR` instead
@@ -76,5 +76,13 @@ pub enum DecoderOptions {
 	NoLahfSahf64 = 0x0004_0000,
 	/// Decode `MPX` instructions
 	MPX = 0x0008_0000,
+	/// Decode most Cyrix instructions: `FPU`, `EMMI`, `SMM`, `DDI`
+	Cyrix = 0x0010_0000,
+	/// Decode Cyrix `SMINT 0F7E` (Cyrix 6x86 or earlier)
+	Cyrix_SMINT_0F7E = 0x0020_0000,
+	/// Decode Cyrix `DMI` instructions (AMD Geode GX/LX)
+	Cyrix_DMI = 0x0040_0000,
+	/// Decode Centaur `ALTINST`
+	ALTINST = 0x0080_0000,
 }
 // GENERATOR-END: Enum

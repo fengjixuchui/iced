@@ -602,8 +602,8 @@ xorb $0x5a,(%eax)
 cmp $0xa5,%al
 cmpb $0xa5,(%eax)
 frstpm
-fstdw %ax
-fstsg %ax
+fnstdw %ax
+fnstsg %ax
 jmpe *%cx
 jmpe *(%eax)
 jmpe *%edx
@@ -665,40 +665,24 @@ addr16 fs clzero
 fs umonitor %bp
 rep montmul
 addr16 rep montmul
-montmul
-addr16 montmul
 rep xsha1
 addr16 rep xsha1
-xsha1
-addr16 xsha1
 rep xsha256
 addr16 rep xsha256
-xsha256
-addr16 xsha256
 rep xstore
 addr16 rep xstore
 xstore
 addr16 xstore
 rep xcryptecb
 addr16 rep xcryptecb
-xcryptecb
-addr16 xcryptecb
 rep xcryptcbc
 addr16 rep xcryptcbc
-xcryptcbc
-addr16 xcryptcbc
 rep xcryptctr
 addr16 rep xcryptctr
-xcryptctr
-addr16 xcryptctr
 rep xcryptcfb
 addr16 rep xcryptcfb
-xcryptcfb
-addr16 xcryptcfb
 rep xcryptofb
 addr16 rep xcryptofb
-xcryptofb
-addr16 xcryptofb
 addr16 pvalidate
 pvalidate
 serialize
@@ -708,3 +692,52 @@ addr16 invlpgb
 invlpgb
 tlbsync
 cl1invmb
+rdshr (%eax)
+rdshr %edx
+wrshr (%eax)
+wrshr %edx
+smint
+dmint
+rdm
+svdc %cs,(%eax)
+rsdc (%eax),%cs
+svldt (%eax)
+rsldt (%eax)
+svts (%eax)
+rsts (%eax)
+smint
+bb0_reset
+bb1_reset
+cpu_write
+cpu_read
+altinst
+paveb (%eax),%mm1
+paveb %mm5,%mm1
+paddsiw (%eax),%mm1
+paddsiw %mm5,%mm1
+pmagw (%eax),%mm1
+pmagw %mm5,%mm1
+pdistib (%eax),%mm1
+psubsiw (%eax),%mm1
+psubsiw %mm5,%mm1
+pmvzb (%eax),%mm1
+pmulhrw (%eax),%mm1
+pmulhrw %mm5,%mm1
+pmvnzb (%eax),%mm1
+pmvlzb (%eax),%mm1
+pmvgezb (%eax),%mm1
+pmulhriw (%eax),%mm1
+pmulhriw %mm5,%mm1
+pmachriw (%eax),%mm1
+undoc
+undoc
+ftstp
+undoc
+frint2
+frichop
+undoc
+undoc
+undoc
+undoc
+undoc
+frinear

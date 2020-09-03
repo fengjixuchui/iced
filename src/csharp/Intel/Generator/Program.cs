@@ -153,6 +153,8 @@ Options:
     Don't include the masm formatter
 --no-nasm
     Don't include the nasm formatter
+--no-fast-fmt
+    Don't include the fast formatter
 --no-vex
     Don't include VEX instructions
 --no-evex
@@ -161,8 +163,10 @@ Options:
     Don't include XOP instructions
 --no-3dnow
     Don't include 3DNow! instructions
---no-via
-    Don't include VIA instructions
+--no-padlock
+    Don't include Centaur (VIA) PadLock instructions
+--no-cyrix
+    Don't include Cyrix / AMD Geode GX/LX instructions
 --include-cpuid <name>
     Include instructions with these CPUID features, remove everything else
     eg. --include-cpuid intel8086;intel186;intel286;intel386;intel486;x64;wbnoinvd
@@ -227,6 +231,10 @@ Options:
 					options.GeneratorFlags |= GeneratorFlags.NoNasmFormatter;
 					break;
 
+				case "--no-fast-fmt":
+					options.GeneratorFlags |= GeneratorFlags.NoFastFormatter;
+					break;
+
 				case "--no-vex":
 					options.GeneratorFlags |= GeneratorFlags.NoVEX;
 					break;
@@ -245,11 +253,23 @@ Options:
 					options.ExcludeCpuid.Add(nameof(CpuidFeature.D3NOW));
 					break;
 
-				case "--no-via":
+				case "--no-padlock":
 					options.ExcludeCpuid.Add(nameof(CpuidFeature.PADLOCK_ACE));
 					options.ExcludeCpuid.Add(nameof(CpuidFeature.PADLOCK_PHE));
 					options.ExcludeCpuid.Add(nameof(CpuidFeature.PADLOCK_PMM));
 					options.ExcludeCpuid.Add(nameof(CpuidFeature.PADLOCK_RNG));
+					break;
+
+				case "--no-cyrix":
+					// Don't include CYRIX_D3NOW. They must be removed by --no-3dnow because the 3DNow! opcode handler has refs to all 3DNow! Code values
+					options.ExcludeCpuid.Add(nameof(CpuidFeature.CYRIX_FPU));
+					options.ExcludeCpuid.Add(nameof(CpuidFeature.CYRIX_SMM));
+					options.ExcludeCpuid.Add(nameof(CpuidFeature.CYRIX_SMINT));
+					options.ExcludeCpuid.Add(nameof(CpuidFeature.CYRIX_SMINT_0F7E));
+					options.ExcludeCpuid.Add(nameof(CpuidFeature.CYRIX_SHR));
+					options.ExcludeCpuid.Add(nameof(CpuidFeature.CYRIX_DDI));
+					options.ExcludeCpuid.Add(nameof(CpuidFeature.CYRIX_EMMI));
+					options.ExcludeCpuid.Add(nameof(CpuidFeature.CYRIX_DMI));
 					break;
 
 				case "--include-cpuid":

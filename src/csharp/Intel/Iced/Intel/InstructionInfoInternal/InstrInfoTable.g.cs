@@ -28,7 +28,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #if INSTR_INFO
 namespace Iced.Intel.InstructionInfoInternal {
 	static class InstrInfoTable {
-		internal static readonly uint[] Data = new uint[8472] {
+		internal static readonly uint[] Data = new uint[8558] {
 			0x00000000, 0x00900000,// INVALID
 			0x00000000, 0x00900000,// DeclareByte
 			0x00000000, 0x00900000,// DeclareWord
@@ -543,12 +543,12 @@ namespace Iced.Intel.InstructionInfoInternal {
 			0x03B00007, 0x43000000,// Fst_m32fp
 			0x03B00007, 0x43000000,// Fstp_m32fp
 			0x00000004, 0x43000000,// Fldenv_m14byte
-			0x00000004, 0x43000000,// Fldenv_m28byte
+			0x00000004, 0x47000000,// Fldenv_m28byte
 			0x00000004, 0x43000000,// Fldcw_m2byte
 			0x00000007, 0x43000000,// Fnstenv_m14byte
 			0x00000007, 0x43000000,// Fstenv_m14byte
-			0x00000007, 0x43000000,// Fnstenv_m28byte
-			0x00000007, 0x43000000,// Fstenv_m28byte
+			0x00000007, 0x47000000,// Fnstenv_m28byte
+			0x00000007, 0x47000000,// Fstenv_m28byte
 			0x00000007, 0x43000000,// Fnstcw_m2byte
 			0x00000007, 0x43000000,// Fstcw_m2byte
 			0x00000037, 0x43000000,// Fld_st0_sti
@@ -639,11 +639,11 @@ namespace Iced.Intel.InstructionInfoInternal {
 			0x03B00007, 0x43000000,// Fst_m64fp
 			0x03B00007, 0x43000000,// Fstp_m64fp
 			0x08000004, 0x43000000,// Frstor_m94byte
-			0x08000004, 0x43000000,// Frstor_m108byte
+			0x08000004, 0x47000000,// Frstor_m108byte
 			0x08000007, 0x43000000,// Fnsave_m94byte
 			0x08000007, 0x43000000,// Fsave_m94byte
-			0x08000007, 0x43000000,// Fnsave_m108byte
-			0x08000007, 0x43000000,// Fsave_m108byte
+			0x08000007, 0x47000000,// Fnsave_m108byte
+			0x08000007, 0x47000000,// Fsave_m108byte
 			0x00000007, 0x43000000,// Fnstsw_m2byte
 			0x00000007, 0x43000000,// Fstsw_m2byte
 			0x00000000, 0x43000000,// Ffree_sti
@@ -1096,8 +1096,8 @@ namespace Iced.Intel.InstructionInfoInternal {
 			0x40080037, 0x0C000000,// Mov_cr_r64
 			0x40080037, 0x05000000,// Mov_dr_r32
 			0x40080037, 0x0C000000,// Mov_dr_r64
-			0x40080037, 0x0A000000,// Mov_r32_tr
-			0x40080037, 0x0A000000,// Mov_tr_r32
+			0x40080037, 0xA5000000,// Mov_r32_tr
+			0x40080037, 0xA5000000,// Mov_tr_r32
 			0x00000037, 0x7B000000,// Movaps_xmm_xmmm128
 			0x20000037, 0x0F000001,// VEX_Vmovaps_xmm_xmmm128
 			0x20000037, 0x0F000001,// VEX_Vmovaps_ymm_ymmm256
@@ -2027,7 +2027,7 @@ namespace Iced.Intel.InstructionInfoInternal {
 			0x12600007, 0x05000000,// Popw_GS
 			0x12800007, 0x05000000,// Popd_GS
 			0x12A00007, 0x0C000000,// Popq_GS
-			0x4808C000, 0x05400000,// Rsm
+			0x4808C000, 0xA6400000,// Rsm
 			0x000A0036, 0x05000000,// Bts_rm16_r16
 			0x000A0036, 0x05000000,// Bts_rm32_r32
 			0x000A0036, 0x0C000000,// Bts_rm64_r64
@@ -4265,6 +4265,49 @@ namespace Iced.Intel.InstructionInfoInternal {
 			0x200000B6, 0x9B000001,// VEX_Tdpbusd_tmm_tmm_tmm
 			0x200000B6, 0x9B000001,// VEX_Tdpbsud_tmm_tmm_tmm
 			0x200000B6, 0x9B000001,// VEX_Tdpbssd_tmm_tmm_tmm
+			0x00000007, 0x48000000,// Fnstdw_AX
+			0x00000007, 0x48000000,// Fnstsg_AX
+			0x40000007, 0xA0000000,// Rdshr_rm32
+			0x40000004, 0xA0000000,// Wrshr_rm32
+			0x40000000, 0x9E700000,// Smint
+			0x40000000, 0xA3700000,// Dmint
+			0x4808C000, 0xA3400000,// Rdm
+			0x40000037, 0x9D000000,// Svdc_m80_Sreg
+			0x40000037, 0x9D000000,// Rsdc_Sreg_m80
+			0x40000007, 0x9D000000,// Svldt_m80
+			0x40000004, 0x9D000000,// Rsldt_m80
+			0x40000007, 0x9D000000,// Svts_m80
+			0x40000004, 0x9D000000,// Rsts_m80
+			0x40000000, 0x9F700000,// Smint_0F7E
+			0x40000000, 0xA1000000,// Bb0_reset
+			0x40000000, 0xA1000000,// Bb1_reset
+			0x46E00000, 0xA1000000,// Cpu_write
+			0x46D00000, 0xA1000000,// Cpu_read
+			0x06900000, 0xA4100000,// Altinst
+			0x00000036, 0xA2000000,// Paveb_mm_mmm64
+			0x06B00034, 0xA2000000,// Paddsiw_mm_mmm64
+			0x00000035, 0xA2000000,// Pmagw_mm_mmm64
+			0x06C00034, 0xA2000000,// Pdistib_mm_m64
+			0x06B00034, 0xA2000000,// Psubsiw_mm_mmm64
+			0x06A00035, 0xA2000000,// Pmvzb_mm_m64
+			0x00000036, 0xA2000000,// Pmulhrw_mm_mmm64
+			0x06A00035, 0xA2000000,// Pmvnzb_mm_m64
+			0x06A00035, 0xA2000000,// Pmvlzb_mm_m64
+			0x06A00035, 0xA2000000,// Pmvgezb_mm_m64
+			0x06B00034, 0xA2000000,// Pmulhriw_mm_mmm64
+			0x06C00034, 0xA2000000,// Pmachriw_mm_m64
+			0x00000000, 0x9C000000,// Cyrix_D9D7
+			0x00000000, 0x9C000000,// Cyrix_D9E2
+			0x03B00000, 0x9C000000,// Ftstp
+			0x00000000, 0x9C000000,// Cyrix_D9E7
+			0x04900000, 0x9C000000,// Frint2
+			0x04900000, 0x9C000000,// Frichop
+			0x00000000, 0x9C000000,// Cyrix_DED8
+			0x00000000, 0x9C000000,// Cyrix_DEDA
+			0x00000000, 0x9C000000,// Cyrix_DEDC
+			0x00000000, 0x9C000000,// Cyrix_DEDD
+			0x00000000, 0x9C000000,// Cyrix_DEDE
+			0x04900000, 0x9C000000,// Frinear
 		};
 	}
 }

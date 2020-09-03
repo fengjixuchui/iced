@@ -28,6 +28,7 @@ use wasm_bindgen::prelude::*;
 /// Mnemonic
 #[wasm_bindgen]
 #[derive(Copy, Clone)]
+#[allow(non_camel_case_types)]
 #[allow(missing_docs)]
 pub enum Mnemonic {
 	INVALID = 0,
@@ -1593,6 +1594,40 @@ pub enum Mnemonic {
 	Tdpbsud = 1560,
 	Tdpbssd = 1561,
 	Sysretq = 1562,
+	Fnstdw = 1563,
+	Fnstsg = 1564,
+	Rdshr = 1565,
+	Wrshr = 1566,
+	Smint = 1567,
+	Dmint = 1568,
+	Rdm = 1569,
+	Svdc = 1570,
+	Rsdc = 1571,
+	Svldt = 1572,
+	Rsldt = 1573,
+	Svts = 1574,
+	Rsts = 1575,
+	Bb0_reset = 1576,
+	Bb1_reset = 1577,
+	Cpu_write = 1578,
+	Cpu_read = 1579,
+	Altinst = 1580,
+	Paveb = 1581,
+	Paddsiw = 1582,
+	Pmagw = 1583,
+	Pdistib = 1584,
+	Psubsiw = 1585,
+	Pmvzb = 1586,
+	Pmvnzb = 1587,
+	Pmvlzb = 1588,
+	Pmvgezb = 1589,
+	Pmulhriw = 1590,
+	Pmachriw = 1591,
+	Ftstp = 1592,
+	Frint2 = 1593,
+	Frichop = 1594,
+	Frinear = 1595,
+	Undoc = 1596,
 }
 // GENERATOR-END: Enum
 

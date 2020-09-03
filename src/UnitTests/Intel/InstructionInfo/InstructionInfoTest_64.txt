@@ -2266,13 +2266,13 @@ D9 18, Fstp_m32fp, Legacy, FPU, op0=w r=rax wm=ds:rax;Float32 r=st0
 # fldenv fpuenv14 ptr [rax]
 66 D9 20, Fldenv_m14byte, Legacy, FPU, op0=r r=rax rm=ds:rax;FpuEnv14
 # fldenv [rax]
-D9 20, Fldenv_m28byte, Legacy, FPU, op0=r r=rax rm=ds:rax;FpuEnv28
+D9 20, Fldenv_m28byte, Legacy, FPU387, op0=r r=rax rm=ds:rax;FpuEnv28
 # fldcw [rax]
 D9 28, Fldcw_m2byte, Legacy, FPU, op0=r r=rax rm=ds:rax;UInt16
 # fnstenv fpuenv14 ptr [rax]
 66 D9 30, Fnstenv_m14byte, Legacy, FPU, op0=w r=rax wm=ds:rax;FpuEnv14
 # fnstenv [rax]
-D9 30, Fnstenv_m28byte, Legacy, FPU, op0=w r=rax wm=ds:rax;FpuEnv28
+D9 30, Fnstenv_m28byte, Legacy, FPU387, op0=w r=rax wm=ds:rax;FpuEnv28
 # fnstcw [rax]
 D9 38, Fnstcw_m2byte, Legacy, FPU, op0=w r=rax wm=ds:rax;UInt16
 # fld st(3)
@@ -2428,11 +2428,11 @@ DD 18, Fstp_m64fp, Legacy, FPU, op0=w r=rax wm=ds:rax;Float64 r=st0
 # frstor fpustate94 ptr [rax]
 66 DD 20, Frstor_m94byte, Legacy, FPU, saverestore op0=r r=rax rm=ds:rax;FpuState94
 # frstor [rax]
-DD 20, Frstor_m108byte, Legacy, FPU, saverestore op0=r r=rax rm=ds:rax;FpuState108
+DD 20, Frstor_m108byte, Legacy, FPU387, saverestore op0=r r=rax rm=ds:rax;FpuState108
 # fnsave fpustate94 ptr [rax]
 66 DD 30, Fnsave_m94byte, Legacy, FPU, saverestore op0=w r=rax wm=ds:rax;FpuState94
 # fnsave [rax]
-DD 30, Fnsave_m108byte, Legacy, FPU, saverestore op0=w r=rax wm=ds:rax;FpuState108
+DD 30, Fnsave_m108byte, Legacy, FPU387, saverestore op0=w r=rax wm=ds:rax;FpuState108
 # fnstsw [rax]
 DD 38, Fnstsw_m2byte, Legacy, FPU, op0=w r=rax wm=ds:rax;UInt16
 # ffree st(3)
@@ -7502,7 +7502,7 @@ C4E1F9 99 D3, VEX_Ktestd_kr_kr, VEX, AVX512BW, pm fw=cz fc=aops op0=r op1=r r=k2
 # pop gs
 0FA9, Popq_GS, Legacy, X64, op0=w rw=xsp w=gs rm=ss:xsp;UInt64 stack=8
 # rsm
-0FAA, Rsm, Legacy, INTEL386, priv saverestore fw=acopszidA flow=Return
+0FAA, Rsm, Legacy, SMM, priv saverestore fw=acopszidA flow=Return
 # bts si,cx
 66 0FAB CE, Bts_rm16_r16, Legacy, INTEL386, fw=c fu=osap op0=rw op1=r rw=si r=cx
 # bts [rax],bx
@@ -17606,13 +17606,13 @@ C4E3C9 7F 10 40, VEX_Vfnmsubsd_xmm_xmm_xmm_xmmm64, VEX, FMA4, pm op0=w op1=r op2
 # pf2id mm1,[rax-5AA5EDCCh]
 0F0F 88 34125AA5 1D, D3NOW_Pf2id_mm_mmm64, D3NOW, D3NOW, op0=w op1=r w=mm1 r=rax rm=ds:rax+0xFFFFFFFFA55A1234;Packed64_Float32
 # pfrcpv mm1,mm5
-0F0F CD 86, D3NOW_Pfrcpv_mm_mmm64, D3NOW, GEODE, op0=w op1=r w=mm1 r=mm5
+0F0F CD 86, D3NOW_Pfrcpv_mm_mmm64, D3NOW, CYRIX_D3NOW, op0=w op1=r w=mm1 r=mm5
 # pfrcpv mm1,[rax-5AA5EDCCh]
-0F0F 88 34125AA5 86, D3NOW_Pfrcpv_mm_mmm64, D3NOW, GEODE, op0=w op1=r w=mm1 r=rax rm=ds:rax+0xFFFFFFFFA55A1234;Packed64_Float32
+0F0F 88 34125AA5 86, D3NOW_Pfrcpv_mm_mmm64, D3NOW, CYRIX_D3NOW, op0=w op1=r w=mm1 r=rax rm=ds:rax+0xFFFFFFFFA55A1234;Packed64_Float32
 # pfrsqrtv mm1,mm5
-0F0F CD 87, D3NOW_Pfrsqrtv_mm_mmm64, D3NOW, GEODE, op0=w op1=r w=mm1 r=mm5
+0F0F CD 87, D3NOW_Pfrsqrtv_mm_mmm64, D3NOW, CYRIX_D3NOW, op0=w op1=r w=mm1 r=mm5
 # pfrsqrtv mm1,[rax-5AA5EDCCh]
-0F0F 88 34125AA5 87, D3NOW_Pfrsqrtv_mm_mmm64, D3NOW, GEODE, op0=w op1=r w=mm1 r=rax rm=ds:rax+0xFFFFFFFFA55A1234;Packed64_Float32
+0F0F 88 34125AA5 87, D3NOW_Pfrsqrtv_mm_mmm64, D3NOW, CYRIX_D3NOW, op0=w op1=r w=mm1 r=rax rm=ds:rax+0xFFFFFFFFA55A1234;Packed64_Float32
 # pfnacc mm1,mm5
 0F0F CD 8A, D3NOW_Pfnacc_mm_mmm64, D3NOW, D3NOWEXT, op0=rw op1=r rw=mm1 r=mm5
 # pfnacc mm1,[rax-5AA5EDCCh]
@@ -17708,7 +17708,7 @@ C4E3C9 7F 10 40, VEX_Vfnmsubsd_xmm_xmm_xmm_xmmm64, VEX, FMA4, pm op0=w op1=r op2
 # fstenv [rax]
 9B 66 D9 30, Fstenv_m14byte, Legacy, FPU, op0=w r=rax wm=ds:rax;FpuEnv14 special
 # fstenv [rax]
-9B D9 30, Fstenv_m28byte, Legacy, FPU, op0=w r=rax wm=ds:rax;FpuEnv28 special
+9B D9 30, Fstenv_m28byte, Legacy, FPU387, op0=w r=rax wm=ds:rax;FpuEnv28 special
 # fstcw [rax]
 9B D9 38, Fstcw_m2byte, Legacy, FPU, op0=w r=rax wm=ds:rax;UInt16 special
 # fstp st(3)
@@ -17736,7 +17736,7 @@ DC DB, Fcomp_st0_sti_DCD8, Legacy, FPU, op0=r op1=r r=st0 r=st3
 # fsave [rax]
 9B 66 DD 30, Fsave_m94byte, Legacy, FPU, saverestore op0=w r=rax wm=ds:rax;FpuState94 special
 # fsave [rax]
-9B DD 30, Fsave_m108byte, Legacy, FPU, saverestore op0=w r=rax wm=ds:rax;FpuState108 special
+9B DD 30, Fsave_m108byte, Legacy, FPU387, saverestore op0=w r=rax wm=ds:rax;FpuState108 special
 # fstsw [rax]
 9B DD 38, Fstsw_m2byte, Legacy, FPU, op0=w r=rax wm=ds:rax;UInt16 special
 # fxch st(3)
@@ -19049,26 +19049,14 @@ C5ED FB CA, VEX_Vpsubq_ymm_ymm_ymmm256, VEX, AVX2, pm op0=w op1=n op2=n w=vmm1
 F3 0FA6 C0, Montmul_64, Legacy, PADLOCK_PMM, crm=es:rsi;Unknown cr=rsi cw=rdx r=rcx cr=eax cw=rax;rcx
 # rep montmul
 67 F3 0FA6 C0, Montmul_32, Legacy, PADLOCK_PMM, crm=es:esi;Unknown cr=esi cw=rdx r=ecx cr=eax cw=rax;rcx
-# montmul
-0FA6 C0, Montmul_64, Legacy, PADLOCK_PMM, rm=es:rsi;Unknown r=rsi r=eax w=rax;rdx
-# montmul
-67 0FA6 C0, Montmul_32, Legacy, PADLOCK_PMM, rm=es:esi;Unknown r=esi r=eax w=rax;rdx
 # rep xsha1
 F3 0FA6 C8, Xsha1_64, Legacy, PADLOCK_PHE, crm=es:rdi;Unknown cwm=es:rdi;Unknown crm=es:rsi;Unknown cr=rsi;rdi cw=rsi;rdi cr=rax cw=rax r=rcx cw=rcx
 # rep xsha1
 67 F3 0FA6 C8, Xsha1_32, Legacy, PADLOCK_PHE, crm=es:edi;Unknown cwm=es:edi;Unknown crm=es:esi;Unknown cr=esi;edi cw=rsi;rdi cr=eax cw=rax r=ecx cw=rcx
-# xsha1
-0FA6 C8, Xsha1_64, Legacy, PADLOCK_PHE, rwm=es:rdi;Unknown rm=es:rsi;Unknown rw=rsi;rdi
-# xsha1
-67 0FA6 C8, Xsha1_32, Legacy, PADLOCK_PHE, rwm=es:edi;Unknown rm=es:esi;Unknown r=esi;edi w=rsi;rdi
 # rep xsha256
 F3 0FA6 D0, Xsha256_64, Legacy, PADLOCK_PHE, crm=es:rdi;Unknown cwm=es:rdi;Unknown crm=es:rsi;Unknown cr=rsi;rdi cw=rsi;rdi cr=rax cw=rax r=rcx cw=rcx
 # rep xsha256
 67 F3 0FA6 D0, Xsha256_32, Legacy, PADLOCK_PHE, crm=es:edi;Unknown cwm=es:edi;Unknown crm=es:esi;Unknown cr=esi;edi cw=rsi;rdi cr=eax cw=rax r=ecx cw=rcx
-# xsha256
-0FA6 D0, Xsha256_64, Legacy, PADLOCK_PHE, rwm=es:rdi;Unknown rm=es:rsi;Unknown rw=rsi;rdi
-# xsha256
-67 0FA6 D0, Xsha256_32, Legacy, PADLOCK_PHE, rwm=es:edi;Unknown rm=es:esi;Unknown r=esi;edi w=rsi;rdi
 # rep xstore
 F3 0FA7 C0, Xstore_64, Legacy, PADLOCK_RNG, cwm=es:rdi;Unknown cr=rdi cw=rdi cr=edx cw=rax r=rcx cw=rcx
 # rep xstore
@@ -19081,42 +19069,22 @@ F3 0FA7 C0, Xstore_64, Legacy, PADLOCK_RNG, cwm=es:rdi;Unknown cr=rdi cw=rdi cr=
 F3 0FA7 C8, XcryptEcb_64, Legacy, PADLOCK_ACE, cwm=es:rdi;Unknown crm=es:rdx;Unknown crm=es:rbx;Unknown crm=es:rsi;Unknown cr=rdx;rbx;rsi;rdi cw=rsi;rdi r=rcx cw=rcx
 # rep xcryptecbs
 67 F3 0FA7 C8, XcryptEcb_32, Legacy, PADLOCK_ACE, cwm=es:edi;Unknown crm=es:edx;Unknown crm=es:ebx;Unknown crm=es:esi;Unknown cr=edx;ebx;esi;edi cw=rsi;rdi r=ecx cw=rcx
-# xcryptecb
-0FA7 C8, XcryptEcb_64, Legacy, PADLOCK_ACE, wm=es:rdi;Unknown rm=es:rdx;Unknown rm=es:rbx;Unknown rm=es:rsi;Unknown r=rdx;rbx;rsi;rdi w=rsi;rdi
-# xcryptecb
-67 0FA7 C8, XcryptEcb_32, Legacy, PADLOCK_ACE, wm=es:edi;Unknown rm=es:edx;Unknown rm=es:ebx;Unknown rm=es:esi;Unknown r=edx;ebx;esi;edi w=rsi;rdi
 # rep xcryptcbc
 F3 0FA7 D0, XcryptCbc_64, Legacy, PADLOCK_ACE, cwm=es:rdi;Unknown crm=es:rax;Unknown cwm=es:rax;Unknown crm=es:rdx;Unknown crm=es:rbx;Unknown crm=es:rsi;Unknown cr=rax;rdx;rbx;rsi;rdi cw=rax;rsi;rdi r=rcx cw=rcx
 # rep xcryptcbc
 67 F3 0FA7 D0, XcryptCbc_32, Legacy, PADLOCK_ACE, cwm=es:edi;Unknown crm=es:eax;Unknown cwm=es:eax;Unknown crm=es:edx;Unknown crm=es:ebx;Unknown crm=es:esi;Unknown cr=eax;edx;ebx;esi;edi cw=rax;rsi;rdi r=ecx cw=rcx
-# xcryptcbc
-0FA7 D0, XcryptCbc_64, Legacy, PADLOCK_ACE, wm=es:rdi;Unknown rwm=es:rax;Unknown rm=es:rdx;Unknown rm=es:rbx;Unknown rm=es:rsi;Unknown r=rax;rdx;rbx;rsi;rdi w=rax;rsi;rdi
-# xcryptcbc
-67 0FA7 D0, XcryptCbc_32, Legacy, PADLOCK_ACE, wm=es:edi;Unknown rwm=es:eax;Unknown rm=es:edx;Unknown rm=es:ebx;Unknown rm=es:esi;Unknown r=eax;edx;ebx;esi;edi w=rax;rsi;rdi
 # rep xcryptctr
 F3 0FA7 D8, XcryptCtr_64, Legacy, PADLOCK_ACE, cwm=es:rdi;Unknown crm=es:rax;Unknown cwm=es:rax;Unknown crm=es:rdx;Unknown crm=es:rbx;Unknown crm=es:rsi;Unknown cr=rax;rdx;rbx;rsi;rdi cw=rax;rsi;rdi r=rcx cw=rcx
 # rep xcryptctr
 67 F3 0FA7 D8, XcryptCtr_32, Legacy, PADLOCK_ACE, cwm=es:edi;Unknown crm=es:eax;Unknown cwm=es:eax;Unknown crm=es:edx;Unknown crm=es:ebx;Unknown crm=es:esi;Unknown cr=eax;edx;ebx;esi;edi cw=rax;rsi;rdi r=ecx cw=rcx
-# xcryptctr
-0FA7 D8, XcryptCtr_64, Legacy, PADLOCK_ACE, wm=es:rdi;Unknown rwm=es:rax;Unknown rm=es:rdx;Unknown rm=es:rbx;Unknown rm=es:rsi;Unknown r=rax;rdx;rbx;rsi;rdi w=rax;rsi;rdi
-# xcryptctr
-67 0FA7 D8, XcryptCtr_32, Legacy, PADLOCK_ACE, wm=es:edi;Unknown rwm=es:eax;Unknown rm=es:edx;Unknown rm=es:ebx;Unknown rm=es:esi;Unknown r=eax;edx;ebx;esi;edi w=rax;rsi;rdi
 # rep xcryptcfb
 F3 0FA7 E0, XcryptCfb_64, Legacy, PADLOCK_ACE, cwm=es:rdi;Unknown crm=es:rax;Unknown cwm=es:rax;Unknown crm=es:rdx;Unknown crm=es:rbx;Unknown crm=es:rsi;Unknown cr=rax;rdx;rbx;rsi;rdi cw=rax;rsi;rdi r=rcx cw=rcx
 # rep xcryptcfb
 67 F3 0FA7 E0, XcryptCfb_32, Legacy, PADLOCK_ACE, cwm=es:edi;Unknown crm=es:eax;Unknown cwm=es:eax;Unknown crm=es:edx;Unknown crm=es:ebx;Unknown crm=es:esi;Unknown cr=eax;edx;ebx;esi;edi cw=rax;rsi;rdi r=ecx cw=rcx
-# xcryptcfb
-0FA7 E0, XcryptCfb_64, Legacy, PADLOCK_ACE, wm=es:rdi;Unknown rwm=es:rax;Unknown rm=es:rdx;Unknown rm=es:rbx;Unknown rm=es:rsi;Unknown r=rax;rdx;rbx;rsi;rdi w=rax;rsi;rdi
-# xcryptcfb
-67 0FA7 E0, XcryptCfb_32, Legacy, PADLOCK_ACE, wm=es:edi;Unknown rwm=es:eax;Unknown rm=es:edx;Unknown rm=es:ebx;Unknown rm=es:esi;Unknown r=eax;edx;ebx;esi;edi w=rax;rsi;rdi
 # rep xcryptofb
 F3 0FA7 E8, XcryptOfb_64, Legacy, PADLOCK_ACE, cwm=es:rdi;Unknown crm=es:rax;Unknown cwm=es:rax;Unknown crm=es:rdx;Unknown crm=es:rbx;Unknown crm=es:rsi;Unknown cr=rax;rdx;rbx;rsi;rdi cw=rax;rsi;rdi r=rcx cw=rcx
 # rep xcryptofb
 67 F3 0FA7 E8, XcryptOfb_32, Legacy, PADLOCK_ACE, cwm=es:edi;Unknown crm=es:eax;Unknown cwm=es:eax;Unknown crm=es:edx;Unknown crm=es:ebx;Unknown crm=es:esi;Unknown cr=eax;edx;ebx;esi;edi cw=rax;rsi;rdi r=ecx cw=rcx
-# xcryptofb
-0FA7 E8, XcryptOfb_64, Legacy, PADLOCK_ACE, wm=es:rdi;Unknown rwm=es:rax;Unknown rm=es:rdx;Unknown rm=es:rbx;Unknown rm=es:rsi;Unknown r=rax;rdx;rbx;rsi;rdi w=rax;rsi;rdi
-# xcryptofb
-67 0FA7 E8, XcryptOfb_32, Legacy, PADLOCK_ACE, wm=es:edi;Unknown rwm=es:eax;Unknown rm=es:edx;Unknown rm=es:ebx;Unknown rm=es:esi;Unknown r=eax;edx;ebx;esi;edi w=rax;rsi;rdi
 # db 66h
 66, DeclareByte, Legacy, INTEL8086, flow=Exception special
 # dw 4466h

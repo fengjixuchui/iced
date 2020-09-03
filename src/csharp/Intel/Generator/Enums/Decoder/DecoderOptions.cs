@@ -50,7 +50,7 @@ namespace Generator.Enums.Decoder {
 		Loadall386				= 0x00000200,
 		[Comment("Decode #(c:CL1INVMB)#")]
 		Cl1invmb				= 0x00000400,
-		[Comment("Decode #(c:MOV r32,tr)# and #(c:Mov tr,r32)#")]
+		[Comment("Decode #(c:MOV r32,tr)# and #(c:MOV tr,r32)#")]
 		MovTr					= 0x00000800,
 		[Comment("Decode #(c:JMPE)# instructions")]
 		Jmpe					= 0x00001000,
@@ -59,7 +59,9 @@ namespace Generator.Enums.Decoder {
 		[Comment("Don't decode #(c:WBNOINVD)#, decode #(c:WBINVD)# instead")]
 		NoWbnoinvd				= 0x00004000,
 		[Comment("Don't decode #(c:LOCK MOV CR0)# as #(c:MOV CR8)# (AMD)")]
-		NoLockMovCR0			= 0x00008000,
+		NoLockMovCR				= 0x00008000,
+		[Deprecated("1.9.0", nameof(NoLockMovCR))]
+		NoLockMovCR0,
 		[Comment("Don't decode #(c:TZCNT)#, decode #(c:BSF)# instead")]
 		NoMPFX_0FBC				= 0x00010000,
 		[Comment("Don't decode #(c:LZCNT)#, decode #(c:BSR)# instead")]
@@ -68,5 +70,13 @@ namespace Generator.Enums.Decoder {
 		NoLahfSahf64			= 0x00040000,
 		[Comment("Decode #(c:MPX)# instructions")]
 		MPX						= 0x00080000,
+		[Comment("Decode most Cyrix instructions: #(c:FPU)#, #(c:EMMI)#, #(c:SMM)#, #(c:DDI)#")]
+		Cyrix					= 0x00100000,
+		[Comment("Decode Cyrix #(c:SMINT 0F7E)# (Cyrix 6x86 or earlier)")]
+		Cyrix_SMINT_0F7E		= 0x00200000,
+		[Comment("Decode Cyrix #(c:DMI)# instructions (AMD Geode GX/LX)")]
+		Cyrix_DMI				= 0x00400000,
+		[Comment("Decode Centaur #(c:ALTINST)#")]
+		ALTINST					= 0x00800000,
 	}
 }

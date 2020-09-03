@@ -4114,7 +4114,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>o32 D9 /4</c><br/>
 		/// <br/>
-		/// <c>8087+</c><br/>
+		/// <c>387+</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		Fldenv_m28byte = 514,
@@ -4146,7 +4146,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>o32 D9 /6</c><br/>
 		/// <br/>
-		/// <c>8087+</c><br/>
+		/// <c>387+</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		Fnstenv_m28byte = 518,
@@ -4154,7 +4154,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>9B o32 D9 /6</c><br/>
 		/// <br/>
-		/// <c>8087+</c><br/>
+		/// <c>387+</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		Fstenv_m28byte = 519,
@@ -4882,7 +4882,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>o32 DD /4</c><br/>
 		/// <br/>
-		/// <c>8087+</c><br/>
+		/// <c>387+</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		Frstor_m108byte = 610,
@@ -4906,7 +4906,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>o32 DD /6</c><br/>
 		/// <br/>
-		/// <c>8087+</c><br/>
+		/// <c>387+</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		Fnsave_m108byte = 613,
@@ -4914,7 +4914,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>9B o32 DD /6</c><br/>
 		/// <br/>
-		/// <c>8087+</c><br/>
+		/// <c>387+</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		Fsave_m108byte = 614,
@@ -5224,7 +5224,7 @@ namespace Iced.Intel {
 		Fstsw_AX = 652,
 		/// <summary><c>FSTDW AX</c><br/>
 		/// <br/>
-		/// <c>DF E1</c><br/>
+		/// <c>9B DF E1</c><br/>
 		/// <br/>
 		/// <c>387 SL</c><br/>
 		/// <br/>
@@ -5232,7 +5232,7 @@ namespace Iced.Intel {
 		Fstdw_AX = 653,
 		/// <summary><c>FSTSG AX</c><br/>
 		/// <br/>
-		/// <c>DF E2</c><br/>
+		/// <c>9B DF E2</c><br/>
 		/// <br/>
 		/// <c>387 SL</c><br/>
 		/// <br/>
@@ -8538,7 +8538,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>0F 24 /r</c><br/>
 		/// <br/>
-		/// <c>386/486</c><br/>
+		/// <c>386/486/Cyrix/Geode</c><br/>
 		/// <br/>
 		/// <c>16/32-bit</c></summary>
 		Mov_r32_tr = 1067,
@@ -8546,7 +8546,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>0F 26 /r</c><br/>
 		/// <br/>
-		/// <c>386/486</c><br/>
+		/// <c>386/486/Cyrix/Geode</c><br/>
 		/// <br/>
 		/// <c>16/32-bit</c></summary>
 		Mov_tr_r32 = 1068,
@@ -15664,7 +15664,7 @@ namespace Iced.Intel {
 		Shld_rm64_r64_CL = 1957,
 		/// <summary><c>MONTMUL</c><br/>
 		/// <br/>
-		/// <c>a16 0F A6 C0</c><br/>
+		/// <c>a16 F3 0F A6 C0</c><br/>
 		/// <br/>
 		/// <c>PADLOCK_PMM</c><br/>
 		/// <br/>
@@ -15672,7 +15672,7 @@ namespace Iced.Intel {
 		Montmul_16 = 1958,
 		/// <summary><c>MONTMUL</c><br/>
 		/// <br/>
-		/// <c>a32 0F A6 C0</c><br/>
+		/// <c>a32 F3 0F A6 C0</c><br/>
 		/// <br/>
 		/// <c>PADLOCK_PMM</c><br/>
 		/// <br/>
@@ -15680,7 +15680,7 @@ namespace Iced.Intel {
 		Montmul_32 = 1959,
 		/// <summary><c>MONTMUL</c><br/>
 		/// <br/>
-		/// <c>0F A6 C0</c><br/>
+		/// <c>F3 0F A6 C0</c><br/>
 		/// <br/>
 		/// <c>PADLOCK_PMM</c><br/>
 		/// <br/>
@@ -15688,7 +15688,7 @@ namespace Iced.Intel {
 		Montmul_64 = 1960,
 		/// <summary><c>XSHA1</c><br/>
 		/// <br/>
-		/// <c>a16 0F A6 C8</c><br/>
+		/// <c>a16 F3 0F A6 C8</c><br/>
 		/// <br/>
 		/// <c>PADLOCK_PHE</c><br/>
 		/// <br/>
@@ -15696,7 +15696,7 @@ namespace Iced.Intel {
 		Xsha1_16 = 1961,
 		/// <summary><c>XSHA1</c><br/>
 		/// <br/>
-		/// <c>a32 0F A6 C8</c><br/>
+		/// <c>a32 F3 0F A6 C8</c><br/>
 		/// <br/>
 		/// <c>PADLOCK_PHE</c><br/>
 		/// <br/>
@@ -15704,7 +15704,7 @@ namespace Iced.Intel {
 		Xsha1_32 = 1962,
 		/// <summary><c>XSHA1</c><br/>
 		/// <br/>
-		/// <c>0F A6 C8</c><br/>
+		/// <c>F3 0F A6 C8</c><br/>
 		/// <br/>
 		/// <c>PADLOCK_PHE</c><br/>
 		/// <br/>
@@ -15712,7 +15712,7 @@ namespace Iced.Intel {
 		Xsha1_64 = 1963,
 		/// <summary><c>XSHA256</c><br/>
 		/// <br/>
-		/// <c>a16 0F A6 D0</c><br/>
+		/// <c>a16 F3 0F A6 D0</c><br/>
 		/// <br/>
 		/// <c>PADLOCK_PHE</c><br/>
 		/// <br/>
@@ -15720,7 +15720,7 @@ namespace Iced.Intel {
 		Xsha256_16 = 1964,
 		/// <summary><c>XSHA256</c><br/>
 		/// <br/>
-		/// <c>a32 0F A6 D0</c><br/>
+		/// <c>a32 F3 0F A6 D0</c><br/>
 		/// <br/>
 		/// <c>PADLOCK_PHE</c><br/>
 		/// <br/>
@@ -15728,7 +15728,7 @@ namespace Iced.Intel {
 		Xsha256_32 = 1965,
 		/// <summary><c>XSHA256</c><br/>
 		/// <br/>
-		/// <c>0F A6 D0</c><br/>
+		/// <c>F3 0F A6 D0</c><br/>
 		/// <br/>
 		/// <c>PADLOCK_PHE</c><br/>
 		/// <br/>
@@ -15776,7 +15776,7 @@ namespace Iced.Intel {
 		Xstore_64 = 1971,
 		/// <summary><c>XCRYPTECB</c><br/>
 		/// <br/>
-		/// <c>a16 0F A7 C8</c><br/>
+		/// <c>a16 F3 0F A7 C8</c><br/>
 		/// <br/>
 		/// <c>PADLOCK_ACE</c><br/>
 		/// <br/>
@@ -15784,7 +15784,7 @@ namespace Iced.Intel {
 		XcryptEcb_16 = 1972,
 		/// <summary><c>XCRYPTECB</c><br/>
 		/// <br/>
-		/// <c>a32 0F A7 C8</c><br/>
+		/// <c>a32 F3 0F A7 C8</c><br/>
 		/// <br/>
 		/// <c>PADLOCK_ACE</c><br/>
 		/// <br/>
@@ -15792,7 +15792,7 @@ namespace Iced.Intel {
 		XcryptEcb_32 = 1973,
 		/// <summary><c>XCRYPTECB</c><br/>
 		/// <br/>
-		/// <c>0F A7 C8</c><br/>
+		/// <c>F3 0F A7 C8</c><br/>
 		/// <br/>
 		/// <c>PADLOCK_ACE</c><br/>
 		/// <br/>
@@ -15800,7 +15800,7 @@ namespace Iced.Intel {
 		XcryptEcb_64 = 1974,
 		/// <summary><c>XCRYPTCBC</c><br/>
 		/// <br/>
-		/// <c>a16 0F A7 D0</c><br/>
+		/// <c>a16 F3 0F A7 D0</c><br/>
 		/// <br/>
 		/// <c>PADLOCK_ACE</c><br/>
 		/// <br/>
@@ -15808,7 +15808,7 @@ namespace Iced.Intel {
 		XcryptCbc_16 = 1975,
 		/// <summary><c>XCRYPTCBC</c><br/>
 		/// <br/>
-		/// <c>a32 0F A7 D0</c><br/>
+		/// <c>a32 F3 0F A7 D0</c><br/>
 		/// <br/>
 		/// <c>PADLOCK_ACE</c><br/>
 		/// <br/>
@@ -15816,7 +15816,7 @@ namespace Iced.Intel {
 		XcryptCbc_32 = 1976,
 		/// <summary><c>XCRYPTCBC</c><br/>
 		/// <br/>
-		/// <c>0F A7 D0</c><br/>
+		/// <c>F3 0F A7 D0</c><br/>
 		/// <br/>
 		/// <c>PADLOCK_ACE</c><br/>
 		/// <br/>
@@ -15824,7 +15824,7 @@ namespace Iced.Intel {
 		XcryptCbc_64 = 1977,
 		/// <summary><c>XCRYPTCTR</c><br/>
 		/// <br/>
-		/// <c>a16 0F A7 D8</c><br/>
+		/// <c>a16 F3 0F A7 D8</c><br/>
 		/// <br/>
 		/// <c>PADLOCK_ACE</c><br/>
 		/// <br/>
@@ -15832,7 +15832,7 @@ namespace Iced.Intel {
 		XcryptCtr_16 = 1978,
 		/// <summary><c>XCRYPTCTR</c><br/>
 		/// <br/>
-		/// <c>a32 0F A7 D8</c><br/>
+		/// <c>a32 F3 0F A7 D8</c><br/>
 		/// <br/>
 		/// <c>PADLOCK_ACE</c><br/>
 		/// <br/>
@@ -15840,7 +15840,7 @@ namespace Iced.Intel {
 		XcryptCtr_32 = 1979,
 		/// <summary><c>XCRYPTCTR</c><br/>
 		/// <br/>
-		/// <c>0F A7 D8</c><br/>
+		/// <c>F3 0F A7 D8</c><br/>
 		/// <br/>
 		/// <c>PADLOCK_ACE</c><br/>
 		/// <br/>
@@ -15848,7 +15848,7 @@ namespace Iced.Intel {
 		XcryptCtr_64 = 1980,
 		/// <summary><c>XCRYPTCFB</c><br/>
 		/// <br/>
-		/// <c>a16 0F A7 E0</c><br/>
+		/// <c>a16 F3 0F A7 E0</c><br/>
 		/// <br/>
 		/// <c>PADLOCK_ACE</c><br/>
 		/// <br/>
@@ -15856,7 +15856,7 @@ namespace Iced.Intel {
 		XcryptCfb_16 = 1981,
 		/// <summary><c>XCRYPTCFB</c><br/>
 		/// <br/>
-		/// <c>a32 0F A7 E0</c><br/>
+		/// <c>a32 F3 0F A7 E0</c><br/>
 		/// <br/>
 		/// <c>PADLOCK_ACE</c><br/>
 		/// <br/>
@@ -15864,7 +15864,7 @@ namespace Iced.Intel {
 		XcryptCfb_32 = 1982,
 		/// <summary><c>XCRYPTCFB</c><br/>
 		/// <br/>
-		/// <c>0F A7 E0</c><br/>
+		/// <c>F3 0F A7 E0</c><br/>
 		/// <br/>
 		/// <c>PADLOCK_ACE</c><br/>
 		/// <br/>
@@ -15872,7 +15872,7 @@ namespace Iced.Intel {
 		XcryptCfb_64 = 1983,
 		/// <summary><c>XCRYPTOFB</c><br/>
 		/// <br/>
-		/// <c>a16 0F A7 E8</c><br/>
+		/// <c>a16 F3 0F A7 E8</c><br/>
 		/// <br/>
 		/// <c>PADLOCK_ACE</c><br/>
 		/// <br/>
@@ -15880,7 +15880,7 @@ namespace Iced.Intel {
 		XcryptOfb_16 = 1984,
 		/// <summary><c>XCRYPTOFB</c><br/>
 		/// <br/>
-		/// <c>a32 0F A7 E8</c><br/>
+		/// <c>a32 F3 0F A7 E8</c><br/>
 		/// <br/>
 		/// <c>PADLOCK_ACE</c><br/>
 		/// <br/>
@@ -15888,7 +15888,7 @@ namespace Iced.Intel {
 		XcryptOfb_32 = 1985,
 		/// <summary><c>XCRYPTOFB</c><br/>
 		/// <br/>
-		/// <c>0F A7 E8</c><br/>
+		/// <c>F3 0F A7 E8</c><br/>
 		/// <br/>
 		/// <c>PADLOCK_ACE</c><br/>
 		/// <br/>
@@ -33450,7 +33450,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>0F 0F /r 86</c><br/>
 		/// <br/>
-		/// <c>AMD Geode LX/GX</c><br/>
+		/// <c>AMD Geode GX/LX</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		D3NOW_Pfrcpv_mm_mmm64 = 4181,
@@ -33458,7 +33458,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>0F 0F /r 87</c><br/>
 		/// <br/>
-		/// <c>AMD Geode LX/GX</c><br/>
+		/// <c>AMD Geode GX/LX</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		D3NOW_Pfrsqrtv_mm_mmm64 = 4182,
@@ -33886,5 +33886,349 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>64-bit</c></summary>
 		VEX_Tdpbssd_tmm_tmm_tmm = 4235,
+		/// <summary><c>FNSTDW AX</c><br/>
+		/// <br/>
+		/// <c>DF E1</c><br/>
+		/// <br/>
+		/// <c>387 SL</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Fnstdw_AX = 4236,
+		/// <summary><c>FNSTSG AX</c><br/>
+		/// <br/>
+		/// <c>DF E2</c><br/>
+		/// <br/>
+		/// <c>387 SL</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Fnstsg_AX = 4237,
+		/// <summary><c>RDSHR r/m32</c><br/>
+		/// <br/>
+		/// <c>0F 36 /0</c><br/>
+		/// <br/>
+		/// <c>Cyrix 6x86MX, M II, III</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Rdshr_rm32 = 4238,
+		/// <summary><c>WRSHR r/m32</c><br/>
+		/// <br/>
+		/// <c>0F 37 /0</c><br/>
+		/// <br/>
+		/// <c>Cyrix 6x86MX, M II, III</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Wrshr_rm32 = 4239,
+		/// <summary><c>SMINT</c><br/>
+		/// <br/>
+		/// <c>0F 38</c><br/>
+		/// <br/>
+		/// <c>Cyrix 6x86MX+, AMD Geode GX/LX</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Smint = 4240,
+		/// <summary><c>DMINT</c><br/>
+		/// <br/>
+		/// <c>0F 39</c><br/>
+		/// <br/>
+		/// <c>AMD Geode GX/LX</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Dmint = 4241,
+		/// <summary><c>RDM</c><br/>
+		/// <br/>
+		/// <c>0F 3A</c><br/>
+		/// <br/>
+		/// <c>AMD Geode GX/LX</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Rdm = 4242,
+		/// <summary><c>SVDC m80, Sreg</c><br/>
+		/// <br/>
+		/// <c>0F 78 /r</c><br/>
+		/// <br/>
+		/// <c>Cyrix, AMD Geode GX/LX</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Svdc_m80_Sreg = 4243,
+		/// <summary><c>RSDC Sreg, m80</c><br/>
+		/// <br/>
+		/// <c>0F 79 /r</c><br/>
+		/// <br/>
+		/// <c>Cyrix, AMD Geode GX/LX</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Rsdc_Sreg_m80 = 4244,
+		/// <summary><c>SVLDT m80</c><br/>
+		/// <br/>
+		/// <c>0F 7A /0</c><br/>
+		/// <br/>
+		/// <c>Cyrix, AMD Geode GX/LX</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Svldt_m80 = 4245,
+		/// <summary><c>RSLDT m80</c><br/>
+		/// <br/>
+		/// <c>0F 7B /0</c><br/>
+		/// <br/>
+		/// <c>Cyrix, AMD Geode GX/LX</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Rsldt_m80 = 4246,
+		/// <summary><c>SVTS m80</c><br/>
+		/// <br/>
+		/// <c>0F 7C /0</c><br/>
+		/// <br/>
+		/// <c>Cyrix, AMD Geode GX/LX</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Svts_m80 = 4247,
+		/// <summary><c>RSTS m80</c><br/>
+		/// <br/>
+		/// <c>0F 7D /0</c><br/>
+		/// <br/>
+		/// <c>Cyrix, AMD Geode GX/LX</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Rsts_m80 = 4248,
+		/// <summary><c>SMINT</c><br/>
+		/// <br/>
+		/// <c>0F 7E</c><br/>
+		/// <br/>
+		/// <c>Cyrix 6x86 or earlier</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Smint_0F7E = 4249,
+		/// <summary><c>BB0_RESET</c><br/>
+		/// <br/>
+		/// <c>0F 3A</c><br/>
+		/// <br/>
+		/// <c>Cyrix MediaGX, GXm, GXLV, GX1</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Bb0_reset = 4250,
+		/// <summary><c>BB1_RESET</c><br/>
+		/// <br/>
+		/// <c>0F 3B</c><br/>
+		/// <br/>
+		/// <c>Cyrix MediaGX, GXm, GXLV, GX1</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Bb1_reset = 4251,
+		/// <summary><c>CPU_WRITE</c><br/>
+		/// <br/>
+		/// <c>0F 3C</c><br/>
+		/// <br/>
+		/// <c>Cyrix MediaGX, GXm, GXLV, GX1</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Cpu_write = 4252,
+		/// <summary><c>CPU_READ</c><br/>
+		/// <br/>
+		/// <c>0F 3D</c><br/>
+		/// <br/>
+		/// <c>Cyrix MediaGX, GXm, GXLV, GX1</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Cpu_read = 4253,
+		/// <summary><c>ALTINST</c><br/>
+		/// <br/>
+		/// <c>0F 3F</c><br/>
+		/// <br/>
+		/// <c>Centaur AIS</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Altinst = 4254,
+		/// <summary><c>PAVEB mm1, mm2/m64</c><br/>
+		/// <br/>
+		/// <c>0F 50 /r</c><br/>
+		/// <br/>
+		/// <c>CYRIX_EMMI</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Paveb_mm_mmm64 = 4255,
+		/// <summary><c>PADDSIW mm1, mm2/m64</c><br/>
+		/// <br/>
+		/// <c>0F 51 /r</c><br/>
+		/// <br/>
+		/// <c>CYRIX_EMMI</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Paddsiw_mm_mmm64 = 4256,
+		/// <summary><c>PMAGW mm1, mm2/m64</c><br/>
+		/// <br/>
+		/// <c>0F 52 /r</c><br/>
+		/// <br/>
+		/// <c>CYRIX_EMMI</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Pmagw_mm_mmm64 = 4257,
+		/// <summary><c>PDISTIB mm1, m64</c><br/>
+		/// <br/>
+		/// <c>0F 54 /r</c><br/>
+		/// <br/>
+		/// <c>CYRIX_EMMI</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Pdistib_mm_m64 = 4258,
+		/// <summary><c>PSUBSIW mm1, mm2/m64</c><br/>
+		/// <br/>
+		/// <c>0F 55 /r</c><br/>
+		/// <br/>
+		/// <c>CYRIX_EMMI</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Psubsiw_mm_mmm64 = 4259,
+		/// <summary><c>PMVZB mm1, m64</c><br/>
+		/// <br/>
+		/// <c>0F 58 /r</c><br/>
+		/// <br/>
+		/// <c>CYRIX_EMMI</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Pmvzb_mm_m64 = 4260,
+		/// <summary><c>PMULHRW mm1, mm2/m64</c><br/>
+		/// <br/>
+		/// <c>0F 59 /r</c><br/>
+		/// <br/>
+		/// <c>CYRIX_EMMI</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Pmulhrw_mm_mmm64 = 4261,
+		/// <summary><c>PMVNZB mm1, m64</c><br/>
+		/// <br/>
+		/// <c>0F 5A /r</c><br/>
+		/// <br/>
+		/// <c>CYRIX_EMMI</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Pmvnzb_mm_m64 = 4262,
+		/// <summary><c>PMVLZB mm1, m64</c><br/>
+		/// <br/>
+		/// <c>0F 5B /r</c><br/>
+		/// <br/>
+		/// <c>CYRIX_EMMI</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Pmvlzb_mm_m64 = 4263,
+		/// <summary><c>PMVGEZB mm1, m64</c><br/>
+		/// <br/>
+		/// <c>0F 5C /r</c><br/>
+		/// <br/>
+		/// <c>CYRIX_EMMI</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Pmvgezb_mm_m64 = 4264,
+		/// <summary><c>PMULHRIW mm1, mm2/m64</c><br/>
+		/// <br/>
+		/// <c>0F 5D /r</c><br/>
+		/// <br/>
+		/// <c>CYRIX_EMMI</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Pmulhriw_mm_mmm64 = 4265,
+		/// <summary><c>PMACHRIW mm1, m64</c><br/>
+		/// <br/>
+		/// <c>0F 5E /r</c><br/>
+		/// <br/>
+		/// <c>CYRIX_EMMI</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Pmachriw_mm_m64 = 4266,
+		/// <summary><c>UNDOC</c><br/>
+		/// <br/>
+		/// <c>D9 D7</c><br/>
+		/// <br/>
+		/// <c>Cyrix, AMD Geode GX/LX</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Cyrix_D9D7 = 4267,
+		/// <summary><c>UNDOC</c><br/>
+		/// <br/>
+		/// <c>D9 E2</c><br/>
+		/// <br/>
+		/// <c>Cyrix, AMD Geode GX/LX</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Cyrix_D9E2 = 4268,
+		/// <summary><c>FTSTP</c><br/>
+		/// <br/>
+		/// <c>D9 E6</c><br/>
+		/// <br/>
+		/// <c>Cyrix, AMD Geode GX/LX</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Ftstp = 4269,
+		/// <summary><c>UNDOC</c><br/>
+		/// <br/>
+		/// <c>D9 E7</c><br/>
+		/// <br/>
+		/// <c>Cyrix, AMD Geode GX/LX</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Cyrix_D9E7 = 4270,
+		/// <summary><c>FRINT2</c><br/>
+		/// <br/>
+		/// <c>DB FC</c><br/>
+		/// <br/>
+		/// <c>Cyrix, AMD Geode GX/LX</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Frint2 = 4271,
+		/// <summary><c>FRICHOP</c><br/>
+		/// <br/>
+		/// <c>DD FC</c><br/>
+		/// <br/>
+		/// <c>Cyrix, AMD Geode GX/LX</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Frichop = 4272,
+		/// <summary><c>UNDOC</c><br/>
+		/// <br/>
+		/// <c>DE D8</c><br/>
+		/// <br/>
+		/// <c>Cyrix, AMD Geode GX/LX</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Cyrix_DED8 = 4273,
+		/// <summary><c>UNDOC</c><br/>
+		/// <br/>
+		/// <c>DE DA</c><br/>
+		/// <br/>
+		/// <c>Cyrix, AMD Geode GX/LX</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Cyrix_DEDA = 4274,
+		/// <summary><c>UNDOC</c><br/>
+		/// <br/>
+		/// <c>DE DC</c><br/>
+		/// <br/>
+		/// <c>Cyrix, AMD Geode GX/LX</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Cyrix_DEDC = 4275,
+		/// <summary><c>UNDOC</c><br/>
+		/// <br/>
+		/// <c>DE DD</c><br/>
+		/// <br/>
+		/// <c>Cyrix, AMD Geode GX/LX</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Cyrix_DEDD = 4276,
+		/// <summary><c>UNDOC</c><br/>
+		/// <br/>
+		/// <c>DE DE</c><br/>
+		/// <br/>
+		/// <c>Cyrix, AMD Geode GX/LX</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Cyrix_DEDE = 4277,
+		/// <summary><c>FRINEAR</c><br/>
+		/// <br/>
+		/// <c>DF FC</c><br/>
+		/// <br/>
+		/// <c>Cyrix, AMD Geode GX/LX</c><br/>
+		/// <br/>
+		/// <c>16/32-bit</c></summary>
+		Frinear = 4278,
 	}
 }

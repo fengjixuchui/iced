@@ -25,10 +25,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 using System.Diagnostics;
 
 namespace Iced.Intel {
-	/// <summary>
-	/// <see cref="MemorySize"/> extension methods
-	/// </summary>
-	public static class MemorySizeExtensions {
+	public static partial class MemorySizeExtensions {
 		internal static readonly MemorySizeInfo[] MemorySizeInfos = GetMemorySizeInfos();
 		enum SizeKind {
 			S0,
@@ -101,6 +98,7 @@ namespace Iced.Intel {
 				(byte)MemorySize.Bcd, (byte)((uint)SizeKind.S10 | ((uint)SizeKind.S10 << 4)), 1,
 				(byte)MemorySize.Tilecfg, (byte)((uint)SizeKind.S64 | ((uint)SizeKind.S64 << 4)), 0,
 				(byte)MemorySize.Tile, (byte)((uint)SizeKind.S0 | ((uint)SizeKind.S0 << 4)), 0,
+				(byte)MemorySize.SegmentDescSelector, (byte)((uint)SizeKind.S10 | ((uint)SizeKind.S10 << 4)), 0,
 				(byte)MemorySize.UInt8, (byte)((uint)SizeKind.S2 | ((uint)SizeKind.S1 << 4)), 0,
 				(byte)MemorySize.Int8, (byte)((uint)SizeKind.S2 | ((uint)SizeKind.S1 << 4)), 1,
 				(byte)MemorySize.UInt8, (byte)((uint)SizeKind.S4 | ((uint)SizeKind.S1 << 4)), 0,
@@ -286,13 +284,6 @@ namespace Iced.Intel {
 		/// <param name="memorySize">Memory size</param>
 		/// <returns></returns>
 		public static int GetElementCount(this MemorySize memorySize) => memorySize.GetInfo().ElementCount;
-
-		/// <summary>
-		/// Checks if <paramref name="memorySize"/> is a broadcast memory type
-		/// </summary>
-		/// <param name="memorySize">Memory size</param>
-		/// <returns></returns>
-		public static bool IsBroadcast(this MemorySize memorySize) => memorySize >= IcedConstants.FirstBroadcastMemorySize;
 	}
 
 	/// <summary>

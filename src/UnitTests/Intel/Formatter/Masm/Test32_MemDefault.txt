@@ -602,8 +602,8 @@ xor byte ptr [eax],5Ah
 cmp al,0A5h
 cmp byte ptr [eax],0A5h
 frstpm
-fstdw ax
-fstsg ax
+fnstdw ax
+fnstsg ax
 jmpe cx
 jmpe word ptr [eax]
 jmpe edx
@@ -665,40 +665,24 @@ fs clzero
 fs umonitor bp
 rep montmul
 rep montmul
-montmul
-montmul
 rep xsha1
 rep xsha1
-xsha1
-xsha1
 rep xsha256
 rep xsha256
-xsha256
-xsha256
 rep xstore
 rep xstore
 xstore
 xstore
 rep xcryptecb
 rep xcryptecb
-xcryptecb
-xcryptecb
 rep xcryptcbc
 rep xcryptcbc
-xcryptcbc
-xcryptcbc
 rep xcryptctr
 rep xcryptctr
-xcryptctr
-xcryptctr
 rep xcryptcfb
 rep xcryptcfb
-xcryptcfb
-xcryptcfb
 rep xcryptofb
 rep xcryptofb
-xcryptofb
-xcryptofb
 pvalidate
 pvalidate
 serialize
@@ -708,3 +692,52 @@ invlpgb
 invlpgb
 tlbsync
 cl1invmb
+rdshr [eax]
+rdshr edx
+wrshr [eax]
+wrshr edx
+smint
+dmint
+rdm
+svdc [eax],cs
+rsdc cs,[eax]
+svldt [eax]
+rsldt [eax]
+svts [eax]
+rsts [eax]
+smint
+bb0_reset
+bb1_reset
+cpu_write
+cpu_read
+altinst
+paveb mm1,[eax]
+paveb mm1,mm5
+paddsiw mm1,[eax]
+paddsiw mm1,mm5
+pmagw mm1,[eax]
+pmagw mm1,mm5
+pdistib mm1,[eax]
+psubsiw mm1,[eax]
+psubsiw mm1,mm5
+pmvzb mm1,[eax]
+pmulhrw mm1,[eax]
+pmulhrw mm1,mm5
+pmvnzb mm1,[eax]
+pmvlzb mm1,[eax]
+pmvgezb mm1,[eax]
+pmulhriw mm1,[eax]
+pmulhriw mm1,mm5
+pmachriw mm1,[eax]
+undoc
+undoc
+ftstp
+undoc
+frint2
+frichop
+undoc
+undoc
+undoc
+undoc
+undoc
+frinear

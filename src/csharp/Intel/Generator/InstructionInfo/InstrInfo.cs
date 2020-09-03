@@ -164,6 +164,12 @@ namespace Generator.InstructionInfo {
 		Arpl,
 		Lea,
 		Tilerelease,
+		R_EAX,
+		EMMI_R_ImpliedReg,
+		EMMI_W_ImpliedReg,
+		EMMI_RW_ImpliedReg,
+		CPUR,
+		CPUW,
 	}
 
 	sealed class InstrInfo {

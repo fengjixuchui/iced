@@ -44,8 +44,8 @@ namespace Generator.Enums.InstructionInfo {
 		INTEL486,
 		[Comment("Intel486 A stepping only (#(c:CMPXCHG)#)")]
 		INTEL486_A_ONLY,
-		[Comment("80386 and Intel486 only")]
-		INTEL386_486_ONLY,
+		[Comment("UMOV (80386 and Intel486)")]
+		UMOV,
 		[Comment("IA-64")]
 		IA64,
 		[Comment("CPUID.80000001H:EDX.LM[bit 29]")]
@@ -148,8 +148,8 @@ namespace Generator.Enums.InstructionInfo {
 		FSGSBASE,
 		[Comment("CPUID.01H:EDX.FXSR[bit 24]")]
 		FXSR,
-		[Comment("AMD Geode LX/GX CPU")]
-		GEODE,
+		[Comment("Cyrix (AMD Geode GX/LX) 3DNow! instructions")]
+		CYRIX_D3NOW,
 		[Comment("CPUID.(EAX=07H, ECX=0H):ECX.GFNI[bit 8]")]
 		GFNI,
 		[Comment("CPUID.(EAX=07H, ECX=0H):EBX.HLE[bit 4]")]
@@ -298,5 +298,27 @@ namespace Generator.Enums.InstructionInfo {
 		AMX_TILE,
 		[Comment("CPUID.(EAX=07H, ECX=0H):EDX.AMX-INT8[bit 25]")]
 		AMX_INT8,
+		[Comment("Cyrix FPU instructions (Cyrix, AMD Geode GX/LX)")]
+		CYRIX_FPU,
+		[Comment("Cyrix SMM instructions: #(c:SVDC)#, #(c:RSDC)#, #(c:SVLDT)#, #(c:RSLDT)#, #(c:SVTS)#, #(c:RSTS)# (Cyrix, AMD Geode GX/LX)")]
+		CYRIX_SMM,
+		[Comment("Cyrix #(c:SMINT 0F38)# (6x86MX and later, AMD Geode GX/LX)")]
+		CYRIX_SMINT,
+		[Comment("Cyrix #(c:SMINT 0F7E)# (6x86 or earlier)")]
+		CYRIX_SMINT_0F7E,
+		[Comment("Cyrix SMM instructions: #(c:RDSHR)#, #(c:WRSHR)# (6x86MX, M II, Cyrix III)")]
+		CYRIX_SHR,
+		[Comment("Cyrix DDI instructions: #(c:BB0_Reset)#, #(c:BB1_Reset)#, #(c:CPU_READ)#, #(c:CPU_WRITE)# (MediaGX, GXm, GXLV, GX1)")]
+		CYRIX_DDI,
+		[Comment("Cyrix AND CPUID.80000001H:EDX.EMMI[bit 24]")]
+		CYRIX_EMMI,
+		[Comment("Cyrix DMI instructions: #(c:DMINT)#, #(c:RDM)# (AMD Geode GX/LX)")]
+		CYRIX_DMI,
+		[Comment("CPUID.0C0000000H:EAX >= 0C0000001H AND CPUID.0C0000001H:EDX.AIS[Bits 1:0] = 11B ([0] = exists, [1] = enabled)")]
+		CENTAUR_AIS,
+		[Comment("MOV to/from TR (80386, Intel486, Cyrix, Geode)")]
+		MOV_TR,
+		[Comment("#(c:RSM)# instruction (some 386s, some 486s, Pentium and later)")]
+		SMM,
 	}
 }

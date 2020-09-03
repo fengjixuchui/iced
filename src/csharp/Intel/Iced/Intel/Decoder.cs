@@ -278,6 +278,7 @@ namespace Iced.Intel {
 		/// </summary>
 		public DecoderError LastError {
 			get {
+				// NoMoreBytes error has highest priority
 				if ((state.flags & StateFlags.NoMoreBytes) != 0)
 					return DecoderError.NoMoreBytes;
 				if ((state.flags & StateFlags.IsInvalid) != 0)
@@ -543,8 +544,7 @@ namespace Iced.Intel {
 			state.flags |= (StateFlags)EncodingKind.VEX;
 #endif
 			uint b = state.modrm;
-			if (is64Mode)
-				state.extraRegisterBase = ((b & 0x80) >> 4) ^ 8;
+			state.extraRegisterBase = ((b >> 4) ^ 8) & 8;
 
 			Static.Assert((int)VectorLength.L128 == 0 ? 0 : -1);
 			Static.Assert((int)VectorLength.L256 == 1 ? 0 : -1);

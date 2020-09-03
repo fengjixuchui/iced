@@ -163,7 +163,7 @@ impl DecoderOptions {
 	pub const LOADALL386: u32 = 0x0000_0200;
 	/// Decode `CL1INVMB`
 	pub const CL1INVMB: u32 = 0x0000_0400;
-	/// Decode `MOV r32,tr` and `Mov tr,r32`
+	/// Decode `MOV r32,tr` and `MOV tr,r32`
 	pub const MOV_TR: u32 = 0x0000_0800;
 	/// Decode `JMPE` instructions
 	pub const JMPE: u32 = 0x0000_1000;
@@ -172,6 +172,9 @@ impl DecoderOptions {
 	/// Don't decode `WBNOINVD`, decode `WBINVD` instead
 	pub const NO_WBNOINVD: u32 = 0x0000_4000;
 	/// Don't decode `LOCK MOV CR0` as `MOV CR8` (AMD)
+	pub const NO_LOCK_MOV_CR: u32 = 0x0000_8000;
+	/// Don't decode `LOCK MOV CR0` as `MOV CR8` (AMD)
+	#[deprecated(since = "1.9.0", note = "Use NO_LOCK_MOV_CR instead")]
 	pub const NO_LOCK_MOV_CR0: u32 = 0x0000_8000;
 	/// Don't decode `TZCNT`, decode `BSF` instead
 	pub const NO_MPFX_0FBC: u32 = 0x0001_0000;
@@ -181,6 +184,14 @@ impl DecoderOptions {
 	pub const NO_LAHF_SAHF_64: u32 = 0x0004_0000;
 	/// Decode `MPX` instructions
 	pub const MPX: u32 = 0x0008_0000;
+	/// Decode most Cyrix instructions: `FPU`, `EMMI`, `SMM`, `DDI`
+	pub const CYRIX: u32 = 0x0010_0000;
+	/// Decode Cyrix `SMINT 0F7E` (Cyrix 6x86 or earlier)
+	pub const CYRIX_SMINT_0F7E: u32 = 0x0020_0000;
+	/// Decode Cyrix `DMI` instructions (AMD Geode GX/LX)
+	pub const CYRIX_DMI: u32 = 0x0040_0000;
+	/// Decode Centaur `ALTINST`
+	pub const ALTINST: u32 = 0x0080_0000;
 }
 // GENERATOR-END: DecoderOptions
 
@@ -793,6 +804,7 @@ impl<'a> Decoder<'a> {
 	#[cfg_attr(has_must_use, must_use)]
 	#[inline]
 	pub fn last_error(&self) -> DecoderError {
+		// NoMoreBytes error has highest priority
 		if (self.state.flags & StateFlags::NO_MORE_BYTES) != 0 {
 			DecoderError::NoMoreBytes
 		} else if (self.state.flags & StateFlags::IS_INVALID) != 0 {
@@ -844,10 +856,11 @@ impl<'a> Decoder<'a> {
 	#[cfg(has_maybe_uninit)]
 	#[inline]
 	pub fn decode(&mut self) -> Instruction {
-		// Safe, decode_out() initializes the whole thing
-		let mut instruction = unsafe { mem::MaybeUninit::uninit().assume_init() };
-		self.decode_out(&mut instruction);
-		instruction
+		let mut instruction = mem::MaybeUninit::uninit();
+		unsafe {
+			self.decode_out_ptr(instruction.as_mut_ptr());
+			instruction.assume_init()
+		}
 	}
 
 	/// Decodes and returns the next instruction, see also [`decode_out(&mut Instruction)`]
@@ -893,10 +906,12 @@ impl<'a> Decoder<'a> {
 	#[cfg(not(has_maybe_uninit))]
 	#[inline]
 	pub fn decode(&mut self) -> Instruction {
-		// Safe, decode_out() initializes the whole thing
-		let mut instruction = unsafe { mem::uninitialized() };
-		self.decode_out(&mut instruction);
-		instruction
+		unsafe {
+			// Relatively safe, decode_out_ptr() initializes the whole thing
+			let mut instruction = mem::uninitialized();
+			self.decode_out_ptr(&mut instruction);
+			instruction
+		}
 	}
 
 	/// Decodes the next instruction. The difference between this method and [`decode()`] is that this
@@ -919,9 +934,6 @@ impl<'a> Decoder<'a> {
 	/// let bytes = b"\xF0\xF3\x01\x18";
 	/// let mut decoder = Decoder::new(64, bytes, DecoderOptions::NONE);
 	/// decoder.set_ip(0x1234_5678);
-	/// // or use core::mem::MaybeUninit:
-	/// //    let mut instr = unsafe { core::mem::MaybeUninit::uninit().assume_init() };
-	/// // to not clear `instr` more than once (`decode_out()` initializes all its fields).
 	/// let mut instr = Instruction::default();
 	/// decoder.decode_out(&mut instr);
 	///
@@ -945,9 +957,16 @@ impl<'a> Decoder<'a> {
 	/// assert!(instr.has_lock_prefix());
 	/// assert!(instr.has_xrelease_prefix());
 	/// ```
-	#[cfg_attr(feature = "cargo-clippy", allow(clippy::missing_inline_in_public_items))]
+	#[inline]
 	pub fn decode_out(&mut self, instruction: &mut Instruction) {
-		*instruction = Instruction::default();
+		unsafe {
+			self.decode_out_ptr(instruction);
+		}
+	}
+
+	unsafe fn decode_out_ptr(&mut self, instruction: *mut Instruction) {
+		ptr::write(instruction, Instruction::default());
+		let instruction = &mut *instruction;
 
 		self.state.extra_register_base = 0;
 		self.state.extra_index_register_base = 0;
@@ -962,14 +981,14 @@ impl<'a> Decoder<'a> {
 		let data_ptr = self.data_ptr;
 		self.instr_start_data_ptr = data_ptr;
 		// The ctor has verified that the two expressions used in min() don't overflow and are >= data_ptr.
-		self.max_data_ptr = unsafe { cmp::min(data_ptr.offset(IcedConstants::MAX_INSTRUCTION_LENGTH as isize), self.data_ptr_end) };
+		self.max_data_ptr = cmp::min(data_ptr.offset(IcedConstants::MAX_INSTRUCTION_LENGTH as isize), self.data_ptr_end);
 
 		let mut default_ds_segment = Register::DS;
 		let mut rex_prefix: usize = 0;
 		let mut b;
 		loop {
 			b = self.read_u8();
-			if unsafe { (((*self.prefixes.get_unchecked(b / 32)) >> (b & 31)) & 1) == 0 } {
+			if (((*self.prefixes.get_unchecked(b / 32)) >> (b & 31)) & 1) == 0 {
 				break;
 			}
 
@@ -1058,7 +1077,7 @@ impl<'a> Decoder<'a> {
 			self.state.extra_base_register_base = (rex_prefix as u32 & 1) << 3;
 		}
 		// Temp needed if rustc < 1.36.0 (2015 edition)
-		let tmp_handler = unsafe { *self.handlers_xx.offset(b as isize) };
+		let tmp_handler = *self.handlers_xx.offset(b as isize);
 		self.decode_table2(tmp_handler, instruction);
 		let flags = self.state.flags;
 		if (flags & (StateFlags::IS_INVALID | StateFlags::LOCK)) != 0 {
@@ -1205,9 +1224,7 @@ impl<'a> Decoder<'a> {
 		}
 
 		let mut b = self.state.modrm;
-		if self.is64_mode {
-			self.state.extra_register_base = ((b & 0x80) >> 4) ^ 8;
-		}
+		self.state.extra_register_base = ((b >> 4) ^ 8) & 8;
 
 		const_assert_eq!(0, VectorLength::L128 as u32);
 		const_assert_eq!(1, VectorLength::L256 as u32);

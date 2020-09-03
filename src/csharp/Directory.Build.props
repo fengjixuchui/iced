@@ -11,15 +11,8 @@
     <Features>strict;nullablePublicOnly</Features>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)Iced.snk</AssemblyOriginatorKeyFile>
-    <IcedFeatureFlags>DECODER;ENCODER;BLOCK_ENCODER;CODE_ASSEMBLER;OPCODE_INFO;INSTR_INFO;GAS;INTEL;MASM;NASM</IcedFeatureFlags>
+    <IcedFeatureFlags>DECODER;ENCODER;BLOCK_ENCODER;CODE_ASSEMBLER;OPCODE_INFO;INSTR_INFO;GAS;INTEL;MASM;NASM;FAST_FMT</IcedFeatureFlags>
     <DefineConstants>$(IcedDefineConstants);$(IcedFeatureFlags)</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DefineConstants>$(DefineConstants);DEBUG;TRACE</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <DefineConstants>$(DefineConstants);TRACE</DefineConstants>
   </PropertyGroup>
 
 </Project>

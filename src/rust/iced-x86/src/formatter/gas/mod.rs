@@ -38,6 +38,7 @@ use self::regs::*;
 use super::super::*;
 use super::fmt_consts::*;
 use super::fmt_utils::*;
+use super::fmt_utils_all::*;
 use super::instruction_internal::get_address_size_in_bytes;
 use super::num_fmt::*;
 use super::regs_tbl::REGS_TBL;
@@ -176,127 +177,144 @@ impl GasFormatter {
 	) {
 		let mut need_space = false;
 		if (mnemonic_options & FormatMnemonicOptions::NO_PREFIXES) == 0 && (op_info.flags & InstrOpInfoFlags::MNEMONIC_IS_DIRECTIVE as u16) == 0 {
-			let mut prefix;
-
-			if (op_info.flags & InstrOpInfoFlags::OP_SIZE_IS_BYTE_DIRECTIVE as u16) != 0 {
-				let size_override: SizeOverride = unsafe {
-					mem::transmute((((op_info.flags as u32) >> InstrOpInfoFlags::OP_SIZE_SHIFT) & InstrOpInfoFlags::SIZE_OVERRIDE_MASK) as u8)
-				};
-				match size_override {
-					SizeOverride::None => {}
-
-					SizeOverride::Size16 | SizeOverride::Size32 => {
-						output.write(
-							self.d.str_.dot_byte.get(self.d.options.uppercase_keywords() || self.d.options.uppercase_all()),
-							FormatterTextKind::Directive,
-						);
-						output.write(" ", FormatterTextKind::Text);
-						let number_options = NumberFormattingOptions::with_immediate(&self.d.options);
-						let s = self.number_formatter.format_u8(&self.d.options, &number_options, 0x66);
-						output.write(s, FormatterTextKind::Number);
-						output.write(";", FormatterTextKind::Punctuation);
-						output.write(" ", FormatterTextKind::Text);
-						*column += (self.d.str_.dot_byte.len() + 1 + s.len() + 1 + 1) as u32;
-					}
-
-					SizeOverride::Size64 => GasFormatter::format_prefix(
-						&self.d.options,
-						output,
-						instruction,
-						column,
-						&self.d.str_.rex_w,
-						PrefixKind::OperandSize,
-						&mut need_space,
-					),
-				}
-			} else {
-				prefix = &self.d.vec_.gas_op_size_strings
-					[((op_info.flags as usize) >> InstrOpInfoFlags::OP_SIZE_SHIFT) & InstrOpInfoFlags::SIZE_OVERRIDE_MASK as usize];
-				if !prefix.is_default() {
-					GasFormatter::format_prefix(&self.d.options, output, instruction, column, prefix, PrefixKind::OperandSize, &mut need_space);
-				}
-			}
-
-			prefix = &self.d.vec_.gas_addr_size_strings
-				[((op_info.flags as usize) >> InstrOpInfoFlags::ADDR_SIZE_SHIFT) & InstrOpInfoFlags::SIZE_OVERRIDE_MASK as usize];
-			if !prefix.is_default() {
-				GasFormatter::format_prefix(&self.d.options, output, instruction, column, prefix, PrefixKind::AddressSize, &mut need_space);
-			}
-
 			let prefix_seg = instruction.segment_prefix();
-			let has_notrack_prefix = prefix_seg == Register::DS && is_notrack_prefix_branch(instruction.code());
-			if !has_notrack_prefix && prefix_seg != Register::None && self.show_segment_prefix(instruction, op_info) {
-				GasFormatter::format_prefix(
-					&self.d.options,
-					output,
-					instruction,
-					column,
-					&self.d.all_registers_naked[prefix_seg as usize],
-					get_segment_register_prefix_kind(prefix_seg),
-					&mut need_space,
-				);
-			}
 
-			if instruction.has_xacquire_prefix() {
-				GasFormatter::format_prefix(
-					&self.d.options,
-					output,
-					instruction,
-					column,
-					&self.d.str_.xacquire,
-					PrefixKind::Xacquire,
-					&mut need_space,
-				);
-			}
-			if instruction.has_xrelease_prefix() {
-				GasFormatter::format_prefix(
-					&self.d.options,
-					output,
-					instruction,
-					column,
-					&self.d.str_.xrelease,
-					PrefixKind::Xrelease,
-					&mut need_space,
-				);
-			}
-			if instruction.has_lock_prefix() {
-				GasFormatter::format_prefix(&self.d.options, output, instruction, column, &self.d.str_.lock, PrefixKind::Lock, &mut need_space);
-			}
+			const PREFIX_FLAGS: u32 = (InstrOpInfoFlags::SIZE_OVERRIDE_MASK << InstrOpInfoFlags::OP_SIZE_SHIFT)
+				| (InstrOpInfoFlags::SIZE_OVERRIDE_MASK << InstrOpInfoFlags::ADDR_SIZE_SHIFT)
+				| InstrOpInfoFlags::BND_PREFIX;
+			if ((prefix_seg as u32)
+				| super::super::instruction_internal::internal_has_any_of_xacquire_xrelease_lock_rep_repne_prefix(instruction)
+				| ((op_info.flags as u32) & PREFIX_FLAGS))
+				!= 0
+			{
+				let mut prefix;
 
-			let has_bnd = (op_info.flags & InstrOpInfoFlags::BND_PREFIX as u16) != 0;
-			if instruction.has_repe_prefix() && show_rep_or_repe_prefix(instruction.code(), &self.d.options) {
-				if is_repe_or_repne_instruction(instruction.code()) {
+				if (op_info.flags & InstrOpInfoFlags::OP_SIZE_IS_BYTE_DIRECTIVE as u16) != 0 {
+					let size_override: SizeOverride = unsafe {
+						mem::transmute((((op_info.flags as u32) >> InstrOpInfoFlags::OP_SIZE_SHIFT) & InstrOpInfoFlags::SIZE_OVERRIDE_MASK) as u8)
+					};
+					match size_override {
+						SizeOverride::None => {}
+
+						SizeOverride::Size16 | SizeOverride::Size32 => {
+							output.write(
+								self.d.str_.dot_byte.get(self.d.options.uppercase_keywords() || self.d.options.uppercase_all()),
+								FormatterTextKind::Directive,
+							);
+							output.write(" ", FormatterTextKind::Text);
+							let number_options = NumberFormattingOptions::with_immediate(&self.d.options);
+							let s = self.number_formatter.format_u8(&self.d.options, &number_options, 0x66);
+							output.write(s, FormatterTextKind::Number);
+							output.write(";", FormatterTextKind::Punctuation);
+							output.write(" ", FormatterTextKind::Text);
+							*column += (self.d.str_.dot_byte.len() + 1 + s.len() + 1 + 1) as u32;
+						}
+
+						SizeOverride::Size64 => GasFormatter::format_prefix(
+							&self.d.options,
+							output,
+							instruction,
+							column,
+							&self.d.str_.rex_w,
+							PrefixKind::OperandSize,
+							&mut need_space,
+						),
+					}
+				} else {
+					prefix = &self.d.vec_.gas_op_size_strings
+						[((op_info.flags as usize) >> InstrOpInfoFlags::OP_SIZE_SHIFT) & InstrOpInfoFlags::SIZE_OVERRIDE_MASK as usize];
+					if !prefix.is_default() {
+						GasFormatter::format_prefix(&self.d.options, output, instruction, column, prefix, PrefixKind::OperandSize, &mut need_space);
+					}
+				}
+
+				prefix = &self.d.vec_.gas_addr_size_strings
+					[((op_info.flags as usize) >> InstrOpInfoFlags::ADDR_SIZE_SHIFT) & InstrOpInfoFlags::SIZE_OVERRIDE_MASK as usize];
+				if !prefix.is_default() {
+					GasFormatter::format_prefix(&self.d.options, output, instruction, column, prefix, PrefixKind::AddressSize, &mut need_space);
+				}
+
+				let has_notrack_prefix = prefix_seg == Register::DS && is_notrack_prefix_branch(instruction.code());
+				if !has_notrack_prefix && prefix_seg != Register::None && self.show_segment_prefix(instruction, op_info) {
 					GasFormatter::format_prefix(
 						&self.d.options,
 						output,
 						instruction,
 						column,
-						get_mnemonic_cc(&self.d.options, 4, &self.d.str_.repe),
-						PrefixKind::Repe,
+						&self.d.all_registers_naked[prefix_seg as usize],
+						get_segment_register_prefix_kind(prefix_seg),
 						&mut need_space,
 					);
-				} else {
-					GasFormatter::format_prefix(&self.d.options, output, instruction, column, &self.d.str_.rep, PrefixKind::Rep, &mut need_space);
 				}
-			}
-			if instruction.has_repne_prefix() && !has_bnd && show_repne_prefix(instruction.code(), &self.d.options) {
-				GasFormatter::format_prefix(
-					&self.d.options,
-					output,
-					instruction,
-					column,
-					get_mnemonic_cc(&self.d.options, 5, &self.d.str_.repne),
-					PrefixKind::Repne,
-					&mut need_space,
-				);
-			}
 
-			if has_notrack_prefix {
-				GasFormatter::format_prefix(&self.d.options, output, instruction, column, &self.d.str_.notrack, PrefixKind::Notrack, &mut need_space);
-			}
+				if instruction.has_xacquire_prefix() {
+					GasFormatter::format_prefix(
+						&self.d.options,
+						output,
+						instruction,
+						column,
+						&self.d.str_.xacquire,
+						PrefixKind::Xacquire,
+						&mut need_space,
+					);
+				}
+				if instruction.has_xrelease_prefix() {
+					GasFormatter::format_prefix(
+						&self.d.options,
+						output,
+						instruction,
+						column,
+						&self.d.str_.xrelease,
+						PrefixKind::Xrelease,
+						&mut need_space,
+					);
+				}
+				if instruction.has_lock_prefix() {
+					GasFormatter::format_prefix(&self.d.options, output, instruction, column, &self.d.str_.lock, PrefixKind::Lock, &mut need_space);
+				}
 
-			if has_bnd {
-				GasFormatter::format_prefix(&self.d.options, output, instruction, column, &self.d.str_.bnd, PrefixKind::Bnd, &mut need_space);
+				if has_notrack_prefix {
+					GasFormatter::format_prefix(
+						&self.d.options,
+						output,
+						instruction,
+						column,
+						&self.d.str_.notrack,
+						PrefixKind::Notrack,
+						&mut need_space,
+					);
+				}
+				let has_bnd = (op_info.flags & InstrOpInfoFlags::BND_PREFIX as u16) != 0;
+				if has_bnd {
+					GasFormatter::format_prefix(&self.d.options, output, instruction, column, &self.d.str_.bnd, PrefixKind::Bnd, &mut need_space);
+				}
+
+				if instruction.has_repe_prefix() && show_rep_or_repe_prefix(instruction.code(), &self.d.options) {
+					if is_repe_or_repne_instruction(instruction.code()) {
+						GasFormatter::format_prefix(
+							&self.d.options,
+							output,
+							instruction,
+							column,
+							get_mnemonic_cc(&self.d.options, 4, &self.d.str_.repe),
+							PrefixKind::Repe,
+							&mut need_space,
+						);
+					} else {
+						GasFormatter::format_prefix(&self.d.options, output, instruction, column, &self.d.str_.rep, PrefixKind::Rep, &mut need_space);
+					}
+				}
+				if instruction.has_repne_prefix() && !has_bnd && show_repne_prefix(instruction.code(), &self.d.options) {
+					GasFormatter::format_prefix(
+						&self.d.options,
+						output,
+						instruction,
+						column,
+						get_mnemonic_cc(&self.d.options, 5, &self.d.str_.repne),
+						PrefixKind::Repne,
+						&mut need_space,
+					);
+				}
 			}
 		}
 
@@ -689,7 +707,7 @@ impl GasFormatter {
 						number_kind = NumberKind::Int8;
 						if (imm8 as i8) < 0 {
 							output.write("-", FormatterTextKind::Operator);
-							imm8 = -(imm8 as i8) as u8;
+							imm8 = (imm8 as i8).wrapping_neg() as u8;
 						}
 					} else {
 						imm64 = imm8 as u64;
@@ -739,7 +757,7 @@ impl GasFormatter {
 						number_kind = NumberKind::Int16;
 						if (imm16 as i16) < 0 {
 							output.write("-", FormatterTextKind::Operator);
-							imm16 = -(imm16 as i16) as u16;
+							imm16 = (imm16 as i16).wrapping_neg() as u16;
 						}
 					} else {
 						imm64 = imm16 as u64;
@@ -789,7 +807,7 @@ impl GasFormatter {
 						number_kind = NumberKind::Int32;
 						if (imm32 as i32) < 0 {
 							output.write("-", FormatterTextKind::Operator);
-							imm32 = -(imm32 as i32) as u32;
+							imm32 = (imm32 as i32).wrapping_neg() as u32;
 						}
 					} else {
 						imm64 = imm32 as u64;
@@ -841,7 +859,7 @@ impl GasFormatter {
 						number_kind = NumberKind::Int64;
 						if (imm64 as i64) < 0 {
 							output.write("-", FormatterTextKind::Operator);
-							imm64 = -(imm64 as i64) as u64;
+							imm64 = (imm64 as i64).wrapping_neg() as u64;
 						}
 					} else {
 						number_kind = NumberKind::UInt64;
@@ -1218,7 +1236,7 @@ impl GasFormatter {
 					if addr_size == 4 {
 						if number_options.signed_number && (displ as i32) < 0 {
 							output.write("-", FormatterTextKind::Operator);
-							displ = (-(displ as i32)) as u32 as i64;
+							displ = (displ as i32).wrapping_neg() as u32 as i64;
 						}
 						if number_options.displacement_leading_zeroes {
 							debug_assert!(displ_size <= 4);
@@ -1227,7 +1245,7 @@ impl GasFormatter {
 					} else if addr_size == 8 {
 						if number_options.signed_number && displ < 0 {
 							output.write("-", FormatterTextKind::Operator);
-							displ = -displ;
+							displ = displ.wrapping_neg();
 						}
 						if number_options.displacement_leading_zeroes {
 							debug_assert!(displ_size <= 8);
@@ -1237,7 +1255,7 @@ impl GasFormatter {
 						debug_assert_eq!(2, addr_size);
 						if number_options.signed_number && (displ as i16) < 0 {
 							output.write("-", FormatterTextKind::Operator);
-							displ = (-(displ as i16)) as u16 as i64;
+							displ = (displ as i16).wrapping_neg() as u16 as i64;
 						}
 						if number_options.displacement_leading_zeroes {
 							debug_assert!(displ_size <= 2);

@@ -22,11 +22,11 @@ Prerequisites:
 
 You can override which features to build to reduce the size of the wasm/ts/js files, see [Feature flags](#feature-flags).
 
-This example assumes you need features `decoder` and `masm` and use a JavaScript bundler eg. webpack (change `bundler` to `nodejs` for Node.js support):
+This example assumes you need features `decoder` and `fast_fmt` and use a JavaScript bundler eg. webpack (change `bundler` to `nodejs` for Node.js support):
 
 ```sh
 cd src/rust/iced-x86-js
-wasm-pack build --mode force --target bundler -- --no-default-features --features "decoder masm"
+wasm-pack build --mode force --target bundler -- --no-default-features --features "decoder fast_fmt"
 ```
 
 `--target` docs [are here](https://rustwasm.github.io/docs/wasm-bindgen/reference/deployment.html) (`bundler`, `web`, `nodejs`, `no-modules`).
@@ -79,15 +79,16 @@ Here's a list of all features you can enable when building the wasm file
 - `intel`: (✔️Enabled by default) Enables the Intel (XED) formatter
 - `masm`: (✔️Enabled by default) Enables the masm formatter
 - `nasm`: (✔️Enabled by default) Enables the nasm formatter
+- `fast_fmt`: (✔️Enabled by default) Enables `FastFormatter` (masm syntax) which uses less code (smaller wasm files)
 - `bigint`: Enables public APIs with `i64`/`u64` arguments and return values (requires JavaScript `BigInt` type, eg. Node.js >= 10.4.0)
 - `no_vex`: Disables all `VEX` instructions. See below for more info.
 - `no_evex`: Disables all `EVEX` instructions. See below for more info.
 - `no_xop`: Disables all `XOP` instructions. See below for more info.
 - `no_d3now`: Disables all `3DNow!` instructions. See below for more info.
 
-`"decoder masm"` is all you need to disassemble code.
+`"decoder fast_fmt"` is all you need to disassemble code (or replace `fast_fmt` with eg. `nasm` or `gas`).
 
-`"decoder masm instr_api instr_info"` if you want to analyze the code and disassemble it. Add `encoder` and optionally `block_encoder` if you want to re-encode the decoded instructions.
+`"decoder fast_fmt instr_api instr_info"` if you want to analyze the code and disassemble it. Add `encoder` and optionally `block_encoder` if you want to re-encode the decoded instructions.
 
 If you use `no_vex`, `no_evex`, `no_xop` or `no_d3now`, you should run the generator again (before building iced) to generate even smaller output.
 
@@ -109,6 +110,7 @@ dotnet run -p src/csharp/Intel/Generator/Generator.csproj -- --no-vex --no-evex 
 - [Create and encode instructions](#create-and-encode-instructions)
 - [Move code in memory (eg. hook a function)](#move-code-in-memory-eg-hook-a-function)
 - [Get instruction info, eg. read/written regs/mem, control flow info, etc](#get-instruction-info-eg-readwritten-regsmem-control-flow-info-etc)
+- [Disassemble old/deprecated CPU instructions](#disassemble-olddeprecated-cpu-instructions)
 
 ## Disassemble (decode and format instructions)
 
@@ -155,7 +157,9 @@ decoder.ipHi = exampleRipHi;
 // which overwrites an existing instruction.
 const instructions = decoder.decodeAll();
 
-// Create a nasm formatter. It supports: Masm, Nasm, Gas (AT&T) and Intel (XED)
+// Create a nasm formatter. It supports: Masm, Nasm, Gas (AT&T) and Intel (XED).
+// There's also `FastFormatter` which uses less code (smaller wasm files).
+//     const formatter = new FastFormatter();
 const formatter = new Formatter(FormatterSyntax.Nasm);
 
 // Change some options, there are many more
@@ -997,4 +1001,77 @@ function usedMemoryToString(memInfo) {
     sb += ";" + memorySizeToString(memInfo.memorySize) + ";" + opAccessToString(memInfo.access) + "]";
     return sb;
 }
+```
+
+## Disassemble old/deprecated CPU instructions
+
+```js
+// iced-x86 features needed: --features "decoder nasm"
+const { Decoder, DecoderOptions, Formatter, FormatterSyntax } = require("iced-x86");
+
+/*
+This code produces the following output:
+731E0A03 bndmov bnd1, [eax]
+731E0A07 mov tr3, esi
+731E0A0A rdshr [eax]
+731E0A0D dmint
+731E0A0F svdc [eax], cs
+731E0A12 cpu_read
+731E0A14 pmvzb mm1, [eax]
+731E0A17 frinear
+731E0A19 altinst
+*/
+
+const bytes = new Uint8Array([
+    // bndmov bnd1,[eax]
+    0x66, 0x0F, 0x1A, 0x08,
+    // mov tr3,esi
+    0x0F, 0x26, 0xDE,
+    // rdshr [eax]
+    0x0F, 0x36, 0x00,
+    // dmint
+    0x0F, 0x39,
+    // svdc [eax],cs
+    0x0F, 0x78, 0x08,
+    // cpu_read
+    0x0F, 0x3D,
+    // pmvzb mm1,[eax]
+    0x0F, 0x58, 0x08,
+    // frinear
+    0xDF, 0xFC,
+    // altinst
+    0x0F, 0x3F,
+]);
+
+// Enable decoding of Cyrix/Geode instructions, Centaur ALTINST, MOV to/from TR
+// and MPX instructions.
+// There are other options to enable other instructions such as UMOV, etc.
+// These are deprecated instructions or only used by old CPUs so they're not
+// enabled by default. Some newer instructions also use the same opcodes as
+// some of these old instructions.
+let decoderOptions = DecoderOptions.MPX | DecoderOptions.MovTr |
+    DecoderOptions.Cyrix | DecoderOptions.Cyrix_DMI | DecoderOptions.ALTINST;
+const decoder = new Decoder(32, bytes, decoderOptions);
+// You have to enable the bigint feature to get i64/u64 APIs, not all browsers support BigInt
+decoder.ipLo = 0x731E0A03;
+decoder.ipHi = 0x00000000;
+
+const formatter = new Formatter(FormatterSyntax.Nasm);
+formatter.spaceAfterOperandSeparator = true;
+
+const instructions = decoder.decodeAll();
+instructions.forEach(instruction => {
+    const disasm = formatter.format(instruction);
+
+    let line = ("0000000" + instruction.ipLo.toString(16)).substr(-8).toUpperCase();
+    line += " ";
+    line += disasm;
+
+    console.log(line);
+});
+
+// Free wasm memory
+instructions.forEach(instruction => instruction.free());
+formatter.free();
+decoder.free();
 ```
