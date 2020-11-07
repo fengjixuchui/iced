@@ -918,7 +918,7 @@ namespace Iced.Intel.DecoderInternal {
 			//instruction.InternalOp3Kind = OpKind.Register;
 			instruction.InternalOp3Register = (int)((ib >> 4) & decoder.reg15Mask) + baseReg;
 			Debug.Assert(instruction.Op4Kind == OpKind.Immediate8);// It's hard coded
-			instruction.InternalImmediate8 = ib & 3;
+			instruction.InternalImmediate8 = ib & 0xF;
 		}
 	}
 
@@ -955,7 +955,7 @@ namespace Iced.Intel.DecoderInternal {
 			//instruction.InternalOp2Kind = OpKind.Register;
 			instruction.InternalOp2Register = (int)((ib >> 4) & decoder.reg15Mask) + baseReg;
 			Debug.Assert(instruction.Op4Kind == OpKind.Immediate8);// It's hard coded
-			instruction.InternalImmediate8 = ib & 3;
+			instruction.InternalImmediate8 = ib & 0xF;
 		}
 	}
 
@@ -1287,7 +1287,7 @@ namespace Iced.Intel.DecoderInternal {
 				decoder.SetInvalidInstruction();
 			else {
 				instruction.InternalOp1Kind = OpKind.Memory;
-				decoder.ReadOpMem_VSIB(ref instruction, vsibIndex, TupleType.None);
+				decoder.ReadOpMem_VSIB(ref instruction, vsibIndex, TupleType.N1);
 				if (decoder.invalidCheckMask != 0) {
 					uint indexNum = ((uint)(instruction.MemoryIndex - Register.XMM0) % (uint)IcedConstants.VMM_count);
 					if ((uint)regNum == indexNum || state.vvvv == indexNum || (uint)regNum == state.vvvv)

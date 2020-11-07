@@ -22,8 +22,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 use super::super::test_utils::from_str_conv::to_vec_u8;
-#[cfg(feature = "op_code_info")]
-use super::super::test_utils::from_str_conv::{code_names, is_ignored_code};
 use super::super::test_utils::*;
 use super::super::*;
 #[cfg(not(feature = "std"))]
@@ -958,12 +956,12 @@ fn with_test_vex() {
 		(64, "C4E3694ACB40", DecoderOptions::NONE, Instruction::with_reg_reg_reg_reg(Code::VEX_Vblendvps_xmm_xmm_xmmm128_xmm, Register::XMM1, Register::XMM2, Register::XMM3, Register::XMM4)),
 		(64, "64C4E3E95C8C7501EFCDAB30", DecoderOptions::NONE, Instruction::with_reg_reg_reg_mem(Code::VEX_Vfmaddsubps_xmm_xmm_xmm_xmmm128, Register::XMM1, Register::XMM2, Register::XMM3, MemoryOperand::new(Register::RBP, Register::RSI, 2, -0x5432_10FF, 8, false, Register::FS))),
 		(64, "64C4E3694A8C7501EFCDAB40", DecoderOptions::NONE, Instruction::with_reg_reg_mem_reg(Code::VEX_Vblendvps_xmm_xmm_xmmm128_xmm, Register::XMM1, Register::XMM2, MemoryOperand::new(Register::RBP, Register::RSI, 2, -0x5432_10FF, 8, false, Register::FS), Register::XMM4)),
-		(64, "C4E36948CB40", DecoderOptions::NONE, Instruction::with_reg_reg_reg_reg_i32(Code::VEX_Vpermil2ps_xmm_xmm_xmmm128_xmm_imm2, Register::XMM1, Register::XMM2, Register::XMM3, Register::XMM4, 0x0)),
-		(64, "C4E36948CB40", DecoderOptions::NONE, Instruction::with_reg_reg_reg_reg_u32(Code::VEX_Vpermil2ps_xmm_xmm_xmmm128_xmm_imm2, Register::XMM1, Register::XMM2, Register::XMM3, Register::XMM4, 0x0)),
-		(64, "64C4E3E9488C7501EFCDAB31", DecoderOptions::NONE, Instruction::with_reg_reg_reg_mem_i32(Code::VEX_Vpermil2ps_xmm_xmm_xmm_xmmm128_imm2, Register::XMM1, Register::XMM2, Register::XMM3, MemoryOperand::new(Register::RBP, Register::RSI, 2, -0x5432_10FF, 8, false, Register::FS), 0x1)),
-		(64, "64C4E3E9488C7501EFCDAB31", DecoderOptions::NONE, Instruction::with_reg_reg_reg_mem_u32(Code::VEX_Vpermil2ps_xmm_xmm_xmm_xmmm128_imm2, Register::XMM1, Register::XMM2, Register::XMM3, MemoryOperand::new(Register::RBP, Register::RSI, 2, -0x5432_10FF, 8, false, Register::FS), 0x1)),
-		(64, "64C4E369488C7501EFCDAB41", DecoderOptions::NONE, Instruction::with_reg_reg_mem_reg_i32(Code::VEX_Vpermil2ps_xmm_xmm_xmmm128_xmm_imm2, Register::XMM1, Register::XMM2, MemoryOperand::new(Register::RBP, Register::RSI, 2, -0x5432_10FF, 8, false, Register::FS), Register::XMM4, 0x1)),
-		(64, "64C4E369488C7501EFCDAB41", DecoderOptions::NONE, Instruction::with_reg_reg_mem_reg_u32(Code::VEX_Vpermil2ps_xmm_xmm_xmmm128_xmm_imm2, Register::XMM1, Register::XMM2, MemoryOperand::new(Register::RBP, Register::RSI, 2, -0x5432_10FF, 8, false, Register::FS), Register::XMM4, 0x1)),
+		(64, "C4E36948CB40", DecoderOptions::NONE, Instruction::with_reg_reg_reg_reg_i32(Code::VEX_Vpermil2ps_xmm_xmm_xmmm128_xmm_imm4, Register::XMM1, Register::XMM2, Register::XMM3, Register::XMM4, 0x0)),
+		(64, "C4E36948CB40", DecoderOptions::NONE, Instruction::with_reg_reg_reg_reg_u32(Code::VEX_Vpermil2ps_xmm_xmm_xmmm128_xmm_imm4, Register::XMM1, Register::XMM2, Register::XMM3, Register::XMM4, 0x0)),
+		(64, "64C4E3E9488C7501EFCDAB31", DecoderOptions::NONE, Instruction::with_reg_reg_reg_mem_i32(Code::VEX_Vpermil2ps_xmm_xmm_xmm_xmmm128_imm4, Register::XMM1, Register::XMM2, Register::XMM3, MemoryOperand::new(Register::RBP, Register::RSI, 2, -0x5432_10FF, 8, false, Register::FS), 0x1)),
+		(64, "64C4E3E9488C7501EFCDAB31", DecoderOptions::NONE, Instruction::with_reg_reg_reg_mem_u32(Code::VEX_Vpermil2ps_xmm_xmm_xmm_xmmm128_imm4, Register::XMM1, Register::XMM2, Register::XMM3, MemoryOperand::new(Register::RBP, Register::RSI, 2, -0x5432_10FF, 8, false, Register::FS), 0x1)),
+		(64, "64C4E369488C7501EFCDAB41", DecoderOptions::NONE, Instruction::with_reg_reg_mem_reg_i32(Code::VEX_Vpermil2ps_xmm_xmm_xmmm128_xmm_imm4, Register::XMM1, Register::XMM2, MemoryOperand::new(Register::RBP, Register::RSI, 2, -0x5432_10FF, 8, false, Register::FS), Register::XMM4, 0x1)),
+		(64, "64C4E369488C7501EFCDAB41", DecoderOptions::NONE, Instruction::with_reg_reg_mem_reg_u32(Code::VEX_Vpermil2ps_xmm_xmm_xmmm128_xmm_imm4, Register::XMM1, Register::XMM2, MemoryOperand::new(Register::RBP, Register::RSI, 2, -0x5432_10FF, 8, false, Register::FS), Register::XMM4, 0x1)),
 		(32, "6467C5F9F7D3", DecoderOptions::NONE, Instruction::with_vmaskmovdqu(16, Register::XMM2, Register::XMM3, Register::FS)),
 		(64, "6467C5F9F7D3", DecoderOptions::NONE, Instruction::with_vmaskmovdqu(32, Register::XMM2, Register::XMM3, Register::FS)),
 		(64, "64C5F9F7D3", DecoderOptions::NONE, Instruction::with_vmaskmovdqu(64, Register::XMM2, Register::XMM3, Register::FS)),
@@ -1339,30 +1337,6 @@ fn create_panics_if_invalid_bitness_core(tests: Vec<fn(u32) -> Instruction>) {
 	for f in tests {
 		let result = panic::catch_unwind(|| f(128));
 		assert!(result.is_err());
-	}
-}
-
-#[test]
-#[cfg(feature = "op_code_info")]
-#[cfg_attr(feature = "cargo-clippy", allow(clippy::needless_range_loop))]
-fn verify_encoding_is_part_of_code_name() {
-	let code_names = code_names();
-	for i in 0..IcedConstants::NUMBER_OF_CODE_VALUES {
-		let code_name = code_names[i];
-		if is_ignored_code(code_name) {
-			continue;
-		}
-		let code: Code = unsafe { mem::transmute(i as u16) };
-		let prefix = match code.op_code().encoding() {
-			EncodingKind::Legacy => "",
-			EncodingKind::VEX => "VEX_",
-			EncodingKind::EVEX => "EVEX_",
-			EncodingKind::XOP => "XOP_",
-			EncodingKind::D3NOW => "D3NOW_",
-		};
-		if !prefix.is_empty() {
-			assert!(code_name.starts_with(prefix));
-		}
 	}
 }
 

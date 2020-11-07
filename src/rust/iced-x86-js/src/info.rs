@@ -58,9 +58,10 @@ pub struct UsedMemory(iced_x86_rust::UsedMemory);
 
 #[wasm_bindgen]
 impl UsedMemory {
-	/// Effective segment register (a [`Register`] enum value)
+	/// Effective segment register (a [`Register`] enum value) or [`Register.None`] if the segment register is ignored
 	///
 	/// [`Register`]: struct.Register.html
+	/// [`Register.None`]: enum.Register.html#variant.None
 	#[wasm_bindgen(getter)]
 	pub fn segment(&self) -> Register {
 		iced_to_register(self.0.segment())
@@ -169,14 +170,7 @@ impl InstructionInfo {
 		self.0.used_memory().iter().map(|&m| JsValue::from(UsedMemory(m))).collect()
 	}
 
-	/// `true` if the instruction isn't available in real mode or virtual 8086 mode
-	#[wasm_bindgen(getter)]
-	#[wasm_bindgen(js_name = "isProtectedMode")]
-	pub fn is_protected_mode(&self) -> bool {
-		self.0.is_protected_mode()
-	}
-
-	/// `true` if this is a privileged instruction
+	/// `true` if it's a privileged instruction (all CPL=0 instructions (except `VMCALL`) and IOPL instructions `IN`, `INS`, `OUT`, `OUTS`, `CLI`, `STI`)
 	#[wasm_bindgen(getter)]
 	#[wasm_bindgen(js_name = "isPrivileged")]
 	pub fn is_privileged(&self) -> bool {
@@ -203,7 +197,7 @@ impl InstructionInfo {
 		self.0.is_save_restore_instruction()
 	}
 
-	/// Instruction encoding (an [`EncodingKind`] enum value), eg. legacy, VEX, EVEX, ...
+	/// Instruction encoding (an [`EncodingKind`] enum value), eg. Legacy, 3DNow!, VEX, EVEX, XOP
 	///
 	/// [`EncodingKind`]: enum.EncodingKind.html
 	#[wasm_bindgen(getter)]
@@ -220,7 +214,7 @@ impl InstructionInfo {
 		self.0.cpuid_features().iter().map(|&a| a as i32).collect()
 	}
 
-	/// Flow control info (a [`FlowControl`] enum value)
+	/// Control flow info (a [`FlowControl`] enum value)
 	///
 	/// [`FlowControl`]: enum.FlowControl.html
 	#[wasm_bindgen(getter)]

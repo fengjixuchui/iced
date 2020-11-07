@@ -37,6 +37,8 @@ namespace Iced.Intel.FormatterInternal {
 		}
 
 		public static bool ShowSegmentPrefix(Register defaultSegReg, in Instruction instruction, bool showUselessPrefixes) {
+			if (instruction.Code.IgnoresSegment())
+				return showUselessPrefixes;
 			var prefixSeg = instruction.SegmentPrefix;
 			Debug.Assert(prefixSeg != Register.None);
 			if (IsCode64(instruction.CodeSize)) {
@@ -55,7 +57,7 @@ namespace Iced.Intel.FormatterInternal {
 		}
 
 		public static bool ShowRepOrRepePrefix(Code code, bool showUselessPrefixes) {
-			if (IsRepRepeRepneInstruction(code))
+			if (showUselessPrefixes || IsRepRepeRepneInstruction(code))
 				return true;
 
 			switch (code) {
@@ -72,7 +74,7 @@ namespace Iced.Intel.FormatterInternal {
 
 		public static bool ShowRepnePrefix(Code code, bool showUselessPrefixes) {
 			// If it's a 'rep/repne' instruction, always show the prefix
-			if (IsRepRepeRepneInstruction(code))
+			if (showUselessPrefixes || IsRepRepeRepneInstruction(code))
 				return true;
 			return showUselessPrefixes;
 		}

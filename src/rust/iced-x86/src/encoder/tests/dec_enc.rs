@@ -55,10 +55,8 @@ fn verify_invalid_and_valid_lock_prefix() {
 			has_lock = instruction.has_lock_prefix();
 			let op_code = info.code().op_code();
 			can_use_lock = op_code.can_use_lock_prefix() && has_modrm_memory_operand(&instruction);
-
-			match info.code() {
-				Code::Mov_r32_cr | Code::Mov_r64_cr | Code::Mov_cr_r32 | Code::Mov_cr_r64 => continue,
-				_ => {}
+			if op_code.amd_lock_reg_bit() {
+				continue;
 			}
 		}
 
@@ -521,8 +519,8 @@ fn test_lig_instructions_ignore_l() {
 }
 
 fn has_is4_or_is5_operands(op_code: &OpCodeInfo) -> bool {
-	for i in 0..op_code.op_count() {
-		match op_code.op_kind(i) {
+	for &op_kind in op_code.op_kinds() {
+		match op_kind {
 			OpCodeOperandKind::xmm_is4 | OpCodeOperandKind::xmm_is5 | OpCodeOperandKind::ymm_is4 | OpCodeOperandKind::ymm_is5 => return true,
 			_ => {}
 		}
@@ -583,7 +581,7 @@ fn test_evex_k1_z_bits() {
 				&p2_values_k1z
 			}
 		} else if op_code.can_use_op_mask_register() {
-			if op_code.require_non_zero_op_mask_register() {
+			if op_code.require_op_mask_register() {
 				&p2_values_k1_fk
 			} else {
 				&p2_values_k1
@@ -713,7 +711,7 @@ fn get_sae_er_instruction(op_code: &OpCodeInfo) -> Option<Code> {
 
 #[test]
 #[cfg_attr(feature = "cargo-clippy", allow(clippy::needless_range_loop))]
-fn verify_only_full_ddd_and_half_ddd_support_bcst() {
+fn verify_tuple_type_bcst() {
 	let code_names = code_names();
 	for i in 0..IcedConstants::NUMBER_OF_CODE_VALUES {
 		if is_ignored_code(code_names[i]) {
@@ -722,7 +720,7 @@ fn verify_only_full_ddd_and_half_ddd_support_bcst() {
 		let code: Code = unsafe { mem::transmute(i as u16) };
 		let op_code = code.op_code();
 		let expected_bcst = match op_code.tuple_type() {
-			TupleType::Full_128 | TupleType::Full_256 | TupleType::Full_512 | TupleType::Half_128 | TupleType::Half_256 | TupleType::Half_512 => true,
+			TupleType::N8b4 | TupleType::N16b4 | TupleType::N32b4 | TupleType::N64b4 | TupleType::N16b8 | TupleType::N32b8 | TupleType::N64b8 => true,
 			_ => false,
 		};
 		assert_eq!(expected_bcst, op_code.can_broadcast());
@@ -891,8 +889,8 @@ fn get_vvvvv_info(op_code: &OpCodeInfo) -> (bool, bool, u8) {
 		EncodingKind::VEX | EncodingKind::XOP => 0xF,
 		EncodingKind::Legacy | EncodingKind::D3NOW => panic!(),
 	};
-	for i in 0..op_code.op_count() {
-		match op_code.op_kind(i) {
+	for &op_kind in op_code.op_kinds() {
+		match op_kind {
 			OpCodeOperandKind::mem_vsib32x
 			| OpCodeOperandKind::mem_vsib64x
 			| OpCodeOperandKind::mem_vsib32y
@@ -934,8 +932,8 @@ fn verify_gpr_rrxb_bits() {
 		let mut uses_reg = false;
 		let mut other_rm = false;
 		let mut other_reg = false;
-		for i in 0..op_code.op_count() {
-			match op_code.op_kind(i) {
+		for &op_kind in op_code.op_kinds() {
+			match op_kind {
 				OpCodeOperandKind::r32_or_mem
 				| OpCodeOperandKind::r64_or_mem
 				| OpCodeOperandKind::r32_or_mem_mpx
@@ -1125,8 +1123,8 @@ fn verify_k_reg_rrxb_bits() {
 		let mut uses_reg = false;
 		let mut other_rm = false;
 		let mut other_reg = false;
-		for i in 0..op_code.op_count() {
-			match op_code.op_kind(i) {
+		for &op_kind in op_code.op_kinds() {
+			match op_kind {
 				OpCodeOperandKind::mem => maybe_uses_rm = true,
 				OpCodeOperandKind::k_or_mem | OpCodeOperandKind::k_rm => uses_rm = true,
 				OpCodeOperandKind::k_reg | OpCodeOperandKind::kp1_reg => uses_reg = true,
@@ -1318,40 +1316,11 @@ fn verify_k_reg_rrxb_bits() {
 #[test]
 #[allow(unused_mut)]
 fn verify_vsib_with_invalid_index_register_evex() {
-	let mut code_values: HashSet<Code> = HashSet::new();
-	#[cfg(not(feature = "no_evex"))]
-	{
-		let _ = code_values.insert(Code::EVEX_Vpgatherdd_xmm_k1_vm32x);
-		let _ = code_values.insert(Code::EVEX_Vpgatherdd_ymm_k1_vm32y);
-		let _ = code_values.insert(Code::EVEX_Vpgatherdd_zmm_k1_vm32z);
-		let _ = code_values.insert(Code::EVEX_Vpgatherdq_xmm_k1_vm32x);
-		let _ = code_values.insert(Code::EVEX_Vpgatherdq_ymm_k1_vm32x);
-		let _ = code_values.insert(Code::EVEX_Vpgatherdq_zmm_k1_vm32y);
-		let _ = code_values.insert(Code::EVEX_Vpgatherqd_xmm_k1_vm64x);
-		let _ = code_values.insert(Code::EVEX_Vpgatherqd_xmm_k1_vm64y);
-		let _ = code_values.insert(Code::EVEX_Vpgatherqd_ymm_k1_vm64z);
-		let _ = code_values.insert(Code::EVEX_Vpgatherqq_xmm_k1_vm64x);
-		let _ = code_values.insert(Code::EVEX_Vpgatherqq_ymm_k1_vm64y);
-		let _ = code_values.insert(Code::EVEX_Vpgatherqq_zmm_k1_vm64z);
-		let _ = code_values.insert(Code::EVEX_Vgatherdps_xmm_k1_vm32x);
-		let _ = code_values.insert(Code::EVEX_Vgatherdps_ymm_k1_vm32y);
-		let _ = code_values.insert(Code::EVEX_Vgatherdps_zmm_k1_vm32z);
-		let _ = code_values.insert(Code::EVEX_Vgatherdpd_xmm_k1_vm32x);
-		let _ = code_values.insert(Code::EVEX_Vgatherdpd_ymm_k1_vm32x);
-		let _ = code_values.insert(Code::EVEX_Vgatherdpd_zmm_k1_vm32y);
-		let _ = code_values.insert(Code::EVEX_Vgatherqps_xmm_k1_vm64x);
-		let _ = code_values.insert(Code::EVEX_Vgatherqps_xmm_k1_vm64y);
-		let _ = code_values.insert(Code::EVEX_Vgatherqps_ymm_k1_vm64z);
-		let _ = code_values.insert(Code::EVEX_Vgatherqpd_xmm_k1_vm64x);
-		let _ = code_values.insert(Code::EVEX_Vgatherqpd_ymm_k1_vm64y);
-		let _ = code_values.insert(Code::EVEX_Vgatherqpd_zmm_k1_vm64z);
-	}
 	for info in decoder_tests(false, false) {
 		if (info.decoder_options() & DecoderOptions::NO_INVALID_CHECK) != 0 {
 			continue;
 		}
 		let op_code = info.code().op_code();
-		assert_eq!(can_have_invalid_index_register_evex(op_code), code_values.contains(&info.code()));
 		if !can_have_invalid_index_register_evex(op_code) {
 			continue;
 		}
@@ -1415,52 +1384,17 @@ fn can_have_invalid_index_register_evex(op_code: &OpCodeInfo) -> bool {
 		OpCodeOperandKind::xmm_reg | OpCodeOperandKind::ymm_reg | OpCodeOperandKind::zmm_reg => {}
 		_ => return false,
 	}
-
-	for i in 1..op_code.op_count() {
-		match op_code.op_kind(i) {
-			OpCodeOperandKind::mem_vsib32x
-			| OpCodeOperandKind::mem_vsib32y
-			| OpCodeOperandKind::mem_vsib32z
-			| OpCodeOperandKind::mem_vsib64x
-			| OpCodeOperandKind::mem_vsib64y
-			| OpCodeOperandKind::mem_vsib64z => {
-				return true;
-			}
-			_ => {}
-		}
-	}
-	false
+	op_code.requires_unique_reg_nums()
 }
 
 #[test]
 #[allow(unused_mut)]
 fn verify_vsib_with_invalid_index_mask_dest_register_vex() {
-	let mut code_values: HashSet<Code> = HashSet::new();
-	#[cfg(not(feature = "no_vex"))]
-	{
-		let _ = code_values.insert(Code::VEX_Vpgatherdd_xmm_vm32x_xmm);
-		let _ = code_values.insert(Code::VEX_Vpgatherdd_ymm_vm32y_ymm);
-		let _ = code_values.insert(Code::VEX_Vpgatherdq_xmm_vm32x_xmm);
-		let _ = code_values.insert(Code::VEX_Vpgatherdq_ymm_vm32x_ymm);
-		let _ = code_values.insert(Code::VEX_Vpgatherqd_xmm_vm64x_xmm);
-		let _ = code_values.insert(Code::VEX_Vpgatherqd_xmm_vm64y_xmm);
-		let _ = code_values.insert(Code::VEX_Vpgatherqq_xmm_vm64x_xmm);
-		let _ = code_values.insert(Code::VEX_Vpgatherqq_ymm_vm64y_ymm);
-		let _ = code_values.insert(Code::VEX_Vgatherdps_xmm_vm32x_xmm);
-		let _ = code_values.insert(Code::VEX_Vgatherdps_ymm_vm32y_ymm);
-		let _ = code_values.insert(Code::VEX_Vgatherdpd_xmm_vm32x_xmm);
-		let _ = code_values.insert(Code::VEX_Vgatherdpd_ymm_vm32x_ymm);
-		let _ = code_values.insert(Code::VEX_Vgatherqps_xmm_vm64x_xmm);
-		let _ = code_values.insert(Code::VEX_Vgatherqps_xmm_vm64y_xmm);
-		let _ = code_values.insert(Code::VEX_Vgatherqpd_xmm_vm64x_xmm);
-		let _ = code_values.insert(Code::VEX_Vgatherqpd_ymm_vm64y_ymm);
-	}
 	for info in decoder_tests(false, false) {
 		if (info.decoder_options() & DecoderOptions::NO_INVALID_CHECK) != 0 {
 			continue;
 		}
 		let op_code = info.code().op_code();
-		assert_eq!(can_have_invalid_index_mask_dest_register_vex(op_code), code_values.contains(&info.code()));
 		if !can_have_invalid_index_mask_dest_register_vex(op_code) {
 			continue;
 		}
@@ -1565,31 +1499,13 @@ fn can_have_invalid_index_mask_dest_register_vex(op_code: &OpCodeInfo) -> bool {
 	if op_code.encoding() != EncodingKind::VEX && op_code.encoding() != EncodingKind::XOP {
 		return false;
 	}
-	if op_code.op_count() != 3 {
-		return false;
-	}
 
 	match op_code.op0_kind() {
 		OpCodeOperandKind::xmm_reg | OpCodeOperandKind::ymm_reg | OpCodeOperandKind::zmm_reg => {}
 		_ => return false,
 	}
 
-	match op_code.op2_kind() {
-		OpCodeOperandKind::xmm_vvvv | OpCodeOperandKind::ymm_vvvv | OpCodeOperandKind::zmm_vvvv => {}
-		_ => return false,
-	}
-
-	match op_code.op1_kind() {
-		OpCodeOperandKind::mem_vsib32x
-		| OpCodeOperandKind::mem_vsib32y
-		| OpCodeOperandKind::mem_vsib32z
-		| OpCodeOperandKind::mem_vsib64x
-		| OpCodeOperandKind::mem_vsib64y
-		| OpCodeOperandKind::mem_vsib64z => {}
-		_ => return false,
-	}
-
-	true
+	op_code.requires_unique_reg_nums()
 }
 
 fn is_vsib(op_code: &OpCodeInfo) -> bool {
@@ -1597,8 +1513,8 @@ fn is_vsib(op_code: &OpCodeInfo) -> bool {
 }
 
 fn get_vsib(op_code: &OpCodeInfo) -> Option<(bool, bool)> {
-	for i in 0..op_code.op_count() {
-		match op_code.op_kind(i) {
+	for &op_kind in op_code.op_kinds() {
+		match op_kind {
 			OpCodeOperandKind::mem_vsib32x | OpCodeOperandKind::mem_vsib32y | OpCodeOperandKind::mem_vsib32z => return Some((true, false)),
 			OpCodeOperandKind::mem_vsib64x | OpCodeOperandKind::mem_vsib64y | OpCodeOperandKind::mem_vsib64z => return Some((false, true)),
 			_ => {}
@@ -2149,7 +2065,7 @@ fn verify_that_test_cases_test_enough_bits() {
 				if !tested.op_mask {
 					get_vec(bitness, &mut opmask_16, &mut opmask_32, &mut opmask_64).push(code);
 				}
-				if !tested.no_op_mask && !op_code.require_non_zero_op_mask_register() {
+				if !tested.no_op_mask && !op_code.require_op_mask_register() {
 					get_vec(bitness, &mut noopmask_16, &mut noopmask_32, &mut noopmask_64).push(code);
 				}
 			}
@@ -2463,8 +2379,8 @@ fn verify_that_test_cases_test_enough_bits() {
 	assert_eq!("pfx_no_bnd_64:", format!("pfx_no_bnd_64:{}", pfx_no_bnd_64.iter().map(|&a| format!("{:?}", a)).collect::<Vec<String>>().join(",")));
 
 	fn can_use_modrm_rm_reg(op_code: &OpCodeInfo) -> bool {
-		for i in 0..op_code.op_count() {
-			match op_code.op_kind(i) {
+		for &op_kind in op_code.op_kinds() {
+			match op_kind {
 				OpCodeOperandKind::r8_or_mem
 				| OpCodeOperandKind::r16_or_mem
 				| OpCodeOperandKind::r32_or_mem
@@ -2493,8 +2409,8 @@ fn verify_that_test_cases_test_enough_bits() {
 	}
 
 	fn can_use_modrm_rm_mem(op_code: &OpCodeInfo) -> bool {
-		for i in 0..op_code.op_count() {
-			match op_code.op_kind(i) {
+		for &op_kind in op_code.op_kinds() {
+			match op_kind {
 				OpCodeOperandKind::mem
 				| OpCodeOperandKind::sibmem
 				| OpCodeOperandKind::mem_mpx
@@ -2533,8 +2449,8 @@ fn verify_that_test_cases_test_enough_bits() {
 			_ => {}
 		}
 
-		for i in 0..op_code.op_count() {
-			match op_code.op_kind(i) {
+		for &op_kind in op_code.op_kinds() {
+			match op_kind {
 				OpCodeOperandKind::mem
 				| OpCodeOperandKind::sibmem
 				| OpCodeOperandKind::mem_mpx
@@ -2552,8 +2468,8 @@ fn verify_that_test_cases_test_enough_bits() {
 				_ => {}
 			}
 		}
-		for i in 0..op_code.op_count() {
-			match op_code.op_kind(i) {
+		for &op_kind in op_code.op_kinds() {
+			match op_kind {
 				OpCodeOperandKind::tmm_rm => return false,
 				OpCodeOperandKind::k_rm
 				| OpCodeOperandKind::mm_rm
@@ -2592,8 +2508,8 @@ fn verify_that_test_cases_test_enough_bits() {
 	}
 
 	fn can_use_x(op_code: &OpCodeInfo) -> bool {
-		for i in 0..op_code.op_count() {
-			match op_code.op_kind(i) {
+		for &op_kind in op_code.op_kinds() {
+			match op_kind {
 				OpCodeOperandKind::k_rm
 				| OpCodeOperandKind::mm_rm
 				| OpCodeOperandKind::r16_rm
@@ -2635,8 +2551,8 @@ fn verify_that_test_cases_test_enough_bits() {
 	}
 
 	fn can_use_r(op_code: &OpCodeInfo) -> bool {
-		for i in 0..op_code.op_count() {
-			match op_code.op_kind(i) {
+		for &op_kind in op_code.op_kinds() {
+			match op_kind {
 				OpCodeOperandKind::k_reg
 				| OpCodeOperandKind::kp1_reg
 				| OpCodeOperandKind::tr_reg
@@ -2660,8 +2576,8 @@ fn verify_that_test_cases_test_enough_bits() {
 	}
 
 	fn can_use_r2(op_code: &OpCodeInfo) -> bool {
-		for i in 0..op_code.op_count() {
-			match op_code.op_kind(i) {
+		for &op_kind in op_code.op_kinds() {
+			match op_kind {
 				OpCodeOperandKind::k_reg
 				| OpCodeOperandKind::kp1_reg
 				| OpCodeOperandKind::tr_reg
@@ -2683,8 +2599,8 @@ fn verify_that_test_cases_test_enough_bits() {
 	}
 
 	fn can_use_v2(op_code: &OpCodeInfo) -> bool {
-		for i in 0..op_code.op_count() {
-			match op_code.op_kind(i) {
+		for &op_kind in op_code.op_kinds() {
+			match op_kind {
 				OpCodeOperandKind::k_vvvv | OpCodeOperandKind::r32_vvvv | OpCodeOperandKind::r64_vvvv | OpCodeOperandKind::tmm_vvvv => return false,
 				OpCodeOperandKind::xmm_vvvv
 				| OpCodeOperandKind::xmmp3_vvvv
@@ -2707,8 +2623,8 @@ fn verify_that_test_cases_test_enough_bits() {
 	}
 
 	fn has_modrm(op_code: &OpCodeInfo) -> bool {
-		for i in 0..op_code.op_count() {
-			match op_code.op_kind(i) {
+		for &op_kind in op_code.op_kinds() {
+			match op_kind {
 				OpCodeOperandKind::mem
 				| OpCodeOperandKind::sibmem
 				| OpCodeOperandKind::mem_mpx
@@ -2787,7 +2703,7 @@ fn test_invalid_zero_opmask_reg() {
 			continue;
 		}
 		let op_code = info.code().op_code();
-		if !op_code.require_non_zero_op_mask_register() {
+		if !op_code.require_op_mask_register() {
 			continue;
 		}
 
@@ -3010,18 +2926,8 @@ fn verify_regonly_or_regmemonly_mod_bits() {
 			continue;
 		}
 		// There are a few instructions that ignore the mod bits...
-		match info.code() {
-			Code::Mov_r32_cr
-			| Code::Mov_r64_cr
-			| Code::Mov_r32_dr
-			| Code::Mov_r64_dr
-			| Code::Mov_cr_r32
-			| Code::Mov_cr_r64
-			| Code::Mov_dr_r32
-			| Code::Mov_dr_r64
-			| Code::Mov_r32_tr
-			| Code::Mov_tr_r32 => continue,
-			_ => {}
+		if op_code.ignores_mod_bits() {
+			continue;
 		}
 
 		let mut bytes = to_vec_u8(&format!("{}{}", info.hex_bytes(), extra_bytes)).unwrap();
@@ -3089,8 +2995,8 @@ fn verify_regonly_or_regmemonly_mod_bits() {
 	}
 
 	fn is_reg_only_or_reg_mem_only_mod_rm(op_code: &OpCodeInfo) -> bool {
-		for i in 0..op_code.op_count() {
-			match op_code.op_kind(i) {
+		for &op_kind in op_code.op_kinds() {
+			match op_kind {
 				OpCodeOperandKind::mem
 				| OpCodeOperandKind::sibmem
 				| OpCodeOperandKind::mem_mpx

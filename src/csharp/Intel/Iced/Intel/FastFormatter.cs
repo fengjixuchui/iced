@@ -25,17 +25,16 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Text;
 using Iced.Intel.FastFormatterInternal;
 using Iced.Intel.FormatterInternal;
 
 namespace Iced.Intel {
 	/// <summary>
-	/// Fast formatter with less formatting options and with masm-like syntax.
+	/// Fast formatter with less formatting options and with a masm-like syntax.
 	/// Use it if formatting speed is more important than being able to re-assemble formatted instructions.
 	/// <br/>
 	/// <br/>
-	/// This formatter is 1.8-2.0x faster than the other formatters (the time includes decoding + formatting).
+	/// This formatter is ~2.3x faster than the other formatters (the time includes decoding + formatting).
 	/// </summary>
 	public sealed class FastFormatter {
 		readonly FastFormatterOptions options;
@@ -89,15 +88,15 @@ namespace Iced.Intel {
 		/// </summary>
 		/// <param name="instruction">Instruction</param>
 		/// <param name="output">Output</param>
-		public void Format(in Instruction instruction, StringBuilder output) {
+		public void Format(in Instruction instruction, FastStringOutput output) {
 			if (output is null)
 				ThrowHelper.ThrowArgumentNullException_output();
 
 			var code = instruction.Code;
 			var mnemonic = codeMnemonics[(int)code];
 			var flags = codeFlags[(int)code];
-			var pseudoOpsNum = (uint)flags >> (int)FastFmtFlags.PseudoOpsKindShift;
 			var opCount = instruction.OpCount;
+			var pseudoOpsNum = (uint)flags >> (int)FastFmtFlags.PseudoOpsKindShift;
 			if (pseudoOpsNum != 0 && options.UsePseudoOps && instruction.GetOpKind(opCount - 1) == OpKind.Immediate8) {
 				int index = instruction.Immediate8;
 				var pseudoOpKind = (PseudoOpsKind)(pseudoOpsNum - 1);
@@ -120,6 +119,7 @@ namespace Iced.Intel {
 			}
 
 			var prefixSeg = instruction.SegmentPrefix;
+			Static.Assert(Register.None == 0 ? 0 : -1);
 			if (((uint)prefixSeg | instruction.HasAnyOf_Xacquire_Xrelease_Lock_Rep_Repne_Prefix) != 0) {
 				bool hasNoTrackPrefix = prefixSeg == Register.DS && FormatterUtils.IsNotrackPrefixBranch(code);
 				if (!hasNoTrackPrefix && prefixSeg != Register.None && ShowSegmentPrefix(instruction, opCount)) {
@@ -128,20 +128,20 @@ namespace Iced.Intel {
 				}
 
 				if (instruction.HasXacquirePrefix)
-					output.Append("xacquire ");
+					output.AppendNotNull("xacquire ");
 				if (instruction.HasXreleasePrefix)
-					output.Append("xrelease ");
+					output.AppendNotNull("xrelease ");
 				if (instruction.HasLockPrefix)
-					output.Append("lock ");
+					output.AppendNotNull("lock ");
 
 				if (hasNoTrackPrefix)
-					output.Append("notrack ");
+					output.AppendNotNull("notrack ");
 
-				if (instruction.HasRepePrefix && FormatterUtils.ShowRepOrRepePrefix(code, ShowUselessPrefixes)) {
+				if (instruction.HasRepePrefix && (ShowUselessPrefixes || FormatterUtils.ShowRepOrRepePrefix(code, ShowUselessPrefixes))) {
 					if (FormatterUtils.IsRepeOrRepneInstruction(code))
-						output.Append("repe ");
+						output.AppendNotNull("repe ");
 					else
-						output.Append("rep ");
+						output.AppendNotNull("rep ");
 				}
 				if (instruction.HasRepnePrefix) {
 					if ((Code.Retnw_imm16 <= code && code <= Code.Retnq) ||
@@ -149,18 +149,18 @@ namespace Iced.Intel {
 						(Code.Call_rm16 <= code && code <= Code.Call_rm64) ||
 						(Code.Jmp_rm16 <= code && code <= Code.Jmp_rm64) ||
 						code.IsJccShortOrNear()) {
-						output.Append("bnd ");
+						output.AppendNotNull("bnd ");
 					}
-					else if (FormatterUtils.ShowRepnePrefix(code, ShowUselessPrefixes))
-						output.Append("repne ");
+					else if (ShowUselessPrefixes || FormatterUtils.ShowRepnePrefix(code, ShowUselessPrefixes))
+						output.AppendNotNull("repne ");
 				}
 			}
 
-			output.Append(mnemonic);
+			output.AppendNotNull(mnemonic);
 
 			bool isDeclareData;
 			OpKind declareDataOpKind;
-			if ((uint)code - 1 <= (uint)Code.DeclareQword - 1) {
+			if ((uint)code - (uint)Code.DeclareByte <= (uint)Code.DeclareQword - (uint)Code.DeclareByte) {
 				opCount = instruction.DeclareDataCount;
 				isDeclareData = true;
 				switch (code) {
@@ -190,7 +190,7 @@ namespace Iced.Intel {
 				for (int operand = 0; operand < opCount; operand++) {
 					if (operand > 0) {
 						if (options.SpaceAfterOperandSeparator)
-							output.Append(", ");
+							output.AppendNotNull(", ");
 						else
 							output.Append(',');
 					}
@@ -270,7 +270,7 @@ namespace Iced.Intel {
 						}
 						if (!((symbolResolver = this.symbolResolver) is null) && symbolResolver.TryGetSymbol(instruction, operand, operand, imm8, 1, out symbol)) {
 							if ((symbol.Flags & SymbolFlags.Relative) == 0)
-								output.Append("offset ");
+								output.AppendNotNull("offset ");
 							WriteSymbol(output, imm8, symbol);
 						}
 						else
@@ -289,7 +289,7 @@ namespace Iced.Intel {
 						}
 						if (!((symbolResolver = this.symbolResolver) is null) && symbolResolver.TryGetSymbol(instruction, operand, operand, imm16, 2, out symbol)) {
 							if ((symbol.Flags & SymbolFlags.Relative) == 0)
-								output.Append("offset ");
+								output.AppendNotNull("offset ");
 							WriteSymbol(output, imm16, symbol);
 						}
 						else
@@ -308,7 +308,7 @@ namespace Iced.Intel {
 						}
 						if (!((symbolResolver = this.symbolResolver) is null) && symbolResolver.TryGetSymbol(instruction, operand, operand, imm32, 4, out symbol)) {
 							if ((symbol.Flags & SymbolFlags.Relative) == 0)
-								output.Append("offset ");
+								output.AppendNotNull("offset ");
 							WriteSymbol(output, imm32, symbol);
 						}
 						else
@@ -330,7 +330,7 @@ namespace Iced.Intel {
 						}
 						if (!((symbolResolver = this.symbolResolver) is null) && symbolResolver.TryGetSymbol(instruction, operand, operand, imm64, 8, out symbol)) {
 							if ((symbol.Flags & SymbolFlags.Relative) == 0)
-								output.Append("offset ");
+								output.AppendNotNull("offset ");
 							WriteSymbol(output, imm64, symbol);
 						}
 						else
@@ -338,43 +338,43 @@ namespace Iced.Intel {
 						break;
 
 					case OpKind.MemorySegSI:
-						FormatMemory(output, instruction, operand, instruction.MemorySize, instruction.SegmentPrefix, instruction.MemorySegment, Register.SI, Register.None, 0, 0, 0, 2);
+						FormatMemory(output, instruction, operand, instruction.MemorySegment, Register.SI, Register.None, 0, 0, 0, 2);
 						break;
 
 					case OpKind.MemorySegESI:
-						FormatMemory(output, instruction, operand, instruction.MemorySize, instruction.SegmentPrefix, instruction.MemorySegment, Register.ESI, Register.None, 0, 0, 0, 4);
+						FormatMemory(output, instruction, operand, instruction.MemorySegment, Register.ESI, Register.None, 0, 0, 0, 4);
 						break;
 
 					case OpKind.MemorySegRSI:
-						FormatMemory(output, instruction, operand, instruction.MemorySize, instruction.SegmentPrefix, instruction.MemorySegment, Register.RSI, Register.None, 0, 0, 0, 8);
+						FormatMemory(output, instruction, operand, instruction.MemorySegment, Register.RSI, Register.None, 0, 0, 0, 8);
 						break;
 
 					case OpKind.MemorySegDI:
-						FormatMemory(output, instruction, operand, instruction.MemorySize, instruction.SegmentPrefix, instruction.MemorySegment, Register.DI, Register.None, 0, 0, 0, 2);
+						FormatMemory(output, instruction, operand, instruction.MemorySegment, Register.DI, Register.None, 0, 0, 0, 2);
 						break;
 
 					case OpKind.MemorySegEDI:
-						FormatMemory(output, instruction, operand, instruction.MemorySize, instruction.SegmentPrefix, instruction.MemorySegment, Register.EDI, Register.None, 0, 0, 0, 4);
+						FormatMemory(output, instruction, operand, instruction.MemorySegment, Register.EDI, Register.None, 0, 0, 0, 4);
 						break;
 
 					case OpKind.MemorySegRDI:
-						FormatMemory(output, instruction, operand, instruction.MemorySize, instruction.SegmentPrefix, instruction.MemorySegment, Register.RDI, Register.None, 0, 0, 0, 8);
+						FormatMemory(output, instruction, operand, instruction.MemorySegment, Register.RDI, Register.None, 0, 0, 0, 8);
 						break;
 
 					case OpKind.MemoryESDI:
-						FormatMemory(output, instruction, operand, instruction.MemorySize, instruction.SegmentPrefix, Register.ES, Register.DI, Register.None, 0, 0, 0, 2);
+						FormatMemory(output, instruction, operand, Register.ES, Register.DI, Register.None, 0, 0, 0, 2);
 						break;
 
 					case OpKind.MemoryESEDI:
-						FormatMemory(output, instruction, operand, instruction.MemorySize, instruction.SegmentPrefix, Register.ES, Register.EDI, Register.None, 0, 0, 0, 4);
+						FormatMemory(output, instruction, operand, Register.ES, Register.EDI, Register.None, 0, 0, 0, 4);
 						break;
 
 					case OpKind.MemoryESRDI:
-						FormatMemory(output, instruction, operand, instruction.MemorySize, instruction.SegmentPrefix, Register.ES, Register.RDI, Register.None, 0, 0, 0, 8);
+						FormatMemory(output, instruction, operand, Register.ES, Register.RDI, Register.None, 0, 0, 0, 8);
 						break;
 
 					case OpKind.Memory64:
-						FormatMemory(output, instruction, operand, instruction.MemorySize, instruction.SegmentPrefix, instruction.MemorySegment, Register.None, Register.None, 0, 8, (long)instruction.MemoryAddress64, 8);
+						FormatMemory(output, instruction, operand, instruction.MemorySegment, Register.None, Register.None, 0, 8, (long)instruction.MemoryAddress64, 8);
 						break;
 
 					case OpKind.Memory:
@@ -389,19 +389,21 @@ namespace Iced.Intel {
 							displ = instruction.MemoryDisplacement;
 						if (code == Code.Xlat_m8)
 							indexReg = Register.None;
-						FormatMemory(output, instruction, operand, instruction.MemorySize, instruction.SegmentPrefix, instruction.MemorySegment, baseReg, indexReg, instruction.InternalMemoryIndexScale, displSize, displ, addrSize);
+						FormatMemory(output, instruction, operand, instruction.MemorySegment, baseReg, indexReg, instruction.InternalMemoryIndexScale, displSize, displ, addrSize);
 						break;
 
 					default:
 						throw new InvalidOperationException();
 					}
 
-					if (operand == 0 && instruction.HasOpMask) {
-						output.Append('{');
-						FormatRegister(output, instruction.OpMask);
-						output.Append('}');
+					if (operand == 0 && instruction.HasOpMask_or_ZeroingMasking) {
+						if (instruction.HasOpMask) {
+							output.Append('{');
+							FormatRegister(output, instruction.OpMask);
+							output.Append('}');
+						}
 						if (instruction.ZeroingMasking)
-							output.Append("{z}");
+							output.AppendNotNull("{z}");
 					}
 				}
 				if (instruction.HasRoundingControlOrSae) {
@@ -412,11 +414,11 @@ namespace Iced.Intel {
 						Static.Assert((int)RoundingControl.RoundDown == 2 ? 0 : -1);
 						Static.Assert((int)RoundingControl.RoundUp == 3 ? 0 : -1);
 						Static.Assert((int)RoundingControl.RoundTowardZero == 4 ? 0 : -1);
-						output.Append(rcStrings[(int)rc - 1]);
+						output.AppendNotNull(rcStrings[(int)rc - 1]);
 					}
 					else {
 						Debug.Assert(instruction.SuppressAllExceptions);
-						output.Append("{sae}");
+						output.AppendNotNull("{sae}");
 					}
 				}
 			}
@@ -465,32 +467,28 @@ namespace Iced.Intel {
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		void FormatRegister(StringBuilder output, Register register) =>
-			output.Append(allRegisters[(int)register].Lower);
+		void FormatRegister(FastStringOutput output, Register register) =>
+			output.AppendNotNull(allRegisters[(int)register].Lower);
 
-		void FormatNumber(StringBuilder output, ulong value) {
+		void FormatNumber(FastStringOutput output, ulong value) {
 			bool useHexPrefix = options.UseHexPrefix;
 			if (useHexPrefix)
-				output.Append("0x");
+				output.AppendNotNull("0x");
 
-			int digits = 1;
+			int digits = 0;
 			for (ulong tmp = value; ;) {
+				digits++;
 				tmp >>= 4;
 				if (tmp == 0)
 					break;
-				digits++;
 			}
 
-			int hexHigh = options.UppercaseHex ? 'A' - 10 : 'a' - 10;
-			if (!useHexPrefix && digits < 17 && (int)((value >> ((digits - 1) << 2)) & 0xF) > 9)
-				digits++;// Another 0
-			for (int i = 0; i < digits; i++) {
-				int index = digits - i - 1;
-				int digit = index >= 16 ? 0 : (int)((value >> (index << 2)) & 0xF);
-				if (digit > 9)
-					output.Append((char)(digit + hexHigh));
-				else
-					output.Append((char)(digit + '0'));
+			if (!useHexPrefix && (int)((value >> ((digits - 1) << 2)) & 0xF) > 9)
+				output.Append('0');
+			var hexDigits = options.UppercaseHex ? "0123456789ABCDEF" : "0123456789abcdef";
+			for (int i = 0, indexShift = (digits - 1) << 2; i < digits; i++, indexShift -= 4) {
+				int digit = (int)(value >> indexShift) & 0xF;
+				output.Append(hexDigits[digit]);
 			}
 
 			if (!useHexPrefix)
@@ -498,9 +496,9 @@ namespace Iced.Intel {
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		void WriteSymbol(StringBuilder output, ulong address, SymbolResult symbol) => WriteSymbol(output, address, symbol, true);
+		void WriteSymbol(FastStringOutput output, ulong address, in SymbolResult symbol) => WriteSymbol(output, address, symbol, true);
 
-		void WriteSymbol(StringBuilder output, ulong address, SymbolResult symbol, bool writeMinusIfSigned) {
+		void WriteSymbol(FastStringOutput output, ulong address, in SymbolResult symbol, bool writeMinusIfSigned) {
 			long displ = (long)(address - symbol.Address);
 			if ((symbol.Flags & SymbolFlags.Signed) != 0) {
 				if (writeMinusIfSigned)
@@ -511,11 +509,13 @@ namespace Iced.Intel {
 			var text = symbol.Text;
 			var array = text.TextArray;
 			if (!(array is null)) {
-				foreach (var part in array)
-					output.Append(part.Text);
+				foreach (var part in array) {
+					if (part.Text is string s)
+						output.AppendNotNull(s);
+				}
 			}
 			else if (text.Text.Text is string s)
-				output.Append(s);
+				output.AppendNotNull(s);
 
 			if (displ != 0) {
 				if (displ < 0) {
@@ -527,13 +527,13 @@ namespace Iced.Intel {
 				FormatNumber(output, (ulong)displ);
 			}
 			if (options.ShowSymbolAddress) {
-				output.Append(" (");
+				output.AppendNotNull(" (");
 				FormatNumber(output, address);
 				output.Append(')');
 			}
 		}
 
-		void FormatMemory(StringBuilder output, in Instruction instruction, int operand, MemorySize memSize, Register segOverride, Register segReg, Register baseReg, Register indexReg, int scale, int displSize, long displ, int addrSize) {
+		void FormatMemory(FastStringOutput output, in Instruction instruction, int operand, Register segReg, Register baseReg, Register indexReg, int scale, int displSize, long displ, int addrSize) {
 			Debug.Assert((uint)scale < (uint)scaleNumbers.Length);
 			Debug.Assert(InstructionUtils.GetAddressSizeInBytes(baseReg, indexReg, displSize, instruction.CodeSize) == addrSize);
 
@@ -579,17 +579,19 @@ namespace Iced.Intel {
 				useScale = false;
 
 			var flags = codeFlags[(int)instruction.Code];
-			bool showMemSize = (flags & FastFmtFlags.ForceMemSize) != 0 || memSize.IsBroadcast() || options.AlwaysShowMemorySize;
+			bool showMemSize = (flags & FastFmtFlags.ForceMemSize) != 0 || instruction.IsBroadcast || options.AlwaysShowMemorySize;
 			if (showMemSize) {
-				Debug.Assert((uint)memSize < (uint)allMemorySizes.Length);
-				var keywords = allMemorySizes[(int)memSize];
-				output.Append(keywords);
+				Debug.Assert((uint)instruction.MemorySize < (uint)allMemorySizes.Length);
+				var keywords = allMemorySizes[(int)instruction.MemorySize];
+				output.AppendNotNull(keywords);
 			}
 
 			var codeSize = instruction.CodeSize;
+			var segOverride = instruction.SegmentPrefix;
 			bool noTrackPrefix = segOverride == Register.DS && FormatterUtils.IsNotrackPrefixBranch(instruction.Code) &&
 				!((codeSize == CodeSize.Code16 || codeSize == CodeSize.Code32) && (baseReg == Register.BP || baseReg == Register.EBP || baseReg == Register.ESP));
-			if (options.AlwaysShowSegmentRegister || (segOverride != Register.None && !noTrackPrefix && FormatterUtils.ShowSegmentPrefix(Register.None, instruction, ShowUselessPrefixes))) {
+			if (options.AlwaysShowSegmentRegister || (segOverride != Register.None && !noTrackPrefix &&
+				(ShowUselessPrefixes || FormatterUtils.ShowSegmentPrefix(Register.None, instruction, ShowUselessPrefixes)))) {
 				FormatRegister(output, segReg);
 				output.Append(':');
 			}
@@ -608,7 +610,7 @@ namespace Iced.Intel {
 
 				FormatRegister(output, indexReg);
 				if (useScale)
-					output.Append(scaleNumbers[scale]);
+					output.AppendNotNull(scaleNumbers[scale]);
 			}
 
 			if (useSymbol) {
@@ -625,18 +627,18 @@ namespace Iced.Intel {
 			}
 			else if (!needPlus || (displSize != 0 && displ != 0)) {
 				if (needPlus) {
-					if (addrSize == 4) {
-						if ((int)displ < 0) {
+					if (addrSize == 8) {
+						if (displ < 0) {
+							displ = -displ;
 							output.Append('-');
-							displ = (uint)-(int)displ;
 						}
 						else
 							output.Append('+');
 					}
-					else if (addrSize == 8) {
-						if (displ < 0) {
+					else if (addrSize == 4) {
+						if ((int)displ < 0) {
+							displ = (uint)-(int)displ;
 							output.Append('-');
-							displ = -displ;
 						}
 						else
 							output.Append('+');
@@ -644,8 +646,8 @@ namespace Iced.Intel {
 					else {
 						Debug.Assert(addrSize == 2);
 						if ((short)displ < 0) {
-							output.Append('-');
 							displ = (ushort)-(short)displ;
+							output.Append('-');
 						}
 						else
 							output.Append('+');

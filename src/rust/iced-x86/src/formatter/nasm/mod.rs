@@ -849,7 +849,6 @@ impl NasmFormatter {
 				operand,
 				instruction_operand,
 				op_info.memory_size(),
-				instruction.segment_prefix(),
 				instruction.memory_segment(),
 				Register::SI,
 				Register::None,
@@ -865,7 +864,6 @@ impl NasmFormatter {
 				operand,
 				instruction_operand,
 				op_info.memory_size(),
-				instruction.segment_prefix(),
 				instruction.memory_segment(),
 				Register::ESI,
 				Register::None,
@@ -881,7 +879,6 @@ impl NasmFormatter {
 				operand,
 				instruction_operand,
 				op_info.memory_size(),
-				instruction.segment_prefix(),
 				instruction.memory_segment(),
 				Register::RSI,
 				Register::None,
@@ -897,7 +894,6 @@ impl NasmFormatter {
 				operand,
 				instruction_operand,
 				op_info.memory_size(),
-				instruction.segment_prefix(),
 				instruction.memory_segment(),
 				Register::DI,
 				Register::None,
@@ -913,7 +909,6 @@ impl NasmFormatter {
 				operand,
 				instruction_operand,
 				op_info.memory_size(),
-				instruction.segment_prefix(),
 				instruction.memory_segment(),
 				Register::EDI,
 				Register::None,
@@ -929,7 +924,6 @@ impl NasmFormatter {
 				operand,
 				instruction_operand,
 				op_info.memory_size(),
-				instruction.segment_prefix(),
 				instruction.memory_segment(),
 				Register::RDI,
 				Register::None,
@@ -945,7 +939,6 @@ impl NasmFormatter {
 				operand,
 				instruction_operand,
 				op_info.memory_size(),
-				instruction.segment_prefix(),
 				Register::ES,
 				Register::DI,
 				Register::None,
@@ -961,7 +954,6 @@ impl NasmFormatter {
 				operand,
 				instruction_operand,
 				op_info.memory_size(),
-				instruction.segment_prefix(),
 				Register::ES,
 				Register::EDI,
 				Register::None,
@@ -977,7 +969,6 @@ impl NasmFormatter {
 				operand,
 				instruction_operand,
 				op_info.memory_size(),
-				instruction.segment_prefix(),
 				Register::ES,
 				Register::RDI,
 				Register::None,
@@ -993,7 +984,6 @@ impl NasmFormatter {
 				operand,
 				instruction_operand,
 				op_info.memory_size(),
-				instruction.segment_prefix(),
 				instruction.memory_segment(),
 				Register::None,
 				Register::None,
@@ -1016,7 +1006,6 @@ impl NasmFormatter {
 					operand,
 					instruction_operand,
 					op_info.memory_size(),
-					instruction.segment_prefix(),
 					instruction.memory_segment(),
 					base_reg,
 					index_reg,
@@ -1075,10 +1064,12 @@ impl NasmFormatter {
 			),
 		}
 
-		if operand == 0 && instruction.has_op_mask() {
-			output.write("{", FormatterTextKind::Punctuation);
-			NasmFormatter::format_register_internal(&self.d, output, instruction, operand, instruction_operand, instruction.op_mask() as u32);
-			output.write("}", FormatterTextKind::Punctuation);
+		if operand == 0 && super::super::instruction_internal::internal_has_op_mask_or_zeroing_masking(instruction) {
+			if instruction.has_op_mask() {
+				output.write("{", FormatterTextKind::Punctuation);
+				NasmFormatter::format_register_internal(&self.d, output, instruction, operand, instruction_operand, instruction.op_mask() as u32);
+				output.write("}", FormatterTextKind::Punctuation);
+			}
 			if instruction.zeroing_masking() {
 				NasmFormatter::format_decorator(
 					&self.d.options,
@@ -1105,7 +1096,7 @@ impl NasmFormatter {
 			SignExtendInfo::Sex1to2 | SignExtendInfo::Sex1to4 | SignExtendInfo::Sex1to8 => &d.str_.byte,
 			SignExtendInfo::Sex2 => &d.str_.word,
 			SignExtendInfo::Sex4 => &d.str_.dword,
-			SignExtendInfo::Sex4to8 | SignExtendInfo::Sex4to8Qword => &d.str_.qword,
+			SignExtendInfo::Sex4to8 => &d.str_.qword,
 		};
 
 		NasmFormatter::format_keyword(&d.options, output, keyword);
@@ -1159,8 +1150,8 @@ impl NasmFormatter {
 	#[cfg_attr(feature = "cargo-clippy", allow(clippy::too_many_arguments))]
 	fn format_memory(
 		&mut self, output: &mut FormatterOutput, instruction: &Instruction, operand: u32, instruction_operand: Option<u32>, mem_size: MemorySize,
-		seg_override: Register, seg_reg: Register, mut base_reg: Register, index_reg: Register, scale: u32, mut displ_size: u32, mut displ: i64,
-		addr_size: u32, mut flags: u32,
+		seg_reg: Register, mut base_reg: Register, index_reg: Register, scale: u32, mut displ_size: u32, mut displ: i64, addr_size: u32,
+		mut flags: u32,
 	) {
 		debug_assert!((scale as usize) < SCALE_NUMBERS.len());
 		debug_assert!(get_address_size_in_bytes(base_reg, index_reg, displ_size, instruction.code_size()) == addr_size);
@@ -1213,7 +1204,7 @@ impl NasmFormatter {
 				use_scale = true;
 			}
 		}
-		if addr_size == 2 {
+		if addr_size == 2 || !show_index_scale(instruction, &self.d.options) {
 			use_scale = false;
 		}
 
@@ -1237,6 +1228,7 @@ impl NasmFormatter {
 		}
 
 		let code_size = instruction.code_size();
+		let seg_override = instruction.segment_prefix();
 		let notrack_prefix = seg_override == Register::DS
 			&& is_notrack_prefix_branch(instruction.code())
 			&& !((code_size == CodeSize::Code16 || code_size == CodeSize::Code32)
@@ -1353,25 +1345,12 @@ impl NasmFormatter {
 						output.write(" ", FormatterTextKind::Text);
 					}
 
-					if addr_size == 4 {
-						if !number_options.signed_number {
-							output.write("+", FormatterTextKind::Operator);
-						} else if (displ as i32) < 0 {
-							output.write("-", FormatterTextKind::Operator);
-							displ = (displ as i32).wrapping_neg() as u32 as i64;
-						} else {
-							output.write("+", FormatterTextKind::Operator);
-						}
-						if number_options.displacement_leading_zeroes {
-							debug_assert!(displ_size <= 4);
-							displ_size = 4;
-						}
-					} else if addr_size == 8 {
+					if addr_size == 8 {
 						if !number_options.signed_number {
 							output.write("+", FormatterTextKind::Operator);
 						} else if displ < 0 {
-							output.write("-", FormatterTextKind::Operator);
 							displ = displ.wrapping_neg();
+							output.write("-", FormatterTextKind::Operator);
 						} else {
 							output.write("+", FormatterTextKind::Operator);
 						}
@@ -1379,13 +1358,26 @@ impl NasmFormatter {
 							debug_assert!(displ_size <= 8);
 							displ_size = 8;
 						}
+					} else if addr_size == 4 {
+						if !number_options.signed_number {
+							output.write("+", FormatterTextKind::Operator);
+						} else if (displ as i32) < 0 {
+							displ = (displ as i32).wrapping_neg() as u32 as i64;
+							output.write("-", FormatterTextKind::Operator);
+						} else {
+							output.write("+", FormatterTextKind::Operator);
+						}
+						if number_options.displacement_leading_zeroes {
+							debug_assert!(displ_size <= 4);
+							displ_size = 4;
+						}
 					} else {
 						debug_assert_eq!(2, addr_size);
 						if !number_options.signed_number {
 							output.write("+", FormatterTextKind::Operator);
 						} else if (displ as i16) < 0 {
-							output.write("-", FormatterTextKind::Operator);
 							displ = (displ as i16).wrapping_neg() as u16 as i64;
+							output.write("-", FormatterTextKind::Operator);
 						} else {
 							output.write("+", FormatterTextKind::Operator);
 						}

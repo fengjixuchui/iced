@@ -892,8 +892,6 @@ impl IntelFormatter {
 				instruction,
 				operand,
 				instruction_operand,
-				instruction.memory_size(),
-				instruction.segment_prefix(),
 				instruction.memory_segment(),
 				Register::SI,
 				Register::None,
@@ -908,8 +906,6 @@ impl IntelFormatter {
 				instruction,
 				operand,
 				instruction_operand,
-				instruction.memory_size(),
-				instruction.segment_prefix(),
 				instruction.memory_segment(),
 				Register::ESI,
 				Register::None,
@@ -924,8 +920,6 @@ impl IntelFormatter {
 				instruction,
 				operand,
 				instruction_operand,
-				instruction.memory_size(),
-				instruction.segment_prefix(),
 				instruction.memory_segment(),
 				Register::RSI,
 				Register::None,
@@ -940,8 +934,6 @@ impl IntelFormatter {
 				instruction,
 				operand,
 				instruction_operand,
-				instruction.memory_size(),
-				instruction.segment_prefix(),
 				instruction.memory_segment(),
 				Register::DI,
 				Register::None,
@@ -956,8 +948,6 @@ impl IntelFormatter {
 				instruction,
 				operand,
 				instruction_operand,
-				instruction.memory_size(),
-				instruction.segment_prefix(),
 				instruction.memory_segment(),
 				Register::EDI,
 				Register::None,
@@ -972,8 +962,6 @@ impl IntelFormatter {
 				instruction,
 				operand,
 				instruction_operand,
-				instruction.memory_size(),
-				instruction.segment_prefix(),
 				instruction.memory_segment(),
 				Register::RDI,
 				Register::None,
@@ -988,8 +976,6 @@ impl IntelFormatter {
 				instruction,
 				operand,
 				instruction_operand,
-				instruction.memory_size(),
-				instruction.segment_prefix(),
 				Register::ES,
 				Register::DI,
 				Register::None,
@@ -1004,8 +990,6 @@ impl IntelFormatter {
 				instruction,
 				operand,
 				instruction_operand,
-				instruction.memory_size(),
-				instruction.segment_prefix(),
 				Register::ES,
 				Register::EDI,
 				Register::None,
@@ -1020,8 +1004,6 @@ impl IntelFormatter {
 				instruction,
 				operand,
 				instruction_operand,
-				instruction.memory_size(),
-				instruction.segment_prefix(),
 				Register::ES,
 				Register::RDI,
 				Register::None,
@@ -1036,8 +1018,6 @@ impl IntelFormatter {
 				instruction,
 				operand,
 				instruction_operand,
-				instruction.memory_size(),
-				instruction.segment_prefix(),
 				instruction.memory_segment(),
 				Register::None,
 				Register::None,
@@ -1062,8 +1042,6 @@ impl IntelFormatter {
 					instruction,
 					operand,
 					instruction_operand,
-					instruction.memory_size(),
-					instruction.segment_prefix(),
 					instruction.memory_segment(),
 					base_reg,
 					index_reg,
@@ -1076,10 +1054,12 @@ impl IntelFormatter {
 			}
 		}
 
-		if operand == 0 && instruction.has_op_mask() && (op_info.flags & InstrOpInfoFlags::IGNORE_OP_MASK as u16) == 0 {
-			output.write("{", FormatterTextKind::Punctuation);
-			IntelFormatter::format_register_internal(&self.d, output, instruction, operand, instruction_operand, instruction.op_mask() as u32);
-			output.write("}", FormatterTextKind::Punctuation);
+		if operand == 0 && super::super::instruction_internal::internal_has_op_mask_or_zeroing_masking(instruction) {
+			if instruction.has_op_mask() && (op_info.flags & InstrOpInfoFlags::IGNORE_OP_MASK as u16) == 0 {
+				output.write("{", FormatterTextKind::Punctuation);
+				IntelFormatter::format_register_internal(&self.d, output, instruction, operand, instruction_operand, instruction.op_mask() as u32);
+				output.write("}", FormatterTextKind::Punctuation);
+			}
 			if instruction.zeroing_masking() {
 				IntelFormatter::format_decorator(
 					&self.d.options,
@@ -1176,9 +1156,8 @@ impl IntelFormatter {
 
 	#[cfg_attr(feature = "cargo-clippy", allow(clippy::too_many_arguments))]
 	fn format_memory(
-		&mut self, output: &mut FormatterOutput, instruction: &Instruction, operand: u32, instruction_operand: Option<u32>, mem_size: MemorySize,
-		seg_override: Register, seg_reg: Register, mut base_reg: Register, index_reg: Register, scale: u32, mut displ_size: u32, mut displ: i64,
-		addr_size: u32, flags: u32,
+		&mut self, output: &mut FormatterOutput, instruction: &Instruction, operand: u32, instruction_operand: Option<u32>, seg_reg: Register,
+		mut base_reg: Register, index_reg: Register, scale: u32, mut displ_size: u32, mut displ: i64, addr_size: u32, flags: u32,
 	) {
 		debug_assert!((scale as usize) < SCALE_NUMBERS.len());
 		debug_assert!(get_address_size_in_bytes(base_reg, index_reg, displ_size, instruction.code_size()) == addr_size);
@@ -1225,13 +1204,14 @@ impl IntelFormatter {
 				use_scale = true;
 			}
 		}
-		if addr_size == 2 {
+		if addr_size == 2 || !show_index_scale(instruction, &self.d.options) {
 			use_scale = false;
 		}
 
-		IntelFormatter::format_memory_size(&self.d, output, &symbol, mem_size, flags, operand_options);
+		IntelFormatter::format_memory_size(&self.d, output, &symbol, instruction.memory_size(), flags, operand_options);
 
 		let code_size = instruction.code_size();
+		let seg_override = instruction.segment_prefix();
 		let notrack_prefix = seg_override == Register::DS
 			&& is_notrack_prefix_branch(instruction.code())
 			&& !((code_size == CodeSize::Code16 || code_size == CodeSize::Code32)
@@ -1352,25 +1332,12 @@ impl IntelFormatter {
 						output.write(" ", FormatterTextKind::Text);
 					}
 
-					if addr_size == 4 {
-						if !number_options.signed_number {
-							output.write("+", FormatterTextKind::Operator);
-						} else if (displ as i32) < 0 {
-							output.write("-", FormatterTextKind::Operator);
-							displ = (displ as i32).wrapping_neg() as u32 as i64;
-						} else {
-							output.write("+", FormatterTextKind::Operator);
-						}
-						if number_options.displacement_leading_zeroes {
-							debug_assert!(displ_size <= 4);
-							displ_size = 4;
-						}
-					} else if addr_size == 8 {
+					if addr_size == 8 {
 						if !number_options.signed_number {
 							output.write("+", FormatterTextKind::Operator);
 						} else if displ < 0 {
-							output.write("-", FormatterTextKind::Operator);
 							displ = displ.wrapping_neg();
+							output.write("-", FormatterTextKind::Operator);
 						} else {
 							output.write("+", FormatterTextKind::Operator);
 						}
@@ -1378,13 +1345,26 @@ impl IntelFormatter {
 							debug_assert!(displ_size <= 8);
 							displ_size = 8;
 						}
+					} else if addr_size == 4 {
+						if !number_options.signed_number {
+							output.write("+", FormatterTextKind::Operator);
+						} else if (displ as i32) < 0 {
+							displ = (displ as i32).wrapping_neg() as u32 as i64;
+							output.write("-", FormatterTextKind::Operator);
+						} else {
+							output.write("+", FormatterTextKind::Operator);
+						}
+						if number_options.displacement_leading_zeroes {
+							debug_assert!(displ_size <= 4);
+							displ_size = 4;
+						}
 					} else {
 						debug_assert_eq!(2, addr_size);
 						if !number_options.signed_number {
 							output.write("+", FormatterTextKind::Operator);
 						} else if (displ as i16) < 0 {
-							output.write("-", FormatterTextKind::Operator);
 							displ = (displ as i16).wrapping_neg() as u16 as i64;
+							output.write("-", FormatterTextKind::Operator);
 						} else {
 							output.write("+", FormatterTextKind::Operator);
 						}
@@ -1432,6 +1412,7 @@ impl IntelFormatter {
 		}
 		output.write("]", FormatterTextKind::Punctuation);
 
+		let mem_size = instruction.memory_size();
 		debug_assert!((mem_size as usize) < self.d.all_memory_sizes.len());
 		let bcst_to = &self.d.all_memory_sizes[mem_size as usize].bcst_to;
 		if !bcst_to.is_default() {

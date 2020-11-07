@@ -21,6 +21,9 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+using System;
+using System.Linq;
+
 namespace Generator.Constants.InstructionInfo {
 	[TypeGen(TypeGenOrders.NoDeps)]
 	sealed class InstructionInfoKeysType {
@@ -30,36 +33,7 @@ namespace Generator.Constants.InstructionInfo {
 		}
 
 		static Constant[] GetConstants() =>
-			new Constant[] {
-				new Constant(ConstantKind.String, "IsProtectedMode", "pm"),
-				new Constant(ConstantKind.String, "IsPrivileged", "priv"),
-				new Constant(ConstantKind.String, "IsSaveRestoreInstruction", "saverestore"),
-				new Constant(ConstantKind.String, "IsStackInstruction", "stack"),
-				new Constant(ConstantKind.String, "IsSpecial", "special"),
-				new Constant(ConstantKind.String, "RflagsRead", "fr"),
-				new Constant(ConstantKind.String, "RflagsUndefined", "fu"),
-				new Constant(ConstantKind.String, "RflagsWritten", "fw"),
-				new Constant(ConstantKind.String, "RflagsCleared", "fc"),
-				new Constant(ConstantKind.String, "RflagsSet", "fs"),
-				new Constant(ConstantKind.String, "FlowControl", "flow"),
-				new Constant(ConstantKind.String, "Op0Access", "op0"),
-				new Constant(ConstantKind.String, "Op1Access", "op1"),
-				new Constant(ConstantKind.String, "Op2Access", "op2"),
-				new Constant(ConstantKind.String, "Op3Access", "op3"),
-				new Constant(ConstantKind.String, "Op4Access", "op4"),
-				new Constant(ConstantKind.String, "ReadRegister", "r"),
-				new Constant(ConstantKind.String, "CondReadRegister", "cr"),
-				new Constant(ConstantKind.String, "WriteRegister", "w"),
-				new Constant(ConstantKind.String, "CondWriteRegister", "cw"),
-				new Constant(ConstantKind.String, "ReadWriteRegister", "rw"),
-				new Constant(ConstantKind.String, "ReadCondWriteRegister", "rcw"),
-				new Constant(ConstantKind.String, "ReadMemory", "rm"),
-				new Constant(ConstantKind.String, "CondReadMemory", "crm"),
-				new Constant(ConstantKind.String, "ReadWriteMemory", "rwm"),
-				new Constant(ConstantKind.String, "ReadCondWriteMemory", "rcwm"),
-				new Constant(ConstantKind.String, "WriteMemory", "wm"),
-				new Constant(ConstantKind.String, "CondWriteMemory", "cwm"),
-				new Constant(ConstantKind.String, "DecoderOptions", "decopt"),
-			};
+			typeof(InstructionInfoKeys).GetFields().Where(a => a.IsLiteral).OrderBy(a => a.MetadataToken).
+				Select(a => new Constant(ConstantKind.String, a.Name, a.GetRawConstantValue() ?? throw new InvalidOperationException())).ToArray();
 	}
 }

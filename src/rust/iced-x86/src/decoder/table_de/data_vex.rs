@@ -672,14 +672,24 @@ pub(super) static TBL_DATA: &[u8] = &[
 		0x00,// Invalid
 		0x09,// W
 			0x0E,// VectorLength
-				0x37,// VW_3
-					0x4D,// XMM0
-					0x4D,// XMM0
-					0x80, 0x15,// VEX_Vbroadcastss_xmm_xmmm32
-				0x37,// VW_3
-					0x6D,// YMM0
-					0x4D,// XMM0
-					0x81, 0x15,// VEX_Vbroadcastss_ymm_xmmm32
+				0x07,// RM
+					0x37,// VW_3
+						0x4D,// XMM0
+						0x4D,// XMM0
+						0xC6, 0x21,// VEX_Vbroadcastss_xmm_xmm
+					0x37,// VW_3
+						0x4D,// XMM0
+						0x4D,// XMM0
+						0x80, 0x15,// VEX_Vbroadcastss_xmm_m32
+				0x07,// RM
+					0x37,// VW_3
+						0x6D,// YMM0
+						0x4D,// XMM0
+						0xC7, 0x21,// VEX_Vbroadcastss_ymm_xmm
+					0x37,// VW_3
+						0x6D,// YMM0
+						0x4D,// XMM0
+						0x81, 0x15,// VEX_Vbroadcastss_ymm_m32
 			0x00,// Invalid
 		0x00,// Invalid
 		0x00,// Invalid
@@ -690,10 +700,15 @@ pub(super) static TBL_DATA: &[u8] = &[
 		0x09,// W
 			0x0E,// VectorLength
 				0x00,// Invalid
-				0x37,// VW_3
-					0x6D,// YMM0
-					0x4D,// XMM0
-					0x85, 0x15,// VEX_Vbroadcastsd_ymm_xmmm64
+				0x07,// RM
+					0x37,// VW_3
+						0x6D,// YMM0
+						0x4D,// XMM0
+						0xC8, 0x21,// VEX_Vbroadcastsd_ymm_xmm
+					0x37,// VW_3
+						0x6D,// YMM0
+						0x4D,// XMM0
+						0x85, 0x15,// VEX_Vbroadcastsd_ymm_m64
 			0x00,// Invalid
 		0x00,// Invalid
 		0x00,// Invalid
@@ -1338,7 +1353,72 @@ pub(super) static TBL_DATA: &[u8] = &[
 
 	// 76 = 0x4C
 	0x02,// Dup
-		0x0C,// 12
+		0x04,// 4
+		0x00,// Invalid
+
+	// 80 = 0x50
+	0x0B,// MandatoryPrefix2_4
+		0x00,// Invalid
+		0x09,// W
+			0x0E,// VectorLength
+				0x29,// VHW_2
+					0x4D,// XMM0
+					0xD0, 0x21,// VEX_Vpdpbusd_xmm_xmm_xmmm128
+				0x29,// VHW_2
+					0x6D,// YMM0
+					0xD1, 0x21,// VEX_Vpdpbusd_ymm_ymm_ymmm256
+			0x00,// Invalid
+		0x00,// Invalid
+		0x00,// Invalid
+
+	// 81 = 0x51
+	0x0B,// MandatoryPrefix2_4
+		0x00,// Invalid
+		0x09,// W
+			0x0E,// VectorLength
+				0x29,// VHW_2
+					0x4D,// XMM0
+					0xD2, 0x21,// VEX_Vpdpbusds_xmm_xmm_xmmm128
+				0x29,// VHW_2
+					0x6D,// YMM0
+					0xD3, 0x21,// VEX_Vpdpbusds_ymm_ymm_ymmm256
+			0x00,// Invalid
+		0x00,// Invalid
+		0x00,// Invalid
+
+	// 82 = 0x52
+	0x0B,// MandatoryPrefix2_4
+		0x00,// Invalid
+		0x09,// W
+			0x0E,// VectorLength
+				0x29,// VHW_2
+					0x4D,// XMM0
+					0xD4, 0x21,// VEX_Vpdpwssd_xmm_xmm_xmmm128
+				0x29,// VHW_2
+					0x6D,// YMM0
+					0xD5, 0x21,// VEX_Vpdpwssd_ymm_ymm_ymmm256
+			0x00,// Invalid
+		0x00,// Invalid
+		0x00,// Invalid
+
+	// 83 = 0x53
+	0x0B,// MandatoryPrefix2_4
+		0x00,// Invalid
+		0x09,// W
+			0x0E,// VectorLength
+				0x29,// VHW_2
+					0x4D,// XMM0
+					0xD6, 0x21,// VEX_Vpdpwssds_xmm_xmm_xmmm128
+				0x29,// VHW_2
+					0x6D,// YMM0
+					0xD7, 0x21,// VEX_Vpdpwssds_ymm_ymm_ymmm256
+			0x00,// Invalid
+		0x00,// Invalid
+		0x00,// Invalid
+
+	// 84 = 0x54
+	0x02,// Dup
+		0x04,// 4
 		0x00,// Invalid
 
 	// 88 = 0x58
@@ -2863,17 +2943,17 @@ pub(super) static TBL_DATA: &[u8] = &[
 			0x0E,// VectorLength
 				0x2F,// VHWIs5
 					0x4D,// XMM0
-					0xCD, 0x1E,// VEX_Vpermil2ps_xmm_xmm_xmmm128_xmm_imm2
+					0xCD, 0x1E,// VEX_Vpermil2ps_xmm_xmm_xmmm128_xmm_imm4
 				0x2F,// VHWIs5
 					0x6D,// YMM0
-					0xCE, 0x1E,// VEX_Vpermil2ps_ymm_ymm_ymmm256_ymm_imm2
+					0xCE, 0x1E,// VEX_Vpermil2ps_ymm_ymm_ymmm256_ymm_imm4
 			0x0E,// VectorLength
 				0x27,// VHIs5W
 					0x4D,// XMM0
-					0xCF, 0x1E,// VEX_Vpermil2ps_xmm_xmm_xmm_xmmm128_imm2
+					0xCF, 0x1E,// VEX_Vpermil2ps_xmm_xmm_xmm_xmmm128_imm4
 				0x27,// VHIs5W
 					0x6D,// YMM0
-					0xD0, 0x1E,// VEX_Vpermil2ps_ymm_ymm_ymm_ymmm256_imm2
+					0xD0, 0x1E,// VEX_Vpermil2ps_ymm_ymm_ymm_ymmm256_imm4
 		0x00,// Invalid
 		0x00,// Invalid
 
@@ -2884,17 +2964,17 @@ pub(super) static TBL_DATA: &[u8] = &[
 			0x0E,// VectorLength
 				0x2F,// VHWIs5
 					0x4D,// XMM0
-					0xD1, 0x1E,// VEX_Vpermil2pd_xmm_xmm_xmmm128_xmm_imm2
+					0xD1, 0x1E,// VEX_Vpermil2pd_xmm_xmm_xmmm128_xmm_imm4
 				0x2F,// VHWIs5
 					0x6D,// YMM0
-					0xD2, 0x1E,// VEX_Vpermil2pd_ymm_ymm_ymmm256_ymm_imm2
+					0xD2, 0x1E,// VEX_Vpermil2pd_ymm_ymm_ymmm256_ymm_imm4
 			0x0E,// VectorLength
 				0x27,// VHIs5W
 					0x4D,// XMM0
-					0xD3, 0x1E,// VEX_Vpermil2pd_xmm_xmm_xmm_xmmm128_imm2
+					0xD3, 0x1E,// VEX_Vpermil2pd_xmm_xmm_xmm_xmmm128_imm4
 				0x27,// VHIs5W
 					0x6D,// YMM0
-					0xD4, 0x1E,// VEX_Vpermil2pd_ymm_ymm_ymm_ymmm256_imm2
+					0xD4, 0x1E,// VEX_Vpermil2pd_ymm_ymm_ymm_ymmm256_imm4
 		0x00,// Invalid
 		0x00,// Invalid
 

@@ -61,154 +61,31 @@ namespace Iced.UnitTests.Intel.AssemblerTests {
 			if ((flags & LocalOpCodeFlags.Broadcast) != 0)
 				expectedInst.IsBroadcast = true;
 			var inst = assembler.Instructions[0];
+			if ((flags & LocalOpCodeFlags.IgnoreCode) != 0)
+				expectedInst.Code = inst.Code;
 			Assert.Equal(expectedInst, inst);
 
 			// Special for decoding options
-			var decoderOptions = DecoderOptions.None;
-			switch (inst.Code) {
-			case Code.Call_rm16:
-			case Code.Jmp_rm16:
-				if (bitness == 64)
-					decoderOptions = DecoderOptions.AMD;
+			var opCode = inst.Code.ToOpCode();
+			var decoderOptions = opCode.DecoderOption;
+			switch (bitness) {
+			case 16:
+				if (!opCode.IntelDecoder16 && opCode.AmdDecoder16)
+					decoderOptions |= DecoderOptions.AMD;
 				break;
-			case Code.Umov_rm8_r8:
-			case Code.Umov_rm16_r16:
-			case Code.Umov_rm32_r32:
-			case Code.Umov_r8_rm8:
-			case Code.Umov_r16_rm16:
-			case Code.Umov_r32_rm32:
-				decoderOptions = DecoderOptions.Umov;
+			case 32:
+				if (!opCode.IntelDecoder32 && opCode.AmdDecoder32)
+					decoderOptions |= DecoderOptions.AMD;
 				break;
-			case Code.Xbts_r16_rm16:
-			case Code.Xbts_r32_rm32:
-			case Code.Ibts_rm16_r16:
-			case Code.Ibts_rm32_r32:
-				decoderOptions = DecoderOptions.Xbts;
+			case 64:
+				if (!opCode.IntelDecoder64 && opCode.AmdDecoder64)
+					decoderOptions |= DecoderOptions.AMD;
 				break;
-			case Code.Frstpm:
-			case Code.Fnstdw_AX:
-			case Code.Fstdw_AX:
-			case Code.Fnstsg_AX:
-			case Code.Fstsg_AX:
-				decoderOptions = DecoderOptions.OldFpu;
-				break;
-			case Code.Pcommit:
-				decoderOptions = DecoderOptions.Pcommit;
-				break;
-			case Code.Loadall386:
-				decoderOptions = DecoderOptions.Loadall386;
-				break;
-			case Code.Cl1invmb:
-				decoderOptions = DecoderOptions.Cl1invmb;
-				break;
-			case Code.Mov_r32_tr:
-			case Code.Mov_tr_r32:
-				decoderOptions = DecoderOptions.MovTr;
-				break;
-			case Code.Jmpe_rm16:
-			case Code.Jmpe_rm32:
-			case Code.Jmpe_disp16:
-			case Code.Jmpe_disp32:
-				decoderOptions = DecoderOptions.Jmpe;
-				break;
-			case Code.ReservedNop_rm16_r16_0F0D:
-			case Code.ReservedNop_rm32_r32_0F0D:
-			case Code.ReservedNop_rm64_r64_0F0D:
-			case Code.ReservedNop_rm16_r16_0F18:
-			case Code.ReservedNop_rm32_r32_0F18:
-			case Code.ReservedNop_rm64_r64_0F18:
-			case Code.ReservedNop_rm16_r16_0F19:
-			case Code.ReservedNop_rm32_r32_0F19:
-			case Code.ReservedNop_rm64_r64_0F19:
-			case Code.ReservedNop_rm16_r16_0F1A:
-			case Code.ReservedNop_rm32_r32_0F1A:
-			case Code.ReservedNop_rm64_r64_0F1A:
-			case Code.ReservedNop_rm16_r16_0F1B:
-			case Code.ReservedNop_rm32_r32_0F1B:
-			case Code.ReservedNop_rm64_r64_0F1B:
-			case Code.ReservedNop_rm16_r16_0F1C:
-			case Code.ReservedNop_rm32_r32_0F1C:
-			case Code.ReservedNop_rm64_r64_0F1C:
-			case Code.ReservedNop_rm16_r16_0F1D:
-			case Code.ReservedNop_rm32_r32_0F1D:
-			case Code.ReservedNop_rm64_r64_0F1D:
-			case Code.ReservedNop_rm16_r16_0F1E:
-			case Code.ReservedNop_rm32_r32_0F1E:
-			case Code.ReservedNop_rm64_r64_0F1E:
-			case Code.ReservedNop_rm16_r16_0F1F:
-			case Code.ReservedNop_rm32_r32_0F1F:
-			case Code.ReservedNop_rm64_r64_0F1F:
-				decoderOptions = DecoderOptions.ForceReservedNop;
-				break;
-			case Code.Bndldx_bnd_mib:
-			case Code.Bndmov_bnd_bndm64:
-			case Code.Bndmov_bnd_bndm128:
-			case Code.Bndcl_bnd_rm32:
-			case Code.Bndcl_bnd_rm64:
-			case Code.Bndcu_bnd_rm32:
-			case Code.Bndcu_bnd_rm64:
-			case Code.Bndstx_mib_bnd:
-			case Code.Bndmov_bndm64_bnd:
-			case Code.Bndmov_bndm128_bnd:
-			case Code.Bndmk_bnd_m32:
-			case Code.Bndmk_bnd_m64:
-			case Code.Bndcn_bnd_rm32:
-			case Code.Bndcn_bnd_rm64:
-				decoderOptions = DecoderOptions.MPX;
-				break;
-			case Code.Ud0:
-				decoderOptions = DecoderOptions.AMD;
-				break;
-			case Code.Rdshr_rm32:
-			case Code.Wrshr_rm32:
-			case Code.Smint:
-			case Code.Svdc_m80_Sreg:
-			case Code.Rsdc_Sreg_m80:
-			case Code.Svldt_m80:
-			case Code.Rsldt_m80:
-			case Code.Svts_m80:
-			case Code.Rsts_m80:
-			case Code.Bb0_reset:
-			case Code.Bb1_reset:
-			case Code.Cpu_write:
-			case Code.Cpu_read:
-			case Code.Paveb_mm_mmm64:
-			case Code.Paddsiw_mm_mmm64:
-			case Code.Pmagw_mm_mmm64:
-			case Code.Pdistib_mm_m64:
-			case Code.Psubsiw_mm_mmm64:
-			case Code.Pmvzb_mm_m64:
-			case Code.Pmulhrw_mm_mmm64:
-			case Code.Pmvnzb_mm_m64:
-			case Code.Pmvlzb_mm_m64:
-			case Code.Pmvgezb_mm_m64:
-			case Code.Pmulhriw_mm_mmm64:
-			case Code.Pmachriw_mm_m64:
-			case Code.Cyrix_D9D7:
-			case Code.Cyrix_D9E2:
-			case Code.Ftstp:
-			case Code.Cyrix_D9E7:
-			case Code.Frint2:
-			case Code.Frichop:
-			case Code.Cyrix_DED8:
-			case Code.Cyrix_DEDA:
-			case Code.Cyrix_DEDC:
-			case Code.Cyrix_DEDD:
-			case Code.Cyrix_DEDE:
-			case Code.Frinear:
-				decoderOptions = DecoderOptions.Cyrix;
-				break;
-			case Code.Dmint:
-			case Code.Rdm:
-				decoderOptions = DecoderOptions.Cyrix_DMI;
-				break;
-			case Code.Smint_0F7E:
-				decoderOptions = DecoderOptions.Cyrix_SMINT_0F7E;
-				break;
-			case Code.Altinst:
-				decoderOptions = DecoderOptions.ALTINST;
-				break;
+			default:
+				throw new InvalidOperationException();
 			}
+			if (opCode.IsReservedNop)
+				decoderOptions |= DecoderOptions.ForceReservedNop;
 
 			// Check decoding back against the original instruction
 			var instructionAsBytes = new System.Text.StringBuilder();
@@ -217,6 +94,8 @@ namespace Iced.UnitTests.Intel.AssemblerTests {
 
 			var decoder = Decoder.Create(bitness, new ByteArrayCodeReader(writer.ToArray()), decoderOptions);
 			var decodedInst = decoder.Decode();
+			if ((flags & LocalOpCodeFlags.IgnoreCode) != 0)
+				decodedInst.Code = inst.Code;
 			switch (inst.Code) {
 			case Code.Montmul_16:
 			case Code.Montmul_32:
@@ -227,21 +106,21 @@ namespace Iced.UnitTests.Intel.AssemblerTests {
 			case Code.Xsha256_16:
 			case Code.Xsha256_32:
 			case Code.Xsha256_64:
-			case Code.XcryptEcb_16:
-			case Code.XcryptEcb_32:
-			case Code.XcryptEcb_64:
-			case Code.XcryptCbc_16:
-			case Code.XcryptCbc_32:
-			case Code.XcryptCbc_64:
-			case Code.XcryptCtr_16:
-			case Code.XcryptCtr_32:
-			case Code.XcryptCtr_64:
-			case Code.XcryptCfb_16:
-			case Code.XcryptCfb_32:
-			case Code.XcryptCfb_64:
-			case Code.XcryptOfb_16:
-			case Code.XcryptOfb_32:
-			case Code.XcryptOfb_64:
+			case Code.Xcryptecb_16:
+			case Code.Xcryptecb_32:
+			case Code.Xcryptecb_64:
+			case Code.Xcryptcbc_16:
+			case Code.Xcryptcbc_32:
+			case Code.Xcryptcbc_64:
+			case Code.Xcryptctr_16:
+			case Code.Xcryptctr_32:
+			case Code.Xcryptctr_64:
+			case Code.Xcryptcfb_16:
+			case Code.Xcryptcfb_32:
+			case Code.Xcryptcfb_64:
+			case Code.Xcryptofb_16:
+			case Code.Xcryptofb_32:
+			case Code.Xcryptofb_64:
 				// They're mandatory prefix instructions but the REP prefix isn't cleared since it's shown in disassembly
 				decodedInst.HasRepPrefix = false;
 				break;
@@ -249,51 +128,23 @@ namespace Iced.UnitTests.Intel.AssemblerTests {
 			if ((flags & LocalOpCodeFlags.Fwait) != 0) {
 				Assert.Equal(decodedInst, Instruction.Create(Code.Wait));
 				decodedInst = decoder.Decode();
-
-				switch (decodedInst.Code) {
-				case Code.Fnstenv_m14byte:
-					decodedInst.Code = Code.Fstenv_m14byte;
-					break;
-				case Code.Fnstenv_m28byte:
-					decodedInst.Code = Code.Fstenv_m28byte;
-					break;
-				case Code.Fnstcw_m2byte:
-					decodedInst.Code = Code.Fstcw_m2byte;
-					break;
-				case Code.Fneni:
-					decodedInst.Code = Code.Feni;
-					break;
-				case Code.Fndisi:
-					decodedInst.Code = Code.Fdisi;
-					break;
-				case Code.Fnclex:
-					decodedInst.Code = Code.Fclex;
-					break;
-				case Code.Fninit:
-					decodedInst.Code = Code.Finit;
-					break;
-				case Code.Fnsetpm:
-					decodedInst.Code = Code.Fsetpm;
-					break;
-				case Code.Fnsave_m94byte:
-					decodedInst.Code = Code.Fsave_m94byte;
-					break;
-				case Code.Fnsave_m108byte:
-					decodedInst.Code = Code.Fsave_m108byte;
-					break;
-				case Code.Fnstsw_m2byte:
-					decodedInst.Code = Code.Fstsw_m2byte;
-					break;
-				case Code.Fnstsw_AX:
-					decodedInst.Code = Code.Fstsw_AX;
-					break;
-				case Code.Fnstdw_AX:
-					decodedInst.Code = Code.Fstdw_AX;
-					break;
-				case Code.Fnstsg_AX:
-					decodedInst.Code = Code.Fstsg_AX;
-					break;
-				}
+				decodedInst.Code = decodedInst.Code switch {
+					Code.Fnstenv_m14byte => Code.Fstenv_m14byte,
+					Code.Fnstenv_m28byte => Code.Fstenv_m28byte,
+					Code.Fnstcw_m2byte => Code.Fstcw_m2byte,
+					Code.Fneni => Code.Feni,
+					Code.Fndisi => Code.Fdisi,
+					Code.Fnclex => Code.Fclex,
+					Code.Fninit => Code.Finit,
+					Code.Fnsetpm => Code.Fsetpm,
+					Code.Fnsave_m94byte => Code.Fsave_m94byte,
+					Code.Fnsave_m108byte => Code.Fsave_m108byte,
+					Code.Fnstsw_m2byte => Code.Fstsw_m2byte,
+					Code.Fnstsw_AX => Code.Fstsw_AX,
+					Code.Fnstdw_AX => Code.Fstdw_AX,
+					Code.Fnstsg_AX => Code.Fstsg_AX,
+					_ => decodedInst.Code,
+				};
 			}
 
 			// Reset IP to 0 when matching against decode
@@ -409,6 +260,7 @@ namespace Iced.UnitTests.Intel.AssemblerTests {
 			Branch = 1 << 5,
 			Broadcast = 1 << 6,
 			BranchUlong = 1 << 7,
+			IgnoreCode = 1 << 8,
 		}
 	}
 }

@@ -21,11 +21,10 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-using System.IO;
 using Generator.IO;
 
 namespace Generator.Decoder.Rust {
-	[Generator(TargetLanguage.Rust, GeneratorNames.Decoder_Table)]
+	[Generator(TargetLanguage.Rust)]
 	sealed class RustDecoderTableGenerator {
 		readonly GeneratorContext generatorContext;
 
@@ -41,7 +40,7 @@ namespace Generator.Decoder.Rust {
 			};
 
 			foreach (var serializer in serializers) {
-				var filename = Path.Combine(generatorContext.RustDir, "decoder", "table_de", $"data_{serializer.TableName}.rs");
+				var filename = generatorContext.Types.Dirs.GetRustFilename("decoder", "table_de", $"data_{serializer.TableName}.rs");
 				using (var writer = new FileWriter(TargetLanguage.Rust, FileUtils.OpenWrite(filename)))
 					serializer.Serialize(writer);
 			}

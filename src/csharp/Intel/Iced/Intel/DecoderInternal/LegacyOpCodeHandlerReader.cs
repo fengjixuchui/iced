@@ -758,8 +758,8 @@ namespace Iced.Intel.DecoderInternal {
 				elem = new OpCodeHandler_RegIz2(deserializer.ReadInt32());
 				return 1;
 
-			case OpCodeHandlerKind.ReservedNop:
-				elem = new OpCodeHandler_ReservedNop(deserializer.ReadHandler(), deserializer.ReadHandler());
+			case OpCodeHandlerKind.Reservednop:
+				elem = new OpCodeHandler_Reservednop(deserializer.ReadHandler(), deserializer.ReadHandler());
 				return 1;
 
 			case OpCodeHandlerKind.RIb:
@@ -951,6 +951,14 @@ namespace Iced.Intel.DecoderInternal {
 			case OpCodeHandlerKind.Sw_M:
 				code = deserializer.ReadCode();
 				elem = new OpCodeHandler_Sw_M(code);
+				return 1;
+
+			case OpCodeHandlerKind.Rq:
+				elem = new OpCodeHandler_Rq(deserializer.ReadCode());
+				return 1;
+
+			case OpCodeHandlerKind.Gd_Rd:
+				elem = new OpCodeHandler_Gd_Rd(deserializer.ReadCode());
 				return 1;
 
 			default:

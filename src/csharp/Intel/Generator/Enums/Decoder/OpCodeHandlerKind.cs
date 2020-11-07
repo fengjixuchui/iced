@@ -182,7 +182,7 @@ namespace Generator.Enums.Decoder {
 		RegIb,
 		RegIb3,
 		RegIz2,
-		ReservedNop,
+		Reservednop,
 		RIb,
 		RIbIb,
 		Rv,
@@ -228,5 +228,7 @@ namespace Generator.Enums.Decoder {
 		Options1632_2,
 		M_Sw,
 		Sw_M,
+		Rq,
+		Gd_Rd,
 	}
 }

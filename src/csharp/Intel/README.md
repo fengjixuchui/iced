@@ -14,7 +14,7 @@ It can be used for static analysis of x86/x64 binaries, to rewrite code (eg. rem
 - ✔️Small decoded instructions, only 32 bytes
 - ✔️High level [Assembler](#assemble-instructions) providing a simple and lean syntax (e.g `asm.mov(eax, edx)`))
 - ✔️The encoder can be used to re-encode decoded instructions at any address
-- ✔️API to get instruction info, eg. read/written registers, memory and rflags bits; CPUID feature flag, flow control info, etc
+- ✔️API to get instruction info, eg. read/written registers, memory and rflags bits; CPUID feature flag, control flow info, etc
 - ✔️Supports `.NET Standard 2.0/2.1+` and `.NET Framework 4.5+`
 - ✔️License: MIT
 
@@ -455,7 +455,7 @@ Moved code:
             decoder.Decode(out var instr);
             origInstructions.Add(instr);
             totalBytes += (uint)instr.Length;
-            if (instr.Code == Code.INVALID)
+            if (instr.IsInvalid)
                 throw new Exception("Found garbage");
             if (totalBytes >= requiredBytes)
                 break;
@@ -596,7 +596,7 @@ static class HowTo_InstructionInfo {
     /*
      * This method produces the following output:
 00007FFAC46ACDA4 mov [rsp+10h],rbx
-    OpCode: REX.W 89 /r
+    OpCode: o64 89 /r
     Instruction: MOV r/m64, r64
     Encoding: Legacy
     Mnemonic: Mov
@@ -613,7 +613,7 @@ static class HowTo_InstructionInfo {
     Used reg: RBX:Read
     Used mem: [SS:RSP+0x10;UInt64;Write]
 00007FFAC46ACDA9 mov [rsp+18h],rsi
-    OpCode: REX.W 89 /r
+    OpCode: o64 89 /r
     Instruction: MOV r/m64, r64
     Encoding: Legacy
     Mnemonic: Mov
@@ -630,7 +630,7 @@ static class HowTo_InstructionInfo {
     Used reg: RSI:Read
     Used mem: [SS:RSP+0x18;UInt64;Write]
 00007FFAC46ACDAE push rbp
-    OpCode: 50+ro
+    OpCode: o64 50+ro
     Instruction: PUSH r64
     Encoding: Legacy
     Mnemonic: Push
@@ -644,7 +644,7 @@ static class HowTo_InstructionInfo {
     Used reg: RSP:ReadWrite
     Used mem: [SS:RSP+0xFFFFFFFFFFFFFFF8;UInt64;Write]
 00007FFAC46ACDAF push rdi
-    OpCode: 50+ro
+    OpCode: o64 50+ro
     Instruction: PUSH r64
     Encoding: Legacy
     Mnemonic: Push
@@ -658,7 +658,7 @@ static class HowTo_InstructionInfo {
     Used reg: RSP:ReadWrite
     Used mem: [SS:RSP+0xFFFFFFFFFFFFFFF8;UInt64;Write]
 00007FFAC46ACDB0 push r14
-    OpCode: 50+ro
+    OpCode: o64 50+ro
     Instruction: PUSH r64
     Encoding: Legacy
     Mnemonic: Push
@@ -672,7 +672,7 @@ static class HowTo_InstructionInfo {
     Used reg: RSP:ReadWrite
     Used mem: [SS:RSP+0xFFFFFFFFFFFFFFF8;UInt64;Write]
 00007FFAC46ACDB2 lea rbp,[rsp-100h]
-    OpCode: REX.W 8D /r
+    OpCode: o64 8D /r
     Instruction: LEA r64, m
     Encoding: Legacy
     Mnemonic: Lea
@@ -687,7 +687,7 @@ static class HowTo_InstructionInfo {
     Used reg: RBP:Write
     Used reg: RSP:Read
 00007FFAC46ACDBA sub rsp,200h
-    OpCode: REX.W 81 /5 id
+    OpCode: o64 81 /5 id
     Instruction: SUB r/m64, imm32
     Encoding: Legacy
     Mnemonic: Sub
@@ -703,7 +703,7 @@ static class HowTo_InstructionInfo {
     Op1: imm32sex64
     Used reg: RSP:ReadWrite
 00007FFAC46ACDC1 mov rax,[7FFAC47524E0h]
-    OpCode: REX.W 8B /r
+    OpCode: o64 8B /r
     Instruction: MOV r64, r/m64
     Encoding: Legacy
     Mnemonic: Mov
@@ -719,7 +719,7 @@ static class HowTo_InstructionInfo {
     Used reg: RAX:Write
     Used mem: [DS:0x7FFAC47524E0;UInt64;Read]
 00007FFAC46ACDC8 xor rax,rsp
-    OpCode: REX.W 33 /r
+    OpCode: o64 33 /r
     Instruction: XOR r64, r/m64
     Encoding: Legacy
     Mnemonic: Xor
@@ -737,7 +737,7 @@ static class HowTo_InstructionInfo {
     Used reg: RAX:ReadWrite
     Used reg: RSP:Read
 00007FFAC46ACDCB mov [rbp+0F0h],rax
-    OpCode: REX.W 89 /r
+    OpCode: o64 89 /r
     Instruction: MOV r/m64, r64
     Encoding: Legacy
     Mnemonic: Mov
@@ -754,7 +754,7 @@ static class HowTo_InstructionInfo {
     Used reg: RAX:Read
     Used mem: [SS:RBP+0xF0;UInt64;Write]
 00007FFAC46ACDD2 mov r8,[7FFAC474F208h]
-    OpCode: REX.W 8B /r
+    OpCode: o64 8B /r
     Instruction: MOV r64, r/m64
     Encoding: Legacy
     Mnemonic: Mov
@@ -770,7 +770,7 @@ static class HowTo_InstructionInfo {
     Used reg: R8:Write
     Used mem: [DS:0x7FFAC474F208;UInt64;Read]
 00007FFAC46ACDD9 lea rax,[7FFAC46F4A58h]
-    OpCode: REX.W 8D /r
+    OpCode: o64 8D /r
     Instruction: LEA r64, m
     Encoding: Legacy
     Mnemonic: Lea
@@ -824,6 +824,7 @@ static class HowTo_InstructionInfo {
             var opCode = instr.OpCode;
             // It returns it by ref, so use `ref readonly` to avoid a useless struct copy
             ref readonly var info = ref instrInfoFactory.GetInfo(instr);
+            var fpuInfo = instr.GetFpuStackIncrementInfo();
             Console.WriteLine($"    OpCode: {opCode.ToOpCodeString()}");
             Console.WriteLine($"    Instruction: {opCode.ToInstructionString()}");
             Console.WriteLine($"    Encoding: {instr.Encoding}");
@@ -831,6 +832,13 @@ static class HowTo_InstructionInfo {
             Console.WriteLine($"    Code: {instr.Code}");
             Console.WriteLine($"    CpuidFeature: {string.Join(" and ", instr.CpuidFeatures)}");
             Console.WriteLine($"    FlowControl: {instr.FlowControl}");
+            if (fpuInfo.WritesTop) {
+                if (fpuInfo.Increment == 0)
+                    Console.WriteLine($"    FPU TOP: the instruction overwrites TOP");
+                else
+                    Console.WriteLine($"    FPU TOP inc: {fpuInfo.Increment}");
+                Console.WriteLine($"    FPU TOP cond write: {(fpuInfo.Conditional ? "true" : "false")}");
+            }
             if (offsets.HasDisplacement)
                 Console.WriteLine($"    Displacement offset = {offsets.DisplacementOffset}, size = {offsets.DisplacementSize}");
             if (offsets.HasImmediate)

@@ -343,6 +343,16 @@ impl Instruction {
 		self.0.set_code_size(code_size_to_iced(newValue))
 	}
 
+	/// Checks if it's an invalid instruction ([`code`] == [`Code.INVALID`])
+	///
+	/// [`code`]: #method.code
+	/// [`Code.INVALID`]: enum.Code.html#variant.INVALID
+	#[wasm_bindgen(getter)]
+	#[wasm_bindgen(js_name = "isInvalid")]
+	pub fn is_invalid(&self) -> bool {
+		self.0.is_invalid()
+	}
+
 	/// Gets the instruction code (a [`Code`] enum value), see also [`mnemonic`].
 	///
 	/// [`mnemonic`]: #method.mnemonic
@@ -2285,7 +2295,35 @@ impl Instruction {
 		self.0.stack_pointer_increment()
 	}
 
-	/// Instruction encoding (a [`EncodingKind`] enum value), eg. legacy, VEX, EVEX, ...
+	/// Used if [`fpuWritesTop()`] is `true`:
+	///
+	/// Value added to `TOP`.
+	///
+	/// This is negative if it pushes one or more values and positive if it pops one or more values
+	/// and `0` if it writes to `TOP` (eg. `FLDENV`, etc) without pushing/popping anything.
+	///
+	/// [`fpuWritesTop()`]: #method.fpu_writes_top
+	#[wasm_bindgen(getter)]
+	#[wasm_bindgen(js_name = "fpuTopIncrement")]
+	pub fn fpu_top_increment(&self) -> i32 {
+		self.0.fpu_stack_increment_info().increment()
+	}
+
+	/// `true` if it's a conditional push/pop (eg. `FPTAN` or `FSINCOS`)
+	#[wasm_bindgen(getter)]
+	#[wasm_bindgen(js_name = "fpuCondWritesTop")]
+	pub fn fpu_cond_writes_top(&self) -> bool {
+		self.0.fpu_stack_increment_info().conditional()
+	}
+
+	/// `true` if `TOP` is written (it's a conditional/unconditional push/pop, `FNSAVE`, `FLDENV`, etc)
+	#[wasm_bindgen(getter)]
+	#[wasm_bindgen(js_name = "fpuWritesTop")]
+	pub fn fpu_writes_top(&self) -> bool {
+		self.0.fpu_stack_increment_info().writes_top()
+	}
+
+	/// Instruction encoding (a [`EncodingKind`] enum value), eg. Legacy, 3DNow!, VEX, EVEX, XOP
 	///
 	/// [`EncodingKind`]: enum.EncodingKind.html
 	///
@@ -2349,7 +2387,7 @@ impl Instruction {
 		self.0.cpuid_features().iter().map(|&a| a as i32).collect()
 	}
 
-	/// Flow control info (a [`FlowControl`] enum value)
+	/// Control flow info (a [`FlowControl`] enum value)
 	///
 	/// [`FlowControl`]: enum.FlowControl.html
 	///
@@ -2387,14 +2425,7 @@ impl Instruction {
 		iced_to_flow_control(self.0.flow_control())
 	}
 
-	/// `true` if the instruction isn't available in real mode or virtual 8086 mode
-	#[wasm_bindgen(getter)]
-	#[wasm_bindgen(js_name = "isProtectedMode")]
-	pub fn is_protected_mode(&self) -> bool {
-		self.0.is_protected_mode()
-	}
-
-	/// `true` if this is a privileged instruction
+	/// `true` if it's a privileged instruction (all CPL=0 instructions (except `VMCALL`) and IOPL instructions `IN`, `INS`, `OUT`, `OUTS`, `CLI`, `STI`)
 	#[wasm_bindgen(getter)]
 	#[wasm_bindgen(js_name = "isPrivileged")]
 	pub fn is_privileged(&self) -> bool {

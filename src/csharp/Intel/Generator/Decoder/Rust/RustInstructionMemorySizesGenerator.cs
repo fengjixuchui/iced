@@ -22,13 +22,12 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 using System;
-using System.IO;
 using Generator.Constants;
 using Generator.IO;
 using Generator.Tables;
 
 namespace Generator.Decoder.Rust {
-	[Generator(TargetLanguage.Rust, GeneratorNames.Code_MemorySize)]
+	[Generator(TargetLanguage.Rust)]
 	sealed class RustInstructionMemorySizesGenerator {
 		readonly IdentifierConverter idConverter;
 		readonly GeneratorContext generatorContext;
@@ -43,7 +42,7 @@ namespace Generator.Decoder.Rust {
 			var icedConstants = genTypes.GetConstantsType(TypeIds.IcedConstants);
 			var defs = genTypes.GetObject<InstructionDefs>(TypeIds.InstructionDefs).Defs;
 			var memSizeName = genTypes[TypeIds.MemorySize].Name(idConverter);
-			using (var writer = new FileWriter(TargetLanguage.Rust, FileUtils.OpenWrite(Path.Combine(generatorContext.RustDir, "instruction_memory_sizes.rs")))) {
+			using (var writer = new FileWriter(TargetLanguage.Rust, FileUtils.OpenWrite(generatorContext.Types.Dirs.GetRustFilename("instruction_memory_sizes.rs")))) {
 				writer.WriteFileHeader();
 				writer.WriteLine($"use super::iced_constants::{icedConstants.Name(idConverter)};");
 				writer.WriteLine($"use super::{genTypes[TypeIds.MemorySize].Name(idConverter)};");
@@ -54,16 +53,16 @@ namespace Generator.Decoder.Rust {
 				writer.WriteLine($"pub(super) static SIZES: [{memSizeName}; {icedConstants.Name(idConverter)}::{icedConstants[IcedConstants.NumberOfCodeValuesName].Name(idConverter)} * 2] = [");
 				using (writer.Indent()) {
 					foreach (var def in defs) {
-						if (def.Mem.Value > byte.MaxValue)
+						if (def.Memory.Value > byte.MaxValue)
 							throw new InvalidOperationException();
-						string value = $"{memSizeName}::{def.Mem.Name(idConverter)}";
-						writer.WriteLine($"{value},// {def.OpCodeInfo.Code.Name(idConverter)}");
+						string value = $"{memSizeName}::{def.Memory.Name(idConverter)}";
+						writer.WriteLine($"{value},// {def.Code.Name(idConverter)}");
 					}
 					foreach (var def in defs) {
-						if (def.Bcst.Value > byte.MaxValue)
+						if (def.MemoryBroadcast.Value > byte.MaxValue)
 							throw new InvalidOperationException();
-						string value = $"{memSizeName}::{def.Bcst.Name(idConverter)}";
-						writer.WriteLine($"{value},// {def.OpCodeInfo.Code.Name(idConverter)}");
+						string value = $"{memSizeName}::{def.MemoryBroadcast.Name(idConverter)}";
+						writer.WriteLine($"{value},// {def.Code.Name(idConverter)}");
 					}
 				}
 				writer.WriteLine("];");

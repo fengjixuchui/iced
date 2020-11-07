@@ -23,12 +23,11 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using Generator.Documentation.Rust;
 using Generator.IO;
 
 namespace Generator.Constants.Rust {
-	[Generator(TargetLanguage.Rust, GeneratorNames.Constants)]
+	[Generator(TargetLanguage.Rust)]
 	sealed class RustConstantsGenerator : ConstantsGenerator {
 		readonly IdentifierConverter idConverter;
 		readonly Dictionary<TypeId, PartialConstantsFileInfo?> toPartialFileInfo;
@@ -51,19 +50,18 @@ namespace Generator.Constants.Rust {
 			idConverter = RustIdentifierConverter.Create();
 			constantsWriter = new RustConstantsWriter(genTypes, idConverter, new RustDocCommentWriter(idConverter), new RustDeprecatedWriter(idConverter));
 
-			var dir = generatorContext.RustDir;
+			var dirs = generatorContext.Types.Dirs;
 			toPartialFileInfo = new Dictionary<TypeId, PartialConstantsFileInfo?>();
-			toPartialFileInfo.Add(TypeIds.IcedConstants, new PartialConstantsFileInfo("IcedConstants", Path.Combine(dir, "iced_constants.rs")));
-			toPartialFileInfo.Add(TypeIds.DecoderTestParserConstants, new PartialConstantsFileInfo("DecoderTestText", Path.Combine(dir, "decoder", "tests", "test_parser.rs"), true));
-			toPartialFileInfo.Add(TypeIds.DecoderConstants, new PartialConstantsFileInfo("DecoderConstants", Path.Combine(dir, "test_utils", "decoder_constants.rs")));
-			toPartialFileInfo.Add(TypeIds.InstrInfoConstants, new PartialConstantsFileInfo("InstrInfoConstants", Path.Combine(dir, "info", "enums.rs")));
-			toPartialFileInfo.Add(TypeIds.MiscInstrInfoTestConstants, new PartialConstantsFileInfo("MiscConstants", Path.Combine(dir, "info", "tests", "constants.rs")));
-			toPartialFileInfo.Add(TypeIds.InstructionInfoKeys, new PartialConstantsFileInfo("KeysConstants", Path.Combine(dir, "info", "tests", "test_parser.rs"), true));
-			toPartialFileInfo.Add(TypeIds.RflagsBitsConstants, new PartialConstantsFileInfo("RflagsBitsConstants", Path.Combine(dir, "info", "tests", "test_parser.rs")));
-			toPartialFileInfo.Add(TypeIds.MiscSectionNames, new PartialConstantsFileInfo("MiscSectionNames", Path.Combine(dir, "info", "tests", "misc_test_data.rs")));
-			toPartialFileInfo.Add(TypeIds.OpCodeInfoKeys, new PartialConstantsFileInfo("OpCodeInfoKeys", Path.Combine(dir, "encoder", "tests", "op_code_test_case_parser.rs"), true));
-			toPartialFileInfo.Add(TypeIds.OpCodeInfoFlags, new PartialConstantsFileInfo("OpCodeInfoFlags", Path.Combine(dir, "encoder", "tests", "op_code_test_case_parser.rs"), true));
-			toPartialFileInfo.Add(TypeIds.OpCodeFlags, new PartialConstantsFileInfo("Flags", Path.Combine(dir, "encoder", "op_code.rs")));
+			toPartialFileInfo.Add(TypeIds.IcedConstants, new PartialConstantsFileInfo("IcedConstants", dirs.GetRustFilename("iced_constants.rs")));
+			toPartialFileInfo.Add(TypeIds.DecoderTestParserConstants, new PartialConstantsFileInfo("DecoderTestText", dirs.GetRustFilename("decoder", "tests", "test_parser.rs"), true));
+			toPartialFileInfo.Add(TypeIds.DecoderConstants, new PartialConstantsFileInfo("DecoderConstants", dirs.GetRustFilename("test_utils", "decoder_constants.rs")));
+			toPartialFileInfo.Add(TypeIds.InstrInfoConstants, new PartialConstantsFileInfo("InstrInfoConstants", dirs.GetRustFilename("info", "enums.rs")));
+			toPartialFileInfo.Add(TypeIds.MiscInstrInfoTestConstants, new PartialConstantsFileInfo("MiscConstants", dirs.GetRustFilename("info", "tests", "constants.rs")));
+			toPartialFileInfo.Add(TypeIds.InstructionInfoKeys, new PartialConstantsFileInfo("KeysConstants", dirs.GetRustFilename("info", "tests", "test_parser.rs"), true));
+			toPartialFileInfo.Add(TypeIds.RflagsBitsConstants, new PartialConstantsFileInfo("RflagsBitsConstants", dirs.GetRustFilename("info", "tests", "test_parser.rs")));
+			toPartialFileInfo.Add(TypeIds.MiscSectionNames, new PartialConstantsFileInfo("MiscSectionNames", dirs.GetRustFilename("info", "tests", "misc_test_data.rs")));
+			toPartialFileInfo.Add(TypeIds.OpCodeInfoKeys, new PartialConstantsFileInfo("OpCodeInfoKeys", dirs.GetRustFilename("encoder", "tests", "op_code_test_case_parser.rs"), true));
+			toPartialFileInfo.Add(TypeIds.OpCodeInfoFlags, new PartialConstantsFileInfo("OpCodeInfoFlags", dirs.GetRustFilename("encoder", "tests", "op_code_test_case_parser.rs"), true));
 		}
 
 		public override void Generate(ConstantsType constantsType) {

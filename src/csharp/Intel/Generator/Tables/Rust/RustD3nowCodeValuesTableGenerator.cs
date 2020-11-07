@@ -22,12 +22,11 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 using System;
-using System.IO;
 using Generator.Enums;
 using Generator.IO;
 
 namespace Generator.Tables.Rust {
-	[Generator(TargetLanguage.Rust, GeneratorNames.D3now_Table)]
+	[Generator(TargetLanguage.Rust)]
 	sealed class RustD3nowCodeValuesTableGenerator : D3nowCodeValuesTableGenerator {
 		readonly GeneratorContext generatorContext;
 		readonly IdentifierConverter idConverter;
@@ -39,7 +38,7 @@ namespace Generator.Tables.Rust {
 		}
 
 		protected override void Generate((int index, EnumValue enumValue)[] infos) {
-			var filename = Path.Combine(generatorContext.RustDir, "decoder", "handlers_3dnow.rs");
+			var filename = generatorContext.Types.Dirs.GetRustFilename("decoder", "handlers_3dnow.rs");
 			var updater = new FileUpdater(TargetLanguage.Rust, "D3nowCodeValues", filename);
 			updater.Generate(writer => WriteTable(writer, infos));
 		}

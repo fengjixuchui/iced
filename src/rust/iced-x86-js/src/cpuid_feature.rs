@@ -131,7 +131,7 @@ pub enum CpuidFeature {
 	/// CPUID.80000001H:EDX.3DNOWEXT\[bit 30\]
 	D3NOWEXT = 49,
 	/// CPUID.(EAX=12H, ECX=0H):EAX.OSS\[bit 5\]
-	ENCLV = 50,
+	OSS = 50,
 	/// CPUID.(EAX=07H, ECX=0H):ECX.ENQCMD\[bit 29\]
 	ENQCMD = 51,
 	/// CPUID.01H:ECX.F16C\[bit 29\]
@@ -165,15 +165,11 @@ pub enum CpuidFeature {
 	/// [`HLE`]: enum.CpuidFeature.html#variant.HLE
 	/// [`RTM`]: enum.CpuidFeature.html#variant.RTM
 	HLE_or_RTM = 65,
-	/// [`VMX`] and IA32_VMX_EPT_VPID_CAP\[bit 20\]
-	///
-	/// [`VMX`]: enum.CpuidFeature.html#variant.VMX
+	/// IA32_VMX_EPT_VPID_CAP\[bit 20\]
 	INVEPT = 66,
 	/// CPUID.(EAX=07H, ECX=0H):EBX.INVPCID\[bit 10\]
 	INVPCID = 67,
-	/// [`VMX`] and IA32_VMX_EPT_VPID_CAP\[bit 32\]
-	///
-	/// [`VMX`]: enum.CpuidFeature.html#variant.VMX
+	/// IA32_VMX_EPT_VPID_CAP\[bit 32\]
 	INVVPID = 68,
 	/// CPUID.80000001H:ECX.LWP\[bit 15\]
 	LWP = 69,
@@ -247,11 +243,11 @@ pub enum CpuidFeature {
 	SHA = 103,
 	/// CPUID.80000001H:ECX.SKINIT\[bit 12\]
 	SKINIT = 104,
-	/// [`SKINIT`] or [`SVML`]
+	/// [`SKINIT`] or [`SVM`]
 	///
 	/// [`SKINIT`]: enum.CpuidFeature.html#variant.SKINIT
-	/// [`SVML`]: enum.CpuidFeature.html#variant.SVML
-	SKINIT_or_SVML = 105,
+	/// [`SVM`]: enum.CpuidFeature.html#variant.SVM
+	SKINIT_or_SVM = 105,
 	/// CPUID.(EAX=07H, ECX=0H):EBX.SMAP\[bit 20\]
 	SMAP = 106,
 	/// CPUID.01H:ECX.SMX\[bit 6\]
@@ -272,8 +268,8 @@ pub enum CpuidFeature {
 	SSSE3 = 114,
 	/// CPUID.80000001H:ECX.SVM\[bit 2\]
 	SVM = 115,
-	/// CPUID.8000000AH:EDX.SVML\[bit 2\]
-	SVML = 116,
+	/// CPUID.8000001FH:EAX.SEV-ES\[bit 3\]
+	SEV_ES = 116,
 	/// CPUID.80000001H:EDX.SYSCALL\[bit 11\]
 	SYSCALL = 117,
 	/// CPUID.80000001H:ECX.TBM\[bit 21\]
@@ -300,13 +296,13 @@ pub enum CpuidFeature {
 	XSAVEOPT = 128,
 	/// CPUID.(EAX=0DH, ECX=1H):EAX.XSAVES\[bit 3\]
 	XSAVES = 129,
-	/// CPUID.8000001FH:EAX.SNP\[bit 4\]
-	SNP = 130,
+	/// CPUID.8000001FH:EAX.SEV-SNP\[bit 4\]
+	SEV_SNP = 130,
 	/// CPUID.(EAX=07H, ECX=0H):EDX.SERIALIZE\[bit 14\]
 	SERIALIZE = 131,
 	/// CPUID.(EAX=07H, ECX=0H):EDX.TSXLDTRK\[bit 16\]
 	TSXLDTRK = 132,
-	/// CPUID.80000001H:EDX.INVLPGB\[bit ??\]
+	/// CPUID.80000008H:EBX.INVLPGB\[bit 3\]
 	INVLPGB = 133,
 	/// CPUID.(EAX=07H, ECX=0H):EDX.AMX-BF16\[bit 22\]
 	AMX_BF16 = 134,
@@ -336,5 +332,19 @@ pub enum CpuidFeature {
 	MOV_TR = 146,
 	/// `RSM` instruction (some 386s, some 486s, Pentium and later)
 	SMM = 147,
+	/// CPUID.(EAX=??H, ECX=?H):???.????\[bit ??\]
+	TDX = 148,
+	/// CPUID.(EAX=07H, ECX=0H):ECX.KL\[bit 23\]
+	KL = 149,
+	/// CPUID.19H:EBX.AESKLE\[bit 0\]
+	AESKLE = 150,
+	/// CPUID.19H:EBX.WIDE_KL\[bit 2\]
+	WIDE_KL = 151,
+	/// CPUID.(EAX=07H, ECX=0H):EDX.UINTR\[bit 5\]
+	UINTR = 152,
+	/// CPUID.(EAX=07H, ECX=01H):EAX.HRESET\[bit 22\]
+	HRESET = 153,
+	/// CPUID.(EAX=07H, ECX=01H):EAX.AVX-VNNI\[bit 4\]
+	AVX_VNNI = 154,
 }
 // GENERATOR-END: Enum

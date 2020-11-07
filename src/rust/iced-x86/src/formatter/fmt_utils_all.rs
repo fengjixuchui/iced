@@ -64,21 +64,21 @@ pub(super) fn is_rep_repe_repne_instruction(code: Code) -> bool {
 		| Code::Xstore_16
 		| Code::Xstore_32
 		| Code::Xstore_64
-		| Code::XcryptEcb_16
-		| Code::XcryptEcb_32
-		| Code::XcryptEcb_64
-		| Code::XcryptCbc_16
-		| Code::XcryptCbc_32
-		| Code::XcryptCbc_64
-		| Code::XcryptCtr_16
-		| Code::XcryptCtr_32
-		| Code::XcryptCtr_64
-		| Code::XcryptCfb_16
-		| Code::XcryptCfb_32
-		| Code::XcryptCfb_64
-		| Code::XcryptOfb_16
-		| Code::XcryptOfb_32
-		| Code::XcryptOfb_64 => true,
+		| Code::Xcryptecb_16
+		| Code::Xcryptecb_32
+		| Code::Xcryptecb_64
+		| Code::Xcryptcbc_16
+		| Code::Xcryptcbc_32
+		| Code::Xcryptcbc_64
+		| Code::Xcryptctr_16
+		| Code::Xcryptctr_32
+		| Code::Xcryptctr_64
+		| Code::Xcryptcfb_16
+		| Code::Xcryptcfb_32
+		| Code::Xcryptcfb_64
+		| Code::Xcryptofb_16
+		| Code::Xcryptofb_32
+		| Code::Xcryptofb_64 => true,
 
 		_ => false,
 	}
@@ -86,7 +86,7 @@ pub(super) fn is_rep_repe_repne_instruction(code: Code) -> bool {
 
 #[cfg_attr(has_must_use, must_use)]
 pub(super) fn show_rep_or_repe_prefix_bool(code: Code, show_useless_prefixes: bool) -> bool {
-	if is_rep_repe_repne_instruction(code) {
+	if show_useless_prefixes || is_rep_repe_repne_instruction(code) {
 		true
 	} else {
 		// We allow 'rep ret' too since some old code use it to work around an old AMD bug
@@ -100,7 +100,7 @@ pub(super) fn show_rep_or_repe_prefix_bool(code: Code, show_useless_prefixes: bo
 #[cfg_attr(has_must_use, must_use)]
 pub(super) fn show_repne_prefix_bool(code: Code, show_useless_prefixes: bool) -> bool {
 	// If it's a 'rep/repne' instruction, always show the prefix
-	if is_rep_repe_repne_instruction(code) {
+	if show_useless_prefixes || is_rep_repe_repne_instruction(code) {
 		true
 	} else {
 		show_useless_prefixes
@@ -124,6 +124,9 @@ pub(super) fn get_default_segment_register(instruction: &Instruction) -> Registe
 
 #[cfg_attr(has_must_use, must_use)]
 pub(super) fn show_segment_prefix_bool(mut default_seg_reg: Register, instruction: &Instruction, show_useless_prefixes: bool) -> bool {
+	if instruction.code().ignores_segment() {
+		return show_useless_prefixes;
+	}
 	let prefix_seg = instruction.segment_prefix();
 	debug_assert_ne!(Register::None, prefix_seg);
 	if is_code64(instruction.code_size()) {

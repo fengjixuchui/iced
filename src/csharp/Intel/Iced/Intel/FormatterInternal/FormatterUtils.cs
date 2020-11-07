@@ -190,6 +190,9 @@ namespace Iced.Intel.FormatterInternal {
 			case Code.Call_rel32_32:
 			case Code.Call_rel32_64:
 				return FormatterFlowControl.NearCall;
+			case Code.Jmp_rel16:
+			case Code.Jmp_rel32_32:
+			case Code.Jmp_rel32_64:
 			case Code.Jo_rel16:
 			case Code.Jo_rel32_32:
 			case Code.Jo_rel32_64:
@@ -238,17 +241,14 @@ namespace Iced.Intel.FormatterInternal {
 			case Code.Jg_rel16:
 			case Code.Jg_rel32_32:
 			case Code.Jg_rel32_64:
-			case Code.Jmp_rel16:
-			case Code.Jmp_rel32_32:
-			case Code.Jmp_rel32_64:
 			case Code.Jmpe_disp16:
 			case Code.Jmpe_disp32:
 				return FormatterFlowControl.NearBranch;
-			case Code.Call_ptr1632:
 			case Code.Call_ptr1616:
+			case Code.Call_ptr1632:
 				return FormatterFlowControl.FarCall;
-			case Code.Jmp_ptr1632:
 			case Code.Jmp_ptr1616:
+			case Code.Jmp_ptr1632:
 				return FormatterFlowControl.FarBranch;
 			case Code.Xbegin_rel16:
 			case Code.Xbegin_rel32:
@@ -317,21 +317,21 @@ namespace Iced.Intel.FormatterInternal {
 			case Code.Xstore_16:
 			case Code.Xstore_32:
 			case Code.Xstore_64:
-			case Code.XcryptEcb_16:
-			case Code.XcryptEcb_32:
-			case Code.XcryptEcb_64:
-			case Code.XcryptCbc_16:
-			case Code.XcryptCbc_32:
-			case Code.XcryptCbc_64:
-			case Code.XcryptCtr_16:
-			case Code.XcryptCtr_32:
-			case Code.XcryptCtr_64:
-			case Code.XcryptCfb_16:
-			case Code.XcryptCfb_32:
-			case Code.XcryptCfb_64:
-			case Code.XcryptOfb_16:
-			case Code.XcryptOfb_32:
-			case Code.XcryptOfb_64:
+			case Code.Xcryptecb_16:
+			case Code.Xcryptecb_32:
+			case Code.Xcryptecb_64:
+			case Code.Xcryptcbc_16:
+			case Code.Xcryptcbc_32:
+			case Code.Xcryptcbc_64:
+			case Code.Xcryptctr_16:
+			case Code.Xcryptctr_32:
+			case Code.Xcryptctr_64:
+			case Code.Xcryptcfb_16:
+			case Code.Xcryptcfb_32:
+			case Code.Xcryptcfb_64:
+			case Code.Xcryptofb_16:
+			case Code.Xcryptofb_32:
+			case Code.Xcryptofb_64:
 				return true;
 
 			default:
@@ -359,6 +359,9 @@ namespace Iced.Intel.FormatterInternal {
 
 		static bool IsCode64(CodeSize codeSize) =>
 			codeSize == CodeSize.Code64 || codeSize == CodeSize.Unknown;
+
+		public static bool ShowIndexScale(in Instruction instruction, FormatterOptions options) =>
+			options.ShowUselessPrefixes || !instruction.Code.IgnoresIndex();
 
 		public static bool ShowSegmentPrefix(Register defaultSegReg, in Instruction instruction, FormatterOptions options) =>
 			ShowSegmentPrefix(defaultSegReg, instruction, options.ShowUselessPrefixes);

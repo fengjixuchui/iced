@@ -28,11 +28,11 @@ namespace Generator.Enums.Decoder {
 		None					= 0x00000000,
 		[Comment("Disable some checks for invalid encodings of instructions, eg. most instructions can't use a #(c:LOCK)# prefix so if one is found, they're decoded as #(e:Code.INVALID)# unless this option is enabled.")]
 		NoInvalidCheck			= 0x00000001,
-		[Comment("AMD decoder: allow 16-bit branch/ret instructions in 64-bit mode, no #(c:o64 CALL/JMP FAR [mem], o64 LSS/LFS/LGS)#, #(c:UD0)# has no modr/m byte")]
+		[Comment("AMD decoder: allow 16-bit branch/ret instructions in 64-bit mode, no #(c:o64 CALL/JMP FAR [mem], o64 LSS/LFS/LGS)#, #(c:UD0)# has no modr/m byte. The AMD decoder can still decode Intel instructions.")]
 		AMD						= 0x00000002,
 		[Deprecated("1.8.0", nameof(AMD))]
 		AmdBranches,
-		[Comment("Decode opcodes #(c:0F0D)# and #(c:0F18-0F1F)# as reserved-nop instructions (eg. #(e:Code.ReservedNop_rm32_r32_0F1D)#)")]
+		[Comment("Decode opcodes #(c:0F0D)# and #(c:0F18-0F1F)# as reserved-nop instructions (eg. #(e:Code.Reservednop_rm32_r32_0F1D)#)")]
 		ForceReservedNop		= 0x00000004,
 		[Comment("Decode #(c:UMOV)# instructions")]
 		Umov					= 0x00000008,

@@ -26,31 +26,28 @@ using System;
 using Generator.Enums.Formatter;
 namespace Generator.Formatters {
 	static class FormatterConstants {
-		public const string InvalidMnemonicName = "(bad)";
-
-		public static string[] GetPseudoOps(PseudoOpsKind kind) {
-			switch (kind) {
-			case PseudoOpsKind.cmpps:		return cmpps_pseudo_ops;
-			case PseudoOpsKind.vcmpps:		return vcmpps_pseudo_ops;
-			case PseudoOpsKind.cmppd:		return cmppd_pseudo_ops;
-			case PseudoOpsKind.vcmppd:		return vcmppd_pseudo_ops;
-			case PseudoOpsKind.cmpss:		return cmpss_pseudo_ops;
-			case PseudoOpsKind.vcmpss:		return vcmpss_pseudo_ops;
-			case PseudoOpsKind.cmpsd:		return cmpsd_pseudo_ops;
-			case PseudoOpsKind.vcmpsd:		return vcmpsd_pseudo_ops;
-			case PseudoOpsKind.pclmulqdq:	return pclmulqdq_pseudo_ops;
-			case PseudoOpsKind.vpclmulqdq:	return vpclmulqdq_pseudo_ops;
-			case PseudoOpsKind.vpcomb:		return vpcomb_pseudo_ops;
-			case PseudoOpsKind.vpcomw:		return vpcomw_pseudo_ops;
-			case PseudoOpsKind.vpcomd:		return vpcomd_pseudo_ops;
-			case PseudoOpsKind.vpcomq:		return vpcomq_pseudo_ops;
-			case PseudoOpsKind.vpcomub:		return vpcomub_pseudo_ops;
-			case PseudoOpsKind.vpcomuw:		return vpcomuw_pseudo_ops;
-			case PseudoOpsKind.vpcomud:		return vpcomud_pseudo_ops;
-			case PseudoOpsKind.vpcomuq:		return vpcomuq_pseudo_ops;
-			default:						throw new ArgumentOutOfRangeException(nameof(kind));
-			}
-		}
+		public static (string mnemonic, int imm)[] GetPseudoOps(PseudoOpsKind kind) =>
+			kind switch {
+				PseudoOpsKind.cmpps => cmpps_pseudo_ops,
+				PseudoOpsKind.vcmpps => vcmpps_pseudo_ops,
+				PseudoOpsKind.cmppd => cmppd_pseudo_ops,
+				PseudoOpsKind.vcmppd => vcmppd_pseudo_ops,
+				PseudoOpsKind.cmpss => cmpss_pseudo_ops,
+				PseudoOpsKind.vcmpss => vcmpss_pseudo_ops,
+				PseudoOpsKind.cmpsd => cmpsd_pseudo_ops,
+				PseudoOpsKind.vcmpsd => vcmpsd_pseudo_ops,
+				PseudoOpsKind.pclmulqdq => pclmulqdq_pseudo_ops,
+				PseudoOpsKind.vpclmulqdq => vpclmulqdq_pseudo_ops,
+				PseudoOpsKind.vpcomb => vpcomb_pseudo_ops,
+				PseudoOpsKind.vpcomw => vpcomw_pseudo_ops,
+				PseudoOpsKind.vpcomd => vpcomd_pseudo_ops,
+				PseudoOpsKind.vpcomq => vpcomq_pseudo_ops,
+				PseudoOpsKind.vpcomub => vpcomub_pseudo_ops,
+				PseudoOpsKind.vpcomuw => vpcomuw_pseudo_ops,
+				PseudoOpsKind.vpcomud => vpcomud_pseudo_ops,
+				PseudoOpsKind.vpcomuq => vpcomuq_pseudo_ops,
+				_ => throw new ArgumentOutOfRangeException(nameof(kind)),
+			};
 
 		static FormatterConstants() {
 			var cc = new string[32] {
@@ -116,43 +113,43 @@ namespace Generator.Formatters {
 			vpcomuq_pseudo_ops = Create(xopcc, 8, "vpcom", "uq");
 		}
 
-		static string[] Create(string[] cc, int size, string prefix, string suffix) {
-			var strings = new string[size];
-			for (int i = 0; i < strings.Length; i++)
-				strings[i] = prefix + cc[i] + suffix;
-			return strings;
+		static (string mnemonic, int imm)[] Create(string[] cc, int size, string prefix, string suffix) {
+			var values = new (string mnemonic, int imm)[size];
+			for (int i = 0; i < values.Length; i++)
+				values[i] = (prefix + cc[i] + suffix, i);
+			return values;
 		}
 
-		static readonly string[] cmpps_pseudo_ops;
-		static readonly string[] vcmpps_pseudo_ops;
-		static readonly string[] cmppd_pseudo_ops;
-		static readonly string[] vcmppd_pseudo_ops;
-		static readonly string[] cmpss_pseudo_ops;
-		static readonly string[] vcmpss_pseudo_ops;
-		static readonly string[] cmpsd_pseudo_ops;
-		static readonly string[] vcmpsd_pseudo_ops;
+		static readonly (string mnemonic, int imm)[] cmpps_pseudo_ops;
+		static readonly (string mnemonic, int imm)[] vcmpps_pseudo_ops;
+		static readonly (string mnemonic, int imm)[] cmppd_pseudo_ops;
+		static readonly (string mnemonic, int imm)[] vcmppd_pseudo_ops;
+		static readonly (string mnemonic, int imm)[] cmpss_pseudo_ops;
+		static readonly (string mnemonic, int imm)[] vcmpss_pseudo_ops;
+		static readonly (string mnemonic, int imm)[] cmpsd_pseudo_ops;
+		static readonly (string mnemonic, int imm)[] vcmpsd_pseudo_ops;
 
-		static readonly string[] pclmulqdq_pseudo_ops = new string[4] {
-			"pclmullqlqdq",
-			"pclmulhqlqdq",
-			"pclmullqhqdq",
-			"pclmulhqhqdq",
+		static readonly (string mnemonic, int imm)[] pclmulqdq_pseudo_ops = new (string mnemonic, int imm)[4] {
+			("pclmullqlqdq", 0x00),
+			("pclmulhqlqdq", 0x01),
+			("pclmullqhqdq", 0x10),
+			("pclmulhqhqdq", 0x11),
 		};
 
-		static readonly string[] vpclmulqdq_pseudo_ops = new string[4] {
-			"vpclmullqlqdq",
-			"vpclmulhqlqdq",
-			"vpclmullqhqdq",
-			"vpclmulhqhqdq",
+		static readonly (string mnemonic, int imm)[] vpclmulqdq_pseudo_ops = new (string mnemonic, int imm)[4] {
+			("vpclmullqlqdq", 0x00),
+			("vpclmulhqlqdq", 0x01),
+			("vpclmullqhqdq", 0x10),
+			("vpclmulhqhqdq", 0x11),
 		};
 
-		static readonly string[] vpcomb_pseudo_ops;
-		static readonly string[] vpcomw_pseudo_ops;
-		static readonly string[] vpcomd_pseudo_ops;
-		static readonly string[] vpcomq_pseudo_ops;
-		static readonly string[] vpcomub_pseudo_ops;
-		static readonly string[] vpcomuw_pseudo_ops;
-		static readonly string[] vpcomud_pseudo_ops;
-		static readonly string[] vpcomuq_pseudo_ops;
+		static readonly (string mnemonic, int imm)[] vpcomb_pseudo_ops;
+		static readonly (string mnemonic, int imm)[] vpcomw_pseudo_ops;
+		static readonly (string mnemonic, int imm)[] vpcomd_pseudo_ops;
+		static readonly (string mnemonic, int imm)[] vpcomq_pseudo_ops;
+		static readonly (string mnemonic, int imm)[] vpcomub_pseudo_ops;
+		static readonly (string mnemonic, int imm)[] vpcomuw_pseudo_ops;
+		static readonly (string mnemonic, int imm)[] vpcomud_pseudo_ops;
+		static readonly (string mnemonic, int imm)[] vpcomuq_pseudo_ops;
 	}
 }

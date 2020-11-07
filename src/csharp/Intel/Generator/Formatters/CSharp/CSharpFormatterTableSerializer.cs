@@ -21,7 +21,6 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-using System.IO;
 using Generator.Enums;
 using Generator.IO;
 
@@ -30,14 +29,14 @@ namespace Generator.Formatters.CSharp {
 		readonly string define;
 		readonly string @namespace;
 
-		public CSharpFormatterTableSerializer(object[][] infos, EnumType ctorKindEnum, string define, string @namespace)
-			: base(infos, CSharpIdentifierConverter.Create(), ctorKindEnum["Previous"]) {
+		public CSharpFormatterTableSerializer(FmtInstructionDef[] defs, EnumType ctorKindEnum, string define, string @namespace)
+			: base(defs, CSharpIdentifierConverter.Create(), ctorKindEnum["Previous"]) {
 			this.define = define;
 			this.@namespace = @namespace;
 		}
 
-		public override string GetFilename(GeneratorContext generatorContext) =>
-			Path.Combine(CSharpConstants.GetDirectory(generatorContext, @namespace), "InstrInfos.g.cs");
+		public override string GetFilename(GenTypes genTypes) =>
+			CSharpConstants.GetFilename(genTypes, @namespace, "InstrInfos.g.cs");
 
 		public override void Serialize(GenTypes genTypes, FileWriter writer, StringsTable stringsTable) {
 			writer.WriteFileHeader();

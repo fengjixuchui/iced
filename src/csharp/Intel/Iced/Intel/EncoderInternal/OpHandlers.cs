@@ -193,11 +193,27 @@ namespace Iced.Intel.EncoderInternal {
 		public OpIb(OpKind opKind) => this.opKind = opKind;
 
 		public override void Encode(Encoder encoder, in Instruction instruction, int operand) {
-			var opImmKind = instruction.GetOpKind(operand);
-			if (!encoder.Verify(operand, opKind, opImmKind))
-				return;
-			encoder.ImmSize = ImmSize.Size1;
-			encoder.Immediate = instruction.Immediate8;
+			switch (encoder.ImmSize) {
+			case ImmSize.Size1:
+				if (!encoder.Verify(operand, OpKind.Immediate8_2nd, instruction.GetOpKind(operand)))
+					return;
+				encoder.ImmSize = ImmSize.Size1_1;
+				encoder.ImmediateHi = instruction.Immediate8_2nd;
+				break;
+			case ImmSize.Size2:
+				if (!encoder.Verify(operand, OpKind.Immediate8_2nd, instruction.GetOpKind(operand)))
+					return;
+				encoder.ImmSize = ImmSize.Size2_1;
+				encoder.ImmediateHi = instruction.Immediate8_2nd;
+				break;
+			default:
+				var opImmKind = instruction.GetOpKind(operand);
+				if (!encoder.Verify(operand, opKind, opImmKind))
+					return;
+				encoder.ImmSize = ImmSize.Size1;
+				encoder.Immediate = instruction.Immediate8;
+				break;
+			}
 		}
 
 		public override OpKind GetImmediateOpKind() => opKind;
@@ -243,39 +259,15 @@ namespace Iced.Intel.EncoderInternal {
 		public override OpKind GetImmediateOpKind() => OpKind.Immediate64;
 	}
 
-	sealed class OpIb21 : Op {
-		public override void Encode(Encoder encoder, in Instruction instruction, int operand) {
-			if (!encoder.Verify(operand, OpKind.Immediate8_2nd, instruction.GetOpKind(operand)))
-				return;
-			Debug.Assert(encoder.ImmSize == ImmSize.Size2);
-			encoder.ImmSize = ImmSize.Size2_1;
-			encoder.ImmediateHi = instruction.Immediate8_2nd;
-		}
-
-		public override OpKind GetImmediateOpKind() => OpKind.Immediate8_2nd;
-	}
-
-	sealed class OpIb11 : Op {
-		public override void Encode(Encoder encoder, in Instruction instruction, int operand) {
-			if (!encoder.Verify(operand, OpKind.Immediate8_2nd, instruction.GetOpKind(operand)))
-				return;
-			Debug.Assert(encoder.ImmSize == ImmSize.Size1);
-			encoder.ImmSize = ImmSize.Size1_1;
-			encoder.ImmediateHi = instruction.Immediate8_2nd;
-		}
-
-		public override OpKind GetImmediateOpKind() => OpKind.Immediate8_2nd;
-	}
-
-	sealed class OpI2 : Op {
+	sealed class OpI4 : Op {
 		public override void Encode(Encoder encoder, in Instruction instruction, int operand) {
 			var opImmKind = instruction.GetOpKind(operand);
 			if (!encoder.Verify(operand, OpKind.Immediate8, opImmKind))
 				return;
 			Debug.Assert(encoder.ImmSize == ImmSize.SizeIbReg);
-			Debug.Assert((encoder.Immediate & 3) == 0);
-			if (instruction.Immediate8 > 3) {
-				encoder.ErrorMessage = $"Operand {operand}: Immediate value must be 0-3, but value is 0x{instruction.Immediate8:X2}";
+			Debug.Assert((encoder.Immediate & 0xF) == 0);
+			if (instruction.Immediate8 > 0xF) {
+				encoder.ErrorMessage = $"Operand {operand}: Immediate value must be 0-15, but value is 0x{instruction.Immediate8:X2}";
 				return;
 			}
 			encoder.ImmSize = ImmSize.Size1;
@@ -474,11 +466,11 @@ namespace Iced.Intel.EncoderInternal {
 	}
 
 #if !NO_VEX || !NO_EVEX
-	sealed class OpVMx : Op {
+	sealed class OpVsib : Op {
 		readonly Register vsibIndexRegLo;
 		readonly Register vsibIndexRegHi;
 
-		public OpVMx(Register regLo, Register regHi) {
+		public OpVsib(Register regLo, Register regHi) {
 			vsibIndexRegLo = regLo;
 			vsibIndexRegHi = regHi;
 		}
@@ -491,11 +483,11 @@ namespace Iced.Intel.EncoderInternal {
 #endif
 
 #if !NO_VEX || !NO_XOP
-	sealed class OpIs4x : Op {
+	sealed class OpIsX : Op {
 		readonly Register regLo;
 		readonly Register regHi;
 
-		public OpIs4x(Register regLo, Register regHi) {
+		public OpIsX(Register regLo, Register regHi) {
 			this.regLo = regLo;
 			this.regHi = regHi;
 		}

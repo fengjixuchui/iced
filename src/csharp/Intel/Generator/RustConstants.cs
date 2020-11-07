@@ -21,6 +21,9 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+using System;
+using Generator.Enums;
+
 namespace Generator {
 	static class RustConstants {
 		// "cargo-fmt" can be anything, rustfmt always sees the attribute
@@ -58,9 +61,21 @@ namespace Generator {
 		public const string FeatureD3now = "#[cfg(not(feature = \"no_d3now\"))]";
 		public const string FeatureEncodingOne = "#[cfg({0})]";
 		public const string FeatureEncodingMany = "#[cfg(any({0}))]";
+		public const string FeatureDecoder = "#[cfg(feature = \"decoder\")]";
 		public const string FeatureDecoderOrEncoder = "#[cfg(any(feature = \"decoder\", feature = \"encoder\"))]";
 		public const string FeatureDecoderOrEncoderOrInstrInfo = "#[cfg(any(feature = \"decoder\", feature = \"encoder\", feature = \"instr_info\"))]";
 		public const string FeatureBigInt = "#[cfg(feature = \"bigint\")]";
 		public const string FeatureNotBigInt = "#[cfg(not(feature = \"bigint\"))]";
+		public const string FeatureGasIntelNasm = "#[cfg(any(feature = \"gas\", feature = \"intel\", feature = \"nasm\"))]";
+
+		public static string? GetFeature(EncodingKind encoding) =>
+			encoding switch {
+				EncodingKind.Legacy => null,
+				EncodingKind.VEX => FeatureVex,
+				EncodingKind.EVEX => FeatureEvex,
+				EncodingKind.XOP => FeatureXop,
+				EncodingKind.D3NOW => FeatureD3now,
+				_ => throw new InvalidOperationException(),
+			};
 	}
 }

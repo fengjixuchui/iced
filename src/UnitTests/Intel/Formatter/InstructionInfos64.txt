@@ -872,7 +872,7 @@ D9 28, Fldcw_m2byte
 66 D9 30, Fnstenv_m14byte
 D9 30, Fnstenv_m28byte
 D9 38, Fnstcw_m2byte
-D9 C3, Fld_st0_sti
+D9 C3, Fld_sti
 D9 CB, Fxch_st0_sti
 D9 D0, Fnop
 D9 E0, Fchs
@@ -4539,18 +4539,18 @@ C4E279 17 CD, VEX_Vptest_xmm_xmmm128
 C4E279 17 10, VEX_Vptest_xmm_xmmm128
 C4E27D 17 CD, VEX_Vptest_ymm_ymmm256
 C4E27D 17 10, VEX_Vptest_ymm_ymmm256
-C4E279 18 CD, VEX_Vbroadcastss_xmm_xmmm32
-C4E279 18 10, VEX_Vbroadcastss_xmm_xmmm32
-C4E27D 18 CD, VEX_Vbroadcastss_ymm_xmmm32
-C4E27D 18 10, VEX_Vbroadcastss_ymm_xmmm32
+C4E279 18 CD, VEX_Vbroadcastss_xmm_xmm
+C4E279 18 10, VEX_Vbroadcastss_xmm_m32
+C4E27D 18 CD, VEX_Vbroadcastss_ymm_xmm
+C4E27D 18 10, VEX_Vbroadcastss_ymm_m32
 62 F27D08 18 D3, EVEX_Vbroadcastss_xmm_k1z_xmmm32
 62 F27D08 18 50 01, EVEX_Vbroadcastss_xmm_k1z_xmmm32
 62 F27D28 18 D3, EVEX_Vbroadcastss_ymm_k1z_xmmm32
 62 F27D28 18 50 01, EVEX_Vbroadcastss_ymm_k1z_xmmm32
 62 F27D48 18 D3, EVEX_Vbroadcastss_zmm_k1z_xmmm32
 62 F27D48 18 50 01, EVEX_Vbroadcastss_zmm_k1z_xmmm32
-C4E27D 19 CD, VEX_Vbroadcastsd_ymm_xmmm64
-C4E27D 19 10, VEX_Vbroadcastsd_ymm_xmmm64
+C4E27D 19 CD, VEX_Vbroadcastsd_ymm_xmm
+C4E27D 19 10, VEX_Vbroadcastsd_ymm_m64
 62 F27D28 19 D3, EVEX_Vbroadcastf32x2_ymm_k1z_xmmm64
 62 F27D28 19 50 01, EVEX_Vbroadcastf32x2_ymm_k1z_xmmm64
 62 F27D48 19 D3, EVEX_Vbroadcastf32x2_zmm_k1z_xmmm64
@@ -7474,22 +7474,22 @@ F2 0F2B 08, Movntsd_m64_xmm
 F2 0F78 D1 A5 FD, Insertq_xmm_xmm_imm8_imm8
 66 0F79 D1, Extrq_xmm_xmm
 F2 0F79 D1, Insertq_xmm_xmm
-C4E349 48 D3 40, VEX_Vpermil2ps_xmm_xmm_xmmm128_xmm_imm2
-C4E349 48 10 41, VEX_Vpermil2ps_xmm_xmm_xmmm128_xmm_imm2
-C4E34D 48 D3 50, VEX_Vpermil2ps_ymm_ymm_ymmm256_ymm_imm2
-C4E34D 48 10 52, VEX_Vpermil2ps_ymm_ymm_ymmm256_ymm_imm2
-C4E3C9 48 D3 40, VEX_Vpermil2ps_xmm_xmm_xmm_xmmm128_imm2
-C4E3C9 48 10 41, VEX_Vpermil2ps_xmm_xmm_xmm_xmmm128_imm2
-C4E3CD 48 D3 50, VEX_Vpermil2ps_ymm_ymm_ymm_ymmm256_imm2
-C4E3CD 48 10 52, VEX_Vpermil2ps_ymm_ymm_ymm_ymmm256_imm2
-C4E349 49 D3 40, VEX_Vpermil2pd_xmm_xmm_xmmm128_xmm_imm2
-C4E349 49 10 41, VEX_Vpermil2pd_xmm_xmm_xmmm128_xmm_imm2
-C4E34D 49 D3 50, VEX_Vpermil2pd_ymm_ymm_ymmm256_ymm_imm2
-C4E34D 49 10 52, VEX_Vpermil2pd_ymm_ymm_ymmm256_ymm_imm2
-C4E3C9 49 D3 40, VEX_Vpermil2pd_xmm_xmm_xmm_xmmm128_imm2
-C4E3C9 49 10 41, VEX_Vpermil2pd_xmm_xmm_xmm_xmmm128_imm2
-C4E3CD 49 D3 50, VEX_Vpermil2pd_ymm_ymm_ymm_ymmm256_imm2
-C4E3CD 49 10 52, VEX_Vpermil2pd_ymm_ymm_ymm_ymmm256_imm2
+C4E349 48 D3 40, VEX_Vpermil2ps_xmm_xmm_xmmm128_xmm_imm4
+C4E349 48 10 44, VEX_Vpermil2ps_xmm_xmm_xmmm128_xmm_imm4
+C4E34D 48 D3 51, VEX_Vpermil2ps_ymm_ymm_ymmm256_ymm_imm4
+C4E34D 48 10 55, VEX_Vpermil2ps_ymm_ymm_ymmm256_ymm_imm4
+C4E3C9 48 D3 42, VEX_Vpermil2ps_xmm_xmm_xmm_xmmm128_imm4
+C4E3C9 48 10 46, VEX_Vpermil2ps_xmm_xmm_xmm_xmmm128_imm4
+C4E3CD 48 D3 53, VEX_Vpermil2ps_ymm_ymm_ymm_ymmm256_imm4
+C4E3CD 48 10 57, VEX_Vpermil2ps_ymm_ymm_ymm_ymmm256_imm4
+C4E349 49 D3 40, VEX_Vpermil2pd_xmm_xmm_xmmm128_xmm_imm4
+C4E349 49 10 48, VEX_Vpermil2pd_xmm_xmm_xmmm128_xmm_imm4
+C4E34D 49 D3 51, VEX_Vpermil2pd_ymm_ymm_ymmm256_ymm_imm4
+C4E34D 49 10 59, VEX_Vpermil2pd_ymm_ymm_ymmm256_ymm_imm4
+C4E3C9 49 D3 42, VEX_Vpermil2pd_xmm_xmm_xmm_xmmm128_imm4
+C4E3C9 49 10 4A, VEX_Vpermil2pd_xmm_xmm_xmm_xmmm128_imm4
+C4E3CD 49 D3 53, VEX_Vpermil2pd_ymm_ymm_ymm_ymmm256_imm4
+C4E3CD 49 10 5F, VEX_Vpermil2pd_ymm_ymm_ymm_ymmm256_imm4
 C4E349 5C D3 40, VEX_Vfmaddsubps_xmm_xmm_xmmm128_xmm
 C4E349 5C 10 40, VEX_Vfmaddsubps_xmm_xmm_xmmm128_xmm
 C4E34D 5C D3 50, VEX_Vfmaddsubps_ymm_ymm_ymmm256_ymm
@@ -7921,60 +7921,60 @@ F3 0F01 28, Rstorssp_m64
 F3 0F01 E8, Setssbsy
 F3 0F01 EA, Saveprevssp
 F3 0F09, Wbnoinvd
-66 0F0D CE, ReservedNop_rm16_r16_0F0D, ForceReservedNop
-66 0F0D 18, ReservedNop_rm16_r16_0F0D, ForceReservedNop
-0F0D CE, ReservedNop_rm32_r32_0F0D, ForceReservedNop
-0F0D 18, ReservedNop_rm32_r32_0F0D, ForceReservedNop
-48 0F0D CE, ReservedNop_rm64_r64_0F0D, ForceReservedNop
-48 0F0D 18, ReservedNop_rm64_r64_0F0D, ForceReservedNop
-66 0F18 CE, ReservedNop_rm16_r16_0F18, ForceReservedNop
-66 0F18 18, ReservedNop_rm16_r16_0F18, ForceReservedNop
-0F18 CE, ReservedNop_rm32_r32_0F18, ForceReservedNop
-0F18 18, ReservedNop_rm32_r32_0F18, ForceReservedNop
-48 0F18 CE, ReservedNop_rm64_r64_0F18, ForceReservedNop
-48 0F18 18, ReservedNop_rm64_r64_0F18, ForceReservedNop
-66 0F19 CE, ReservedNop_rm16_r16_0F19, ForceReservedNop
-66 0F19 18, ReservedNop_rm16_r16_0F19, ForceReservedNop
-0F19 CE, ReservedNop_rm32_r32_0F19, ForceReservedNop
-0F19 18, ReservedNop_rm32_r32_0F19, ForceReservedNop
-48 0F19 CE, ReservedNop_rm64_r64_0F19, ForceReservedNop
-48 0F19 18, ReservedNop_rm64_r64_0F19, ForceReservedNop
-66 0F1A CE, ReservedNop_rm16_r16_0F1A, ForceReservedNop
-66 0F1A 18, ReservedNop_rm16_r16_0F1A, ForceReservedNop
-0F1A CE, ReservedNop_rm32_r32_0F1A, ForceReservedNop
-0F1A 18, ReservedNop_rm32_r32_0F1A, ForceReservedNop
-48 0F1A CE, ReservedNop_rm64_r64_0F1A, ForceReservedNop
-48 0F1A 18, ReservedNop_rm64_r64_0F1A, ForceReservedNop
-66 0F1B CE, ReservedNop_rm16_r16_0F1B, ForceReservedNop
-66 0F1B 18, ReservedNop_rm16_r16_0F1B, ForceReservedNop
-0F1B CE, ReservedNop_rm32_r32_0F1B, ForceReservedNop
-0F1B 18, ReservedNop_rm32_r32_0F1B, ForceReservedNop
-48 0F1B CE, ReservedNop_rm64_r64_0F1B, ForceReservedNop
-48 0F1B 18, ReservedNop_rm64_r64_0F1B, ForceReservedNop
-66 0F1C CE, ReservedNop_rm16_r16_0F1C, ForceReservedNop
-66 0F1C 18, ReservedNop_rm16_r16_0F1C, ForceReservedNop
-0F1C CE, ReservedNop_rm32_r32_0F1C, ForceReservedNop
-0F1C 18, ReservedNop_rm32_r32_0F1C, ForceReservedNop
-48 0F1C CE, ReservedNop_rm64_r64_0F1C, ForceReservedNop
-48 0F1C 18, ReservedNop_rm64_r64_0F1C, ForceReservedNop
-66 0F1D CE, ReservedNop_rm16_r16_0F1D, ForceReservedNop
-66 0F1D 18, ReservedNop_rm16_r16_0F1D, ForceReservedNop
-0F1D CE, ReservedNop_rm32_r32_0F1D, ForceReservedNop
-0F1D 18, ReservedNop_rm32_r32_0F1D, ForceReservedNop
-48 0F1D CE, ReservedNop_rm64_r64_0F1D, ForceReservedNop
-48 0F1D 18, ReservedNop_rm64_r64_0F1D, ForceReservedNop
-66 0F1E CE, ReservedNop_rm16_r16_0F1E, ForceReservedNop
-66 0F1E 18, ReservedNop_rm16_r16_0F1E, ForceReservedNop
-0F1E CE, ReservedNop_rm32_r32_0F1E, ForceReservedNop
-0F1E 18, ReservedNop_rm32_r32_0F1E, ForceReservedNop
-48 0F1E CE, ReservedNop_rm64_r64_0F1E, ForceReservedNop
-48 0F1E 18, ReservedNop_rm64_r64_0F1E, ForceReservedNop
-66 0F1F CE, ReservedNop_rm16_r16_0F1F, ForceReservedNop
-66 0F1F 18, ReservedNop_rm16_r16_0F1F, ForceReservedNop
-0F1F CE, ReservedNop_rm32_r32_0F1F, ForceReservedNop
-0F1F 18, ReservedNop_rm32_r32_0F1F, ForceReservedNop
-48 0F1F CE, ReservedNop_rm64_r64_0F1F, ForceReservedNop
-48 0F1F 18, ReservedNop_rm64_r64_0F1F, ForceReservedNop
+66 0F0D CE, Reservednop_rm16_r16_0F0D, ForceReservedNop
+66 0F0D 18, Reservednop_rm16_r16_0F0D, ForceReservedNop
+0F0D CE, Reservednop_rm32_r32_0F0D, ForceReservedNop
+0F0D 18, Reservednop_rm32_r32_0F0D, ForceReservedNop
+48 0F0D CE, Reservednop_rm64_r64_0F0D, ForceReservedNop
+48 0F0D 18, Reservednop_rm64_r64_0F0D, ForceReservedNop
+66 0F18 CE, Reservednop_rm16_r16_0F18, ForceReservedNop
+66 0F18 18, Reservednop_rm16_r16_0F18, ForceReservedNop
+0F18 CE, Reservednop_rm32_r32_0F18, ForceReservedNop
+0F18 18, Reservednop_rm32_r32_0F18, ForceReservedNop
+48 0F18 CE, Reservednop_rm64_r64_0F18, ForceReservedNop
+48 0F18 18, Reservednop_rm64_r64_0F18, ForceReservedNop
+66 0F19 CE, Reservednop_rm16_r16_0F19, ForceReservedNop
+66 0F19 18, Reservednop_rm16_r16_0F19, ForceReservedNop
+0F19 CE, Reservednop_rm32_r32_0F19, ForceReservedNop
+0F19 18, Reservednop_rm32_r32_0F19, ForceReservedNop
+48 0F19 CE, Reservednop_rm64_r64_0F19, ForceReservedNop
+48 0F19 18, Reservednop_rm64_r64_0F19, ForceReservedNop
+66 0F1A CE, Reservednop_rm16_r16_0F1A, ForceReservedNop
+66 0F1A 18, Reservednop_rm16_r16_0F1A, ForceReservedNop
+0F1A CE, Reservednop_rm32_r32_0F1A, ForceReservedNop
+0F1A 18, Reservednop_rm32_r32_0F1A, ForceReservedNop
+48 0F1A CE, Reservednop_rm64_r64_0F1A, ForceReservedNop
+48 0F1A 18, Reservednop_rm64_r64_0F1A, ForceReservedNop
+66 0F1B CE, Reservednop_rm16_r16_0F1B, ForceReservedNop
+66 0F1B 18, Reservednop_rm16_r16_0F1B, ForceReservedNop
+0F1B CE, Reservednop_rm32_r32_0F1B, ForceReservedNop
+0F1B 18, Reservednop_rm32_r32_0F1B, ForceReservedNop
+48 0F1B CE, Reservednop_rm64_r64_0F1B, ForceReservedNop
+48 0F1B 18, Reservednop_rm64_r64_0F1B, ForceReservedNop
+66 0F1C CE, Reservednop_rm16_r16_0F1C, ForceReservedNop
+66 0F1C 18, Reservednop_rm16_r16_0F1C, ForceReservedNop
+0F1C CE, Reservednop_rm32_r32_0F1C, ForceReservedNop
+0F1C 18, Reservednop_rm32_r32_0F1C, ForceReservedNop
+48 0F1C CE, Reservednop_rm64_r64_0F1C, ForceReservedNop
+48 0F1C 18, Reservednop_rm64_r64_0F1C, ForceReservedNop
+66 0F1D CE, Reservednop_rm16_r16_0F1D, ForceReservedNop
+66 0F1D 18, Reservednop_rm16_r16_0F1D, ForceReservedNop
+0F1D CE, Reservednop_rm32_r32_0F1D, ForceReservedNop
+0F1D 18, Reservednop_rm32_r32_0F1D, ForceReservedNop
+48 0F1D CE, Reservednop_rm64_r64_0F1D, ForceReservedNop
+48 0F1D 18, Reservednop_rm64_r64_0F1D, ForceReservedNop
+66 0F1E CE, Reservednop_rm16_r16_0F1E, ForceReservedNop
+66 0F1E 18, Reservednop_rm16_r16_0F1E, ForceReservedNop
+0F1E CE, Reservednop_rm32_r32_0F1E, ForceReservedNop
+0F1E 18, Reservednop_rm32_r32_0F1E, ForceReservedNop
+48 0F1E CE, Reservednop_rm64_r64_0F1E, ForceReservedNop
+48 0F1E 18, Reservednop_rm64_r64_0F1E, ForceReservedNop
+66 0F1F CE, Reservednop_rm16_r16_0F1F, ForceReservedNop
+66 0F1F 18, Reservednop_rm16_r16_0F1F, ForceReservedNop
+0F1F CE, Reservednop_rm32_r32_0F1F, ForceReservedNop
+0F1F 18, Reservednop_rm32_r32_0F1F, ForceReservedNop
+48 0F1F CE, Reservednop_rm64_r64_0F1F, ForceReservedNop
+48 0F1F 18, Reservednop_rm64_r64_0F1F, ForceReservedNop
 0F1C 00, Cldemote_m8
 F3 0F1E C9, Rdsspd_r32
 F3 48 0F1E C9, Rdsspq_r64
@@ -8294,16 +8294,16 @@ F3 0FA7 C0, Xstore_64
 67 F3 0FA7 C0, Xstore_32
 0FA7 C0, Xstore_64
 67 0FA7 C0, Xstore_32
-F3 0FA7 C8, XcryptEcb_64
-67 F3 0FA7 C8, XcryptEcb_32
-F3 0FA7 D0, XcryptCbc_64
-67 F3 0FA7 D0, XcryptCbc_32
-F3 0FA7 D8, XcryptCtr_64
-67 F3 0FA7 D8, XcryptCtr_32
-F3 0FA7 E0, XcryptCfb_64
-67 F3 0FA7 E0, XcryptCfb_32
-F3 0FA7 E8, XcryptOfb_64
-67 F3 0FA7 E8, XcryptOfb_32
+F3 0FA7 C8, Xcryptecb_64
+67 F3 0FA7 C8, Xcryptecb_32
+F3 0FA7 D0, Xcryptcbc_64
+67 F3 0FA7 D0, Xcryptcbc_32
+F3 0FA7 D8, Xcryptctr_64
+67 F3 0FA7 D8, Xcryptctr_32
+F3 0FA7 E0, Xcryptcfb_64
+67 F3 0FA7 E0, Xcryptcfb_32
+F3 0FA7 E8, Xcryptofb_64
+67 F3 0FA7 E8, Xcryptofb_32
 62 E20E0B 52 D3, EVEX_Vdpbf16ps_xmm_k1z_xmm_xmmm128b32
 62 F24E08 52 50 01, EVEX_Vdpbf16ps_xmm_k1z_xmm_xmmm128b32
 62 F24E9D 52 50 01, EVEX_Vdpbf16ps_xmm_k1z_xmm_xmmm128b32
@@ -8342,13 +8342,14 @@ F2 0F 01 E9, Xresldtrk
 67 0F 01 FE, Invlpgbd
 0F 01 FE, Invlpgbq
 0F 01 FF, Tlbsync
-0F0D 18, PrefetchReserved3_m8
-0F0D 20, PrefetchReserved4_m8
-0F0D 28, PrefetchReserved5_m8
-0F0D 30, PrefetchReserved6_m8
-0F0D 38, PrefetchReserved7_m8
+0F0D 18, Prefetchreserved3_m8
+0F0D 20, Prefetchreserved4_m8
+0F0D 28, Prefetchreserved5_m8
+0F0D 30, Prefetchreserved6_m8
+0F0D 38, Prefetchreserved7_m8
 0FFF, Ud0, AMD
 F3 0F01 D9, Vmgexit
+F2 0F01 D9, Vmgexit_F2
 C4E278 49 00, VEX_Ldtilecfg_m512
 C4E278 49 C0, VEX_Tilerelease
 C4E279 49 00, VEX_Sttilecfg_m512
@@ -8367,3 +8368,41 @@ C4E25B 5E D3, VEX_Tdpbssd_tmm_tmm_tmm
 C4E26A 5C C1, VEX_Tdpbf16ps_tmm_tmm_tmm
 C4E252 5C DC, VEX_Tdpbf16ps_tmm_tmm_tmm
 C4E27A 5C F7, VEX_Tdpbf16ps_tmm_tmm_tmm
+62 F14C98 14 50 01, EVEX_Vunpcklps_xmm_k1z_xmm_xmmm128b32, NoInvalidCheck
+66 0F01 CC, Tdcall
+66 0F01 CD, Seamret
+66 0F01 CE, Seamops
+66 0F01 CF, Seamcall
+F3 0F38 D8 00, Aesencwide128kl_m384
+F3 0F38 D8 08, Aesdecwide128kl_m384
+F3 0F38 D8 10, Aesencwide256kl_m512
+F3 0F38 D8 18, Aesdecwide256kl_m512
+F3 0F38 DC D3, Loadiwkey_xmm_xmm
+F3 0F38 DC 10, Aesenc128kl_xmm_m384
+F3 0F38 DD 10, Aesdec128kl_xmm_m384
+F3 0F38 DE 10, Aesenc256kl_xmm_m512
+F3 0F38 DF 10, Aesdec256kl_xmm_m512
+F3 0F38 FA D3, Encodekey128_r32_r32
+F3 0F38 FB D3, Encodekey256_r32_r32
+F3 0F01 EC, Uiret
+F3 0F01 ED, Testui
+F3 0F01 EE, Clui
+F3 0F01 EF, Stui
+F3 0FC7 F1, Senduipi_r64
+F3 0F3A F0C0 A5, Hreset_imm8
+C4E249 50 10, VEX_Vpdpbusd_xmm_xmm_xmmm128
+C4E249 50 D3, VEX_Vpdpbusd_xmm_xmm_xmmm128
+C4E24D 50 10, VEX_Vpdpbusd_ymm_ymm_ymmm256
+C4E24D 50 D3, VEX_Vpdpbusd_ymm_ymm_ymmm256
+C4E249 51 10, VEX_Vpdpbusds_xmm_xmm_xmmm128
+C4E249 51 D3, VEX_Vpdpbusds_xmm_xmm_xmmm128
+C4E24D 51 10, VEX_Vpdpbusds_ymm_ymm_ymmm256
+C4E24D 51 D3, VEX_Vpdpbusds_ymm_ymm_ymmm256
+C4E249 52 10, VEX_Vpdpwssd_xmm_xmm_xmmm128
+C4E249 52 D3, VEX_Vpdpwssd_xmm_xmm_xmmm128
+C4E24D 52 10, VEX_Vpdpwssd_ymm_ymm_ymmm256
+C4E24D 52 D3, VEX_Vpdpwssd_ymm_ymm_ymmm256
+C4E249 53 10, VEX_Vpdpwssds_xmm_xmm_xmmm128
+C4E249 53 D3, VEX_Vpdpwssds_xmm_xmm_xmmm128
+C4E24D 53 10, VEX_Vpdpwssds_ymm_ymm_ymmm256
+C4E24D 53 D3, VEX_Vpdpwssds_ymm_ymm_ymmm256

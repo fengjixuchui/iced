@@ -51,8 +51,6 @@ namespace IcedFuzzer.Core {
 		NoXOP				= 0x00000004,
 		NoEVEX				= 0x00000008,
 		No3DNow				= 0x00000010,
-		NoAVX				= 0x00000020,
-		NoAVX2				= 0x00000040,
 	}
 
 	public static class InstrGen {
@@ -183,17 +181,6 @@ namespace IcedFuzzer.Core {
 
 				case EncodingKind.VEX:
 					Assert.True((genFlags & InstrGenFlags.NoVEX) == 0);
-					if (CodeUtils.IsSpecialAvxAvx2(instr.Code)) {
-						// AVX (reg,mem) or AVX2 (reg,reg)
-						if (instr.IsModrmMemory) {
-							if ((genFlags & InstrGenFlags.NoAVX) != 0)
-								continue;
-						}
-						else {
-							if ((genFlags & InstrGenFlags.NoAVX2) != 0)
-								continue;
-						}
-					}
 					key = new OpCodeKey(instr.Table, instr.IsModrmMemory);
 					var vexInstrs = vex[key];
 					vexInstrs[byteOpCode].Add(hasModrm, instr);
@@ -336,8 +323,8 @@ namespace IcedFuzzer.Core {
 
 			// Verify that all input Code values are used. Reserved-nops aren't guaranteed to be used
 			// since other instructions can override them.
-			const bool filterOutReservedNop = true;
-			var hash = opCodes.Select(a => a.Code).Where(a => !filterOutReservedNop || !CodeUtils.IsReservedNop(a)).ToHashSet();
+			const bool filterOutReservednop = true;
+			var hash = opCodes.Where(a => !filterOutReservednop || !a.IsReservedNop).Select(a => a.Code).ToHashSet();
 			foreach (var (_, fuzzerOpCodes) in encodingTables.GetOpCodeGroups()) {
 				foreach (var fuzzerOpCode in fuzzerOpCodes) {
 					foreach (var instr in fuzzerOpCode.Instructions)
@@ -511,7 +498,7 @@ namespace IcedFuzzer.Core {
 			return false;
 		}
 
-		sealed class ReservedNopInfo {
+		sealed class ReservednopInfo {
 			public FuzzerInstruction? Instr16;
 			public FuzzerInstruction? Instr32;
 			public FuzzerInstruction? Instr64;
@@ -630,12 +617,12 @@ namespace IcedFuzzer.Core {
 			const int INDEX_NORMAL = 0;
 			const int INDEX_GROUP = 1;
 			var instrHash = new HashSet<LegacyKey>();
-			ReservedNopInfo? resNop = null;
+			ReservednopInfo? resNop = null;
 			foreach (var instruction in instructions) {
 				Assert.True(instruction.RmGroupIndex < 0, "Not supported");
-				if (CodeUtils.IsReservedNop(instruction.Code)) {
+				if (instruction.IsReservedNop) {
 					if (resNop is null)
-						resNop = new ReservedNopInfo();
+						resNop = new ReservednopInfo();
 					// We assume they don't use mandatory prefixes and only use OperandSize (16,32,64)
 					Assert.True(instruction.MandatoryPrefix == MandatoryPrefix.None);
 					switch (instruction.OperandSize) {
@@ -956,7 +943,7 @@ namespace IcedFuzzer.Core {
 			}
 		}
 
-		static void InitializeResNop(int bitness, LegacyFlags[] flags, FuzzerOpCodeTable table, Func<MandatoryPrefix, (OpCode opCode, int groupIndex)> getOpCode, bool isModrmMemory, ref LegacyInfo info, int flagsIndex, ReservedNopInfo resNop, InvalidInstructionKind invalidKind, LegacyFlags ignoredPrefixes) {
+		static void InitializeResNop(int bitness, LegacyFlags[] flags, FuzzerOpCodeTable table, Func<MandatoryPrefix, (OpCode opCode, int groupIndex)> getOpCode, bool isModrmMemory, ref LegacyInfo info, int flagsIndex, ReservednopInfo resNop, InvalidInstructionKind invalidKind, LegacyFlags ignoredPrefixes) {
 			var resNopInstrs = resNop.GetInstructions();
 			if (ignoredPrefixes == 0 && info.IsInvalidMandatoryPrefixInstructions(invalidKind)) {
 				var (opCode, groupIndex) = getOpCode(MandatoryPrefix.None);
@@ -974,7 +961,7 @@ namespace IcedFuzzer.Core {
 		static void InitializeLegacyFlags(LegacyFlags[] flags, FuzzerInstruction instruction, OpCode opCode, int groupIndex) {
 			LegacyFlags flag;
 			// Only a few instructions are NFx: rdrand, rdseed, movbe. bsf/bsr are similar but they allow garbage F2 (F3 is lzcnt/tzcnt).
-			if (instruction.IsNFx)
+			if (instruction.NFx)
 				flag = LegacyFlags.PNP | LegacyFlags.P66;
 			else
 				flag = (LegacyFlags)(1 << (int)instruction.MandatoryPrefix);
@@ -1147,7 +1134,7 @@ namespace IcedFuzzer.Core {
 				var prefix = (MandatoryPrefix)i;
 				var fflags = FuzzerInstructionFlags.None;
 				foreach (var instr in info.Instructions[i]) {
-					if (instr.OperandSize == 64)
+					if (instr.OperandSize == 64 && !instr.DefaultOperandSize64)
 						fflags |= FuzzerInstructionFlags.DontUsePrefixREXW;
 					if (bitness == 16) {
 						if (instr.OperandSize == 32)
@@ -1563,14 +1550,7 @@ namespace IcedFuzzer.Core {
 			// one with reg only ops and the other one with reg+mem ops, eg. `add r16,rm16`
 			// becomes `add r16,m16` and `add r16,r16`.
 			foreach (var opCode in opCodes) {
-				if (opCode.Code == Code.Vmgexit) {
-					Assert.True(opCode.MandatoryPrefix == MandatoryPrefix.PF3 || opCode.MandatoryPrefix == MandatoryPrefix.PF2);
-					foreach (var info in GetInstructions(bitness, opCode, MandatoryPrefix.PF3, opCode.GroupIndex))
-						yield return info;
-					foreach (var info in GetInstructions(bitness, opCode, MandatoryPrefix.PF2, opCode.GroupIndex))
-						yield return info;
-				}
-				else if (IsSETcc(opCode.Code)) {
+				if (IsSETcc(opCode.Code)) {
 					for (int i = 0; i < 8; i++) {
 						foreach (var info in GetInstructions(bitness, opCode, opCode.MandatoryPrefix, i))
 							yield return info;
@@ -1736,7 +1716,7 @@ namespace IcedFuzzer.Core {
 				case OpCodeOperandKind.rax:
 				case OpCodeOperandKind.st0:
 				case OpCodeOperandKind.sti_opcode:
-				case OpCodeOperandKind.imm2_m2z:
+				case OpCodeOperandKind.imm4_m2z:
 				case OpCodeOperandKind.imm8:
 				case OpCodeOperandKind.imm8_const_1:
 				case OpCodeOperandKind.imm8sex16:

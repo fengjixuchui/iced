@@ -38,7 +38,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //! - ✔️The decoder is 4x+ faster than other similar libraries and doesn't allocate any memory
 //! - ✔️Small decoded instructions, only 32 bytes
 //! - ✔️The encoder can be used to re-encode decoded instructions at any address
-//! - ✔️API to get instruction info, eg. read/written registers, memory and rflags bits; CPUID feature flag, flow control info, etc
+//! - ✔️API to get instruction info, eg. read/written registers, memory and rflags bits; CPUID feature flag, control flow info, etc
 //! - ✔️Supports `#![no_std]` and `WebAssembly`
 //! - ✔️Supports `rustc` `1.20.0` or later
 //! - ✔️Few dependencies (`static_assertions` and `lazy_static`)
@@ -50,14 +50,14 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //!
 //! ```toml
 //! [dependencies]
-//! iced-x86 = "1.8.0"
+//! iced-x86 = "1.9.1"
 //! ```
 //!
 //! Or to customize which features to use:
 //!
 //! ```toml
 //! [dependencies.iced-x86]
-//! version = "1.8.0"
+//! version = "1.9.1"
 //! default-features = false
 //! # See below for all features
 //! features = ["std", "decoder", "masm"]
@@ -82,7 +82,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //! - `intel`: (✔️Enabled by default) Enables the Intel (XED) formatter
 //! - `masm`: (✔️Enabled by default) Enables the masm formatter
 //! - `nasm`: (✔️Enabled by default) Enables the nasm formatter
-//! - `fast_fmt`: (✔️Enabled by default) Enables `FastFormatter` (masm syntax) which is ~1.6x faster than the other formatters (the time includes decoding + formatting). Use it if formatting speed is more important than being able to re-assemble formatted instructions or if targeting wasm (this formatter uses less code).
+//! - `fast_fmt`: (✔️Enabled by default) Enables `FastFormatter` (masm syntax) which is ~1.9x faster than the other formatters (the time includes decoding + formatting). Use it if formatting speed is more important than being able to re-assemble formatted instructions or if targeting wasm (this formatter uses less code).
 //! - `db`: Enables creating `db`, `dw`, `dd`, `dq` instructions. It's not enabled by default because it's possible to store up to 16 bytes in the instruction and then use another method to read an enum value.
 //! - `std`: (✔️Enabled by default) Enables the `std` crate. `std` or `no_std` must be defined, but not both.
 //! - `no_std`: Enables `#![no_std]`. `std` or `no_std` must be defined, but not both. This feature uses the `alloc` crate (`rustc` `1.36.0+`) and the `hashbrown` crate.
@@ -93,18 +93,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //! - `no_d3now`: Disables all `3DNow!` instructions. See below for more info.
 //!
 //! If you use `no_vex`, `no_evex`, `no_xop` or `no_d3now`, you should run the generator again (before building iced) to generate even smaller output.
-//!
-//! [.NET Core](https://dotnet.microsoft.com/download) is required. Help:
-//!
-//! ```sh
-//! dotnet run -p src/csharp/Intel/Generator/Generator.csproj -- --help
-//! ```
-//!
-//! No VEX, EVEX, XOP, 3DNow!:
-//!
-//! ```sh
-//! dotnet run -p src/csharp/Intel/Generator/Generator.csproj -- --no-vex --no-evex --no-xop --no-3dnow
-//! ```
 //!
 //! [`BlockEncoder`]: struct.BlockEncoder.html
 //! [`OpCodeInfo`]: struct.OpCodeInfo.html
@@ -158,7 +146,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //!     decoder.set_ip(EXAMPLE_CODE_RIP);
 //!
 //!     // Formatters: Masm*, Nasm*, Gas* (AT&T) and Intel* (XED).
-//!     // There's also `FastFormatter` which is ~1.6x faster. Use it if formatting speed is more
+//!     // There's also `FastFormatter` which is ~1.9x faster. Use it if formatting speed is more
 //!     // important than being able to re-assemble formatted instructions.
 //!     let mut formatter = NasmFormatter::new();
 //!
@@ -411,7 +399,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //! [`Formatter`]: trait.Formatter.html
 //!
 //! ```rust compile_fail
-//! // This example uses crate colored = "1.9.2"
+//! // This example uses crate colored = "2.0.0"
 //! use colored::{ColoredString, Colorize};
 //! use iced_x86::{
 //!     Decoder, DecoderOptions, Formatter, FormatterOutput, FormatterTextKind, IntelFormatter,
@@ -555,7 +543,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //!     for instr in &mut decoder {
 //!         orig_instructions.push(instr);
 //!         total_bytes += instr.len() as u32;
-//!         if instr.code() == Code::INVALID {
+//!         if instr.is_invalid() {
 //!             panic!("Found garbage");
 //!         }
 //!         if total_bytes >= required_bytes {
@@ -684,7 +672,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //! /*
 //! This method produces the following output:
 //! 00007FFAC46ACDA4 mov [rsp+10h],rbx
-//!     OpCode: REX.W 89 /r
+//!     OpCode: o64 89 /r
 //!     Instruction: MOV r/m64, r64
 //!     Encoding: Legacy
 //!     Mnemonic: Mov
@@ -701,7 +689,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //!     Used reg: RBX:Read
 //!     Used mem: [SS:RSP+0x10;UInt64;Write]
 //! 00007FFAC46ACDA9 mov [rsp+18h],rsi
-//!     OpCode: REX.W 89 /r
+//!     OpCode: o64 89 /r
 //!     Instruction: MOV r/m64, r64
 //!     Encoding: Legacy
 //!     Mnemonic: Mov
@@ -718,7 +706,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //!     Used reg: RSI:Read
 //!     Used mem: [SS:RSP+0x18;UInt64;Write]
 //! 00007FFAC46ACDAE push rbp
-//!     OpCode: 50+ro
+//!     OpCode: o64 50+ro
 //!     Instruction: PUSH r64
 //!     Encoding: Legacy
 //!     Mnemonic: Push
@@ -732,7 +720,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //!     Used reg: RSP:ReadWrite
 //!     Used mem: [SS:RSP+0xFFFFFFFFFFFFFFF8;UInt64;Write]
 //! 00007FFAC46ACDAF push rdi
-//!     OpCode: 50+ro
+//!     OpCode: o64 50+ro
 //!     Instruction: PUSH r64
 //!     Encoding: Legacy
 //!     Mnemonic: Push
@@ -746,7 +734,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //!     Used reg: RSP:ReadWrite
 //!     Used mem: [SS:RSP+0xFFFFFFFFFFFFFFF8;UInt64;Write]
 //! 00007FFAC46ACDB0 push r14
-//!     OpCode: 50+ro
+//!     OpCode: o64 50+ro
 //!     Instruction: PUSH r64
 //!     Encoding: Legacy
 //!     Mnemonic: Push
@@ -760,7 +748,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //!     Used reg: RSP:ReadWrite
 //!     Used mem: [SS:RSP+0xFFFFFFFFFFFFFFF8;UInt64;Write]
 //! 00007FFAC46ACDB2 lea rbp,[rsp-100h]
-//!     OpCode: REX.W 8D /r
+//!     OpCode: o64 8D /r
 //!     Instruction: LEA r64, m
 //!     Encoding: Legacy
 //!     Mnemonic: Lea
@@ -775,7 +763,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //!     Used reg: RBP:Write
 //!     Used reg: RSP:Read
 //! 00007FFAC46ACDBA sub rsp,200h
-//!     OpCode: REX.W 81 /5 id
+//!     OpCode: o64 81 /5 id
 //!     Instruction: SUB r/m64, imm32
 //!     Encoding: Legacy
 //!     Mnemonic: Sub
@@ -791,7 +779,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //!     Op1: imm32sex64
 //!     Used reg: RSP:ReadWrite
 //! 00007FFAC46ACDC1 mov rax,[7FFAC47524E0h]
-//!     OpCode: REX.W 8B /r
+//!     OpCode: o64 8B /r
 //!     Instruction: MOV r64, r/m64
 //!     Encoding: Legacy
 //!     Mnemonic: Mov
@@ -807,7 +795,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //!     Used reg: RAX:Write
 //!     Used mem: [DS:0x7FFAC47524E0;UInt64;Read]
 //! 00007FFAC46ACDC8 xor rax,rsp
-//!     OpCode: REX.W 33 /r
+//!     OpCode: o64 33 /r
 //!     Instruction: XOR r64, r/m64
 //!     Encoding: Legacy
 //!     Mnemonic: Xor
@@ -825,7 +813,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //!     Used reg: RAX:ReadWrite
 //!     Used reg: RSP:Read
 //! 00007FFAC46ACDCB mov [rbp+0F0h],rax
-//!     OpCode: REX.W 89 /r
+//!     OpCode: o64 89 /r
 //!     Instruction: MOV r/m64, r64
 //!     Encoding: Legacy
 //!     Mnemonic: Mov
@@ -842,7 +830,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //!     Used reg: RAX:Read
 //!     Used mem: [SS:RBP+0xF0;UInt64;Write]
 //! 00007FFAC46ACDD2 mov r8,[7FFAC474F208h]
-//!     OpCode: REX.W 8B /r
+//!     OpCode: o64 8B /r
 //!     Instruction: MOV r64, r/m64
 //!     Encoding: Legacy
 //!     Mnemonic: Mov
@@ -858,7 +846,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //!     Used reg: R8:Write
 //!     Used mem: [DS:0x7FFAC474F208;UInt64;Read]
 //! 00007FFAC46ACDD9 lea rax,[7FFAC46F4A58h]
-//!     OpCode: REX.W 8D /r
+//!     OpCode: o64 8D /r
 //!     Instruction: LEA r64, m
 //!     Encoding: Legacy
 //!     Mnemonic: Lea
@@ -1034,6 +1022,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //!     if (rf & RflagsBits::AC) != 0 {
 //!         append(&mut sb, "AC");
 //!     }
+//!     if (rf & RflagsBits::UIF) != 0 {
+//!         append(&mut sb, "UIF");
+//!     }
 //!     if sb.is_empty() {
 //!         sb.push_str("<empty>");
 //!     }
@@ -1162,7 +1153,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //! Bumping the minimum supported version of `rustc` is considered a minor breaking change. The minor version of iced-x86 will be incremented.
 
 #![doc(html_logo_url = "https://raw.githubusercontent.com/0xd4d/iced/master/logo.png")]
-#![doc(html_root_url = "https://docs.rs/iced-x86/1.8.0")]
+#![doc(html_root_url = "https://docs.rs/iced-x86/1.9.1")]
 #![allow(unknown_lints)]
 #![allow(bare_trait_objects)] // Not supported if < 1.27.0
 #![warn(absolute_paths_not_starting_with_crate)]
@@ -1186,6 +1177,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #![cfg_attr(feature = "cargo-clippy", allow(clippy::cast_lossless))]
 #![cfg_attr(feature = "cargo-clippy", allow(clippy::cognitive_complexity))]
 #![cfg_attr(feature = "cargo-clippy", allow(clippy::collapsible_if))]
+#![cfg_attr(feature = "cargo-clippy", allow(clippy::match_like_matches_macro))] // Not supported if < 1.42.0
 #![cfg_attr(feature = "cargo-clippy", allow(clippy::match_ref_pats))] // Not supported if < 1.26.0
 #![cfg_attr(feature = "cargo-clippy", allow(clippy::needless_lifetimes))] // Not supported if < 1.31.0
 #![cfg_attr(feature = "cargo-clippy", allow(clippy::ptr_offset_with_cast))] // Not supported if < 1.26.0
@@ -1274,9 +1266,11 @@ mod mnemonic;
 mod mnemonics;
 mod register;
 #[cfg(test)]
-mod test;
+pub(crate) mod test;
 #[cfg(test)]
 pub(crate) mod test_utils;
+#[cfg(any(feature = "decoder", feature = "encoder"))]
+mod tuple_type_tbl;
 
 #[cfg(all(feature = "encoder", feature = "block_encoder"))]
 pub use self::block_enc::*;

@@ -78,13 +78,12 @@ impl FastFormatterOptions {
 	}
 
 	// NOTE: These tables must render correctly by `cargo doc` and inside of IDEs, eg. VSCode.
-	// An extra `-` is needed for `cargo doc`.
 
 	/// Add a space after the operand separator
 	///
 	/// Default | Value | Example
 	/// --------|-------|--------
-	/// - | `true` | `mov rax, rcx`
+	/// &nbsp; | `true` | `mov rax, rcx`
 	/// ✔️ | `false` | `mov rax,rcx`
 	#[cfg_attr(has_must_use, must_use)]
 	#[inline]
@@ -96,7 +95,7 @@ impl FastFormatterOptions {
 	///
 	/// Default | Value | Example
 	/// --------|-------|--------
-	/// - | `true` | `mov rax, rcx`
+	/// &nbsp; | `true` | `mov rax, rcx`
 	/// ✔️ | `false` | `mov rax,rcx`
 	///
 	/// # Arguments
@@ -115,7 +114,7 @@ impl FastFormatterOptions {
 	///
 	/// Default | Value | Example
 	/// --------|-------|--------
-	/// - | `true` | `mov eax,[rip+12345678h]`
+	/// &nbsp; | `true` | `mov eax,[rip+12345678h]`
 	/// ✔️ | `false` | `mov eax,[1029384756AFBECDh]`
 	#[cfg_attr(has_must_use, must_use)]
 	#[inline]
@@ -127,7 +126,7 @@ impl FastFormatterOptions {
 	///
 	/// Default | Value | Example
 	/// --------|-------|--------
-	/// - | `true` | `mov eax,[rip+12345678h]`
+	/// &nbsp; | `true` | `mov eax,[rip+12345678h]`
 	/// ✔️ | `false` | `mov eax,[1029384756AFBECDh]`
 	///
 	/// # Arguments
@@ -147,7 +146,7 @@ impl FastFormatterOptions {
 	/// Default | Value | Example
 	/// --------|-------|--------
 	/// ✔️ | `true` | `vcmpnltsd xmm2,xmm6,xmm3`
-	/// - | `false` | `vcmpsd xmm2,xmm6,xmm3,5`
+	/// &nbsp; | `false` | `vcmpsd xmm2,xmm6,xmm3,5`
 	#[cfg_attr(has_must_use, must_use)]
 	#[inline]
 	pub fn use_pseudo_ops(&self) -> bool {
@@ -159,7 +158,7 @@ impl FastFormatterOptions {
 	/// Default | Value | Example
 	/// --------|-------|--------
 	/// ✔️ | `true` | `vcmpnltsd xmm2,xmm6,xmm3`
-	/// - | `false` | `vcmpsd xmm2,xmm6,xmm3,5`
+	/// &nbsp; | `false` | `vcmpsd xmm2,xmm6,xmm3,5`
 	///
 	/// # Arguments
 	///
@@ -177,7 +176,7 @@ impl FastFormatterOptions {
 	///
 	/// Default | Value | Example
 	/// --------|-------|--------
-	/// - | `true` | `mov eax,[myfield (12345678)]`
+	/// &nbsp; | `true` | `mov eax,[myfield (12345678)]`
 	/// ✔️ | `false` | `mov eax,[myfield]`
 	#[cfg_attr(has_must_use, must_use)]
 	#[inline]
@@ -189,7 +188,7 @@ impl FastFormatterOptions {
 	///
 	/// Default | Value | Example
 	/// --------|-------|--------
-	/// - | `true` | `mov eax,[myfield (12345678)]`
+	/// &nbsp; | `true` | `mov eax,[myfield (12345678)]`
 	/// ✔️ | `false` | `mov eax,[myfield]`
 	///
 	/// # Arguments
@@ -209,7 +208,7 @@ impl FastFormatterOptions {
 	///
 	/// Default | Value | Example
 	/// --------|-------|--------
-	/// - | `true` | `mov eax,ds:[ecx]`
+	/// &nbsp; | `true` | `mov eax,ds:[ecx]`
 	/// ✔️ | `false` | `mov eax,[ecx]`
 	#[cfg_attr(has_must_use, must_use)]
 	#[inline]
@@ -222,7 +221,7 @@ impl FastFormatterOptions {
 	///
 	/// Default | Value | Example
 	/// --------|-------|--------
-	/// - | `true` | `mov eax,ds:[ecx]`
+	/// &nbsp; | `true` | `mov eax,ds:[ecx]`
 	/// ✔️ | `false` | `mov eax,[ecx]`
 	///
 	/// # Arguments
@@ -237,24 +236,24 @@ impl FastFormatterOptions {
 		}
 	}
 
-	/// Always show memory operands' size
+	/// Always show the size of memory operands
 	///
-	/// Default | Value | Example
-	/// --------|-------|--------
-	/// - | `true` | `mov eax,dword ptr [ebx]` / `add byte ptr [eax],0x12`
-	/// ✔️ | `false` | `mov eax,[ebx]` / `add byte ptr [eax],0x12`
+	/// Default | Value | Example | Example
+	/// --------|-------|---------|--------
+	/// &nbsp; | `true` | `mov eax,dword ptr [ebx]` | `add byte ptr [eax],0x12`
+	/// ✔️ | `false` | `mov eax,[ebx]` | `add byte ptr [eax],0x12`
 	#[cfg_attr(has_must_use, must_use)]
 	#[inline]
 	pub fn always_show_memory_size(&self) -> bool {
 		(self.options1 & Flags1::ALWAYS_SHOW_MEMORY_SIZE) != 0
 	}
 
-	/// Always show memory operands' size
+	/// Always show the size of memory operands
 	///
-	/// Default | Value | Example
-	/// --------|-------|--------
-	/// - | `true` | `mov eax,dword ptr [ebx]` / `add byte ptr [eax],0x12`
-	/// ✔️ | `false` | `mov eax,[ebx]` / `add byte ptr [eax],0x12`
+	/// Default | Value | Example | Example
+	/// --------|-------|---------|--------
+	/// &nbsp; | `true` | `mov eax,dword ptr [ebx]` | `add byte ptr [eax],0x12`
+	/// ✔️ | `false` | `mov eax,[ebx]` | `add byte ptr [eax],0x12`
 	///
 	/// # Arguments
 	///
@@ -273,7 +272,7 @@ impl FastFormatterOptions {
 	/// Default | Value | Example
 	/// --------|-------|--------
 	/// ✔️ | `true` | `0xFF`
-	/// - | `false` | `0xff`
+	/// &nbsp; | `false` | `0xff`
 	#[cfg_attr(has_must_use, must_use)]
 	#[inline]
 	pub fn uppercase_hex(&self) -> bool {
@@ -285,7 +284,7 @@ impl FastFormatterOptions {
 	/// Default | Value | Example
 	/// --------|-------|--------
 	/// ✔️ | `true` | `0xFF`
-	/// - | `false` | `0xff`
+	/// &nbsp; | `false` | `0xff`
 	///
 	/// # Arguments
 	///
@@ -303,7 +302,7 @@ impl FastFormatterOptions {
 	///
 	/// Default | Value | Example
 	/// --------|-------|--------
-	/// - | `true` | `0x5A`
+	/// &nbsp; | `true` | `0x5A`
 	/// ✔️ | `false` | `5Ah`
 	#[cfg_attr(has_must_use, must_use)]
 	#[inline]
@@ -311,12 +310,12 @@ impl FastFormatterOptions {
 		(self.options1 & Flags1::USE_HEX_PREFIX) != 0
 	}
 
-	/// Always show memory operands' size
+	/// Use a hex prefix (`0x`) or a hex suffix (`h`)
 	///
 	/// Default | Value | Example
 	/// --------|-------|--------
-	/// - | `true` | `mov eax,dword ptr [ebx]` / `add byte ptr [eax],0x12`
-	/// ✔️ | `false` | `mov eax,[ebx]` / `add byte ptr [eax],0x12`
+	/// &nbsp; | `true` | `0x5A`
+	/// ✔️ | `false` | `5Ah`
 	///
 	/// # Arguments
 	///
@@ -331,10 +330,10 @@ impl FastFormatterOptions {
 	}
 }
 
-/// Fast formatter with less formatting options and with masm-like syntax.
+/// Fast formatter with less formatting options and with a masm-like syntax.
 /// Use it if formatting speed is more important than being able to re-assemble formatted instructions.
 ///
-/// This formatter is 1.5-1.6x faster than the other formatters (the time includes decoding + formatting).
+/// This formatter is 1.8-1.9x faster than the other formatters (the time includes decoding + formatting).
 ///
 /// # Examples
 ///
@@ -469,8 +468,8 @@ impl FastFormatter {
 		// Safe, all Code values are valid indexes
 		let flags = unsafe { *self.d.code_flags.get_unchecked(code as usize) };
 
-		let pseudo_ops_num = flags >> FastFmtFlags::PSEUDO_OPS_KIND_SHIFT;
 		let mut op_count = instruction.op_count();
+		let pseudo_ops_num = flags >> FastFmtFlags::PSEUDO_OPS_KIND_SHIFT;
 		if pseudo_ops_num != 0 && self.d.options.use_pseudo_ops() && instruction.op_kind(op_count - 1) == OpKind::Immediate8 {
 			let mut index = instruction.immediate8() as usize;
 			// Safe, the generator generates only valid values (1-based)
@@ -494,6 +493,7 @@ impl FastFormatter {
 		}
 
 		let prefix_seg = instruction.segment_prefix();
+		const_assert_eq!(0, Register::None as u32);
 		if ((prefix_seg as u32) | super::super::instruction_internal::internal_has_any_of_xacquire_xrelease_lock_rep_repne_prefix(instruction)) != 0 {
 			let has_notrack_prefix = prefix_seg == Register::DS && is_notrack_prefix_branch(code);
 			if !has_notrack_prefix && prefix_seg != Register::None && FastFormatter::show_segment_prefix(instruction, op_count) {
@@ -515,7 +515,9 @@ impl FastFormatter {
 				output.push_str("notrack ");
 			}
 
-			if instruction.has_repe_prefix() && show_rep_or_repe_prefix_bool(code, FastFormatter::SHOW_USELESS_PREFIXES) {
+			if instruction.has_repe_prefix()
+				&& (FastFormatter::SHOW_USELESS_PREFIXES || show_rep_or_repe_prefix_bool(code, FastFormatter::SHOW_USELESS_PREFIXES))
+			{
 				if is_repe_or_repne_instruction(code) {
 					output.push_str("repe ");
 				} else {
@@ -530,7 +532,7 @@ impl FastFormatter {
 					|| code.is_jcc_short_or_near()
 				{
 					output.push_str("bnd ");
-				} else if show_repne_prefix_bool(code, FastFormatter::SHOW_USELESS_PREFIXES) {
+				} else if FastFormatter::SHOW_USELESS_PREFIXES || show_repne_prefix_bool(code, FastFormatter::SHOW_USELESS_PREFIXES) {
 					output.push_str("repne ");
 				}
 			}
@@ -539,7 +541,7 @@ impl FastFormatter {
 		output.push_str(mnemonic);
 
 		let is_declare_data;
-		let declare_data_kind = if (code as u32).wrapping_sub(1) <= (Code::DeclareQword as u32 - 1) {
+		let declare_data_kind = if (code as u32).wrapping_sub(Code::DeclareByte as u32) <= (Code::DeclareQword as u32 - Code::DeclareByte as u32) {
 			op_count = instruction.declare_data_len() as u32;
 			is_declare_data = true;
 			match code {
@@ -727,138 +729,31 @@ impl FastFormatter {
 						}
 					}
 
-					OpKind::MemorySegSI => self.format_memory(
-						output,
-						instruction,
-						operand,
-						instruction.memory_size(),
-						instruction.segment_prefix(),
-						instruction.memory_segment(),
-						Register::SI,
-						Register::None,
-						0,
-						0,
-						0,
-						2,
-					),
-					OpKind::MemorySegESI => self.format_memory(
-						output,
-						instruction,
-						operand,
-						instruction.memory_size(),
-						instruction.segment_prefix(),
-						instruction.memory_segment(),
-						Register::ESI,
-						Register::None,
-						0,
-						0,
-						0,
-						4,
-					),
-					OpKind::MemorySegRSI => self.format_memory(
-						output,
-						instruction,
-						operand,
-						instruction.memory_size(),
-						instruction.segment_prefix(),
-						instruction.memory_segment(),
-						Register::RSI,
-						Register::None,
-						0,
-						0,
-						0,
-						8,
-					),
-					OpKind::MemorySegDI => self.format_memory(
-						output,
-						instruction,
-						operand,
-						instruction.memory_size(),
-						instruction.segment_prefix(),
-						instruction.memory_segment(),
-						Register::DI,
-						Register::None,
-						0,
-						0,
-						0,
-						2,
-					),
-					OpKind::MemorySegEDI => self.format_memory(
-						output,
-						instruction,
-						operand,
-						instruction.memory_size(),
-						instruction.segment_prefix(),
-						instruction.memory_segment(),
-						Register::EDI,
-						Register::None,
-						0,
-						0,
-						0,
-						4,
-					),
-					OpKind::MemorySegRDI => self.format_memory(
-						output,
-						instruction,
-						operand,
-						instruction.memory_size(),
-						instruction.segment_prefix(),
-						instruction.memory_segment(),
-						Register::RDI,
-						Register::None,
-						0,
-						0,
-						0,
-						8,
-					),
-					OpKind::MemoryESDI => self.format_memory(
-						output,
-						instruction,
-						operand,
-						instruction.memory_size(),
-						instruction.segment_prefix(),
-						Register::ES,
-						Register::DI,
-						Register::None,
-						0,
-						0,
-						0,
-						2,
-					),
-					OpKind::MemoryESEDI => self.format_memory(
-						output,
-						instruction,
-						operand,
-						instruction.memory_size(),
-						instruction.segment_prefix(),
-						Register::ES,
-						Register::EDI,
-						Register::None,
-						0,
-						0,
-						0,
-						4,
-					),
-					OpKind::MemoryESRDI => self.format_memory(
-						output,
-						instruction,
-						operand,
-						instruction.memory_size(),
-						instruction.segment_prefix(),
-						Register::ES,
-						Register::RDI,
-						Register::None,
-						0,
-						0,
-						0,
-						8,
-					),
+					OpKind::MemorySegSI => {
+						self.format_memory(output, instruction, operand, instruction.memory_segment(), Register::SI, Register::None, 0, 0, 0, 2)
+					}
+					OpKind::MemorySegESI => {
+						self.format_memory(output, instruction, operand, instruction.memory_segment(), Register::ESI, Register::None, 0, 0, 0, 4)
+					}
+					OpKind::MemorySegRSI => {
+						self.format_memory(output, instruction, operand, instruction.memory_segment(), Register::RSI, Register::None, 0, 0, 0, 8)
+					}
+					OpKind::MemorySegDI => {
+						self.format_memory(output, instruction, operand, instruction.memory_segment(), Register::DI, Register::None, 0, 0, 0, 2)
+					}
+					OpKind::MemorySegEDI => {
+						self.format_memory(output, instruction, operand, instruction.memory_segment(), Register::EDI, Register::None, 0, 0, 0, 4)
+					}
+					OpKind::MemorySegRDI => {
+						self.format_memory(output, instruction, operand, instruction.memory_segment(), Register::RDI, Register::None, 0, 0, 0, 8)
+					}
+					OpKind::MemoryESDI => self.format_memory(output, instruction, operand, Register::ES, Register::DI, Register::None, 0, 0, 0, 2),
+					OpKind::MemoryESEDI => self.format_memory(output, instruction, operand, Register::ES, Register::EDI, Register::None, 0, 0, 0, 4),
+					OpKind::MemoryESRDI => self.format_memory(output, instruction, operand, Register::ES, Register::RDI, Register::None, 0, 0, 0, 8),
 					OpKind::Memory64 => self.format_memory(
 						output,
 						instruction,
 						operand,
-						instruction.memory_size(),
-						instruction.segment_prefix(),
 						instruction.memory_segment(),
 						Register::None,
 						Register::None,
@@ -882,8 +777,6 @@ impl FastFormatter {
 							output,
 							instruction,
 							operand,
-							instruction.memory_size(),
-							instruction.segment_prefix(),
 							instruction.memory_segment(),
 							base_reg,
 							index_reg,
@@ -895,10 +788,12 @@ impl FastFormatter {
 					}
 				}
 
-				if operand == 0 && instruction.has_op_mask() {
-					output.push('{');
-					FastFormatter::format_register(&self.d, output, instruction.op_mask());
-					output.push('}');
+				if operand == 0 && super::super::instruction_internal::internal_has_op_mask_or_zeroing_masking(instruction) {
+					if instruction.has_op_mask() {
+						output.push('{');
+						FastFormatter::format_register(&self.d, output, instruction.op_mask());
+						output.push('}');
+					}
 					if instruction.zeroing_masking() {
 						output.push_str("{z}");
 					}
@@ -971,28 +866,25 @@ impl FastFormatter {
 			output.push_str("0x");
 		}
 
-		let mut digits = 1;
+		let mut digits = 0;
 		let mut tmp = value;
 		loop {
+			digits += 1;
 			tmp >>= 4;
 			if tmp == 0 {
 				break;
 			}
-			digits += 1;
 		}
 
-		let hex_high = if options.uppercase_hex() { 'A' as u32 - 10 } else { 'a' as u32 - 10 };
-		if !options.use_hex_prefix() && digits < 17 && ((value >> ((digits - 1) << 2)) & 0xF) > 9 {
-			digits += 1; // Another 0
+		if !options.use_hex_prefix() && ((value >> ((digits - 1) << 2)) & 0xF) > 9 {
+			output.push('0');
 		}
+		let hex_high = if options.uppercase_hex() { 'A' as u32 - 10 } else { 'a' as u32 - 10 };
 		for i in 0..digits {
 			let index = digits - i - 1;
-			let digit = if index >= 16 { 0 } else { ((value >> (index << 2)) & 0xF) as u32 };
-			if digit > 9 {
-				output.push((digit + hex_high) as u8 as char);
-			} else {
-				output.push((digit + '0' as u32) as u8 as char);
-			}
+			let digit = ((value >> (index << 2)) & 0xF) as u32;
+			let c: char = if digit > 9 { (digit + hex_high) as u8 as char } else { (digit + '0' as u32) as u8 as char };
+			output.push(c);
 		}
 
 		if !options.use_hex_prefix() {
@@ -1005,6 +897,7 @@ impl FastFormatter {
 		FastFormatter::write_symbol2(output, address, symbol, options, true);
 	}
 
+	#[cold]
 	fn write_symbol2(output: &mut String, address: u64, symbol: &SymbolResult, options: &FastFormatterOptions, write_minus_if_signed: bool) {
 		let mut displ = address.wrapping_sub(symbol.address) as i64;
 		if (symbol.flags & SymbolFlags::SIGNED) != 0 {
@@ -1051,8 +944,8 @@ impl FastFormatter {
 	}
 
 	fn format_memory(
-		&mut self, output: &mut String, instruction: &Instruction, operand: u32, mem_size: MemorySize, seg_override: Register, seg_reg: Register,
-		mut base_reg: Register, index_reg: Register, scale: u32, mut displ_size: u32, mut displ: i64, addr_size: u32,
+		&mut self, output: &mut String, instruction: &Instruction, operand: u32, seg_reg: Register, mut base_reg: Register, index_reg: Register,
+		scale: u32, mut displ_size: u32, mut displ: i64, addr_size: u32,
 	) {
 		debug_assert!((scale as usize) < SCALE_NUMBERS.len());
 		debug_assert!(get_address_size_in_bytes(base_reg, index_reg, displ_size, instruction.code_size()) == addr_size);
@@ -1098,14 +991,15 @@ impl FastFormatter {
 		// Safe, all Code values are valid indexes
 		let flags = unsafe { *self.d.code_flags.get_unchecked(instruction.code() as usize) };
 		let show_mem_size =
-			(flags & (FastFmtFlags::FORCE_MEM_SIZE as u8)) != 0 || mem_size.is_broadcast() || self.d.options.always_show_memory_size();
+			(flags & (FastFmtFlags::FORCE_MEM_SIZE as u8)) != 0 || instruction.is_broadcast() || self.d.options.always_show_memory_size();
 		if show_mem_size {
 			// Safe, all MemorySize values are valid indexes
-			let keywords = unsafe { *self.d.all_memory_sizes.get_unchecked(mem_size as usize) };
+			let keywords = unsafe { *self.d.all_memory_sizes.get_unchecked(instruction.memory_size() as usize) };
 			output.push_str(keywords);
 		}
 
 		let code_size = instruction.code_size();
+		let seg_override = instruction.segment_prefix();
 		let notrack_prefix = seg_override == Register::DS
 			&& is_notrack_prefix_branch(instruction.code())
 			&& !((code_size == CodeSize::Code16 || code_size == CodeSize::Code32)
@@ -1113,7 +1007,8 @@ impl FastFormatter {
 		if self.d.options.always_show_segment_register()
 			|| (seg_override != Register::None
 				&& !notrack_prefix
-				&& show_segment_prefix_bool(Register::None, instruction, FastFormatter::SHOW_USELESS_PREFIXES))
+				&& (FastFormatter::SHOW_USELESS_PREFIXES
+					|| show_segment_prefix_bool(Register::None, instruction, FastFormatter::SHOW_USELESS_PREFIXES)))
 		{
 			FastFormatter::format_register(&self.d, output, seg_reg);
 			output.push(':');
@@ -1153,25 +1048,25 @@ impl FastFormatter {
 			FastFormatter::write_symbol2(output, abs_addr, symbol, &self.d.options, false);
 		} else if !need_plus || (displ_size != 0 && displ != 0) {
 			if need_plus {
-				if addr_size == 4 {
-					if (displ as i32) < 0 {
+				if addr_size == 8 {
+					if displ < 0 {
+						displ = displ.wrapping_neg();
 						output.push('-');
-						displ = (displ as i32).wrapping_neg() as u32 as i64;
 					} else {
 						output.push('+');
 					}
-				} else if addr_size == 8 {
-					if displ < 0 {
+				} else if addr_size == 4 {
+					if (displ as i32) < 0 {
+						displ = (displ as i32).wrapping_neg() as u32 as i64;
 						output.push('-');
-						displ = displ.wrapping_neg();
 					} else {
 						output.push('+');
 					}
 				} else {
 					debug_assert_eq!(2, addr_size);
 					if (displ as i16) < 0 {
-						output.push('-');
 						displ = (displ as i16).wrapping_neg() as u16 as i64;
+						output.push('-');
 					} else {
 						output.push('+');
 					}

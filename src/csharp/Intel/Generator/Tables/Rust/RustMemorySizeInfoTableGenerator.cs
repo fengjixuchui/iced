@@ -21,11 +21,10 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-using System.IO;
 using Generator.IO;
 
 namespace Generator.Tables.Rust {
-	[Generator(TargetLanguage.Rust, GeneratorNames.MemorySizeInfo_Table)]
+	[Generator(TargetLanguage.Rust)]
 	sealed class RustMemorySizeInfoTableGenerator {
 		readonly IdentifierConverter idConverter;
 		readonly GeneratorContext generatorContext;
@@ -36,15 +35,15 @@ namespace Generator.Tables.Rust {
 		}
 
 		public void Generate() {
-			var infos = generatorContext.Types.GetObject<MemorySizeInfoTable>(TypeIds.MemorySizeInfoTable).Data;
-			var filename = Path.Combine(generatorContext.RustDir, "memory_size.rs");
+			var defs = generatorContext.Types.GetObject<MemorySizeInfoTable>(TypeIds.MemorySizeInfoTable).Defs;
+			var filename = generatorContext.Types.Dirs.GetRustFilename("memory_size.rs");
 			var updater = new FileUpdater(TargetLanguage.Rust, "MemorySizeInfoTable", filename);
-			updater.Generate(writer => WriteTable(writer, infos));
+			updater.Generate(writer => WriteTable(writer, defs));
 		}
 
-		void WriteTable(FileWriter writer, MemorySizeInfo[] infos) {
+		void WriteTable(FileWriter writer, MemorySizeDef[] defs) {
 			var memSizeName = generatorContext.Types[TypeIds.MemorySize].Name(idConverter);
-			foreach (var info in infos)
+			foreach (var info in defs)
 				writer.WriteLine($"MemorySizeInfo {{ size: {info.Size}, element_size: {info.ElementSize}, memory_size: {memSizeName}::{info.MemorySize.Name(idConverter)}, element_type: {memSizeName}::{info.ElementType.Name(idConverter)}, is_signed: {(info.IsSigned ? "true" : "false")}, is_broadcast: {(info.IsBroadcast ? "true" : "false")} }},");
 		}
 	}

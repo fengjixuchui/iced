@@ -37,7 +37,7 @@ namespace Generator {
 			int c = GetOrder(x!.Language).CompareTo(GetOrder(y!.Language));
 			if (c != 0)
 				return c;
-			return StringComparer.OrdinalIgnoreCase.Compare(x.Name, y.Name);
+			return StringComparer.Ordinal.Compare(x.TypeName, y.TypeName);
 		}
 
 		static int GetOrder(TargetLanguage language) => (int)language;
@@ -49,17 +49,16 @@ namespace Generator {
 		readonly MethodInfo method;
 
 		public TargetLanguage Language { get; }
-		public string Name { get; }
+		public string TypeName { get; }
 
-		public GeneratorInfo(TargetLanguage language, string name, Type type) {
+		public GeneratorInfo(TargetLanguage language, Type type) {
 			Language = language;
-			Name = name;
+			TypeName = type.FullName ?? throw new InvalidOperationException();
 
 			var ctor = type.GetConstructor(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, CallingConventions.Standard, new[] { typeof(GeneratorContext) }, null);
 			if (ctor is null)
 				throw new InvalidOperationException($"Generator {type.FullName} doesn't have a constructor that takes a {nameof(GeneratorContext)} argument");
 			this.ctor = ctor;
-
 			var method = type.GetMethod(InvokeMethodName, 0, BindingFlags.Public | BindingFlags.Instance, null, CallingConventions.Standard, Array.Empty<Type>(), null);
 			if (method is null || method.ReturnType != typeof(void))
 				throw new InvalidOperationException($"Generator {type.FullName} doesn't have a public void {InvokeMethodName}() method");
@@ -92,7 +91,7 @@ namespace Generator {
 				}
 
 				var generatorContext = CreateGeneratorContext(options.GeneratorFlags, options.IncludeCpuid, options.ExcludeCpuid);
-				CodeComments.AddComments(generatorContext.Types, generatorContext.UnitTestsDir);
+				CodeComments.AddComments(generatorContext.Types);
 
 				// It's not much of an improvement in speed at the moment.
 				// Group by lang since different lang gens don't write to the same files.
@@ -176,7 +175,7 @@ Options:
 		}
 
 		static bool TryParseCommandLine(string[] args, [NotNullWhen(true)] out CommandLineOptions? options, [NotNullWhen(false)] out string? error) {
-			if (Enum.GetValues(typeof(TargetLanguage)).Length != 3)
+			if (Enum.GetValues(typeof(TargetLanguage)).Length != 4)
 				throw new InvalidOperationException("Enum updated, update help message and this method");
 			options = new CommandLineOptions();
 			for (int i = 0; i < args.Length; i++) {
@@ -315,7 +314,7 @@ Options:
 				var attr = (GeneratorAttribute?)type.GetCustomAttribute(typeof(GeneratorAttribute));
 				if (attr is null)
 					continue;
-				result.Add(new GeneratorInfo(attr.Language, attr.Name, type));
+				result.Add(new GeneratorInfo(attr.Language, type));
 			}
 			result.Sort(new GeneratorInfoComparer());
 			return result;

@@ -154,6 +154,9 @@ namespace Iced.Intel {
 #endif
 			_ = InstructionOpCounts.OpCount;
 			_ = MnemonicUtilsData.toMnemonic;
+#if !HAS_SPAN
+			_ = TupleTypeTable.tupleTypeData;
+#endif
 #if INSTR_INFO
 			_ = RegisterExtensions.RegisterInfos;
 			_ = MemorySizeExtensions.MemorySizeInfos;
@@ -274,7 +277,8 @@ namespace Iced.Intel {
 		public bool InvalidNoMoreBytes => (state.flags & StateFlags.NoMoreBytes) != 0;
 
 		/// <summary>
-		/// Gets the last decoder error. Call it after calling <see cref="Decode()"/> or <see cref="Decode(out Instruction)"/>
+		/// Gets the last decoder error. Unless you need to know the reason it failed,
+		/// it's better to check <see cref="Instruction.IsInvalid"/>.
 		/// </summary>
 		public DecoderError LastError {
 			get {
@@ -791,11 +795,11 @@ namespace Iced.Intel {
 		internal bool ReadOpMem(ref Instruction instruction) {
 			Debug.Assert(state.Encoding != EncodingKind.EVEX);
 			if (state.addressSize == OpSize.Size64)
-				return ReadOpMem32Or64(ref instruction, Register.RAX, Register.RAX, TupleType.None, false);
+				return ReadOpMem32Or64(ref instruction, Register.RAX, Register.RAX, TupleType.N1, false);
 			else if (state.addressSize == OpSize.Size32)
-				return ReadOpMem32Or64(ref instruction, Register.EAX, Register.EAX, TupleType.None, false);
+				return ReadOpMem32Or64(ref instruction, Register.EAX, Register.EAX, TupleType.N1, false);
 			else {
-				ReadOpMem16(ref instruction, TupleType.None);
+				ReadOpMem16(ref instruction, TupleType.N1);
 				return false;
 			}
 		}
@@ -805,11 +809,11 @@ namespace Iced.Intel {
 			Debug.Assert(state.Encoding != EncodingKind.EVEX);
 			bool isValid;
 			if (state.addressSize == OpSize.Size64)
-				isValid = ReadOpMem32Or64(ref instruction, Register.RAX, Register.RAX, TupleType.None, false);
+				isValid = ReadOpMem32Or64(ref instruction, Register.RAX, Register.RAX, TupleType.N1, false);
 			else if (state.addressSize == OpSize.Size32)
-				isValid = ReadOpMem32Or64(ref instruction, Register.EAX, Register.EAX, TupleType.None, false);
+				isValid = ReadOpMem32Or64(ref instruction, Register.EAX, Register.EAX, TupleType.N1, false);
 			else {
-				ReadOpMem16(ref instruction, TupleType.None);
+				ReadOpMem16(ref instruction, TupleType.N1);
 				isValid = false;
 			}
 			if (invalidCheckMask != 0 && !isValid)
@@ -824,12 +828,12 @@ namespace Iced.Intel {
 			Debug.Assert(state.Encoding != EncodingKind.EVEX);
 			if (is64Mode) {
 				state.addressSize = OpSize.Size64;
-				ReadOpMem32Or64(ref instruction, Register.RAX, Register.RAX, TupleType.None, false);
+				ReadOpMem32Or64(ref instruction, Register.RAX, Register.RAX, TupleType.N1, false);
 			}
 			else if (state.addressSize == OpSize.Size32)
-				ReadOpMem32Or64(ref instruction, Register.EAX, Register.EAX, TupleType.None, false);
+				ReadOpMem32Or64(ref instruction, Register.EAX, Register.EAX, TupleType.N1, false);
 			else {
-				ReadOpMem16(ref instruction, TupleType.None);
+				ReadOpMem16(ref instruction, TupleType.N1);
 				if (invalidCheckMask != 0)
 					SetInvalidInstruction();
 			}
@@ -900,7 +904,7 @@ namespace Iced.Intel {
 			case 1:
 				instruction.InternalSetMemoryDisplSize(1);
 				displIndex = state.instructionLength;
-				if (tupleType == TupleType.None)
+				if (tupleType == TupleType.N1)
 					instruction.MemoryDisplacement = (ushort)(sbyte)ReadByte();
 				else
 					instruction.MemoryDisplacement = (ushort)(GetDisp8N(tupleType) * (uint)(sbyte)ReadByte());
@@ -957,7 +961,7 @@ namespace Iced.Intel {
 					sib = ReadByte();
 					displSizeScale = 1;
 					displIndex = state.instructionLength;
-					if (tupleType == TupleType.None)
+					if (tupleType == TupleType.N1)
 						displ = (uint)(sbyte)ReadByte();
 					else
 						displ = GetDisp8N(tupleType) * (uint)(sbyte)ReadByte();
@@ -967,7 +971,7 @@ namespace Iced.Intel {
 					Debug.Assert(0 <= state.rm && state.rm <= 7 && state.rm != 4);
 					instruction.InternalSetMemoryDisplSize(1);
 					displIndex = state.instructionLength;
-					if (tupleType == TupleType.None)
+					if (tupleType == TupleType.N1)
 						instruction.MemoryDisplacement = (uint)(sbyte)ReadByte();
 					else
 						instruction.MemoryDisplacement = GetDisp8N(tupleType) * (uint)(sbyte)ReadByte();
@@ -1024,122 +1028,9 @@ namespace Iced.Intel {
 			return true;
 		}
 
-		uint GetDisp8N(TupleType tupleType) {
-			switch (tupleType) {
-			case TupleType.None:
-				return 1;
-
-			case TupleType.Full_128:
-				if ((state.flags & StateFlags.b) != 0)
-					return (state.flags & StateFlags.W) != 0 ? 8U : 4;
-				return 16;
-
-			case TupleType.Full_256:
-				if ((state.flags & StateFlags.b) != 0)
-					return (state.flags & StateFlags.W) != 0 ? 8U : 4;
-				return 32;
-
-			case TupleType.Full_512:
-				if ((state.flags & StateFlags.b) != 0)
-					return (state.flags & StateFlags.W) != 0 ? 8U : 4;
-				return 64;
-
-			case TupleType.Half_128:
-				return (state.flags & StateFlags.b) != 0 ? 4U : 8;
-
-			case TupleType.Half_256:
-				return (state.flags & StateFlags.b) != 0 ? 4U : 16;
-
-			case TupleType.Half_512:
-				return (state.flags & StateFlags.b) != 0 ? 4U : 32;
-
-			case TupleType.Full_Mem_128:
-				return 16;
-
-			case TupleType.Full_Mem_256:
-				return 32;
-
-			case TupleType.Full_Mem_512:
-				return 64;
-
-			case TupleType.Tuple1_Scalar:
-				return (state.flags & StateFlags.W) != 0 ? 8U : 4;
-
-			case TupleType.Tuple1_Scalar_1:
-				return 1;
-
-			case TupleType.Tuple1_Scalar_2:
-				return 2;
-
-			case TupleType.Tuple1_Scalar_4:
-				return 4;
-
-			case TupleType.Tuple1_Scalar_8:
-				return 8;
-
-			case TupleType.Tuple1_Fixed_4:
-				return 4;
-
-			case TupleType.Tuple1_Fixed_8:
-				return 8;
-
-			case TupleType.Tuple2:
-				return (state.flags & StateFlags.W) != 0 ? 16U : 8;
-
-			case TupleType.Tuple4:
-				return (state.flags & StateFlags.W) != 0 ? 32U : 16;
-
-			case TupleType.Tuple8:
-				Debug.Assert((state.flags & StateFlags.W) == 0);
-				return 32;
-
-			case TupleType.Tuple1_4X:
-				return 16;
-
-			case TupleType.Half_Mem_128:
-				return 8;
-
-			case TupleType.Half_Mem_256:
-				return 16;
-
-			case TupleType.Half_Mem_512:
-				return 32;
-
-			case TupleType.Quarter_Mem_128:
-				return 4;
-
-			case TupleType.Quarter_Mem_256:
-				return 8;
-
-			case TupleType.Quarter_Mem_512:
-				return 16;
-
-			case TupleType.Eighth_Mem_128:
-				return 2;
-
-			case TupleType.Eighth_Mem_256:
-				return 4;
-
-			case TupleType.Eighth_Mem_512:
-				return 8;
-
-			case TupleType.Mem128:
-				return 16;
-
-			case TupleType.MOVDDUP_128:
-				return 8;
-
-			case TupleType.MOVDDUP_256:
-				return 32;
-
-			case TupleType.MOVDDUP_512:
-				return 64;
-
-			default:
-				Debug.Fail($"Unreachable code");
-				return 0;
-			}
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		uint GetDisp8N(TupleType tupleType) =>
+			TupleTypeTable.GetDisp8N(tupleType, (state.flags & StateFlags.b) != 0);
 
 		/// <summary>
 		/// Gets the offsets of the constants (memory displacement and immediate) in the decoded instruction.

@@ -22,7 +22,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 using System;
-using System.IO;
 using System.Linq;
 using Generator.Enums;
 using Generator.Enums.CSharp;
@@ -30,28 +29,26 @@ using Generator.IO;
 using Generator.Tables;
 
 namespace Generator.Encoder.CSharp {
-	[Generator(TargetLanguage.CSharp, GeneratorNames.Encoder)]
+	[Generator(TargetLanguage.CSharp)]
 	sealed class CSharpEncoderGenerator : EncoderGenerator {
-		readonly GeneratorContext generatorContext;
 		readonly IdentifierConverter idConverter;
 		readonly CSharpEnumsGenerator enumGenerator;
 
 		public CSharpEncoderGenerator(GeneratorContext generatorContext)
 			: base(generatorContext.Types) {
-			this.generatorContext = generatorContext;
 			idConverter = CSharpIdentifierConverter.Create();
 			enumGenerator = new CSharpEnumsGenerator(generatorContext);
 		}
 
 		protected override void Generate(EnumType enumType) => enumGenerator.Generate(enumType);
 
-		protected override void Generate((EnumValue opCodeOperandKind, EnumValue legacyOpKind, OpHandlerKind opHandlerKind, object[] args)[] legacy, (EnumValue opCodeOperandKind, EnumValue vexOpKind, OpHandlerKind opHandlerKind, object[] args)[] vex, (EnumValue opCodeOperandKind, EnumValue xopOpKind, OpHandlerKind opHandlerKind, object[] args)[] xop, (EnumValue opCodeOperandKind, EnumValue evexOpKind, OpHandlerKind opHandlerKind, object[] args)[] evex) {
+		protected override void Generate((EnumValue opCodeOperandKind, OpHandlerKind opHandlerKind, object[] args)[] legacy, (EnumValue opCodeOperandKind, OpHandlerKind opHandlerKind, object[] args)[] vex, (EnumValue opCodeOperandKind, OpHandlerKind opHandlerKind, object[] args)[] xop, (EnumValue opCodeOperandKind, OpHandlerKind opHandlerKind, object[] args)[] evex) {
 			GenerateOpCodeOperandKindTables(legacy, vex, xop, evex);
 			GenerateOpTables(legacy, vex, xop, evex);
 		}
 
-		void GenerateOpCodeOperandKindTables((EnumValue opCodeOperandKind, EnumValue legacyOpKind, OpHandlerKind opHandlerKind, object[] args)[] legacy, (EnumValue opCodeOperandKind, EnumValue vexOpKind, OpHandlerKind opHandlerKind, object[] args)[] vex, (EnumValue opCodeOperandKind, EnumValue xopOpKind, OpHandlerKind opHandlerKind, object[] args)[] xop, (EnumValue opCodeOperandKind, EnumValue evexOpKind, OpHandlerKind opHandlerKind, object[] args)[] evex) {
-			var filename = Path.Combine(CSharpConstants.GetDirectory(generatorContext, CSharpConstants.EncoderNamespace), "OpCodeOperandKinds.g.cs");
+		void GenerateOpCodeOperandKindTables((EnumValue opCodeOperandKind, OpHandlerKind opHandlerKind, object[] args)[] legacy, (EnumValue opCodeOperandKind, OpHandlerKind opHandlerKind, object[] args)[] vex, (EnumValue opCodeOperandKind, OpHandlerKind opHandlerKind, object[] args)[] xop, (EnumValue opCodeOperandKind, OpHandlerKind opHandlerKind, object[] args)[] evex) {
+			var filename = CSharpConstants.GetFilename(genTypes, CSharpConstants.EncoderNamespace, "OpCodeOperandKinds.g.cs");
 			using (var writer = new FileWriter(TargetLanguage.CSharp, FileUtils.OpenWrite(filename))) {
 				writer.WriteFileHeader();
 				writer.WriteLineNoIndent($"#if {CSharpConstants.OpCodeInfoDefine}");
@@ -71,7 +68,7 @@ namespace Generator.Encoder.CSharp {
 				writer.WriteLineNoIndent("#endif");
 			}
 
-			void Generate(FileWriter writer, string name, string? define, (EnumValue opCodeOperandKind, EnumValue opKind, OpHandlerKind opHandlerKind, object[] args)[] table) {
+			void Generate(FileWriter writer, string name, string? define, (EnumValue opCodeOperandKind, OpHandlerKind opHandlerKind, object[] args)[] table) {
 				var declTypeStr = genTypes[TypeIds.OpCodeOperandKind].Name(idConverter);
 				if (define is object)
 					writer.WriteLineNoIndent($"#if {define}");
@@ -82,7 +79,7 @@ namespace Generator.Encoder.CSharp {
 				writer.WriteLineNoIndent("#endif");
 				using (writer.Indent()) {
 					foreach (var info in table)
-						writer.WriteLine($"(byte){declTypeStr}.{info.opCodeOperandKind.Name(idConverter)},// {info.opKind.Name(idConverter)}");
+						writer.WriteLine($"(byte){declTypeStr}.{info.opCodeOperandKind.Name(idConverter)},");
 				}
 				writer.WriteLine("};");
 				if (define is object)
@@ -90,8 +87,8 @@ namespace Generator.Encoder.CSharp {
 			}
 		}
 
-		void GenerateOpTables((EnumValue opCodeOperandKind, EnumValue legacyOpKind, OpHandlerKind opHandlerKind, object[] args)[] legacy, (EnumValue opCodeOperandKind, EnumValue vexOpKind, OpHandlerKind opHandlerKind, object[] args)[] vex, (EnumValue opCodeOperandKind, EnumValue xopOpKind, OpHandlerKind opHandlerKind, object[] args)[] xop, (EnumValue opCodeOperandKind, EnumValue evexOpKind, OpHandlerKind opHandlerKind, object[] args)[] evex) {
-			var filename = Path.Combine(CSharpConstants.GetDirectory(generatorContext, CSharpConstants.EncoderNamespace), "OpTables.g.cs");
+		void GenerateOpTables((EnumValue opCodeOperandKind, OpHandlerKind opHandlerKind, object[] args)[] legacy, (EnumValue opCodeOperandKind, OpHandlerKind opHandlerKind, object[] args)[] vex, (EnumValue opCodeOperandKind, OpHandlerKind opHandlerKind, object[] args)[] xop, (EnumValue opCodeOperandKind, OpHandlerKind opHandlerKind, object[] args)[] evex) {
+			var filename = CSharpConstants.GetFilename(genTypes, CSharpConstants.EncoderNamespace, "OpTables.g.cs");
 			using (var writer = new FileWriter(TargetLanguage.CSharp, FileUtils.OpenWrite(filename))) {
 				writer.WriteFileHeader();
 				writer.WriteLineNoIndent($"#if {CSharpConstants.EncoderDefine}");
@@ -111,7 +108,7 @@ namespace Generator.Encoder.CSharp {
 				writer.WriteLineNoIndent("#endif");
 			}
 
-			void Generate(FileWriter writer, string name, string? define, (EnumValue opCodeOperandKind, EnumValue opKind, OpHandlerKind opHandlerKind, object[] args)[] table) {
+			void Generate(FileWriter writer, string name, string? define, (EnumValue opCodeOperandKind, OpHandlerKind opHandlerKind, object[] args)[] table) {
 				var declTypeStr = genTypes[TypeIds.OpCodeOperandKind].Name(idConverter);
 				if (table[0].opHandlerKind != OpHandlerKind.None)
 					throw new InvalidOperationException();
@@ -151,28 +148,52 @@ namespace Generator.Encoder.CSharp {
 			}
 		}
 
-		protected override void GenerateOpCodeInfo(InstructionDef[] defs) {
+		protected override void GenerateOpCodeInfo(InstructionDef[] defs) =>
 			GenerateTable(defs);
-			GenerateNonZeroOpMaskRegisterCode(defs);
-		}
 
 		void GenerateTable(InstructionDef[] defs) {
-			var filename = Path.Combine(CSharpConstants.GetDirectory(generatorContext, CSharpConstants.EncoderNamespace), "OpCodeHandlers.Data.g.cs");
-			using (var writer = new FileWriter(TargetLanguage.CSharp, FileUtils.OpenWrite(filename))) {
+			var allData = GetData(defs).ToArray();
+			var encFlags1 = allData.Select(a => (a.def, a.encFlags1)).ToArray();
+			var encFlags2 = allData.Select(a => (a.def, a.encFlags2)).ToArray();
+			var encFlags3 = allData.Select(a => (a.def, a.encFlags3)).ToArray();
+			var opcFlags1 = allData.Select(a => (a.def, a.opcFlags1)).ToArray();
+			var opcFlags2 = allData.Select(a => (a.def, a.opcFlags2)).ToArray();
+			var encoderInfo = new (string name, (InstructionDef def, uint value)[] values)[] {
+				("EncFlags1", encFlags1),
+				("EncFlags2", encFlags2),
+				("EncFlags3", encFlags3),
+			};
+			var opCodeInfo = new (string name, (InstructionDef def, uint value)[] values)[] {
+				("OpcFlags1", opcFlags1),
+				("OpcFlags2", opcFlags2),
+			};
+
+			GenerateTables(defs, encoderInfo, CSharpConstants.EncoderDefine, "EncoderData", "EncoderData.g.cs");
+			GenerateTables(defs, opCodeInfo, CSharpConstants.OpCodeInfoDefine, "OpCodeInfoData", "OpCodeInfoData.g.cs");
+		}
+
+		void GenerateTables(InstructionDef[] defs, (string name, (InstructionDef def, uint value)[] values)[] tableData, string define, string className, string filename) {
+			var fullFilename = CSharpConstants.GetFilename(genTypes, CSharpConstants.EncoderNamespace, filename);
+			using (var writer = new FileWriter(TargetLanguage.CSharp, FileUtils.OpenWrite(fullFilename))) {
 				writer.WriteFileHeader();
-				writer.WriteLineNoIndent($"#if {CSharpConstants.EncoderDefine}");
+				writer.WriteLineNoIndent($"#if {define}");
 				writer.WriteLine($"namespace {CSharpConstants.EncoderNamespace} {{");
 				using (writer.Indent()) {
-					writer.WriteLine("static partial class OpCodeHandlers {");
+					writer.WriteLine($"static class {className} {{");
 					using (writer.Indent()) {
-						writer.WriteLine("public static uint[] GetData() =>");
-						using (writer.Indent()) {
-							writer.WriteLine($"new uint[{defs.Length} * 3] {{");
+						foreach (var info in tableData)
+							writer.WriteLine($"internal static readonly uint[] {info.name} = Get{info.name}();");
+						foreach (var info in tableData) {
+							writer.WriteLine();
+							writer.WriteLine($"static uint[] Get{info.name}() =>");
 							using (writer.Indent()) {
-								foreach (var info in GetData(defs))
-									writer.WriteLine($"0x{info.dword1:X8}, 0x{info.dword2:X8}, 0x{info.dword3:X8},// {info.opCode.Code.Name(idConverter)}");
+								writer.WriteLine($"new uint[{defs.Length}] {{");
+								using (writer.Indent()) {
+									foreach (var vinfo in info.values)
+										writer.WriteLine($"0x{vinfo.value:X8},// {vinfo.def.Code.Name(idConverter)}");
+								}
+								writer.WriteLine("};");
 							}
-							writer.WriteLine("};");
 						}
 					}
 					writer.WriteLine("}");
@@ -182,14 +203,8 @@ namespace Generator.Encoder.CSharp {
 			}
 		}
 
-		void GenerateNonZeroOpMaskRegisterCode(InstructionDef[] defs) {
-			var filename = Path.Combine(CSharpConstants.GetDirectory(generatorContext, CSharpConstants.IcedNamespace), "OpCodeInfo.cs");
-			var codeValues = defs.Where(def => (def.OpCodeInfo.Flags & OpCodeFlags.NonZeroOpMaskRegister) != 0).Select(def => def.OpCodeInfo.Code).ToArray();
-			GenerateCases(filename, "NonZeroOpMaskRegister", codeValues, "flags |= Flags.NonZeroOpMaskRegister;");
-		}
-
 		protected override void Generate((EnumValue value, uint size)[] immSizes) {
-			var filename = Path.Combine(CSharpConstants.GetDirectory(generatorContext, CSharpConstants.IcedNamespace), "Encoder.cs");
+			var filename = CSharpConstants.GetFilename(genTypes, CSharpConstants.IcedNamespace, "Encoder.cs");
 			new FileUpdater(TargetLanguage.CSharp, "ImmSizes", filename).Generate(writer => {
 				writer.WriteLine($"static readonly uint[] s_immSizes = new uint[{immSizes.Length}] {{");
 				using (writer.Indent()) {
@@ -197,17 +212,6 @@ namespace Generator.Encoder.CSharp {
 						writer.WriteLine($"{info.size},// {info.value.Name(idConverter)}");
 				}
 				writer.WriteLine("};");
-			});
-		}
-
-		protected override void Generate((EnumValue allowedPrefixes, OpCodeFlags prefixes)[] infos, (EnumValue value, OpCodeFlags flag)[] flagsInfos) {
-			var filename = Path.Combine(CSharpConstants.GetDirectory(generatorContext, CSharpConstants.IcedNamespace), "OpCodeInfo.cs");
-			new FileUpdater(TargetLanguage.CSharp, "AllowedPrefixes", filename).Generate(writer => {
-				foreach (var info in infos) {
-					writer.Write($"{info.allowedPrefixes.DeclaringType.Name(idConverter)}.{info.allowedPrefixes.Name(idConverter)} => ");
-					WriteFlags(writer, idConverter, info.prefixes, flagsInfos, " | ", ".", false);
-					writer.WriteLine(",");
-				}
 			});
 		}
 
@@ -220,7 +224,7 @@ namespace Generator.Encoder.CSharp {
 				using (writer.Indent()) {
 					foreach (var statement in statements)
 						writer.WriteLine(statement);
-					if (!statements[statements.Length - 1].StartsWith("return "))
+					if (!statements[statements.Length - 1].StartsWith("return ", StringComparison.Ordinal))
 						writer.WriteLine("break;");
 				}
 			});
@@ -233,18 +237,13 @@ namespace Generator.Encoder.CSharp {
 			});
 		}
 
-		protected override void GenerateInstructionFormatter((EnumValue code, string result)[] notInstrStrings, EnumValue[] opMaskIsK1, EnumValue[] incVecIndex, EnumValue[] noVecIndex, EnumValue[] swapVecIndex12, EnumValue[] fpuStartOpIndex1) {
-			var filename = Path.Combine(CSharpConstants.GetDirectory(generatorContext, CSharpConstants.EncoderNamespace), "InstructionFormatter.cs");
+		protected override void GenerateInstructionFormatter((EnumValue code, string result)[] notInstrStrings) {
+			var filename = CSharpConstants.GetFilename(genTypes, CSharpConstants.EncoderNamespace, "InstructionFormatter.cs");
 			GenerateNotInstrCases(filename, "InstrFmtNotInstructionString", notInstrStrings);
-			GenerateCases(filename, "OpMaskIsK1", opMaskIsK1, "opMaskIsK1 = true;");
-			GenerateCases(filename, "IncVecIndex", incVecIndex, "vec_index++;");
-			GenerateCases(filename, "NoVecIndex", noVecIndex, "noVecIndex = true;");
-			GenerateCases(filename, "SwapVecIndex12", swapVecIndex12, "swapVecIndex12 = true;");
-			GenerateCases(filename, "FpuStartOpIndex1", fpuStartOpIndex1, "startOpIndex = 1;");
 		}
 
 		protected override void GenerateOpCodeFormatter((EnumValue code, string result)[] notInstrStrings, EnumValue[] hasModRM, EnumValue[] hasVsib) {
-			var filename = Path.Combine(CSharpConstants.GetDirectory(generatorContext, CSharpConstants.EncoderNamespace), "OpCodeFormatter.cs");
+			var filename = CSharpConstants.GetFilename(genTypes, CSharpConstants.EncoderNamespace, "OpCodeFormatter.cs");
 			GenerateNotInstrCases(filename, "OpCodeFmtNotInstructionString", notInstrStrings);
 			GenerateCases(filename, "HasModRM", hasModRM, "return true;");
 			GenerateCases(filename, "HasVsib", hasVsib, "return true;");
@@ -254,7 +253,7 @@ namespace Generator.Encoder.CSharp {
 		}
 
 		protected override void GenerateInstrSwitch(EnumValue[] jccInstr, EnumValue[] simpleBranchInstr, EnumValue[] callInstr, EnumValue[] jmpInstr, EnumValue[] xbeginInstr) {
-			var filename = Path.Combine(CSharpConstants.GetDirectory(generatorContext, CSharpConstants.BlockEncoderNamespace), "Instr.cs");
+			var filename = CSharpConstants.GetFilename(genTypes, CSharpConstants.BlockEncoderNamespace, "Instr.cs");
 			GenerateCases(filename, "JccInstr", jccInstr, "return new JccInstr(blockEncoder, block, instruction);");
 			GenerateCases(filename, "SimpleBranchInstr", simpleBranchInstr, "return new SimpleBranchInstr(blockEncoder, block, instruction);");
 			GenerateCases(filename, "CallInstr", callInstr, "return new CallInstr(blockEncoder, block, instruction);");
@@ -263,9 +262,39 @@ namespace Generator.Encoder.CSharp {
 		}
 
 		protected override void GenerateVsib(EnumValue[] vsib32, EnumValue[] vsib64) {
-			var filename = Path.Combine(CSharpConstants.GetDirectory(generatorContext, CSharpConstants.IcedNamespace), "Instruction.cs");
+			var filename = CSharpConstants.GetFilename(genTypes, CSharpConstants.IcedNamespace, "Instruction.cs");
 			GenerateCases(filename, "Vsib32", vsib32, "vsib64 = false;", "return true;");
 			GenerateCases(filename, "Vsib64", vsib64, "vsib64 = true;", "return true;");
+		}
+
+		protected override void GenerateDecoderOptionsTable((EnumValue decOptionValue, EnumValue decoderOptions)[] values) {
+			var filename = CSharpConstants.GetFilename(genTypes, CSharpConstants.IcedNamespace, "OpCodeInfo.cs");
+			new FileUpdater(TargetLanguage.CSharp, "ToDecoderOptionsTable", filename).Generate(writer => {
+				foreach (var (_, decoderOptions) in values)
+					writer.WriteLine($"{decoderOptions.DeclaringType.Name(idConverter)}.{decoderOptions.Name(idConverter)},");
+			});
+		}
+
+		protected override void GenerateImpliedOps((EncodingKind Encoding, InstrStrImpliedOp[] Ops, InstructionDef[] defs)[] impliedOpsInfo) {
+			var filename = CSharpConstants.GetFilename(genTypes, CSharpConstants.EncoderNamespace, "InstructionFormatter.cs");
+			new FileUpdater(TargetLanguage.CSharp, "PrintImpliedOps", filename).Generate(writer => {
+				foreach (var info in impliedOpsInfo) {
+					var feature = CSharpConstants.GetDefine(info.Encoding);
+					if (feature is object)
+						writer.WriteLineNoIndent($"#if {feature}");
+					foreach (var def in info.defs)
+						writer.WriteLine($"case {def.Code.DeclaringType.Name(idConverter)}.{def.Code.Name(idConverter)}:");
+					using (writer.Indent()) {
+						foreach (var op in info.Ops) {
+							writer.WriteLine("WriteOpSeparator();");
+							writer.WriteLine($"Write(\"{op.Operand}\", upper: {(op.IsUpper ? "true" : "false")});");
+						}
+						writer.WriteLine("break;");
+					}
+					if (feature is object)
+						writer.WriteLineNoIndent("#endif");
+				}
+			});
 		}
 	}
 }

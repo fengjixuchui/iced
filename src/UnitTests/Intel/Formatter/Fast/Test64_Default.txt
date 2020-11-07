@@ -248,9 +248,9 @@ pop r15
 movsxd cx,si
 movsxd bx,[rax]
 movsxd ecx,esi
-movsxd ebx,dword ptr [rax]
+movsxd ebx,[rax]
 movsxd rcx,esi
-movsxd rbx,dword ptr [rax]
+movsxd rbx,[rax]
 push 0A55Ah
 push 0FFFFFFFF8412A55Ah
 imul cx,si,5AA5h
@@ -267,18 +267,18 @@ imul ecx,esi,0FFFFFFA5h
 imul ebx,[rax],0FFFFFFA5h
 imul rcx,rsi,0FFFFFFFFFFFFFFA5h
 imul rbx,[rax],0FFFFFFFFFFFFFFA5h
-ins byte ptr [edi],dx
-ins byte ptr [rdi],dx
-ins word ptr [edi],dx
-ins word ptr [rdi],dx
-ins dword ptr [edi],dx
-ins dword ptr [rdi],dx
-outs dx,byte ptr [esi]
-outs dx,byte ptr [rsi]
-outs dx,word ptr [esi]
-outs dx,word ptr [rsi]
-outs dx,dword ptr [esi]
-outs dx,dword ptr [rsi]
+insb [edi],dx
+insb [rdi],dx
+insw [edi],dx
+insw [rdi],dx
+insd [edi],dx
+insd [rdi],dx
+outsb dx,[esi]
+outsb dx,[rsi]
+outsw dx,[esi]
+outsw dx,[rsi]
+outsd dx,[esi]
+outsd dx,[rsi]
 jo 800000000000004Ch
 jno 800000000000004Ch
 jb 800000000000004Ch
@@ -536,50 +536,50 @@ mov [0F0DEBC9A78563412h],eax
 mov [78563412h],eax
 mov [0F0DEBC9A78563412h],rax
 mov [78563412h],rax
-movs byte ptr [edi],byte ptr [esi]
-movs byte ptr [rdi],byte ptr [rsi]
-movs word ptr [edi],word ptr [esi]
-movs word ptr [rdi],word ptr [rsi]
-movs dword ptr [edi],dword ptr [esi]
-movs dword ptr [rdi],dword ptr [rsi]
-movs qword ptr [edi],qword ptr [esi]
-movs qword ptr [rdi],qword ptr [rsi]
-cmps byte ptr [esi],byte ptr [edi]
-cmps byte ptr [rsi],byte ptr [rdi]
-cmps word ptr [esi],word ptr [edi]
-cmps word ptr [rsi],word ptr [rdi]
-cmps dword ptr [esi],dword ptr [edi]
-cmps dword ptr [rsi],dword ptr [rdi]
-cmps qword ptr [esi],qword ptr [edi]
-cmps qword ptr [rsi],qword ptr [rdi]
+movsb [edi],[esi]
+movsb [rdi],[rsi]
+movsw [edi],[esi]
+movsw [rdi],[rsi]
+movsd [edi],[esi]
+movsd [rdi],[rsi]
+movsq [edi],[esi]
+movsq [rdi],[rsi]
+cmpsb [esi],[edi]
+cmpsb [rsi],[rdi]
+cmpsw [esi],[edi]
+cmpsw [rsi],[rdi]
+cmpsd [esi],[edi]
+cmpsd [rsi],[rdi]
+cmpsq [esi],[edi]
+cmpsq [rsi],[rdi]
 test al,0A5h
 test ax,5AA5h
 test eax,12345AA5h
 test rax,0FFFFFFFF82345AA5h
-stos byte ptr [edi],al
-stos byte ptr [rdi],al
-stos word ptr [edi],ax
-stos word ptr [rdi],ax
-stos dword ptr [edi],eax
-stos dword ptr [rdi],eax
-stos qword ptr [edi],rax
-stos qword ptr [rdi],rax
-lods al,byte ptr [esi]
-lods al,byte ptr [rsi]
-lods ax,word ptr [esi]
-lods ax,word ptr [rsi]
-lods eax,dword ptr [esi]
-lods eax,dword ptr [rsi]
-lods rax,qword ptr [esi]
-lods rax,qword ptr [rsi]
-scas al,byte ptr [edi]
-scas al,byte ptr [rdi]
-scas ax,word ptr [edi]
-scas ax,word ptr [rdi]
-scas eax,dword ptr [edi]
-scas eax,dword ptr [rdi]
-scas rax,qword ptr [edi]
-scas rax,qword ptr [rdi]
+stosb [edi],al
+stosb [rdi],al
+stosw [edi],ax
+stosw [rdi],ax
+stosd [edi],eax
+stosd [rdi],eax
+stosq [edi],rax
+stosq [rdi],rax
+lodsb al,[esi]
+lodsb al,[rsi]
+lodsw ax,[esi]
+lodsw ax,[rsi]
+lodsd eax,[esi]
+lodsd eax,[rsi]
+lodsq rax,[esi]
+lodsq rax,[rsi]
+scasb al,[edi]
+scasb al,[rdi]
+scasw ax,[edi]
+scasw ax,[rdi]
+scasd eax,[edi]
+scasd eax,[rdi]
+scasq rax,[edi]
+scasq rax,[rdi]
 mov al,5Ah
 mov r8b,5Ah
 mov cl,0A5h
@@ -872,7 +872,7 @@ fldcw [rax]
 fnstenv fpuenv14 ptr [rax]
 fnstenv fpuenv28 ptr [rax]
 fnstcw [rax]
-fld st(0),st(3)
+fld st(3)
 fxch st(0),st(3)
 fnop
 fchs
@@ -7067,21 +7067,21 @@ rorx edx,ebx,0A5h
 rorx edx,[rax],5Ah
 rorx rdx,rbx,0A5h
 rorx rdx,[rax],0A5h
-outs dx,byte ptr fs:[rsi]
-outs dx,word ptr fs:[rsi]
-outs dx,dword ptr fs:[rsi]
-movs byte ptr es:[rdi],byte ptr fs:[rsi]
-movs word ptr es:[rdi],word ptr fs:[rsi]
-movs dword ptr es:[rdi],dword ptr fs:[rsi]
-movs qword ptr es:[rdi],qword ptr fs:[rsi]
-cmps byte ptr fs:[rsi],byte ptr es:[rdi]
-cmps word ptr fs:[rsi],word ptr es:[rdi]
-cmps dword ptr fs:[rsi],dword ptr es:[rdi]
-cmps qword ptr fs:[rsi],qword ptr es:[rdi]
-lods al,byte ptr fs:[rsi]
-lods ax,word ptr fs:[rsi]
-lods eax,dword ptr fs:[rsi]
-lods rax,qword ptr fs:[rsi]
+outsb dx,fs:[rsi]
+outsw dx,fs:[rsi]
+outsd dx,fs:[rsi]
+movsb es:[rdi],fs:[rsi]
+movsw es:[rdi],fs:[rsi]
+movsd es:[rdi],fs:[rsi]
+movsq es:[rdi],fs:[rsi]
+cmpsb fs:[rsi],es:[rdi]
+cmpsw fs:[rsi],es:[rdi]
+cmpsd fs:[rsi],es:[rdi]
+cmpsq fs:[rsi],es:[rdi]
+lodsb al,fs:[rsi]
+lodsw ax,fs:[rsi]
+lodsd eax,fs:[rsi]
+lodsq rax,fs:[rsi]
 xlat [ebx]
 xlat fs:[rbx]
 maskmovq fs:[rdi],mm2,mm3
@@ -7475,21 +7475,21 @@ insertq xmm2,xmm1,0A5h,0FDh
 extrq xmm2,xmm1
 insertq xmm2,xmm1
 vpermil2ps xmm2,xmm6,xmm3,xmm4,0h
-vpermil2ps xmm2,xmm6,[rax],xmm4,1h
-vpermil2ps ymm2,ymm6,ymm3,ymm5,0h
-vpermil2ps ymm2,ymm6,[rax],ymm5,2h
-vpermil2ps xmm2,xmm6,xmm4,xmm3,0h
-vpermil2ps xmm2,xmm6,xmm4,[rax],1h
-vpermil2ps ymm2,ymm6,ymm5,ymm3,0h
-vpermil2ps ymm2,ymm6,ymm5,[rax],2h
+vpermil2ps xmm2,xmm6,[rax],xmm4,4h
+vpermil2ps ymm2,ymm6,ymm3,ymm5,1h
+vpermil2ps ymm2,ymm6,[rax],ymm5,5h
+vpermil2ps xmm2,xmm6,xmm4,xmm3,2h
+vpermil2ps xmm2,xmm6,xmm4,[rax],6h
+vpermil2ps ymm2,ymm6,ymm5,ymm3,3h
+vpermil2ps ymm2,ymm6,ymm5,[rax],7h
 vpermil2pd xmm2,xmm6,xmm3,xmm4,0h
-vpermil2pd xmm2,xmm6,[rax],xmm4,1h
-vpermil2pd ymm2,ymm6,ymm3,ymm5,0h
-vpermil2pd ymm2,ymm6,[rax],ymm5,2h
-vpermil2pd xmm2,xmm6,xmm4,xmm3,0h
-vpermil2pd xmm2,xmm6,xmm4,[rax],1h
-vpermil2pd ymm2,ymm6,ymm5,ymm3,0h
-vpermil2pd ymm2,ymm6,ymm5,[rax],2h
+vpermil2pd xmm2,xmm6,[rax],xmm4,8h
+vpermil2pd ymm2,ymm6,ymm3,ymm5,1h
+vpermil2pd ymm2,ymm6,[rax],ymm5,9h
+vpermil2pd xmm2,xmm6,xmm4,xmm3,2h
+vpermil2pd xmm2,xmm6,xmm4,[rax],0Ah
+vpermil2pd ymm2,ymm6,ymm5,ymm3,3h
+vpermil2pd ymm2,ymm6,ymm5,[rax],0Fh
 vfmaddsubps xmm2,xmm6,xmm3,xmm4
 vfmaddsubps xmm2,xmm6,[rax],xmm4
 vfmaddsubps ymm2,ymm6,ymm3,ymm5
@@ -8349,6 +8349,7 @@ prefetch [rax]
 prefetch [rax]
 ud0
 vmgexit
+vmgexit
 ldtilecfg [rax]
 tilerelease
 sttilecfg [rax]
@@ -8367,3 +8368,41 @@ tdpbssd tmm2,tmm3,tmm4
 tdpbf16ps tmm0,tmm1,tmm2
 tdpbf16ps tmm3,tmm4,tmm5
 tdpbf16ps tmm6,tmm7,tmm0
+vunpcklps xmm2{z},xmm6,dword bcst [rax+4h]
+tdcall
+seamret
+seamops
+seamcall
+aesencwide128kl [rax]
+aesdecwide128kl [rax]
+aesencwide256kl [rax]
+aesdecwide256kl [rax]
+loadiwkey xmm2,xmm3
+aesenc128kl xmm2,[rax]
+aesdec128kl xmm2,[rax]
+aesenc256kl xmm2,[rax]
+aesdec256kl xmm2,[rax]
+encodekey128 edx,ebx
+encodekey256 edx,ebx
+uiret
+testui
+clui
+stui
+senduipi rcx
+hreset 0A5h
+vpdpbusd xmm2,xmm6,[rax]
+vpdpbusd xmm2,xmm6,xmm3
+vpdpbusd ymm2,ymm6,[rax]
+vpdpbusd ymm2,ymm6,ymm3
+vpdpbusds xmm2,xmm6,[rax]
+vpdpbusds xmm2,xmm6,xmm3
+vpdpbusds ymm2,ymm6,[rax]
+vpdpbusds ymm2,ymm6,ymm3
+vpdpwssd xmm2,xmm6,[rax]
+vpdpwssd xmm2,xmm6,xmm3
+vpdpwssd ymm2,ymm6,[rax]
+vpdpwssd ymm2,ymm6,ymm3
+vpdpwssds xmm2,xmm6,[rax]
+vpdpwssds xmm2,xmm6,xmm3
+vpdpwssds ymm2,ymm6,[rax]
+vpdpwssds ymm2,ymm6,ymm3

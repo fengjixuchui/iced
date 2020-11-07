@@ -25,46 +25,41 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Text;
 using Generator.Documentation.CSharp;
-using Generator.Encoder;
 using Generator.Enums;
-using Generator.Enums.Encoder;
 using Generator.IO;
+using Generator.Tables;
 
 namespace Generator.Assembler.CSharp {
-	[Generator(TargetLanguage.CSharp, GeneratorNames.CodeAssembler)]
+	[Generator(TargetLanguage.CSharp)]
 	sealed class CSharpAssemblerSyntaxGenerator : AssemblerSyntaxGenerator {
-		readonly GeneratorContext generatorContext;
+		readonly IdentifierConverter idConverter;
 		readonly CSharpDocCommentWriter docWriter;
 
-		static readonly List<(string, int, string[], string)> declareDataList = new List<(string, int, string[], string)>() {
-			("db", 1, new [] {"byte", "sbyte"}, "CreateDeclareByte"),
-			("dw", 2, new [] {"ushort", "short"}, "CreateDeclareWord"),
-			("dd", 4, new [] {"uint", "int", "float"}, "CreateDeclareDword"),
-			("dq", 8, new [] {"ulong", "long", "double"}, "CreateDeclareQword"),
+		static readonly List<(string, int, string[], string)> declareDataList = new List<(string, int, string[], string)> {
+			("db", 1, new[] { "byte", "sbyte" }, "CreateDeclareByte"),
+			("dw", 2, new[] { "ushort", "short" }, "CreateDeclareWord"),
+			("dd", 4, new[] { "uint", "int", "float" }, "CreateDeclareDword"),
+			("dq", 8, new[] { "ulong", "long", "double" }, "CreateDeclareQword"),
 		};
 
 		static readonly Dictionary<int, HashSet<string>> IgnoredTestsPerBitness = new Dictionary<int, HashSet<string>>() {
 			// generates  System.InvalidOperationException : Operand 0: Expected: NearBranch16, actual: NearBranch32 : 0x1 jecxz 000031D0h
-			{16, new HashSet<string>() {"jecxz_lu"}},
+			{ 16, new HashSet<string> { "jecxz_lu" } },
 			// generates  System.InvalidOperationException : Operand 0: Expected: NearBranch32, actual: NearBranch16 : 0x1 jcxz 31D0h
-			{32, new HashSet<string>() {"jcxz_lu"}},
+			{ 32, new HashSet<string> { "jcxz_lu" } },
 		};
 
 		public CSharpAssemblerSyntaxGenerator(GeneratorContext generatorContext)
 			: base(generatorContext.Types) {
-			this.generatorContext = generatorContext;
-			Converter = CSharpIdentifierConverter.Create();
-			docWriter = new CSharpDocCommentWriter(Converter);
+			idConverter = CSharpIdentifierConverter.Create();
+			docWriter = new CSharpDocCommentWriter(idConverter);
 		}
 
-		IdentifierConverter Converter { get; }
-
 		protected override void GenerateRegisters(EnumType registers) {
-			var filename = Path.Combine(CSharpConstants.GetDirectory(generatorContext, CSharpConstants.IcedNamespace), "Assembler", "AssemblerRegisters.g.cs");
+			var filename = CSharpConstants.GetFilename(genTypes, CSharpConstants.IcedNamespace, "Assembler", "AssemblerRegisters.g.cs");
 			using (var writer = new FileWriter(TargetLanguage.CSharp, FileUtils.OpenWrite(filename))) {
 				writer.WriteFileHeader();
 				writer.WriteLineNoIndent($"#if {CSharpConstants.CodeAssemblerDefine}");
@@ -75,28 +70,21 @@ namespace Generator.Assembler.CSharp {
 					writer.WriteLine("public static partial class AssemblerRegisters {");
 					using (writer.Indent()) {
 						foreach (var register in registers.Values) {
-							if (register.Value == 0) {
+							switch ((Register)register.Value) {
+							case Register.None:
+							case Register.EIP:
+							case Register.RIP:
 								continue;
 							}
-							var name = register.Name(Converter);
-							// Discard EIP/RIP from assembler registers
-							if (name == "EIP" || name == "RIP") continue;
-							var registerName = name;
-							switch ((Register)register.Value) {
-							case Register.R8L:
-							case Register.R9L:
-							case Register.R10L:
-							case Register.R11L:
-							case Register.R12L:
-							case Register.R13L:
-							case Register.R14L:
-							case Register.R15L:
-								registerName = registerName.Replace("L", "B");
-								break;
-							}
+
+							var regDef = regDefs[(int)register.Value];
+							var registerName = regDef.Name;
+							// st(0) -> st0 etc
+							if ((Register)regDef.BaseRegister.Value == Register.ST0)
+								registerName = regDef.Register.RawName;
 							var assemblerRegisterName = registerName.ToLowerInvariant();
-							var registerTypeName = $"AssemblerRegister{GetRegisterPostfix((Register)register.Value)}";
-							writer.WriteLine($"public static readonly {registerTypeName} {assemblerRegisterName} = new {registerTypeName}(Register.{name});");
+							var registerTypeName = $"AssemblerRegister{GetRegisterSuffix(regDef)}";
+							writer.WriteLine($"public static readonly {registerTypeName} {assemblerRegisterName} = new {registerTypeName}({register.DeclaringType.Name(idConverter)}.{register.Name(idConverter)});");
 						}
 					}
 					writer.WriteLine("}");
@@ -108,11 +96,11 @@ namespace Generator.Assembler.CSharp {
 
 		protected override void Generate(Dictionary<GroupKey, OpCodeInfoGroup> map, OpCodeInfoGroup[] groups) {
 			GenerateCode(map, groups);
-			GenerateTests(map, groups);
+			GenerateTests(groups);
 		}
 
 		void GenerateCode(Dictionary<GroupKey, OpCodeInfoGroup> map, OpCodeInfoGroup[] groups) {
-			var filename = Path.Combine(CSharpConstants.GetDirectory(generatorContext, CSharpConstants.IcedNamespace), "Assembler", "Assembler.g.cs");
+			var filename = CSharpConstants.GetFilename(genTypes, CSharpConstants.IcedNamespace, "Assembler", "Assembler.g.cs");
 			using (var writer = new FileWriter(TargetLanguage.CSharp, FileUtils.OpenWrite(filename))) {
 				writer.WriteFileHeader();
 				writer.WriteLineNoIndent($"#if {CSharpConstants.CodeAssemblerDefine}");
@@ -122,7 +110,7 @@ namespace Generator.Assembler.CSharp {
 					using (writer.Indent()) {
 						foreach (var group in groups) {
 							var renderArgs = GetRenderArgs(group);
-							var methodName = Converter.Method(group.Name);
+							var methodName = idConverter.Method(group.Name);
 							GenerateAssemblerCode(writer, methodName, group, renderArgs);
 						}
 
@@ -156,12 +144,10 @@ namespace Generator.Assembler.CSharp {
 							writer.Write($"AddInstruction(Instruction.{methodName}(");
 							for (int j = 0; j < i; j++) {
 								if (j > 0) writer.Write(", ");
-								if (typeIndex == 0) {
+								if (typeIndex == 0)
 									writer.Write($"imm{j}");
-								}
-								else {
+								else
 									writer.Write(isUnsafe ? $"*({types[0]}*)&imm{j}" : $"({types[0]})imm{j}");
-								}
 							}
 
 							writer.WriteLine("));");
@@ -173,17 +159,16 @@ namespace Generator.Assembler.CSharp {
 			}
 		}
 
-		void GenerateTests(Dictionary<GroupKey, OpCodeInfoGroup> map, OpCodeInfoGroup[] groups) {
-			foreach (var bitness in new int[] { 16, 32, 64 }) {
+		void GenerateTests(OpCodeInfoGroup[] groups) {
+			foreach (var bitness in new[] { 16, 32, 64 })
 				GenerateAssemblerTests(bitness, groups);
-			}
 		}
 
 		void GenerateAssemblerTests(int bitness, OpCodeInfoGroup[] groups) {
 			const string assemblerTestsNameBase = "AssemblerTests";
 			string testName = assemblerTestsNameBase + bitness;
 
-			var filenameTests = Path.Combine(Path.Combine(generatorContext.CSharpTestsDir, "Intel", assemblerTestsNameBase, $"{testName}.g.cs"));
+			var filenameTests = genTypes.Dirs.GetCSharpTestFilename("Intel", assemblerTestsNameBase, $"{testName}.g.cs");
 			using (var writerTests = new FileWriter(TargetLanguage.CSharp, FileUtils.OpenWrite(filenameTests))) {
 				writerTests.WriteFileHeader();
 				writerTests.WriteLine($"#if {CSharpConstants.CodeAssemblerDefine}");
@@ -198,36 +183,31 @@ namespace Generator.Assembler.CSharp {
 						writerTests.WriteLine($"public {testName}() : base({bitness}) {{ }}");
 						writerTests.WriteLine();
 
-						OpCodeFlags bitnessFlags;
-						switch (bitness) {
-						case 64:
-							bitnessFlags = OpCodeFlags.Mode64;
-							break;
-						case 32:
-							bitnessFlags = OpCodeFlags.Mode32;
-							break;
-						case 16:
-							bitnessFlags = OpCodeFlags.Mode16;
-							break;
-						default:
-							throw new ArgumentException($"{bitness}");
-						}
+						var bitnessFlags = bitness switch {
+							64 => InstructionDefFlags1.Bit64,
+							32 => InstructionDefFlags1.Bit32,
+							16 => InstructionDefFlags1.Bit16,
+							_ => throw new ArgumentException($"{bitness}"),
+						};
 
 						foreach (var group in groups) {
-							var groupBitness = group.AllOpCodeFlags & BitnessMaskFlags;
-							if ((groupBitness & bitnessFlags) == 0) {
+							switch (group.Name) {
+							case "xbegin":
+								// Implemented manually
 								continue;
 							}
+							var groupBitness = group.AllOpCodeFlags & BitnessMaskFlags;
+							if ((groupBitness & bitnessFlags) == 0)
+								continue;
 
 							var renderArgs = GetRenderArgs(@group);
-							var methodName = Converter.Method(@group.Name);
+							var methodName = idConverter.Method(@group.Name);
 							RenderTests(bitness, bitnessFlags, writerTests, methodName, @group, renderArgs);
 						}
 					}
 
-					if (bitness == 64) {
+					if (bitness == 64)
 						GenerateDeclareDataTests(writerTests);
-					}
 
 					writerTests.WriteLine("}");
 				}
@@ -238,7 +218,7 @@ namespace Generator.Assembler.CSharp {
 		}
 
 		void GenerateDeclareDataTests(FileWriter writer) {
-			foreach (var (name, size, types, methodName) in declareDataList) {
+			foreach (var (name, size, types, _) in declareDataList) {
 				int maxSize = 16;
 				int argCount = maxSize / size;
 
@@ -270,21 +250,17 @@ namespace Generator.Assembler.CSharp {
 
 		List<RenderArg> GetRenderArgs(OpCodeInfoGroup group) {
 			var renderArgs = new List<RenderArg>();
-
 			int immArg = 0;
-
 			var signature = group.Signature;
-			var lastArgKind = signature.ArgCount > 0 ? signature.GetArgKind(signature.ArgCount - 1) : ArgKind.Unknown;
 			for (int i = 0; i < signature.ArgCount; i++) {
 				string argName = i == 0 ? "dst" : "src";
-				string argType = $"<unknown>";
 				int maxArgSize = group.MaxArgSizes[i];
 				var argKind = signature.GetArgKind(i);
 
-				if (signature.ArgCount > 2 && i >= 1) {
+				if (signature.ArgCount > 2 && i >= 1)
 					argName = $"src{i}";
-				}
 
+				string argType;
 				switch (argKind) {
 				case ArgKind.Register8:
 					argType = "AssemblerRegister8";
@@ -398,12 +374,10 @@ namespace Generator.Assembler.CSharp {
 						var renderArg = renderArgs[i];
 						writer.Write(", ");
 						writer.Write(renderArg.Name);
-						if (renderArg.Kind == ArgKind.Label) {
+						if (renderArg.Kind == ArgKind.Label)
 							writer.Write(".Id");
-						}
-						else if (renderArg.Kind == ArgKind.Memory) {
+						else if (renderArg.Kind == ArgKind.Memory)
 							writer.Write(".ToMemoryOperand(Bitness)");
-						}
 					}
 
 					writer.WriteLine("));");
@@ -426,12 +400,10 @@ namespace Generator.Assembler.CSharp {
 						GenerateOpCodeSelector(writer, group, renderArgs);
 					}
 
-					if (group.HasLabel) {
+					if (group.HasLabel)
 						writer.Write("AddInstruction(Instruction.CreateBranch(op");
-					}
-					else {
+					else
 						writer.Write("AddInstruction(Instruction.Create(op");
-					}
 
 					for (var i = 0; i < renderArgs.Count; i++) {
 						var renderArg = renderArgs[i];
@@ -441,21 +413,17 @@ namespace Generator.Assembler.CSharp {
 
 						// Perform casting for unsigned
 						if (IsArgKindImmediate(renderArg.Kind) && !renderArg.IsTypeSigned()) {
-							if (renderArg.Type == "ulong") {
+							if (renderArg.Type == "ulong")
 								argName = $"(ulong){argName}";
-							}
-							else if (renderArg.Type != "uint") {
+							else if (renderArg.Type != "uint")
 								argName = $"(uint){argName}";
-							}
 						}
 
 						writer.Write(argName);
-						if (renderArg.Kind == ArgKind.Label) {
+						if (renderArg.Kind == ArgKind.Label)
 							writer.Write(".Id");
-						}
-						else if (renderArg.Kind == ArgKind.Memory) {
+						else if (renderArg.Kind == ArgKind.Memory)
 							writer.Write(".ToMemoryOperand(Bitness)");
-						}
 					}
 
 					writer.Write(")");
@@ -472,12 +440,10 @@ namespace Generator.Assembler.CSharp {
 						for (int i = renderArgs.Count - 1; i >= 0; i--) {
 							var argKind = renderArgs[i].Kind;
 							if (hasBroadcast && argKind == ArgKind.Memory || hasSaeOrRoundingControl && !IsArgKindImmediate(argKind)) {
-								if (hasFlags) {
+								if (hasFlags)
 									writer.Write(" | ");
-								}
-								else {
+								else
 									writer.Write(", ");
-								}
 
 								writer.Write($"{renderArgs[i].Name}.Flags");
 								break;
@@ -505,7 +471,7 @@ namespace Generator.Assembler.CSharp {
 		EncodingFlags GetEncodingFlags(OpCodeInfoGroup group) {
 			var flags = EncodingFlags.None;
 			foreach (var def in group.Items.Select(a => defs[(int)a.Code.Value])) {
-				flags |= def.OpCodeInfo.Encoding switch {
+				flags |= def.Encoding switch {
 					EncodingKind.Legacy => EncodingFlags.Legacy,
 					EncodingKind.VEX => EncodingFlags.VEX,
 					EncodingKind.EVEX => EncodingFlags.EVEX,
@@ -539,7 +505,7 @@ namespace Generator.Assembler.CSharp {
 			return string.Join(" && ", defines.ToArray());
 		}
 
-		void RenderTests(int bitness, OpCodeFlags bitnessFlags, FileWriter writer, string methodName, OpCodeInfoGroup group, List<RenderArg> renderArgs) {
+		void RenderTests(int bitness, InstructionDefFlags1 bitnessFlags, FileWriter writer, string methodName, OpCodeInfoGroup group, List<RenderArg> renderArgs) {
 			var fullMethodName = new StringBuilder();
 			fullMethodName.Append(methodName);
 			foreach (var renderArg in renderArgs) {
@@ -584,9 +550,8 @@ namespace Generator.Assembler.CSharp {
 			}
 
 			var fullMethodNameStr = fullMethodName.ToString();
-			if (IgnoredTestsPerBitness.TryGetValue(bitness, out var ignoredTests) && ignoredTests.Contains(fullMethodNameStr)) {
+			if (IgnoredTestsPerBitness.TryGetValue(bitness, out var ignoredTests) && ignoredTests.Contains(fullMethodNameStr))
 				return;
-			}
 			var define = GetDefine(group);
 			if (define is object)
 				writer.WriteLineNoIndent($"#if {define}");
@@ -594,17 +559,15 @@ namespace Generator.Assembler.CSharp {
 			writer.WriteLine($"public void {fullMethodNameStr}() {{");
 			using (writer.Indent()) {
 				var argValues = new List<object?>(renderArgs.Count);
-				for (int i = 0; i < renderArgs.Count; i++) {
+				for (int i = 0; i < renderArgs.Count; i++)
 					argValues.Add(null);
-				}
 
 				if (group.Flags == OpCodeArgFlags.Pseudo) {
 					Debug.Assert(group.ParentPseudoOpsKind is object);
 					GenerateTestAssemblerForOpCode(writer, bitness, bitnessFlags, @group, methodName, renderArgs, argValues, OpCodeArgFlags.Default, group.ParentPseudoOpsKind.Items[0]);
 				}
-				else {
+				else
 					GenerateOpCodeTest(writer, bitness, bitnessFlags, group, methodName, group.RootOpCodeNode, renderArgs, argValues, OpCodeArgFlags.Default);
-				}
 			}
 			writer.WriteLine("}");
 			if (define is object)
@@ -612,11 +575,10 @@ namespace Generator.Assembler.CSharp {
 			writer.WriteLine(); ;
 		}
 
-		void GenerateOpCodeTest(FileWriter writer, int bitness, OpCodeFlags bitnessFlags, OpCodeInfoGroup group, string methodName, OpCodeNode node, List<RenderArg> args, List<object?> argValues, OpCodeArgFlags contextFlags) {
-			var opCodeInfo = node.OpCodeInfo;
-			if (opCodeInfo is object) {
+		void GenerateOpCodeTest(FileWriter writer, int bitness, InstructionDefFlags1 bitnessFlags, OpCodeInfoGroup group, string methodName, OpCodeNode node, List<RenderArg> args, List<object?> argValues, OpCodeArgFlags contextFlags) {
+			var opCodeInfo = node.Def;
+			if (opCodeInfo is object)
 				GenerateTestAssemblerForOpCode(writer, bitness, bitnessFlags, @group, methodName, args, argValues, contextFlags, opCodeInfo);
-			}
 			else {
 				var selector = node.Selector;
 				Debug.Assert(selector is object);
@@ -629,55 +591,48 @@ namespace Generator.Assembler.CSharp {
 					using (writer.Indent()) {
 						foreach (var argValue in GetArgValue(bitness, selector.Kind, false, selector.ArgIndex, args)) {
 							var newArgValues = new List<object?>(argValues);
-							if (selector.ArgIndex >= 0) {
+							if (selector.ArgIndex >= 0)
 								newArgValues[selector.ArgIndex] = argValue;
-							}
 							GenerateOpCodeTest(writer, bitness, bitnessFlags, group, methodName, selector.IfTrue, args, newArgValues, contextFlags | contextIfFlags);
 						}
 					}
 				}
-				else {
+				else
 					writer.WriteLine($"{{ // skip ({condition}) not supported by this Assembler bitness");
-				}
 
 				if (!selector.IfFalse.IsEmpty) {
 					if (continueElse) {
 						writer.Write("} /* else */ ");
 						foreach (var argValue in GetArgValue(bitness, selector.Kind, true, selector.ArgIndex, args)) {
 							var newArgValues = new List<object?>(argValues);
-							if (selector.ArgIndex >= 0) {
+							if (selector.ArgIndex >= 0)
 								newArgValues[selector.ArgIndex] = argValue;
-							}
 							GenerateOpCodeTest(writer, bitness, bitnessFlags, group, methodName, selector.IfFalse, args, newArgValues, contextFlags | contextElseFlags);
 						}
 					}
-					else {
+					else
 						writer.WriteLine($"}} /* else skip ({condition}) not supported by this Assembler bitness */");
-					}
 				}
 				else {
 					writer.WriteLine("}");
 					writer.WriteLine("{");
 					using (writer.Indent()) {
-
 						bool isGenerated = false;
 						// Don't generate AssertInvalid for unsigned as they are already tested by signed
 						if (isSelectorSupportedByBitness && selector.ArgIndex >= 0 && !group.HasImmediateUnsigned) {
 							var newArg = GetInvalidArgValue(bitness, selector.Kind, selector.ArgIndex);
 							if (newArg is object) {
-
 								// Force fake bitness support to allow to generate a throw for the last selector
 								if (bitness == 64 && (group.Name == "bndcn" ||
 													  group.Name == "bndmk" ||
 													  group.Name == "bndcu" ||
 													  group.Name == "bndcl")) {
-									bitness = bitness == 64 ? 32 : 16;
-									bitnessFlags = bitness == 64 ? OpCodeFlags.Mode32 : OpCodeFlags.Mode16;
+									bitness = 32;
+									bitnessFlags = InstructionDefFlags1.Bit32;
 								}
 
 								writer.WriteLine("AssertInvalid( () => {");
 								using (writer.Indent()) {
-
 									var newArgValues = new List<object?>(argValues);
 									newArgValues[selector.ArgIndex] = newArg;
 									GenerateOpCodeTest(writer, bitness, bitnessFlags, group, methodName, selector.IfTrue, args, newArgValues, contextFlags | contextIfFlags);
@@ -688,12 +643,10 @@ namespace Generator.Assembler.CSharp {
 						}
 
 						if (!isGenerated) {
-							if (group.HasImmediateUnsigned) {
+							if (group.HasImmediateUnsigned)
 								writer.WriteLine($"// Already tested by signed version");
-							}
-							else {
+							else
 								writer.WriteLine($"// See manual test for this case {methodName}");
-							}
 						}
 					}
 					writer.WriteLine("}");
@@ -701,25 +654,23 @@ namespace Generator.Assembler.CSharp {
 			}
 		}
 
-		bool GenerateTestAssemblerForOpCode(FileWriter writer, int bitness, OpCodeFlags bitnessFlags, OpCodeInfoGroup @group, string methodName, List<RenderArg> args, List<object?> argValues, OpCodeArgFlags contextFlags, OpCodeInfo opCodeInfo) {
-			if ((opCodeInfo.Flags & bitnessFlags) == 0) {
+		bool GenerateTestAssemblerForOpCode(FileWriter writer, int bitness, InstructionDefFlags1 bitnessFlags, OpCodeInfoGroup @group, string methodName, List<RenderArg> args, List<object?> argValues, OpCodeArgFlags contextFlags, InstructionDef def) {
+			if ((def.Flags1 & bitnessFlags) == 0) {
 				writer.WriteLine("{");
-				using (writer.Indent()) {
-					writer.WriteLine($"// Skipping {opCodeInfo.Code.RawName} - Not supported for {bitnessFlags}");
-				}
+				using (writer.Indent())
+					writer.WriteLine($"// Skipping {def.Code.RawName} - Not supported for {bitnessFlags}");
 
 				writer.WriteLine("}");
 				return false;
 			}
 
-			bool isMoffs = IsMoffs(opCodeInfo);
-
+			bool isMoffs = IsMoffs(def);
 			var assemblerArgs = new List<string>();
 			var instructionCreateArgs = new List<string>();
 			int forceBitness = 0;
 			// Special case for movdir64b, the memory operand should match the register size
 			// TODO: Ideally this should be handled in the base class
-			switch (GetOrigCodeValue(opCodeInfo.Code)) {
+			switch (GetOrigCodeValue(def.Code)) {
 			case Code.Bndmov_bndm64_bnd:
 			case Code.Bndmov_bnd_bndm64:
 			case Code.Bndldx_bnd_mib:
@@ -754,18 +705,17 @@ namespace Generator.Assembler.CSharp {
 				if (argValueForAssembler is null) {
 					var localBitness = forceBitness > 0 ? forceBitness : bitness;
 
-					argValueForAssembler = GetDefaultArgument(localBitness, opCodeInfo.OpKind(encoderTypes, @group.NumberOfLeadingArgToDiscard + i), isMemory, true, i, renderArg);
-					argValueForInstructionCreate = GetDefaultArgument(localBitness, opCodeInfo.OpKind(encoderTypes, @group.NumberOfLeadingArgToDiscard + i), isMemory, false, i, renderArg);
+					argValueForAssembler = GetDefaultArgument(localBitness, def.OpKinds[@group.NumberOfLeadingArgToDiscard + i], isMemory, true, i, renderArg);
+					argValueForInstructionCreate = GetDefaultArgument(localBitness, def.OpKinds[@group.NumberOfLeadingArgToDiscard + i], isMemory, false, i, renderArg);
 				}
 
-				if ((opCodeInfo.Flags & (OpCodeFlags.OpMaskRegister | OpCodeFlags.NonZeroOpMaskRegister)) != 0 && i == 0) {
+				if ((def.Flags1 & InstructionDefFlags1.OpMaskRegister) != 0 && i == 0) {
 					argValueForAssembler += ".k1";
 					argValueForInstructionCreate += ".k1";
 				}
 
-				if (renderArg.Kind == ArgKind.Memory && (!isMoffs || bitness != 64)) {
+				if (renderArg.Kind == ArgKind.Memory && (!isMoffs || bitness != 64))
 					argValueForInstructionCreate += ".ToMemoryOperand(Bitness)";
-				}
 
 				// Perform casting for unsigned
 				if (IsArgKindImmediate(renderArg.Kind) && !renderArg.IsTypeSigned()) {
@@ -786,59 +736,45 @@ namespace Generator.Assembler.CSharp {
 			}
 
 			var optionalOpCodeFlags = new List<string>();
-			if ((contextFlags & OpCodeArgFlags.HasVex) != 0) {
+			if ((contextFlags & OpCodeArgFlags.HasVex) != 0)
 				optionalOpCodeFlags.Add("LocalOpCodeFlags.PreferVex");
-			}
-			if ((contextFlags & OpCodeArgFlags.HasEvex) != 0) {
+			if ((contextFlags & OpCodeArgFlags.HasEvex) != 0)
 				optionalOpCodeFlags.Add("LocalOpCodeFlags.PreferEvex");
-			}
-			if ((contextFlags & OpCodeArgFlags.HasBroadcast) != 0) {
+			if ((contextFlags & OpCodeArgFlags.HasBroadcast) != 0)
 				optionalOpCodeFlags.Add("LocalOpCodeFlags.Broadcast");
-			}
-			if ((contextFlags & OpCodeArgFlags.HasBranchShort) != 0) {
+			if ((contextFlags & OpCodeArgFlags.HasBranchShort) != 0)
 				optionalOpCodeFlags.Add("LocalOpCodeFlags.PreferBranchShort");
-			}
-			if ((contextFlags & OpCodeArgFlags.HasBranchNear) != 0) {
+			if ((contextFlags & OpCodeArgFlags.HasBranchNear) != 0)
 				optionalOpCodeFlags.Add("LocalOpCodeFlags.PreferBranchNear");
-			}
-			if ((opCodeInfo.Flags & OpCodeFlags.Fwait) != 0) {
+			if ((def.Flags1 & InstructionDefFlags1.Fwait) != 0)
 				optionalOpCodeFlags.Add("LocalOpCodeFlags.Fwait");
-			}
-			if (@group.HasLabel) {
-				optionalOpCodeFlags.Add(
-					(group.Flags & OpCodeArgFlags.HasLabelUlong) == 0
-						? "LocalOpCodeFlags.Branch"
-						: "LocalOpCodeFlags.BranchUlong"
-				);
-			}
+			if (@group.HasLabel)
+				optionalOpCodeFlags.Add((group.Flags & OpCodeArgFlags.HasLabelUlong) == 0 ? "LocalOpCodeFlags.Branch" : "LocalOpCodeFlags.BranchUlong");
 
-			if (group.Flags == OpCodeArgFlags.Pseudo) {
+			if (group.Flags == OpCodeArgFlags.Pseudo)
 				instructionCreateArgs.Add($"{group.PseudoOpsKindImmediateValue}");
-			}
 
-			string beginInstruction = $"Instruction.Create(Code.{opCodeInfo.Code.Name(Converter)}";
+			string beginInstruction = $"Instruction.Create(Code.{def.Code.Name(idConverter)}";
 			string endInstruction = ")";
 			if ((@group.Flags & OpCodeArgFlags.HasSpecialInstructionEncoding) != 0) {
 				beginInstruction = $"Instruction.Create{@group.MemoName}(Bitness";
-				if (@group.HasLabel && (group.Flags & OpCodeArgFlags.HasLabelUlong) == 0) {
+				if (@group.HasLabel && (group.Flags & OpCodeArgFlags.HasLabelUlong) == 0)
 					beginInstruction = $"AssignLabel({beginInstruction}, {instructionCreateArgs[0]})";
-				}
 			}
 			else if (@group.HasLabel) {
-				beginInstruction = (@group.Flags & OpCodeArgFlags.HasLabelUlong) == 0
-					? $"AssignLabel(Instruction.CreateBranch(Code.{opCodeInfo.Code.Name(Converter)}, {instructionCreateArgs[0]})"
-					: $"Instruction.CreateBranch(Code.{opCodeInfo.Code.Name(Converter)}";
+				beginInstruction = (@group.Flags & OpCodeArgFlags.HasLabelUlong) == 0 ?
+					$"AssignLabel(Instruction.CreateBranch(Code.{def.Code.Name(idConverter)}, {instructionCreateArgs[0]})" :
+					$"Instruction.CreateBranch(Code.{def.Code.Name(idConverter)}";
 			}
 
-			if ((opCodeInfo.Flags & (OpCodeFlags.OpMaskRegister | OpCodeFlags.NonZeroOpMaskRegister)) != 0) {
+			if ((def.Flags1 & InstructionDefFlags1.OpMaskRegister) != 0) {
 				beginInstruction = $"ApplyK1({beginInstruction}";
 				endInstruction = "))";
 			}
 
 			// Special case for moffs
-			if (isMoffs && bitness == 64) {
-				beginInstruction = $"CreateMemory64(Code.{opCodeInfo.Code.Name(Converter)}";
-			}
+			if (isMoffs && bitness == 64)
+				beginInstruction = $"CreateMemory64(Code.{def.Code.Name(idConverter)}";
 
 			var assemblerArgsStr = string.Join(", ", assemblerArgs);
 			var instructionCreateArgsStr = instructionCreateArgs.Count > 0 ? $", {string.Join(", ", instructionCreateArgs)}" : string.Empty;
@@ -848,412 +784,151 @@ namespace Generator.Assembler.CSharp {
 			return true;
 		}
 
-		string GetDefaultArgument(int bitness, OpCodeOperandKind kind, bool asMemory, bool isAssembler, int index, RenderArg arg) {
-			switch (kind) {
-			case OpCodeOperandKind.farbr2_2:
-				break;
-			case OpCodeOperandKind.farbr4_2:
-				break;
-			case OpCodeOperandKind.mem_offs:
-				if (bitness == 64 || bitness == 32) {
-					return "__[12345]";
-				}
-				else if (bitness == 16) {
-					return "__[67]";
-				}
-
-				break;
-			case OpCodeOperandKind.mem:
-			case OpCodeOperandKind.mem_mpx:
-				if (bitness == 64) {
-					return "__[rcx]";
-				}
-				else if (bitness == 32) {
-					return "__[ecx]";
-				}
-				else if (bitness == 16) {
-					return "__[si]";
-				}
-				break;
-			case OpCodeOperandKind.sibmem:
-				if (bitness == 64) {
-					return "__[rcx+rdx*4]";
-				}
-				else if (bitness == 32) {
-					return "__[ecx+edx*2]";
-				}
-				else if (bitness == 16) {
-					return "__[ecx+edx*1]";
-				}
-				break;
-			case OpCodeOperandKind.mem_mib:
-				if (bitness == 64) {
-					return "__byte_ptr[rcx]";
-				}
-				else if (bitness == 32) {
-					return "__byte_ptr[ecx]";
-				}
-				else if (bitness == 16) {
-					return "__byte_ptr[si]";
-				}
-				break;
-			case OpCodeOperandKind.mem_vsib32x:
-			case OpCodeOperandKind.mem_vsib64x:
-				if (bitness == 16) {
-					return $"__[esi + xmm{index + 2}]";
-				}
-				else if (bitness == 32) {
-					return $"__[edx + xmm{index + 2}]";
-				}
-				else if (bitness == 64) {
-					return $"__[rdx + xmm{index + 2}]";
-				}
-				break;
-			case OpCodeOperandKind.mem_vsib32y:
-			case OpCodeOperandKind.mem_vsib64y:
-				if (bitness == 16) {
-					return $"__[esi + ymm{index + 2}]";
-				}
-				else if (bitness == 32) {
-					return $"__[edx + ymm{index + 2}]";
-				}
-				else if (bitness == 64) {
-					return $"__[rdx + ymm{index + 2}]";
-				}
-				break;
-			case OpCodeOperandKind.mem_vsib32z:
-			case OpCodeOperandKind.mem_vsib64z:
-				if (bitness == 16) {
-					return $"__[esi + zmm{index + 2}]";
-				}
-				else if (bitness == 32) {
-					return $"__[edx + zmm{index + 2}]";
-				}
-				else if (bitness == 64) {
-					return $"__[rdx + zmm{index + 2}]";
-				}
-				break;
-			case OpCodeOperandKind.r8_or_mem:
-				if (asMemory) {
-					if (bitness == 64) {
-						return "__byte_ptr[rcx]";
-					}
-					else if (bitness == 32) {
-						return "__byte_ptr[ecx]";
-					}
-					else if (bitness == 16) {
-						return "__byte_ptr[si]";
-					}
-
-					break;
-				}
-				else {
-					return "bl";
-				}
-			case OpCodeOperandKind.r16_or_mem:
-				if (asMemory) {
-					if (bitness == 64) {
-						return "__word_ptr[rcx]";
-					}
-					else if (bitness == 32) {
-						return "__word_ptr[ecx]";
-					}
-					else if (bitness == 16) {
-						return "__word_ptr[si]";
-					}
-				}
-				else {
-					return "bx";
-				}
-
-				break;
-			case OpCodeOperandKind.r32_or_mem:
-			case OpCodeOperandKind.r32_or_mem_mpx:
-				if (asMemory) {
-					if (bitness == 64) {
-						return "__dword_ptr[rcx]";
-					}
-					else if (bitness == 32) {
-						return "__dword_ptr[ecx]";
-					}
-					else if (bitness == 16) {
-						return "__dword_ptr[si]";
-					}
-				}
-				else {
-					return "ebx";
-				}
-
-				break;
-			case OpCodeOperandKind.r64_or_mem:
-			case OpCodeOperandKind.r64_or_mem_mpx:
-				if (asMemory) {
-					if (bitness == 64) {
-						return "__qword_ptr[rcx]";
-					}
-					else if (bitness == 32) {
-						return "__qword_ptr[ecx]";
-					}
-					else if (bitness == 16) {
-						return "__qword_ptr[si]";
-					}
-				}
-				else {
-					return "rbx";
-				}
-
-				break;
-			case OpCodeOperandKind.mm_or_mem:
-				if (asMemory) {
-					if (bitness == 64) {
-						return "__qword_ptr[rcx]";
-					}
-					else if (bitness == 32) {
-						return "__qword_ptr[ecx]";
-					}
-					else if (bitness == 16) {
-						return "__qword_ptr[si]";
-					}
-				}
-				else {
-					return "mm7";
-				}
-
-				break;
-			case OpCodeOperandKind.xmm_or_mem:
-				if (asMemory) {
-					if (bitness == 64) {
-						return "__xmmword_ptr[rcx]";
-					}
-					else if (bitness == 32) {
-						return "__xmmword_ptr[ecx]";
-					}
-					else if (bitness == 16) {
-						return "__xmmword_ptr[si]";
-					}
-				}
-				else {
-					return bitness <= 32 ? "xmm7" : "xmm9";
-				}
-
-				break;
-			case OpCodeOperandKind.ymm_or_mem:
-				if (asMemory) {
-					if (bitness == 64) {
-						return "__ymmword_ptr[rcx]";
-					}
-					else if (bitness == 32) {
-						return "__ymmword_ptr[ecx]";
-					}
-					else if (bitness == 16) {
-						return "__ymmword_ptr[si]";
-					}
-				}
-				else {
-					return $"ymm{index + 2}";
-				}
-				break;
-			case OpCodeOperandKind.zmm_or_mem:
-				if (asMemory) {
-					if (bitness == 64) {
-						return "__zmmword_ptr[rcx]";
-					}
-					else if (bitness == 32) {
-						return "__zmmword_ptr[ecx]";
-					}
-					else if (bitness == 16) {
-						return "__zmmword_ptr[si]";
-					}
-				}
-				else {
-					return $"zmm{index + 2}";
-				}
-
-				break;
-			case OpCodeOperandKind.bnd_or_mem_mpx:
-				if (asMemory) {
-					if (bitness == 64) {
-						return "__[rcx]";
-					}
-					else if (bitness == 32) {
-						return "__[ecx]";
-					}
-					else if (bitness == 16) {
-						return "__[si]";
-					}
-				}
-				else {
-					return "bnd2";
-				}
-				break;
-			case OpCodeOperandKind.k_or_mem:
-				if (asMemory) {
-					if (bitness == 64) {
-						return "__[rcx]";
-					}
-					else if (bitness == 32) {
-						return "__[ecx]";
-					}
-					else if (bitness == 16) {
-						return "__[si]";
-					}
-				}
-				else {
-					return "k2";
-				}
-				break;
-			case OpCodeOperandKind.r8_reg:
-			case OpCodeOperandKind.r8_opcode:
-				return "cl";
-			case OpCodeOperandKind.r16_reg:
-			case OpCodeOperandKind.r16_rm:
-			case OpCodeOperandKind.r16_opcode:
-			case OpCodeOperandKind.r16_reg_mem:
-				return index == 0 ? "cx" : "dx";
-			case OpCodeOperandKind.r32_reg:
-			case OpCodeOperandKind.r32_rm:
-			case OpCodeOperandKind.r32_opcode:
-			case OpCodeOperandKind.r32_vvvv:
-			case OpCodeOperandKind.r32_reg_mem:
-				return index == 0 ? "ecx" : "edx";
-			case OpCodeOperandKind.r64_reg:
-			case OpCodeOperandKind.r64_rm:
-			case OpCodeOperandKind.r64_opcode:
-			case OpCodeOperandKind.r64_vvvv:
-			case OpCodeOperandKind.r64_reg_mem:
-				return index == 0 ? "rcx" : "rdx";
-			case OpCodeOperandKind.seg_reg:
-				return "ds";
-			case OpCodeOperandKind.k_reg:
-			case OpCodeOperandKind.k_rm:
-			case OpCodeOperandKind.kp1_reg:
-			case OpCodeOperandKind.k_vvvv:
-				return "k" + (index + 2).ToString();
-			case OpCodeOperandKind.mm_reg:
-			case OpCodeOperandKind.mm_rm:
-				return "mm1";
-			case OpCodeOperandKind.xmm_reg:
-			case OpCodeOperandKind.xmm_rm:
-			case OpCodeOperandKind.xmm_vvvv:
-			case OpCodeOperandKind.xmmp3_vvvv:
-			case OpCodeOperandKind.xmm_is4:
-			case OpCodeOperandKind.xmm_is5:
-				return $"xmm{index + 2}";
-			case OpCodeOperandKind.ymm_reg:
-			case OpCodeOperandKind.ymm_rm:
-			case OpCodeOperandKind.ymm_vvvv:
-			case OpCodeOperandKind.ymm_is4:
-			case OpCodeOperandKind.ymm_is5:
-				return $"ymm{index + 2}";
-			case OpCodeOperandKind.zmm_reg:
-			case OpCodeOperandKind.zmm_rm:
-			case OpCodeOperandKind.zmm_vvvv:
-			case OpCodeOperandKind.zmmp3_vvvv:
-				return $"zmm{index + 2}";
-			case OpCodeOperandKind.tmm_reg:
-			case OpCodeOperandKind.tmm_rm:
-			case OpCodeOperandKind.tmm_vvvv:
-				return $"tmm{index + 2}";
-			case OpCodeOperandKind.cr_reg:
-				return "cr2";
-			case OpCodeOperandKind.dr_reg:
-				return "dr1";
-			case OpCodeOperandKind.tr_reg:
-				return "tr1";
-			case OpCodeOperandKind.bnd_reg:
-				return "bnd1";
-			case OpCodeOperandKind.es:
-				return "es";
-			case OpCodeOperandKind.cs:
-				return "cs";
-			case OpCodeOperandKind.ss:
-				return "ss";
-			case OpCodeOperandKind.ds:
-				return "ds";
-			case OpCodeOperandKind.fs:
-				return "fs";
-			case OpCodeOperandKind.gs:
-				return "gs";
-			case OpCodeOperandKind.al:
-				return "al";
-			case OpCodeOperandKind.cl:
-				return "cl";
-			case OpCodeOperandKind.ax:
-				return "ax";
-			case OpCodeOperandKind.dx:
-				return "dx";
-			case OpCodeOperandKind.eax:
-				return "eax";
-			case OpCodeOperandKind.rax:
-				return "rax";
-			case OpCodeOperandKind.st0:
-				return "st0";
-			case OpCodeOperandKind.sti_opcode:
-				return "st1";
-			case OpCodeOperandKind.imm2_m2z:
-				return "3";
-			case OpCodeOperandKind.imm8:
-				return arg.IsTypeSigned() ? "-5" : "127";
-			case OpCodeOperandKind.imm8_const_1:
-				return "1";
-			case OpCodeOperandKind.imm8sex16:
-				return "-5";
-			case OpCodeOperandKind.imm8sex32:
-				return "-9";
-			case OpCodeOperandKind.imm8sex64:
-				return "-10";
-			case OpCodeOperandKind.imm16:
-				return "16567";
-			case OpCodeOperandKind.imm32:
-				return "int.MaxValue";
-			case OpCodeOperandKind.imm32sex64:
-				return "int.MinValue";
-			case OpCodeOperandKind.imm64:
-				return "long.MinValue";
-			case OpCodeOperandKind.seg_rSI:
-				return "__[rsi]";
-			case OpCodeOperandKind.es_rDI:
-				return "__[rdi]";
-			case OpCodeOperandKind.seg_rDI:
-				return "__[rdi]";
-			case OpCodeOperandKind.seg_rBX_al:
-				return "__[rbx]";
-			case OpCodeOperandKind.br16_1:
-			case OpCodeOperandKind.br32_1:
-			case OpCodeOperandKind.br64_1:
-			case OpCodeOperandKind.br16_2:
-			case OpCodeOperandKind.br32_4:
-			case OpCodeOperandKind.br64_4:
-			case OpCodeOperandKind.xbegin_2:
-			case OpCodeOperandKind.xbegin_4:
-			case OpCodeOperandKind.brdisp_2:
-			case OpCodeOperandKind.brdisp_4:
-				if (arg.Kind == ArgKind.LabelUlong) {
+		string GetDefaultArgument(int bitness, OpCodeOperandKindDef def, bool asMemory, bool isAssembler, int index, RenderArg arg) {
+			switch (def.OperandEncoding) {
+			case OperandEncoding.NearBranch:
+			case OperandEncoding.Xbegin:
+			case OperandEncoding.AbsNearBranch:
+				if (arg.Kind == ArgKind.LabelUlong)
 					return "12752";
-				}
 				return isAssembler ? "CreateAndEmitLabel(c)" : "1"; // First id of label starts at 1
 
+			case OperandEncoding.Immediate:
+				return (def.ImmediateSize, def.ImmediateSignExtSize) switch {
+					(4, 4) => "3",
+					(8, 8) => arg.IsTypeSigned() ? "-5" : "127",
+					(8, 16) => "-5",
+					(8, 32) => "-9",
+					(8, 64) => "-10",
+					(16, 16) => "16567",
+					(32, 32) => "int.MaxValue",
+					(32, 64) => "int.MinValue",
+					(64, 64) => "long.MinValue",
+					_ => throw new InvalidOperationException(),
+				};
+
+			case OperandEncoding.ImpliedConst:
+				return def.ImpliedConst.ToString();
+
+			case OperandEncoding.ImpliedRegister:
+				var regDef = regDefs[(int)def.Register];
+				return ((Register)regDef.BaseRegister.Value == Register.ST0 ? regDef.Register.RawName : regDef.Name).ToLowerInvariant();
+
+			case OperandEncoding.RegImm:
+			case OperandEncoding.RegOpCode:
+			case OperandEncoding.RegModrmReg:
+			case OperandEncoding.RegModrmRm:
+			case OperandEncoding.RegVvvvv:
+				return GetRegMemSizeInfo(def, index).regStr;
+
+			case OperandEncoding.RegMemModrmRm:
+				var (regStr, memSizeStr) = GetRegMemSizeInfo(def, index);
+				if (asMemory && def.OperandEncoding == OperandEncoding.RegMemModrmRm) {
+					return bitness switch {
+						16 => $"__{memSizeStr}[si]",
+						32 => $"__{memSizeStr}[ecx]",
+						64 => $"__{memSizeStr}[rcx]",
+						_ => throw new InvalidOperationException(),
+					};
+				}
+				else
+					return regStr;
+
+			case OperandEncoding.MemModrmRm:
+				if (def.SibRequired) {
+					return bitness switch {
+						16 => "__[ecx+edx*1]",
+						32 => "__[ecx+edx*2]",
+						64 => "__[rcx+rdx*4]",
+						_ => throw new InvalidOperationException(),
+					};
+				}
+				else if (def.MIB) {
+					return bitness switch {
+						16 => "__byte_ptr[si]",
+						32 => "__byte_ptr[ecx]",
+						64 => "__byte_ptr[rcx]",
+						_ => throw new InvalidOperationException(),
+					};
+				}
+				else if (def.Vsib) {
+					var vsibReg = def.Register switch {
+						Register.XMM0 => "xmm",
+						Register.YMM0 => "ymm",
+						Register.ZMM0 => "zmm",
+						_ => throw new InvalidOperationException(),
+					};
+					return bitness switch {
+						16 => $"__[esi + {vsibReg}{index + 2}]",
+						32 => $"__[edx + {vsibReg}{index + 2}]",
+						64 => $"__[rdx + {vsibReg}{index + 2}]",
+						_ => throw new InvalidOperationException(),
+					};
+				}
+				else {
+					return bitness switch {
+						16 => "__[si]",
+						32 => "__[ecx]",
+						64 => "__[rcx]",
+						_ => throw new InvalidOperationException(),
+					};
+				}
+
+			case OperandEncoding.MemOffset:
+				return bitness switch {
+					16 => "__[67]",
+					32 => "__[12345]",
+					64 => "__[123456789]",
+					_ => throw new InvalidOperationException(),
+				};
+
+			case OperandEncoding.None:
+			case OperandEncoding.FarBranch:
+			case OperandEncoding.SegRBX:
+			case OperandEncoding.SegRSI:
+			case OperandEncoding.SegRDI:
+			case OperandEncoding.ESRDI:
 			default:
-				throw new ArgumentOutOfRangeException(nameof(kind), kind, null);
+				throw new InvalidOperationException();
 			}
-
-			return $"GetArg_{kind}";
 		}
 
-		void GenerateOpCodeSelector(FileWriter writer, OpCodeInfoGroup group, List<RenderArg> args) {
+		static readonly string[] r8Values = new string[] { "dl", "bl", "ah", "ch", "dh" };
+		static readonly string[] r16Values = new string[] { "dx", "bx", "sp", "bp", "si" };
+		static readonly string[] r32Values = new string[] { "edx", "ebx", "esp", "ebp", "esi" };
+		static readonly string[] r64Values = new string[] { "rdx", "rbx", "rsp", "rbp", "rsi" };
+		static (string regStr, string memSizeStr) GetRegMemSizeInfo(OpCodeOperandKindDef def, int index) =>
+			def.Register switch {
+				Register.AL => (r8Values[index], "byte_ptr"),
+				Register.AX => (r16Values[index], "word_ptr"),
+				Register.EAX => (r32Values[index], "dword_ptr"),
+				Register.RAX => (r64Values[index], "qword_ptr"),
+				Register.MM0 => ($"mm{index + 2}", "qword_ptr"),
+				Register.XMM0 => ($"xmm{index + 2}", "xmmword_ptr"),
+				Register.YMM0 => ($"ymm{index + 2}", "ymmword_ptr"),
+				Register.ZMM0 => ($"zmm{index + 2}", "zmmword_ptr"),
+				Register.TMM0 => ($"tmm{index + 2}", string.Empty),
+				Register.BND0 => ($"bnd{index + 2}", string.Empty),
+				Register.K0 => ($"k{index + 2}", string.Empty),
+				Register.ES => ("ds", string.Empty),
+				Register.CR0 => ("cr2", string.Empty),
+				Register.DR0 => ("dr1", string.Empty),
+				Register.TR0 => ("tr1", string.Empty),
+				Register.ST0 => ("st1", string.Empty),
+				_ => throw new InvalidOperationException(),
+			};
+
+		void GenerateOpCodeSelector(FileWriter writer, OpCodeInfoGroup group, List<RenderArg> args) =>
 			GenerateOpCodeSelector(writer, group, true, group.RootOpCodeNode, args);
-		}
 
 		void GenerateOpCodeSelector(FileWriter writer, OpCodeInfoGroup group, bool isLeaf, OpCodeNode node, List<RenderArg> args) {
-			var opCodeInfo = node.OpCodeInfo;
+			var opCodeInfo = node.Def;
 			if (opCodeInfo is object) {
-				if (isLeaf) {
+				if (isLeaf)
 					writer.Write("op = ");
-				}
-				writer.Write($"Code.{opCodeInfo.Code.Name(Converter)}");
-				if (isLeaf) {
+				writer.Write($"Code.{opCodeInfo.Code.Name(idConverter)}");
+				if (isLeaf)
 					writer.WriteLine(";");
-				}
 			}
 			else {
 				var selector = node.Selector;
@@ -1273,20 +948,17 @@ namespace Generator.Assembler.CSharp {
 
 						if (IsMemOffs64Selector(selector.Kind)) {
 							var argIndex = selector.ArgIndex;
-							if (argIndex == 1) {
+							if (argIndex == 1)
 								writer.WriteLine($"AddInstruction(Instruction.CreateMemory64(op, {args[0].Name}, (ulong){args[1].Name}.Displacement, {args[1].Name}.Prefix));");
-							}
-							else {
+							else
 								writer.WriteLine($"AddInstruction(Instruction.CreateMemory64(op, (ulong){args[0].Name}.Displacement, {args[1].Name}, {args[0].Name}.Prefix));");
-							}
 							writer.WriteLine("return;");
 						}
 					}
 
 					writer.Write("} else ");
-					if (!selector.IfFalse.IsEmpty) {
+					if (!selector.IfFalse.IsEmpty)
 						GenerateOpCodeSelector(writer, group, true, selector.IfFalse, args);
-					}
 					else {
 						writer.WriteLine("{");
 						using (writer.Indent()) {
@@ -1309,145 +981,80 @@ namespace Generator.Assembler.CSharp {
 		static string GetArgConditionForOpCodeKind(RenderArg arg, OpCodeSelectorKind selectorKind, int index, OpCodeArgFlags groupFlags) {
 			var regName = arg.Name;
 			var otherRegName = arg.Name == "src" ? "dst" : "src";
-			switch (selectorKind) {
-			case OpCodeSelectorKind.MemOffs64_RAX:
-				return $"{otherRegName}.Value == Register.RAX && Bitness == 64 && {regName}.IsDisplacementOnly";
-			case OpCodeSelectorKind.MemOffs64_EAX:
-				return $"{otherRegName}.Value == Register.EAX && Bitness == 64 && {regName}.IsDisplacementOnly";
-			case OpCodeSelectorKind.MemOffs64_AX:
-				return $"{otherRegName}.Value == Register.AX && Bitness == 64 && {regName}.IsDisplacementOnly";
-			case OpCodeSelectorKind.MemOffs64_AL:
-				return $"{otherRegName}.Value == Register.AL && Bitness == 64 && {regName}.IsDisplacementOnly";
-			case OpCodeSelectorKind.MemOffs_RAX:
-				return $"{otherRegName}.Value == Register.RAX && Bitness < 64 && {regName}.IsDisplacementOnly";
-			case OpCodeSelectorKind.MemOffs_EAX:
-				return $"{otherRegName}.Value == Register.EAX && Bitness < 64 && {regName}.IsDisplacementOnly";
-			case OpCodeSelectorKind.MemOffs_AX:
-				return $"{otherRegName}.Value == Register.AX && Bitness < 64 && {regName}.IsDisplacementOnly";
-			case OpCodeSelectorKind.MemOffs_AL:
-				return $"{otherRegName}.Value == Register.AL && Bitness < 64 && {regName}.IsDisplacementOnly";
-			case OpCodeSelectorKind.Bitness64:
-				return "Bitness == 64";
-			case OpCodeSelectorKind.Bitness32:
-				return "Bitness >= 32";
-			case OpCodeSelectorKind.Bitness16:
-				return "Bitness >= 16";
-			case OpCodeSelectorKind.BranchShort:
-				return "PreferBranchShort";
-			case OpCodeSelectorKind.ImmediateByteEqual1:
-				return $"{regName} == 1";
-			case OpCodeSelectorKind.ImmediateByteSigned8: {
-				return !arg.IsTypeSigned()
-					? $"{regName} <= ({arg.Type})sbyte.MaxValue || (0xFFFF_FF80 <= {regName} && {regName} <= 0xFFFF_FFFF)"
-					: $"{regName} >= sbyte.MinValue && {regName} <= sbyte.MaxValue";
-			}
-			case OpCodeSelectorKind.ImmediateByteSigned8To16: {
-				return !arg.IsTypeSigned()
-					? $"{regName} <= ({arg.Type})sbyte.MaxValue || (0xFF80 <= {regName} && {regName} <= 0xFFFF)"
-					: $"{regName} >= sbyte.MinValue && {regName} <= sbyte.MaxValue";
-			}
-			case OpCodeSelectorKind.ImmediateByteSigned8To32: {
-				return !arg.IsTypeSigned()
-					? $"{regName} <= ({arg.Type})sbyte.MaxValue || (0xFFFF_FF80 <= {regName} && {regName} <= 0xFFFF_FFFF)"
-					: $"{regName} >= sbyte.MinValue && {regName} <= sbyte.MaxValue";
-			}
-			case OpCodeSelectorKind.Vex:
-				return "PreferVex";
-
-			case OpCodeSelectorKind.EvexBroadcastX:
-			case OpCodeSelectorKind.EvexBroadcastY:
-			case OpCodeSelectorKind.EvexBroadcastZ:
-				return $"{regName}.IsBroadcast";
-
-			case OpCodeSelectorKind.RegisterCL:
-				return $"{regName} == Register.CL";
-			case OpCodeSelectorKind.RegisterAL:
-				return $"{regName} == Register.AL";
-			case OpCodeSelectorKind.RegisterAX:
-				return $"{regName} == Register.AX";
-			case OpCodeSelectorKind.RegisterEAX:
-				return $"{regName} == Register.EAX";
-			case OpCodeSelectorKind.RegisterRAX:
-				return $"{regName} == Register.RAX";
-			case OpCodeSelectorKind.RegisterBND:
-				return $"{regName} == Register.IsBND()";
-			case OpCodeSelectorKind.RegisterES:
-				return $"{regName} == Register.ES";
-			case OpCodeSelectorKind.RegisterCS:
-				return $"{regName} == Register.CS";
-			case OpCodeSelectorKind.RegisterSS:
-				return $"{regName} == Register.SS";
-			case OpCodeSelectorKind.RegisterDS:
-				return $"{regName} == Register.DS";
-			case OpCodeSelectorKind.RegisterFS:
-				return $"{regName} == Register.FS";
-			case OpCodeSelectorKind.RegisterGS:
-				return $"{regName} == Register.GS";
-			case OpCodeSelectorKind.RegisterDX:
-				return $"{regName} == Register.DX";
-			case OpCodeSelectorKind.Register8:
-				return $"{regName}.IsGPR8()";
-			case OpCodeSelectorKind.Register16:
-				return $"{regName}.IsGPR16()";
-			case OpCodeSelectorKind.Register32:
-				return $"{regName}.IsGPR32()";
-			case OpCodeSelectorKind.Register64:
-				return $"{regName}.IsGPR64()";
-			case OpCodeSelectorKind.RegisterK:
-				return $"{regName}.IsK()";
-			case OpCodeSelectorKind.RegisterST0:
-				return $"{regName} == Register.ST0";
-			case OpCodeSelectorKind.RegisterST:
-				return $"{regName}.IsST()";
-			case OpCodeSelectorKind.RegisterSegment:
-				return $"{regName}.IsSegmentRegister()";
-			case OpCodeSelectorKind.RegisterCR:
-				return $"{regName}.IsCR()";
-			case OpCodeSelectorKind.RegisterDR:
-				return $"{regName}.IsDR()";
-			case OpCodeSelectorKind.RegisterTR:
-				return $"{regName}.IsTR()";
-			case OpCodeSelectorKind.RegisterMM:
-				return $"{regName}.IsMM()";
-			case OpCodeSelectorKind.RegisterXMM:
-				return $"{regName}.IsXMM()";
-			case OpCodeSelectorKind.RegisterYMM:
-				return $"{regName}.IsYMM()";
-			case OpCodeSelectorKind.RegisterZMM:
-				return $"{regName}.IsZMM()";
-			case OpCodeSelectorKind.RegisterTMM:
-				return $"{regName}.IsTMM()";
-			case OpCodeSelectorKind.Memory8:
-				return $"{regName}.Size == MemoryOperandSize.BytePtr";
-			case OpCodeSelectorKind.Memory16:
-				return $"{regName}.Size == MemoryOperandSize.WordPtr";
-			case OpCodeSelectorKind.Memory32:
-				return $"{regName}.Size == MemoryOperandSize.DwordPtr";
-			case OpCodeSelectorKind.Memory48:
-				return $"{regName}.Size == MemoryOperandSize.FwordPtr";
-			case OpCodeSelectorKind.Memory80:
-				return $"{regName}.Size == MemoryOperandSize.TwordPtr";
-			case OpCodeSelectorKind.Memory64:
-			case OpCodeSelectorKind.MemoryMM:
-				return $"{regName}.Size == MemoryOperandSize.QwordPtr";
-			case OpCodeSelectorKind.MemoryXMM:
-				return $"{regName}.Size == MemoryOperandSize.OwordPtr";
-			case OpCodeSelectorKind.MemoryYMM:
-				return $"{regName}.Size == MemoryOperandSize.YwordPtr";
-			case OpCodeSelectorKind.MemoryZMM:
-				return $"{regName}.Size == MemoryOperandSize.ZwordPtr";
-			case OpCodeSelectorKind.MemoryIndex32Xmm:
-			case OpCodeSelectorKind.MemoryIndex64Xmm:
-				return $"{regName}.Index.IsXMM()";
-			case OpCodeSelectorKind.MemoryIndex64Ymm:
-			case OpCodeSelectorKind.MemoryIndex32Ymm:
-				return $"{regName}.Index.IsYMM()";
-			case OpCodeSelectorKind.MemoryIndex64Zmm:
-			case OpCodeSelectorKind.MemoryIndex32Zmm:
-				return $"{regName}.Index.IsZMM()";
-			default:
-				return $"invalid_selector_{selectorKind}_for_arg_{regName}";
-			}
+			return selectorKind switch {
+				OpCodeSelectorKind.MemOffs64_RAX => $"{otherRegName}.Value == Register.RAX && Bitness == 64 && {regName}.IsDisplacementOnly",
+				OpCodeSelectorKind.MemOffs64_EAX => $"{otherRegName}.Value == Register.EAX && Bitness == 64 && {regName}.IsDisplacementOnly",
+				OpCodeSelectorKind.MemOffs64_AX => $"{otherRegName}.Value == Register.AX && Bitness == 64 && {regName}.IsDisplacementOnly",
+				OpCodeSelectorKind.MemOffs64_AL => $"{otherRegName}.Value == Register.AL && Bitness == 64 && {regName}.IsDisplacementOnly",
+				OpCodeSelectorKind.MemOffs_RAX => $"{otherRegName}.Value == Register.RAX && Bitness < 64 && {regName}.IsDisplacementOnly",
+				OpCodeSelectorKind.MemOffs_EAX => $"{otherRegName}.Value == Register.EAX && Bitness < 64 && {regName}.IsDisplacementOnly",
+				OpCodeSelectorKind.MemOffs_AX => $"{otherRegName}.Value == Register.AX && Bitness < 64 && {regName}.IsDisplacementOnly",
+				OpCodeSelectorKind.MemOffs_AL => $"{otherRegName}.Value == Register.AL && Bitness < 64 && {regName}.IsDisplacementOnly",
+				OpCodeSelectorKind.Bitness64 => "Bitness == 64",
+				OpCodeSelectorKind.Bitness32 => "Bitness >= 32",
+				OpCodeSelectorKind.Bitness16 => "Bitness >= 16",
+				OpCodeSelectorKind.BranchShort => "PreferBranchShort",
+				OpCodeSelectorKind.ImmediateByteEqual1 => $"{regName} == 1",
+				OpCodeSelectorKind.ImmediateByteSigned8 => !arg.IsTypeSigned() ?
+					$"{regName} <= ({arg.Type})sbyte.MaxValue || (0xFFFF_FF80 <= {regName} && {regName} <= 0xFFFF_FFFF)" :
+					$"{regName} >= sbyte.MinValue && {regName} <= sbyte.MaxValue",
+				OpCodeSelectorKind.ImmediateByteSigned8To16 => !arg.IsTypeSigned() ?
+					$"{regName} <= ({arg.Type})sbyte.MaxValue || (0xFF80 <= {regName} && {regName} <= 0xFFFF)" :
+					$"{regName} >= sbyte.MinValue && {regName} <= sbyte.MaxValue",
+				OpCodeSelectorKind.ImmediateByteSigned8To32 => !arg.IsTypeSigned() ?
+					$"{regName} <= ({arg.Type})sbyte.MaxValue || (0xFFFF_FF80 <= {regName} && {regName} <= 0xFFFF_FFFF)" :
+					$"{regName} >= sbyte.MinValue && {regName} <= sbyte.MaxValue",
+				OpCodeSelectorKind.Vex => "PreferVex",
+				OpCodeSelectorKind.EvexBroadcastX => $"{regName}.IsBroadcast",
+				OpCodeSelectorKind.EvexBroadcastY => $"{regName}.IsBroadcast",
+				OpCodeSelectorKind.EvexBroadcastZ => $"{regName}.IsBroadcast",
+				OpCodeSelectorKind.RegisterCL => $"{regName} == Register.CL",
+				OpCodeSelectorKind.RegisterAL => $"{regName} == Register.AL",
+				OpCodeSelectorKind.RegisterAX => $"{regName} == Register.AX",
+				OpCodeSelectorKind.RegisterEAX => $"{regName} == Register.EAX",
+				OpCodeSelectorKind.RegisterRAX => $"{regName} == Register.RAX",
+				OpCodeSelectorKind.RegisterBND => $"{regName} == Register.IsBND()",
+				OpCodeSelectorKind.RegisterES => $"{regName} == Register.ES",
+				OpCodeSelectorKind.RegisterCS => $"{regName} == Register.CS",
+				OpCodeSelectorKind.RegisterSS => $"{regName} == Register.SS",
+				OpCodeSelectorKind.RegisterDS => $"{regName} == Register.DS",
+				OpCodeSelectorKind.RegisterFS => $"{regName} == Register.FS",
+				OpCodeSelectorKind.RegisterGS => $"{regName} == Register.GS",
+				OpCodeSelectorKind.RegisterDX => $"{regName} == Register.DX",
+				OpCodeSelectorKind.Register8 => $"{regName}.IsGPR8()",
+				OpCodeSelectorKind.Register16 => $"{regName}.IsGPR16()",
+				OpCodeSelectorKind.Register32 => $"{regName}.IsGPR32()",
+				OpCodeSelectorKind.Register64 => $"{regName}.IsGPR64()",
+				OpCodeSelectorKind.RegisterK => $"{regName}.IsK()",
+				OpCodeSelectorKind.RegisterST0 => $"{regName} == Register.ST0",
+				OpCodeSelectorKind.RegisterST => $"{regName}.IsST()",
+				OpCodeSelectorKind.RegisterSegment => $"{regName}.IsSegmentRegister()",
+				OpCodeSelectorKind.RegisterCR => $"{regName}.IsCR()",
+				OpCodeSelectorKind.RegisterDR => $"{regName}.IsDR()",
+				OpCodeSelectorKind.RegisterTR => $"{regName}.IsTR()",
+				OpCodeSelectorKind.RegisterMM => $"{regName}.IsMM()",
+				OpCodeSelectorKind.RegisterXMM => $"{regName}.IsXMM()",
+				OpCodeSelectorKind.RegisterYMM => $"{regName}.IsYMM()",
+				OpCodeSelectorKind.RegisterZMM => $"{regName}.IsZMM()",
+				OpCodeSelectorKind.RegisterTMM => $"{regName}.IsTMM()",
+				OpCodeSelectorKind.Memory8 => $"{regName}.Size == MemoryOperandSize.BytePtr",
+				OpCodeSelectorKind.Memory16 => $"{regName}.Size == MemoryOperandSize.WordPtr",
+				OpCodeSelectorKind.Memory32 => $"{regName}.Size == MemoryOperandSize.DwordPtr",
+				OpCodeSelectorKind.Memory48 => $"{regName}.Size == MemoryOperandSize.FwordPtr",
+				OpCodeSelectorKind.Memory80 => $"{regName}.Size == MemoryOperandSize.TwordPtr",
+				OpCodeSelectorKind.Memory64 => $"{regName}.Size == MemoryOperandSize.QwordPtr",
+				OpCodeSelectorKind.MemoryMM => $"{regName}.Size == MemoryOperandSize.QwordPtr",
+				OpCodeSelectorKind.MemoryXMM => $"{regName}.Size == MemoryOperandSize.OwordPtr",
+				OpCodeSelectorKind.MemoryYMM => $"{regName}.Size == MemoryOperandSize.YwordPtr",
+				OpCodeSelectorKind.MemoryZMM => $"{regName}.Size == MemoryOperandSize.ZwordPtr",
+				OpCodeSelectorKind.MemoryIndex32Xmm => $"{regName}.Index.IsXMM()",
+				OpCodeSelectorKind.MemoryIndex64Xmm => $"{regName}.Index.IsXMM()",
+				OpCodeSelectorKind.MemoryIndex64Ymm => $"{regName}.Index.IsYMM()",
+				OpCodeSelectorKind.MemoryIndex32Ymm => $"{regName}.Index.IsYMM()",
+				OpCodeSelectorKind.MemoryIndex64Zmm => $"{regName}.Index.IsZMM()",
+				OpCodeSelectorKind.MemoryIndex32Zmm => $"{regName}.Index.IsZMM()",
+				_ => $"invalid_selector_{selectorKind}_for_arg_{regName}",
+			};
 		}
 
 		static string? GetInvalidArgValue(int bitness, OpCodeSelectorKind selectorKind, int argIndex) {
@@ -1458,46 +1065,35 @@ namespace Generator.Assembler.CSharp {
 			case OpCodeSelectorKind.Memory48:
 			case OpCodeSelectorKind.Memory80:
 			case OpCodeSelectorKind.Memory64:
-				if (bitness == 16) {
-					return "__zmmword_ptr[di]";
-				}
-				else if (bitness == 32) {
-					return "__zmmword_ptr[edx]";
-				}
-				else if (bitness == 64) {
-					return "__zmmword_ptr[rdx]";
-				}
-				break;
+				return bitness switch {
+					16 => "__zmmword_ptr[di]",
+					32 => "__zmmword_ptr[edx]",
+					64 => "__zmmword_ptr[rdx]",
+					_ => throw new InvalidOperationException(),
+				};
 			case OpCodeSelectorKind.MemoryMM:
 			case OpCodeSelectorKind.MemoryXMM:
 			case OpCodeSelectorKind.MemoryYMM:
 			case OpCodeSelectorKind.MemoryZMM:
-				if (bitness == 16) {
-					return "__byte_ptr[di]";
-				}
-				else if (bitness == 32) {
-					return "__byte_ptr[edx]";
-				}
-				else {
-					return "__byte_ptr[rdx]";
-				}
+				return bitness switch {
+					16 => "__byte_ptr[di]",
+					32 => "__byte_ptr[edx]",
+					64 => "__byte_ptr[rdx]",
+					_ => throw new InvalidOperationException(),
+				};
 			case OpCodeSelectorKind.MemoryIndex32Xmm:
 			case OpCodeSelectorKind.MemoryIndex64Xmm:
 			case OpCodeSelectorKind.MemoryIndex64Ymm:
 			case OpCodeSelectorKind.MemoryIndex32Ymm:
-				if (bitness == 16) {
-					return $"__[edi + zmm{argIndex}]";
-				}
-				else if (bitness == 32) {
-					return $"__[edx + zmm{argIndex}]";
-				}
-				else {
-					return $"__[rdx + zmm{argIndex}]";
-				}
+				return bitness switch {
+					16 => $"__[edi + zmm{argIndex}]",
+					32 => $"__[edx + zmm{argIndex}]",
+					64 => $"__[rdx + zmm{argIndex}]",
+					_ => throw new InvalidOperationException(),
+				};
+			default:
+				return null;
 			}
-
-			// Not supported
-			return null;
 		}
 
 		static IEnumerable<string?> GetArgValue(int bitness, OpCodeSelectorKind selectorKind, bool isElseBranch, int index, List<RenderArg> args) {
@@ -1507,38 +1103,30 @@ namespace Generator.Assembler.CSharp {
 			case OpCodeSelectorKind.MemOffs64_AX:
 			case OpCodeSelectorKind.MemOffs64_AL:
 				if (isElseBranch) {
-					if (bitness == 64) {
-						yield return index == 0 ? $"__[rdi]" : $"__[rsi]";
-					}
-					else if (bitness == 32) {
-						yield return index == 0 ? $"__[edi]" : $"__[esi]";
-					}
-					else if (bitness == 16) {
-						yield return index == 0 ? $"__[di]" : $"__[si]";
+					switch (bitness) {
+					case 16: yield return index == 0 ? $"__[di]" : $"__[si]"; break;
+					case 32: yield return index == 0 ? $"__[edi]" : $"__[esi]"; break;
+					case 64: yield return index == 0 ? $"__[rdi]" : $"__[rsi]"; break;
+					default: throw new InvalidOperationException();
 					}
 				}
-				else {
+				else
 					yield return $"__[0x0123456789abcdef]";
-				}
 				break;
 			case OpCodeSelectorKind.MemOffs_RAX:
 			case OpCodeSelectorKind.MemOffs_EAX:
 			case OpCodeSelectorKind.MemOffs_AX:
 			case OpCodeSelectorKind.MemOffs_AL:
 				if (isElseBranch) {
-					if (bitness == 64) {
-						yield return index == 0 ? $"__[rdi]" : $"__[rsi]";
-					}
-					else if (bitness == 32) {
-						yield return index == 0 ? $"__[edi]" : $"__[esi]";
-					}
-					else if (bitness == 16) {
-						yield return index == 0 ? $"__[di]" : $"__[si]";
+					switch (bitness) {
+					case 16: yield return index == 0 ? $"__[di]" : $"__[si]"; break;
+					case 32: yield return index == 0 ? $"__[edi]" : $"__[esi]"; break;
+					case 64: yield return index == 0 ? $"__[rdi]" : $"__[rsi]"; break;
+					default: throw new InvalidOperationException();
 					}
 				}
-				else {
+				else
 					yield return (bitness >= 32 ? $"__[0x01234567]" : $"__[0x01234]");
-				}
 				break;
 			case OpCodeSelectorKind.Bitness64:
 				yield return "todo_bitness_64";
@@ -1550,25 +1138,20 @@ namespace Generator.Assembler.CSharp {
 				yield return "todo_bitness_16";
 				break;
 			case OpCodeSelectorKind.BranchShort:
-				if (isElseBranch) {
+				if (isElseBranch)
 					yield return "c.PreferBranchShort = false;";
-				}
-				else {
+				else
 					yield return "c.PreferBranchShort = true;";
-				}
 				break;
 			case OpCodeSelectorKind.ImmediateByteEqual1:
-				if (isElseBranch) {
+				if (isElseBranch)
 					yield return "2";
-				}
-				else {
+				else
 					yield return "1";
-				}
 				break;
 			case OpCodeSelectorKind.ImmediateByteSigned8:
-				if (isElseBranch) {
+				if (isElseBranch)
 					yield return null;
-				}
 				else {
 					var arg = args[index];
 					if (arg.IsTypeSigned()) {
@@ -1583,9 +1166,8 @@ namespace Generator.Assembler.CSharp {
 				break;
 			case OpCodeSelectorKind.ImmediateByteSigned8To16: {
 				var arg = args[index];
-				if (isElseBranch) {
+				if (isElseBranch)
 					yield return null;
-				}
 				else {
 					if (arg.IsTypeSigned()) {
 						yield return $"sbyte.MinValue";
@@ -1601,9 +1183,8 @@ namespace Generator.Assembler.CSharp {
 			}
 			case OpCodeSelectorKind.ImmediateByteSigned8To32: {
 				var arg = args[index];
-				if (isElseBranch) {
+				if (isElseBranch)
 					yield return null;
-				}
 				else {
 					if (arg.IsTypeSigned()) {
 						yield return $"sbyte.MinValue";
@@ -1618,450 +1199,351 @@ namespace Generator.Assembler.CSharp {
 				break;
 			}
 			case OpCodeSelectorKind.Vex:
-				if (isElseBranch) {
+				if (isElseBranch)
 					yield return "c.PreferVex = false;";
-				}
-				else {
+				else
 					yield return "c.PreferVex = true;";
-				}
 				break;
 			case OpCodeSelectorKind.EvexBroadcastX:
 			case OpCodeSelectorKind.EvexBroadcastY:
 			case OpCodeSelectorKind.EvexBroadcastZ:
-				if (isElseBranch) {
+				if (isElseBranch)
 					yield return null;
-				}
 				else {
-					if (bitness == 16) {
-						yield return "__dword_bcst[di]";
-					}
-					else if (bitness == 32) {
-						yield return "__dword_bcst[edx]";
-					}
-					else if (bitness == 64) {
-						yield return "__dword_bcst[rdx]";
+					switch (bitness) {
+					case 16: yield return "__dword_bcst[di]"; break;
+					case 32: yield return "__dword_bcst[edx]"; break;
+					case 64: yield return "__dword_bcst[rdx]"; break;
+					default: throw new InvalidOperationException();
 					}
 				}
 				break;
 			case OpCodeSelectorKind.RegisterCL:
-				if (!isElseBranch) {
+				if (!isElseBranch)
 					yield return $"cl";
-				}
-				else {
+				else
 					yield return null;
-				}
 				break;
 			case OpCodeSelectorKind.RegisterAL:
-				if (!isElseBranch) {
+				if (!isElseBranch)
 					yield return $"al";
-				}
-				else {
+				else
 					yield return null;
-				}
 
 				break;
 			case OpCodeSelectorKind.RegisterAX:
-				if (!isElseBranch) {
+				if (!isElseBranch)
 					yield return $"ax";
-				}
-				else {
+				else
 					yield return null;
-				}
 				break;
 			case OpCodeSelectorKind.RegisterEAX:
-				if (!isElseBranch) {
+				if (!isElseBranch)
 					yield return $"eax";
-				}
-				else {
+				else
 					yield return null;
-				}
-
 				break;
 			case OpCodeSelectorKind.RegisterRAX:
-				if (!isElseBranch) {
+				if (!isElseBranch)
 					yield return $"rax";
-				}
-				else {
+				else
 					yield return null;
-				}
 				break;
 			case OpCodeSelectorKind.RegisterBND:
-				if (!isElseBranch) {
+				if (!isElseBranch)
 					yield return $"bnd0";
-				}
-				else {
+				else
 					yield return null;
-				}
 				break;
 			case OpCodeSelectorKind.RegisterES:
-				if (!isElseBranch) {
+				if (!isElseBranch)
 					yield return $"es";
-				}
-				else {
+				else
 					yield return null;
-				}
 				break;
 			case OpCodeSelectorKind.RegisterCS:
-				if (!isElseBranch) {
+				if (!isElseBranch)
 					yield return $"cs";
-				}
-				else {
+				else
 					yield return null;
-				}
 				break;
 			case OpCodeSelectorKind.RegisterSS:
-				if (!isElseBranch) {
+				if (!isElseBranch)
 					yield return $"ss";
-				}
-				else {
+				else
 					yield return null;
-				}
 				break;
 			case OpCodeSelectorKind.RegisterDS:
-				if (!isElseBranch) {
+				if (!isElseBranch)
 					yield return $"ds";
-				}
-				else {
+				else
 					yield return null;
-				}
 				break;
 			case OpCodeSelectorKind.RegisterFS:
-				if (!isElseBranch) {
+				if (!isElseBranch)
 					yield return $"fs";
-				}
-				else {
+				else
 					yield return null;
-				}
 				break;
 			case OpCodeSelectorKind.RegisterGS:
-				if (!isElseBranch) {
+				if (!isElseBranch)
 					yield return $"gs";
-				}
-				else {
+				else
 					yield return null;
-				}
 				break;
 			case OpCodeSelectorKind.RegisterDX:
-				if (!isElseBranch) {
+				if (!isElseBranch)
 					yield return $"dx";
-				}
-				else {
+				else
 					yield return null;
-				}
 				break;
 			case OpCodeSelectorKind.Register8:
-				if (!isElseBranch) {
+				if (!isElseBranch)
 					yield return $"bl";
-				}
-				else {
+				else
 					yield return null;
-				}
 				break;
 			case OpCodeSelectorKind.Register16:
-				if (!isElseBranch) {
+				if (!isElseBranch)
 					yield return $"bx";
-				}
-				else {
+				else
 					yield return null;
-				}
 				break;
 			case OpCodeSelectorKind.Register32:
-				if (!isElseBranch) {
+				if (!isElseBranch)
 					yield return $"ebx";
-				}
-				else {
+				else
 					yield return null;
-				}
 				break;
 			case OpCodeSelectorKind.Register64:
-				if (!isElseBranch) {
+				if (!isElseBranch)
 					yield return $"rbx";
-				}
-				else {
+				else
 					yield return null;
-				}
 				break;
 			case OpCodeSelectorKind.RegisterK:
-				if (!isElseBranch) {
+				if (!isElseBranch)
 					yield return $"k{index + 2}";
-				}
-				else {
+				else
 					yield return null;
-				}
 				break;
 			case OpCodeSelectorKind.RegisterST0:
-				if (!isElseBranch) {
+				if (!isElseBranch)
 					yield return $"st0";
-				}
-				else {
+				else
 					yield return null;
-				}
 				break;
 			case OpCodeSelectorKind.RegisterST:
-				if (!isElseBranch) {
+				if (!isElseBranch)
 					yield return $"st3";
-				}
-				else {
+				else
 					yield return null;
-				}
 				break;
 			case OpCodeSelectorKind.RegisterSegment:
-				if (!isElseBranch) {
+				if (!isElseBranch)
 					yield return $"fs";
-				}
-				else {
+				else
 					yield return null;
-				}
 				break;
 			case OpCodeSelectorKind.RegisterCR:
-				if (!isElseBranch) {
+				if (!isElseBranch)
 					yield return "cr3";
-				}
-				else {
+				else
 					yield return null;
-				}
 				break;
 			case OpCodeSelectorKind.RegisterDR:
-				if (!isElseBranch) {
+				if (!isElseBranch)
 					yield return "dr5";
-				}
-				else {
+				else
 					yield return null;
-				}
 				break;
 			case OpCodeSelectorKind.RegisterTR:
-				if (!isElseBranch) {
+				if (!isElseBranch)
 					yield return "tr4";
-				}
-				else {
+				else
 					yield return null;
-				}
 				break;
 			case OpCodeSelectorKind.RegisterMM:
-				if (!isElseBranch) {
+				if (!isElseBranch)
 					yield return $"mm{index + 2}";
-				}
-				else {
+				else
 					yield return null;
-				}
 				break;
 			case OpCodeSelectorKind.RegisterXMM:
-				if (!isElseBranch) {
+				if (!isElseBranch)
 					yield return $"xmm{index + 2}";
-				}
-				else {
+				else
 					yield return null;
-				}
 				break;
 			case OpCodeSelectorKind.RegisterYMM:
-				if (!isElseBranch) {
+				if (!isElseBranch)
 					yield return $"ymm{index + 2}";
-				}
-				else {
+				else
 					yield return null;
-				}
 				break;
 			case OpCodeSelectorKind.RegisterZMM:
-				if (!isElseBranch) {
+				if (!isElseBranch)
 					yield return $"zmm{index + 2}";
-				}
-				else {
+				else
 					yield return null;
-				}
 				break;
 			case OpCodeSelectorKind.RegisterTMM:
-				if (!isElseBranch) {
+				if (!isElseBranch)
 					yield return $"tmm{index + 2}";
-				}
-				else {
+				else
 					yield return null;
-				}
 				break;
 			case OpCodeSelectorKind.Memory8:
-				if (isElseBranch) {
+				if (isElseBranch)
 					yield return null;
-				}
-				else if (bitness == 16) {
-					yield return "__byte_ptr[di]";
-				}
-				else if (bitness == 32) {
-					yield return "__byte_ptr[edx]";
-				}
-				else if (bitness == 64) {
-					yield return "__byte_ptr[rdx]";
+				else {
+					switch (bitness) {
+					case 16: yield return "__byte_ptr[di]"; break;
+					case 32: yield return "__byte_ptr[edx]"; break;
+					case 64: yield return "__byte_ptr[rdx]"; break;
+					default: throw new InvalidOperationException();
+					}
 				}
 				break;
 			case OpCodeSelectorKind.Memory16:
-				if (isElseBranch) {
+				if (isElseBranch)
 					yield return null;
-				}
-				else if (bitness == 16) {
-					yield return "__word_ptr[di]";
-				}
-				else if (bitness == 32) {
-					yield return "__word_ptr[edx]";
-				}
-				else if (bitness == 64) {
-					yield return "__word_ptr[rdx]";
+				else {
+					switch (bitness) {
+					case 16: yield return "__word_ptr[di]"; break;
+					case 32: yield return "__word_ptr[edx]"; break;
+					case 64: yield return "__word_ptr[rdx]"; break;
+					default: throw new InvalidOperationException();
+					}
 				}
 				break;
 			case OpCodeSelectorKind.Memory32:
-				if (isElseBranch) {
+				if (isElseBranch)
 					yield return null;
-				}
-				else if (bitness == 16) {
-					if (args.Count == 2 && (args[0].Kind == ArgKind.RegisterBND || args[1].Kind == ArgKind.RegisterBND)) {
-						yield return "__dword_ptr[edi]";
+				else {
+					switch (bitness) {
+					case 16:
+						if (args.Count == 2 && (args[0].Kind == ArgKind.RegisterBND || args[1].Kind == ArgKind.RegisterBND))
+							yield return "__dword_ptr[edi]";
+						else
+							yield return "__dword_ptr[di]";
+						break;
+					case 32: yield return "__dword_ptr[edx]"; break;
+					case 64: yield return "__dword_ptr[rdx]"; break;
+					default: throw new InvalidOperationException();
 					}
-					else {
-						yield return "__dword_ptr[di]";
-					}
-				}
-				else if (bitness == 32) {
-					yield return "__dword_ptr[edx]";
-				}
-				else if (bitness == 64) {
-					yield return "__dword_ptr[rdx]";
 				}
 				break;
 			case OpCodeSelectorKind.Memory80:
-				if (isElseBranch) {
+				if (isElseBranch)
 					yield return null;
-				}
-				else if (bitness == 16) {
-					yield return "__tword_ptr[di]";
-				}
-				else if (bitness == 32) {
-					yield return "__tword_ptr[edx]";
-				}
-				else if (bitness == 64) {
-					yield return "__tword_ptr[rdx]";
+				else {
+					switch (bitness) {
+					case 16: yield return "__tword_ptr[di]"; break;
+					case 32: yield return "__tword_ptr[edx]"; break;
+					case 64: yield return "__tword_ptr[rdx]"; break;
+					default: throw new InvalidOperationException();
+					}
 				}
 				break;
 			case OpCodeSelectorKind.Memory48:
-				if (isElseBranch) {
+				if (isElseBranch)
 					yield return null;
-				}
-				else if (bitness == 16) {
-					yield return "__fword_ptr[di]";
-				}
-				else if (bitness == 32) {
-					yield return "__fword_ptr[edx]";
-				}
-				else if (bitness == 64) {
-					yield return "__fword_ptr[rdx]";
+				else {
+					switch (bitness) {
+					case 16: yield return "__fword_ptr[di]"; break;
+					case 32: yield return "__fword_ptr[edx]"; break;
+					case 64: yield return "__fword_ptr[rdx]"; break;
+					default: throw new InvalidOperationException();
+					}
 				}
 				break;
 			case OpCodeSelectorKind.Memory64:
 			case OpCodeSelectorKind.MemoryMM:
-				if (isElseBranch) {
+				if (isElseBranch)
 					yield return null;
-				}
-				else if (bitness == 16) {
-					yield return "__qword_ptr[di]";
-				}
-				else if (bitness == 32) {
-					yield return "__qword_ptr[edx]";
-				}
-				else if (bitness == 64) {
-					yield return "__qword_ptr[rdx]";
+				else {
+					switch (bitness) {
+					case 16: yield return "__qword_ptr[di]"; break;
+					case 32: yield return "__qword_ptr[edx]"; break;
+					case 64: yield return "__qword_ptr[rdx]"; break;
+					default: throw new InvalidOperationException();
+					}
 				}
 				break;
 			case OpCodeSelectorKind.MemoryXMM:
-				if (isElseBranch) {
+				if (isElseBranch)
 					yield return null;
-				}
-				else if (bitness == 16) {
-					yield return "__xmmword_ptr[di]";
-				}
-				else if (bitness == 32) {
-					yield return "__xmmword_ptr[edx]";
-				}
-				else if (bitness == 64) {
-					yield return "__xmmword_ptr[rdx]";
+				else {
+					switch (bitness) {
+					case 16: yield return "__xmmword_ptr[di]"; break;
+					case 32: yield return "__xmmword_ptr[edx]"; break;
+					case 64: yield return "__xmmword_ptr[rdx]"; break;
+					default: throw new InvalidOperationException();
+					}
 				}
 				break;
 			case OpCodeSelectorKind.MemoryYMM:
-				if (isElseBranch) {
+				if (isElseBranch)
 					yield return null;
-				}
-				else if (bitness == 16) {
-					yield return "__ymmword_ptr[di]";
-				}
-				else if (bitness == 32) {
-					yield return "__ymmword_ptr[edx]";
-				}
-				else if (bitness == 64) {
-					yield return "__ymmword_ptr[rdx]";
+				else {
+					switch (bitness) {
+					case 16: yield return "__ymmword_ptr[di]"; break;
+					case 32: yield return "__ymmword_ptr[edx]"; break;
+					case 64: yield return "__ymmword_ptr[rdx]"; break;
+					default: throw new InvalidOperationException();
+					}
 				}
 				break;
 			case OpCodeSelectorKind.MemoryZMM:
-				if (isElseBranch) {
+				if (isElseBranch)
 					yield return null;
-				}
-				else if (bitness == 16) {
-					yield return "__zmmword_ptr[di]";
-				}
-				else if (bitness == 32) {
-					yield return "__zmmword_ptr[edx]";
-				}
-				else if (bitness == 64) {
-					yield return "__zmmword_ptr[rdx]";
+				else {
+					switch (bitness) {
+					case 16: yield return "__zmmword_ptr[di]"; break;
+					case 32: yield return "__zmmword_ptr[edx]"; break;
+					case 64: yield return "__zmmword_ptr[rdx]"; break;
+					default: throw new InvalidOperationException();
+					}
 				}
 				break;
-			// case OpCodeSelectorKind.ImmediateInt:
-			// 	break;
-			// case OpCodeSelectorKind.ImmediateByte:
-			// 	break;
-			// case OpCodeSelectorKind.ImmediateByteWith2Bits:
-			// 	break;
-			// case OpCodeSelectorKind.Memory:
-			// 	break;
-			// case OpCodeSelectorKind.MemoryK:
-			// 	break;
 			case OpCodeSelectorKind.MemoryIndex32Xmm:
 			case OpCodeSelectorKind.MemoryIndex64Xmm:
-				if (isElseBranch) {
+				if (isElseBranch)
 					yield return null;
-				}
-				else if (bitness == 16) {
-					yield return $"__[edi + xmm{index + 2}]";
-				}
-				else if (bitness == 32) {
-					yield return $"__[edx + xmm{index + 2}]";
-				}
-				else if (bitness == 64) {
-					yield return $"__[rdx + xmm{index + 2}]";
+				else {
+					switch (bitness) {
+					case 16: yield return $"__[edi + xmm{index + 2}]"; break;
+					case 32: yield return $"__[edx + xmm{index + 2}]"; break;
+					case 64: yield return $"__[rdx + xmm{index + 2}]"; break;
+					default: throw new InvalidOperationException();
+					}
 				}
 				break;
 			case OpCodeSelectorKind.MemoryIndex32Ymm:
 			case OpCodeSelectorKind.MemoryIndex64Ymm:
-				if (isElseBranch) {
+				if (isElseBranch)
 					yield return null;
-				}
-				else if (bitness == 16) {
-					yield return $"__[edi + ymm{index + 2}]";
-				}
-				else if (bitness == 32) {
-					yield return $"__[edx + ymm{index + 2}]";
-				}
-				else if (bitness == 64) {
-					yield return $"__[rdx + ymm{index + 2}]";
+				else {
+					switch (bitness) {
+					case 16: yield return $"__[edi + ymm{index + 2}]"; break;
+					case 32: yield return $"__[edx + ymm{index + 2}]"; break;
+					case 64: yield return $"__[rdx + ymm{index + 2}]"; break;
+					default: throw new InvalidOperationException();
+					}
 				}
 				break;
 			case OpCodeSelectorKind.MemoryIndex32Zmm:
 			case OpCodeSelectorKind.MemoryIndex64Zmm:
-				if (isElseBranch) {
+				if (isElseBranch)
 					yield return null;
-				}
-				else if (bitness == 16) {
-					yield return $"__[edi + zmm{index + 2}]";
-				}
-				else if (bitness == 32) {
-					yield return $"__[edx + zmm{index + 2}]";
-				}
-				else if (bitness == 64) {
-					yield return $"__[rdx + zmm{index + 2}]";
+				else {
+					switch (bitness) {
+					case 16: yield return $"__[edi + zmm{index + 2}]"; break;
+					case 32: yield return $"__[edx + zmm{index + 2}]"; break;
+					case 64: yield return $"__[rdx + zmm{index + 2}]"; break;
+					default: throw new InvalidOperationException();
+					}
 				}
 				break;
 			default:
@@ -2077,9 +1559,7 @@ namespace Generator.Assembler.CSharp {
 			}
 
 			public string Name;
-
 			public string Type;
-
 			public ArgKind Kind;
 
 			public bool IsTypeSigned() {
@@ -2113,17 +1593,13 @@ namespace Generator.Assembler.CSharp {
 
 			public string GetSignedTypeFromUnsigned() {
 				Debug.Assert(!IsTypeSigned());
-				switch (Type) {
-				case "byte":
-					return "sbyte";
-				case "ushort":
-					return "short";
-				case "uint":
-					return "int";
-				case "ulong":
-					return "long";
-				}
-				throw new ArgumentException($"Invalid {Type}");
+				return Type switch {
+					"byte" => "sbyte",
+					"ushort" => "short",
+					"uint" => "int",
+					"ulong" => "long",
+					_ => throw new ArgumentException($"Invalid {Type}"),
+				};
 			}
 		}
 	}

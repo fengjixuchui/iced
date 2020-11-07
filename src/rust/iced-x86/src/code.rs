@@ -72,7 +72,7 @@ pub enum Code {
 	Add_rm32_r32 = 7,
 	/// `ADD r/m64, r64`
 	///
-	/// `REX.W 01 /r`
+	/// `o64 01 /r`
 	///
 	/// `X64`
 	///
@@ -104,7 +104,7 @@ pub enum Code {
 	Add_r32_rm32 = 11,
 	/// `ADD r64, r/m64`
 	///
-	/// `REX.W 03 /r`
+	/// `o64 03 /r`
 	///
 	/// `X64`
 	///
@@ -136,7 +136,7 @@ pub enum Code {
 	Add_EAX_imm32 = 15,
 	/// `ADD RAX, imm32`
 	///
-	/// `REX.W 05 id`
+	/// `o64 05 id`
 	///
 	/// `X64`
 	///
@@ -200,7 +200,7 @@ pub enum Code {
 	Or_rm32_r32 = 23,
 	/// `OR r/m64, r64`
 	///
-	/// `REX.W 09 /r`
+	/// `o64 09 /r`
 	///
 	/// `X64`
 	///
@@ -232,7 +232,7 @@ pub enum Code {
 	Or_r32_rm32 = 27,
 	/// `OR r64, r/m64`
 	///
-	/// `REX.W 0B /r`
+	/// `o64 0B /r`
 	///
 	/// `X64`
 	///
@@ -264,7 +264,7 @@ pub enum Code {
 	Or_EAX_imm32 = 31,
 	/// `OR RAX, imm32`
 	///
-	/// `REX.W 0D id`
+	/// `o64 0D id`
 	///
 	/// `X64`
 	///
@@ -292,7 +292,7 @@ pub enum Code {
 	///
 	/// `8086`
 	///
-	/// `16/32-bit`
+	/// `16-bit`
 	Popw_CS = 35,
 	/// `ADC r/m8, r8`
 	///
@@ -320,7 +320,7 @@ pub enum Code {
 	Adc_rm32_r32 = 38,
 	/// `ADC r/m64, r64`
 	///
-	/// `REX.W 11 /r`
+	/// `o64 11 /r`
 	///
 	/// `X64`
 	///
@@ -352,7 +352,7 @@ pub enum Code {
 	Adc_r32_rm32 = 42,
 	/// `ADC r64, r/m64`
 	///
-	/// `REX.W 13 /r`
+	/// `o64 13 /r`
 	///
 	/// `X64`
 	///
@@ -384,7 +384,7 @@ pub enum Code {
 	Adc_EAX_imm32 = 46,
 	/// `ADC RAX, imm32`
 	///
-	/// `REX.W 15 id`
+	/// `o64 15 id`
 	///
 	/// `X64`
 	///
@@ -448,7 +448,7 @@ pub enum Code {
 	Sbb_rm32_r32 = 54,
 	/// `SBB r/m64, r64`
 	///
-	/// `REX.W 19 /r`
+	/// `o64 19 /r`
 	///
 	/// `X64`
 	///
@@ -480,7 +480,7 @@ pub enum Code {
 	Sbb_r32_rm32 = 58,
 	/// `SBB r64, r/m64`
 	///
-	/// `REX.W 1B /r`
+	/// `o64 1B /r`
 	///
 	/// `X64`
 	///
@@ -512,7 +512,7 @@ pub enum Code {
 	Sbb_EAX_imm32 = 62,
 	/// `SBB RAX, imm32`
 	///
-	/// `REX.W 1D id`
+	/// `o64 1D id`
 	///
 	/// `X64`
 	///
@@ -576,7 +576,7 @@ pub enum Code {
 	And_rm32_r32 = 70,
 	/// `AND r/m64, r64`
 	///
-	/// `REX.W 21 /r`
+	/// `o64 21 /r`
 	///
 	/// `X64`
 	///
@@ -608,7 +608,7 @@ pub enum Code {
 	And_r32_rm32 = 74,
 	/// `AND r64, r/m64`
 	///
-	/// `REX.W 23 /r`
+	/// `o64 23 /r`
 	///
 	/// `X64`
 	///
@@ -640,7 +640,7 @@ pub enum Code {
 	And_EAX_imm32 = 78,
 	/// `AND RAX, imm32`
 	///
-	/// `REX.W 25 id`
+	/// `o64 25 id`
 	///
 	/// `X64`
 	///
@@ -680,7 +680,7 @@ pub enum Code {
 	Sub_rm32_r32 = 83,
 	/// `SUB r/m64, r64`
 	///
-	/// `REX.W 29 /r`
+	/// `o64 29 /r`
 	///
 	/// `X64`
 	///
@@ -712,7 +712,7 @@ pub enum Code {
 	Sub_r32_rm32 = 87,
 	/// `SUB r64, r/m64`
 	///
-	/// `REX.W 2B /r`
+	/// `o64 2B /r`
 	///
 	/// `X64`
 	///
@@ -744,7 +744,7 @@ pub enum Code {
 	Sub_EAX_imm32 = 91,
 	/// `SUB RAX, imm32`
 	///
-	/// `REX.W 2D id`
+	/// `o64 2D id`
 	///
 	/// `X64`
 	///
@@ -784,7 +784,7 @@ pub enum Code {
 	Xor_rm32_r32 = 96,
 	/// `XOR r/m64, r64`
 	///
-	/// `REX.W 31 /r`
+	/// `o64 31 /r`
 	///
 	/// `X64`
 	///
@@ -816,7 +816,7 @@ pub enum Code {
 	Xor_r32_rm32 = 100,
 	/// `XOR r64, r/m64`
 	///
-	/// `REX.W 33 /r`
+	/// `o64 33 /r`
 	///
 	/// `X64`
 	///
@@ -848,7 +848,7 @@ pub enum Code {
 	Xor_EAX_imm32 = 104,
 	/// `XOR RAX, imm32`
 	///
-	/// `REX.W 35 id`
+	/// `o64 35 id`
 	///
 	/// `X64`
 	///
@@ -888,7 +888,7 @@ pub enum Code {
 	Cmp_rm32_r32 = 109,
 	/// `CMP r/m64, r64`
 	///
-	/// `REX.W 39 /r`
+	/// `o64 39 /r`
 	///
 	/// `X64`
 	///
@@ -920,7 +920,7 @@ pub enum Code {
 	Cmp_r32_rm32 = 113,
 	/// `CMP r64, r/m64`
 	///
-	/// `REX.W 3B /r`
+	/// `o64 3B /r`
 	///
 	/// `X64`
 	///
@@ -952,7 +952,7 @@ pub enum Code {
 	Cmp_EAX_imm32 = 117,
 	/// `CMP RAX, imm32`
 	///
-	/// `REX.W 3D id`
+	/// `o64 3D id`
 	///
 	/// `X64`
 	///
@@ -1016,7 +1016,7 @@ pub enum Code {
 	Push_r32 = 125,
 	/// `PUSH r64`
 	///
-	/// `50+ro`
+	/// `o64 50+ro`
 	///
 	/// `X64`
 	///
@@ -1040,7 +1040,7 @@ pub enum Code {
 	Pop_r32 = 128,
 	/// `POP r64`
 	///
-	/// `58+ro`
+	/// `o64 58+ro`
 	///
 	/// `X64`
 	///
@@ -1128,7 +1128,7 @@ pub enum Code {
 	Movsxd_r32_rm32 = 139,
 	/// `MOVSXD r64, r/m32`
 	///
-	/// `REX.W 63 /r`
+	/// `o64 63 /r`
 	///
 	/// `X64`
 	///
@@ -1152,7 +1152,7 @@ pub enum Code {
 	Pushd_imm32 = 142,
 	/// `PUSH imm32`
 	///
-	/// `68 id`
+	/// `o64 68 id`
 	///
 	/// `X64`
 	///
@@ -1176,7 +1176,7 @@ pub enum Code {
 	Imul_r32_rm32_imm32 = 145,
 	/// `IMUL r64, r/m64, imm32`
 	///
-	/// `REX.W 69 /r id`
+	/// `o64 69 /r id`
 	///
 	/// `X64`
 	///
@@ -1200,7 +1200,7 @@ pub enum Code {
 	Pushd_imm8 = 148,
 	/// `PUSH imm8`
 	///
-	/// `6A ib`
+	/// `o64 6A ib`
 	///
 	/// `X64`
 	///
@@ -1224,7 +1224,7 @@ pub enum Code {
 	Imul_r32_rm32_imm8 = 151,
 	/// `IMUL r64, r/m64, imm8`
 	///
-	/// `REX.W 6B /r ib`
+	/// `o64 6B /r ib`
 	///
 	/// `X64`
 	///
@@ -1296,7 +1296,7 @@ pub enum Code {
 	Jo_rel8_32 = 160,
 	/// `JO rel8`
 	///
-	/// `70 cb`
+	/// `o64 70 cb`
 	///
 	/// `X64`
 	///
@@ -1320,7 +1320,7 @@ pub enum Code {
 	Jno_rel8_32 = 163,
 	/// `JNO rel8`
 	///
-	/// `71 cb`
+	/// `o64 71 cb`
 	///
 	/// `X64`
 	///
@@ -1344,7 +1344,7 @@ pub enum Code {
 	Jb_rel8_32 = 166,
 	/// `JB rel8`
 	///
-	/// `72 cb`
+	/// `o64 72 cb`
 	///
 	/// `X64`
 	///
@@ -1368,7 +1368,7 @@ pub enum Code {
 	Jae_rel8_32 = 169,
 	/// `JAE rel8`
 	///
-	/// `73 cb`
+	/// `o64 73 cb`
 	///
 	/// `X64`
 	///
@@ -1392,7 +1392,7 @@ pub enum Code {
 	Je_rel8_32 = 172,
 	/// `JE rel8`
 	///
-	/// `74 cb`
+	/// `o64 74 cb`
 	///
 	/// `X64`
 	///
@@ -1416,7 +1416,7 @@ pub enum Code {
 	Jne_rel8_32 = 175,
 	/// `JNE rel8`
 	///
-	/// `75 cb`
+	/// `o64 75 cb`
 	///
 	/// `X64`
 	///
@@ -1440,7 +1440,7 @@ pub enum Code {
 	Jbe_rel8_32 = 178,
 	/// `JBE rel8`
 	///
-	/// `76 cb`
+	/// `o64 76 cb`
 	///
 	/// `X64`
 	///
@@ -1464,7 +1464,7 @@ pub enum Code {
 	Ja_rel8_32 = 181,
 	/// `JA rel8`
 	///
-	/// `77 cb`
+	/// `o64 77 cb`
 	///
 	/// `X64`
 	///
@@ -1488,7 +1488,7 @@ pub enum Code {
 	Js_rel8_32 = 184,
 	/// `JS rel8`
 	///
-	/// `78 cb`
+	/// `o64 78 cb`
 	///
 	/// `X64`
 	///
@@ -1512,7 +1512,7 @@ pub enum Code {
 	Jns_rel8_32 = 187,
 	/// `JNS rel8`
 	///
-	/// `79 cb`
+	/// `o64 79 cb`
 	///
 	/// `X64`
 	///
@@ -1536,7 +1536,7 @@ pub enum Code {
 	Jp_rel8_32 = 190,
 	/// `JP rel8`
 	///
-	/// `7A cb`
+	/// `o64 7A cb`
 	///
 	/// `X64`
 	///
@@ -1560,7 +1560,7 @@ pub enum Code {
 	Jnp_rel8_32 = 193,
 	/// `JNP rel8`
 	///
-	/// `7B cb`
+	/// `o64 7B cb`
 	///
 	/// `X64`
 	///
@@ -1584,7 +1584,7 @@ pub enum Code {
 	Jl_rel8_32 = 196,
 	/// `JL rel8`
 	///
-	/// `7C cb`
+	/// `o64 7C cb`
 	///
 	/// `X64`
 	///
@@ -1608,7 +1608,7 @@ pub enum Code {
 	Jge_rel8_32 = 199,
 	/// `JGE rel8`
 	///
-	/// `7D cb`
+	/// `o64 7D cb`
 	///
 	/// `X64`
 	///
@@ -1632,7 +1632,7 @@ pub enum Code {
 	Jle_rel8_32 = 202,
 	/// `JLE rel8`
 	///
-	/// `7E cb`
+	/// `o64 7E cb`
 	///
 	/// `X64`
 	///
@@ -1656,7 +1656,7 @@ pub enum Code {
 	Jg_rel8_32 = 205,
 	/// `JG rel8`
 	///
-	/// `7F cb`
+	/// `o64 7F cb`
 	///
 	/// `X64`
 	///
@@ -1744,7 +1744,7 @@ pub enum Code {
 	Add_rm32_imm32 = 216,
 	/// `ADD r/m64, imm32`
 	///
-	/// `REX.W 81 /0 id`
+	/// `o64 81 /0 id`
 	///
 	/// `X64`
 	///
@@ -1768,7 +1768,7 @@ pub enum Code {
 	Or_rm32_imm32 = 219,
 	/// `OR r/m64, imm32`
 	///
-	/// `REX.W 81 /1 id`
+	/// `o64 81 /1 id`
 	///
 	/// `X64`
 	///
@@ -1792,7 +1792,7 @@ pub enum Code {
 	Adc_rm32_imm32 = 222,
 	/// `ADC r/m64, imm32`
 	///
-	/// `REX.W 81 /2 id`
+	/// `o64 81 /2 id`
 	///
 	/// `X64`
 	///
@@ -1816,7 +1816,7 @@ pub enum Code {
 	Sbb_rm32_imm32 = 225,
 	/// `SBB r/m64, imm32`
 	///
-	/// `REX.W 81 /3 id`
+	/// `o64 81 /3 id`
 	///
 	/// `X64`
 	///
@@ -1840,7 +1840,7 @@ pub enum Code {
 	And_rm32_imm32 = 228,
 	/// `AND r/m64, imm32`
 	///
-	/// `REX.W 81 /4 id`
+	/// `o64 81 /4 id`
 	///
 	/// `X64`
 	///
@@ -1864,7 +1864,7 @@ pub enum Code {
 	Sub_rm32_imm32 = 231,
 	/// `SUB r/m64, imm32`
 	///
-	/// `REX.W 81 /5 id`
+	/// `o64 81 /5 id`
 	///
 	/// `X64`
 	///
@@ -1888,7 +1888,7 @@ pub enum Code {
 	Xor_rm32_imm32 = 234,
 	/// `XOR r/m64, imm32`
 	///
-	/// `REX.W 81 /6 id`
+	/// `o64 81 /6 id`
 	///
 	/// `X64`
 	///
@@ -1912,7 +1912,7 @@ pub enum Code {
 	Cmp_rm32_imm32 = 237,
 	/// `CMP r/m64, imm32`
 	///
-	/// `REX.W 81 /7 id`
+	/// `o64 81 /7 id`
 	///
 	/// `X64`
 	///
@@ -2000,7 +2000,7 @@ pub enum Code {
 	Add_rm32_imm8 = 248,
 	/// `ADD r/m64, imm8`
 	///
-	/// `REX.W 83 /0 ib`
+	/// `o64 83 /0 ib`
 	///
 	/// `X64`
 	///
@@ -2024,7 +2024,7 @@ pub enum Code {
 	Or_rm32_imm8 = 251,
 	/// `OR r/m64, imm8`
 	///
-	/// `REX.W 83 /1 ib`
+	/// `o64 83 /1 ib`
 	///
 	/// `X64`
 	///
@@ -2048,7 +2048,7 @@ pub enum Code {
 	Adc_rm32_imm8 = 254,
 	/// `ADC r/m64, imm8`
 	///
-	/// `REX.W 83 /2 ib`
+	/// `o64 83 /2 ib`
 	///
 	/// `X64`
 	///
@@ -2072,7 +2072,7 @@ pub enum Code {
 	Sbb_rm32_imm8 = 257,
 	/// `SBB r/m64, imm8`
 	///
-	/// `REX.W 83 /3 ib`
+	/// `o64 83 /3 ib`
 	///
 	/// `X64`
 	///
@@ -2096,7 +2096,7 @@ pub enum Code {
 	And_rm32_imm8 = 260,
 	/// `AND r/m64, imm8`
 	///
-	/// `REX.W 83 /4 ib`
+	/// `o64 83 /4 ib`
 	///
 	/// `X64`
 	///
@@ -2120,7 +2120,7 @@ pub enum Code {
 	Sub_rm32_imm8 = 263,
 	/// `SUB r/m64, imm8`
 	///
-	/// `REX.W 83 /5 ib`
+	/// `o64 83 /5 ib`
 	///
 	/// `X64`
 	///
@@ -2144,7 +2144,7 @@ pub enum Code {
 	Xor_rm32_imm8 = 266,
 	/// `XOR r/m64, imm8`
 	///
-	/// `REX.W 83 /6 ib`
+	/// `o64 83 /6 ib`
 	///
 	/// `X64`
 	///
@@ -2168,7 +2168,7 @@ pub enum Code {
 	Cmp_rm32_imm8 = 269,
 	/// `CMP r/m64, imm8`
 	///
-	/// `REX.W 83 /7 ib`
+	/// `o64 83 /7 ib`
 	///
 	/// `X64`
 	///
@@ -2200,7 +2200,7 @@ pub enum Code {
 	Test_rm32_r32 = 273,
 	/// `TEST r/m64, r64`
 	///
-	/// `REX.W 85 /r`
+	/// `o64 85 /r`
 	///
 	/// `X64`
 	///
@@ -2232,7 +2232,7 @@ pub enum Code {
 	Xchg_rm32_r32 = 277,
 	/// `XCHG r/m64, r64`
 	///
-	/// `REX.W 87 /r`
+	/// `o64 87 /r`
 	///
 	/// `X64`
 	///
@@ -2264,7 +2264,7 @@ pub enum Code {
 	Mov_rm32_r32 = 281,
 	/// `MOV r/m64, r64`
 	///
-	/// `REX.W 89 /r`
+	/// `o64 89 /r`
 	///
 	/// `X64`
 	///
@@ -2296,7 +2296,7 @@ pub enum Code {
 	Mov_r32_rm32 = 285,
 	/// `MOV r64, r/m64`
 	///
-	/// `REX.W 8B /r`
+	/// `o64 8B /r`
 	///
 	/// `X64`
 	///
@@ -2320,7 +2320,7 @@ pub enum Code {
 	Mov_r32m16_Sreg = 288,
 	/// `MOV r64/m16, Sreg`
 	///
-	/// `REX.W 8C /r`
+	/// `o64 8C /r`
 	///
 	/// `X64`
 	///
@@ -2344,7 +2344,7 @@ pub enum Code {
 	Lea_r32_m = 291,
 	/// `LEA r64, m`
 	///
-	/// `REX.W 8D /r`
+	/// `o64 8D /r`
 	///
 	/// `X64`
 	///
@@ -2368,7 +2368,7 @@ pub enum Code {
 	Mov_Sreg_r32m16 = 294,
 	/// `MOV Sreg, r64/m16`
 	///
-	/// `REX.W 8E /r`
+	/// `o64 8E /r`
 	///
 	/// `X64`
 	///
@@ -2392,7 +2392,7 @@ pub enum Code {
 	Pop_rm32 = 297,
 	/// `POP r/m64`
 	///
-	/// `8F /0`
+	/// `o64 8F /0`
 	///
 	/// `X64`
 	///
@@ -2416,7 +2416,7 @@ pub enum Code {
 	Nopd = 300,
 	/// `NOP`
 	///
-	/// `REX.W 90`
+	/// `o64 90`
 	///
 	/// `8086+`
 	///
@@ -2440,7 +2440,7 @@ pub enum Code {
 	Xchg_r32_EAX = 303,
 	/// `XCHG r64, RAX`
 	///
-	/// `REX.W 90+ro`
+	/// `o64 90+ro`
 	///
 	/// `X64`
 	///
@@ -2472,7 +2472,7 @@ pub enum Code {
 	Cwde = 307,
 	/// `CDQE`
 	///
-	/// `REX.W 98`
+	/// `o64 98`
 	///
 	/// `X64`
 	///
@@ -2496,7 +2496,7 @@ pub enum Code {
 	Cdq = 310,
 	/// `CQO`
 	///
-	/// `REX.W 99`
+	/// `o64 99`
 	///
 	/// `X64`
 	///
@@ -2544,7 +2544,7 @@ pub enum Code {
 	Pushfd = 316,
 	/// `PUSHFQ`
 	///
-	/// `9C`
+	/// `o64 9C`
 	///
 	/// `X64`
 	///
@@ -2568,7 +2568,7 @@ pub enum Code {
 	Popfd = 319,
 	/// `POPFQ`
 	///
-	/// `9D`
+	/// `o64 9D`
 	///
 	/// `X64`
 	///
@@ -2616,7 +2616,7 @@ pub enum Code {
 	Mov_EAX_moffs32 = 325,
 	/// `MOV RAX, moffs64`
 	///
-	/// `REX.W A1 mo`
+	/// `o64 A1 mo`
 	///
 	/// `X64`
 	///
@@ -2648,7 +2648,7 @@ pub enum Code {
 	Mov_moffs32_EAX = 329,
 	/// `MOV moffs64, RAX`
 	///
-	/// `REX.W A3 mo`
+	/// `o64 A3 mo`
 	///
 	/// `X64`
 	///
@@ -2680,7 +2680,7 @@ pub enum Code {
 	Movsd_m32_m32 = 333,
 	/// `MOVSQ`
 	///
-	/// `REX.W A5`
+	/// `o64 A5`
 	///
 	/// `X64`
 	///
@@ -2712,7 +2712,7 @@ pub enum Code {
 	Cmpsd_m32_m32 = 337,
 	/// `CMPSQ`
 	///
-	/// `REX.W A7`
+	/// `o64 A7`
 	///
 	/// `X64`
 	///
@@ -2744,7 +2744,7 @@ pub enum Code {
 	Test_EAX_imm32 = 341,
 	/// `TEST RAX, imm32`
 	///
-	/// `REX.W A9 id`
+	/// `o64 A9 id`
 	///
 	/// `X64`
 	///
@@ -2776,7 +2776,7 @@ pub enum Code {
 	Stosd_m32_EAX = 345,
 	/// `STOSQ`
 	///
-	/// `REX.W AB`
+	/// `o64 AB`
 	///
 	/// `X64`
 	///
@@ -2808,7 +2808,7 @@ pub enum Code {
 	Lodsd_EAX_m32 = 349,
 	/// `LODSQ`
 	///
-	/// `REX.W AD`
+	/// `o64 AD`
 	///
 	/// `X64`
 	///
@@ -2840,7 +2840,7 @@ pub enum Code {
 	Scasd_EAX_m32 = 353,
 	/// `SCASQ`
 	///
-	/// `REX.W AF`
+	/// `o64 AF`
 	///
 	/// `X64`
 	///
@@ -2872,7 +2872,7 @@ pub enum Code {
 	Mov_r32_imm32 = 357,
 	/// `MOV r64, imm64`
 	///
-	/// `REX.W B8+ro io`
+	/// `o64 B8+ro io`
 	///
 	/// `X64`
 	///
@@ -2960,7 +2960,7 @@ pub enum Code {
 	Rol_rm32_imm8 = 368,
 	/// `ROL r/m64, imm8`
 	///
-	/// `REX.W C1 /0 ib`
+	/// `o64 C1 /0 ib`
 	///
 	/// `X64`
 	///
@@ -2984,7 +2984,7 @@ pub enum Code {
 	Ror_rm32_imm8 = 371,
 	/// `ROR r/m64, imm8`
 	///
-	/// `REX.W C1 /1 ib`
+	/// `o64 C1 /1 ib`
 	///
 	/// `X64`
 	///
@@ -3008,7 +3008,7 @@ pub enum Code {
 	Rcl_rm32_imm8 = 374,
 	/// `RCL r/m64, imm8`
 	///
-	/// `REX.W C1 /2 ib`
+	/// `o64 C1 /2 ib`
 	///
 	/// `X64`
 	///
@@ -3032,7 +3032,7 @@ pub enum Code {
 	Rcr_rm32_imm8 = 377,
 	/// `RCR r/m64, imm8`
 	///
-	/// `REX.W C1 /3 ib`
+	/// `o64 C1 /3 ib`
 	///
 	/// `X64`
 	///
@@ -3056,7 +3056,7 @@ pub enum Code {
 	Shl_rm32_imm8 = 380,
 	/// `SHL r/m64, imm8`
 	///
-	/// `REX.W C1 /4 ib`
+	/// `o64 C1 /4 ib`
 	///
 	/// `X64`
 	///
@@ -3080,7 +3080,7 @@ pub enum Code {
 	Shr_rm32_imm8 = 383,
 	/// `SHR r/m64, imm8`
 	///
-	/// `REX.W C1 /5 ib`
+	/// `o64 C1 /5 ib`
 	///
 	/// `X64`
 	///
@@ -3104,7 +3104,7 @@ pub enum Code {
 	Sal_rm32_imm8 = 386,
 	/// `SAL r/m64, imm8`
 	///
-	/// `REX.W C1 /6 ib`
+	/// `o64 C1 /6 ib`
 	///
 	/// `X64`
 	///
@@ -3128,7 +3128,7 @@ pub enum Code {
 	Sar_rm32_imm8 = 389,
 	/// `SAR r/m64, imm8`
 	///
-	/// `REX.W C1 /7 ib`
+	/// `o64 C1 /7 ib`
 	///
 	/// `X64`
 	///
@@ -3152,7 +3152,7 @@ pub enum Code {
 	Retnd_imm16 = 392,
 	/// `RET imm16`
 	///
-	/// `C2 iw`
+	/// `o64 C2 iw`
 	///
 	/// `X64`
 	///
@@ -3176,7 +3176,7 @@ pub enum Code {
 	Retnd = 395,
 	/// `RET`
 	///
-	/// `C3`
+	/// `o64 C3`
 	///
 	/// `X64`
 	///
@@ -3248,7 +3248,7 @@ pub enum Code {
 	Mov_rm32_imm32 = 404,
 	/// `MOV r/m64, imm32`
 	///
-	/// `REX.W C7 /0 id`
+	/// `o64 C7 /0 id`
 	///
 	/// `X64`
 	///
@@ -3288,7 +3288,7 @@ pub enum Code {
 	Enterd_imm16_imm8 = 409,
 	/// `ENTER imm16, imm8`
 	///
-	/// `C8 iw ib`
+	/// `o64 C8 iw ib`
 	///
 	/// `X64`
 	///
@@ -3312,7 +3312,7 @@ pub enum Code {
 	Leaved = 412,
 	/// `LEAVE`
 	///
-	/// `C9`
+	/// `o64 C9`
 	///
 	/// `X64`
 	///
@@ -3336,7 +3336,7 @@ pub enum Code {
 	Retfd_imm16 = 415,
 	/// `RETF imm16`
 	///
-	/// `REX.W CA iw`
+	/// `o64 CA iw`
 	///
 	/// `X64`
 	///
@@ -3360,7 +3360,7 @@ pub enum Code {
 	Retfd = 418,
 	/// `RETF`
 	///
-	/// `REX.W CB`
+	/// `o64 CB`
 	///
 	/// `X64`
 	///
@@ -3408,7 +3408,7 @@ pub enum Code {
 	Iretd = 424,
 	/// `IRETQ`
 	///
-	/// `REX.W CF`
+	/// `o64 CF`
 	///
 	/// `X64`
 	///
@@ -3496,7 +3496,7 @@ pub enum Code {
 	Rol_rm32_1 = 435,
 	/// `ROL r/m64, 1`
 	///
-	/// `REX.W D1 /0`
+	/// `o64 D1 /0`
 	///
 	/// `X64`
 	///
@@ -3520,7 +3520,7 @@ pub enum Code {
 	Ror_rm32_1 = 438,
 	/// `ROR r/m64, 1`
 	///
-	/// `REX.W D1 /1`
+	/// `o64 D1 /1`
 	///
 	/// `X64`
 	///
@@ -3544,7 +3544,7 @@ pub enum Code {
 	Rcl_rm32_1 = 441,
 	/// `RCL r/m64, 1`
 	///
-	/// `REX.W D1 /2`
+	/// `o64 D1 /2`
 	///
 	/// `X64`
 	///
@@ -3568,7 +3568,7 @@ pub enum Code {
 	Rcr_rm32_1 = 444,
 	/// `RCR r/m64, 1`
 	///
-	/// `REX.W D1 /3`
+	/// `o64 D1 /3`
 	///
 	/// `X64`
 	///
@@ -3592,7 +3592,7 @@ pub enum Code {
 	Shl_rm32_1 = 447,
 	/// `SHL r/m64, 1`
 	///
-	/// `REX.W D1 /4`
+	/// `o64 D1 /4`
 	///
 	/// `X64`
 	///
@@ -3616,7 +3616,7 @@ pub enum Code {
 	Shr_rm32_1 = 450,
 	/// `SHR r/m64, 1`
 	///
-	/// `REX.W D1 /5`
+	/// `o64 D1 /5`
 	///
 	/// `X64`
 	///
@@ -3640,7 +3640,7 @@ pub enum Code {
 	Sal_rm32_1 = 453,
 	/// `SAL r/m64, 1`
 	///
-	/// `REX.W D1 /6`
+	/// `o64 D1 /6`
 	///
 	/// `X64`
 	///
@@ -3664,7 +3664,7 @@ pub enum Code {
 	Sar_rm32_1 = 456,
 	/// `SAR r/m64, 1`
 	///
-	/// `REX.W D1 /7`
+	/// `o64 D1 /7`
 	///
 	/// `X64`
 	///
@@ -3752,7 +3752,7 @@ pub enum Code {
 	Rol_rm32_CL = 467,
 	/// `ROL r/m64, CL`
 	///
-	/// `REX.W D3 /0`
+	/// `o64 D3 /0`
 	///
 	/// `X64`
 	///
@@ -3776,7 +3776,7 @@ pub enum Code {
 	Ror_rm32_CL = 470,
 	/// `ROR r/m64, CL`
 	///
-	/// `REX.W D3 /1`
+	/// `o64 D3 /1`
 	///
 	/// `X64`
 	///
@@ -3800,7 +3800,7 @@ pub enum Code {
 	Rcl_rm32_CL = 473,
 	/// `RCL r/m64, CL`
 	///
-	/// `REX.W D3 /2`
+	/// `o64 D3 /2`
 	///
 	/// `X64`
 	///
@@ -3824,7 +3824,7 @@ pub enum Code {
 	Rcr_rm32_CL = 476,
 	/// `RCR r/m64, CL`
 	///
-	/// `REX.W D3 /3`
+	/// `o64 D3 /3`
 	///
 	/// `X64`
 	///
@@ -3848,7 +3848,7 @@ pub enum Code {
 	Shl_rm32_CL = 479,
 	/// `SHL r/m64, CL`
 	///
-	/// `REX.W D3 /4`
+	/// `o64 D3 /4`
 	///
 	/// `X64`
 	///
@@ -3872,7 +3872,7 @@ pub enum Code {
 	Shr_rm32_CL = 482,
 	/// `SHR r/m64, CL`
 	///
-	/// `REX.W D3 /5`
+	/// `o64 D3 /5`
 	///
 	/// `X64`
 	///
@@ -3896,7 +3896,7 @@ pub enum Code {
 	Sal_rm32_CL = 485,
 	/// `SAL r/m64, CL`
 	///
-	/// `REX.W D3 /6`
+	/// `o64 D3 /6`
 	///
 	/// `X64`
 	///
@@ -3920,7 +3920,7 @@ pub enum Code {
 	Sar_rm32_CL = 488,
 	/// `SAR r/m64, CL`
 	///
-	/// `REX.W D3 /7`
+	/// `o64 D3 /7`
 	///
 	/// `X64`
 	///
@@ -4189,7 +4189,7 @@ pub enum Code {
 	/// `8087+`
 	///
 	/// `16/32/64-bit`
-	Fld_st0_sti = 522,
+	Fld_sti = 522,
 	/// `FXCH ST(i)`
 	///
 	/// `D9 C8+i`
@@ -5296,7 +5296,7 @@ pub enum Code {
 	Loopne_rel8_32_ECX = 660,
 	/// `LOOPNE rel8`
 	///
-	/// `a32 E0 cb`
+	/// `a32 o64 E0 cb`
 	///
 	/// `X64`
 	///
@@ -5304,7 +5304,7 @@ pub enum Code {
 	Loopne_rel8_64_ECX = 661,
 	/// `LOOPNE rel8`
 	///
-	/// `o16 E0 cb`
+	/// `a64 o16 E0 cb`
 	///
 	/// `X64`
 	///
@@ -5312,7 +5312,7 @@ pub enum Code {
 	Loopne_rel8_16_RCX = 662,
 	/// `LOOPNE rel8`
 	///
-	/// `E0 cb`
+	/// `a64 o64 E0 cb`
 	///
 	/// `X64`
 	///
@@ -5352,7 +5352,7 @@ pub enum Code {
 	Loope_rel8_32_ECX = 667,
 	/// `LOOPE rel8`
 	///
-	/// `a32 E1 cb`
+	/// `a32 o64 E1 cb`
 	///
 	/// `X64`
 	///
@@ -5360,7 +5360,7 @@ pub enum Code {
 	Loope_rel8_64_ECX = 668,
 	/// `LOOPE rel8`
 	///
-	/// `o16 E1 cb`
+	/// `a64 o16 E1 cb`
 	///
 	/// `X64`
 	///
@@ -5368,7 +5368,7 @@ pub enum Code {
 	Loope_rel8_16_RCX = 669,
 	/// `LOOPE rel8`
 	///
-	/// `E1 cb`
+	/// `a64 o64 E1 cb`
 	///
 	/// `X64`
 	///
@@ -5408,7 +5408,7 @@ pub enum Code {
 	Loop_rel8_32_ECX = 674,
 	/// `LOOP rel8`
 	///
-	/// `a32 E2 cb`
+	/// `a32 o64 E2 cb`
 	///
 	/// `X64`
 	///
@@ -5416,7 +5416,7 @@ pub enum Code {
 	Loop_rel8_64_ECX = 675,
 	/// `LOOP rel8`
 	///
-	/// `o16 E2 cb`
+	/// `a64 o16 E2 cb`
 	///
 	/// `X64`
 	///
@@ -5424,7 +5424,7 @@ pub enum Code {
 	Loop_rel8_16_RCX = 676,
 	/// `LOOP rel8`
 	///
-	/// `E2 cb`
+	/// `a64 o64 E2 cb`
 	///
 	/// `X64`
 	///
@@ -5464,7 +5464,7 @@ pub enum Code {
 	Jecxz_rel8_32 = 681,
 	/// `JECXZ rel8`
 	///
-	/// `a32 E3 cb`
+	/// `a32 o64 E3 cb`
 	///
 	/// `X64`
 	///
@@ -5472,7 +5472,7 @@ pub enum Code {
 	Jecxz_rel8_64 = 682,
 	/// `JRCXZ rel8`
 	///
-	/// `o16 E3 cb`
+	/// `a64 o16 E3 cb`
 	///
 	/// `X64`
 	///
@@ -5480,7 +5480,7 @@ pub enum Code {
 	Jrcxz_rel8_16 = 683,
 	/// `JRCXZ rel8`
 	///
-	/// `E3 cb`
+	/// `a64 o64 E3 cb`
 	///
 	/// `X64`
 	///
@@ -5552,7 +5552,7 @@ pub enum Code {
 	Call_rel32_32 = 692,
 	/// `CALL rel32`
 	///
-	/// `E8 cd`
+	/// `o64 E8 cd`
 	///
 	/// `X64`
 	///
@@ -5576,7 +5576,7 @@ pub enum Code {
 	Jmp_rel32_32 = 695,
 	/// `JMP rel32`
 	///
-	/// `E9 cd`
+	/// `o64 E9 cd`
 	///
 	/// `X64`
 	///
@@ -5616,7 +5616,7 @@ pub enum Code {
 	Jmp_rel8_32 = 700,
 	/// `JMP rel8`
 	///
-	/// `EB cb`
+	/// `o64 EB cb`
 	///
 	/// `X64`
 	///
@@ -5776,7 +5776,7 @@ pub enum Code {
 	Test_rm32_imm32 = 720,
 	/// `TEST r/m64, imm32`
 	///
-	/// `REX.W F7 /0 id`
+	/// `o64 F7 /0 id`
 	///
 	/// `X64`
 	///
@@ -5800,7 +5800,7 @@ pub enum Code {
 	Test_rm32_imm32_F7r1 = 723,
 	/// `TEST r/m64, imm32`
 	///
-	/// `REX.W F7 /1 id`
+	/// `o64 F7 /1 id`
 	///
 	/// `X64`
 	///
@@ -5824,7 +5824,7 @@ pub enum Code {
 	Not_rm32 = 726,
 	/// `NOT r/m64`
 	///
-	/// `REX.W F7 /2`
+	/// `o64 F7 /2`
 	///
 	/// `X64`
 	///
@@ -5848,7 +5848,7 @@ pub enum Code {
 	Neg_rm32 = 729,
 	/// `NEG r/m64`
 	///
-	/// `REX.W F7 /3`
+	/// `o64 F7 /3`
 	///
 	/// `X64`
 	///
@@ -5872,7 +5872,7 @@ pub enum Code {
 	Mul_rm32 = 732,
 	/// `MUL r/m64`
 	///
-	/// `REX.W F7 /4`
+	/// `o64 F7 /4`
 	///
 	/// `X64`
 	///
@@ -5896,7 +5896,7 @@ pub enum Code {
 	Imul_rm32 = 735,
 	/// `IMUL r/m64`
 	///
-	/// `REX.W F7 /5`
+	/// `o64 F7 /5`
 	///
 	/// `X64`
 	///
@@ -5920,7 +5920,7 @@ pub enum Code {
 	Div_rm32 = 738,
 	/// `DIV r/m64`
 	///
-	/// `REX.W F7 /6`
+	/// `o64 F7 /6`
 	///
 	/// `X64`
 	///
@@ -5944,7 +5944,7 @@ pub enum Code {
 	Idiv_rm32 = 741,
 	/// `IDIV r/m64`
 	///
-	/// `REX.W F7 /7`
+	/// `o64 F7 /7`
 	///
 	/// `X64`
 	///
@@ -6032,7 +6032,7 @@ pub enum Code {
 	Inc_rm32 = 752,
 	/// `INC r/m64`
 	///
-	/// `REX.W FF /0`
+	/// `o64 FF /0`
 	///
 	/// `X64`
 	///
@@ -6056,7 +6056,7 @@ pub enum Code {
 	Dec_rm32 = 755,
 	/// `DEC r/m64`
 	///
-	/// `REX.W FF /1`
+	/// `o64 FF /1`
 	///
 	/// `X64`
 	///
@@ -6080,7 +6080,7 @@ pub enum Code {
 	Call_rm32 = 758,
 	/// `CALL r/m64`
 	///
-	/// `FF /2`
+	/// `o64 FF /2`
 	///
 	/// `X64`
 	///
@@ -6104,7 +6104,7 @@ pub enum Code {
 	Call_m1632 = 761,
 	/// `CALL m16:64`
 	///
-	/// `REX.W FF /3`
+	/// `o64 FF /3`
 	///
 	/// `X64`
 	///
@@ -6128,7 +6128,7 @@ pub enum Code {
 	Jmp_rm32 = 764,
 	/// `JMP r/m64`
 	///
-	/// `FF /4`
+	/// `o64 FF /4`
 	///
 	/// `X64`
 	///
@@ -6152,7 +6152,7 @@ pub enum Code {
 	Jmp_m1632 = 767,
 	/// `JMP m16:64`
 	///
-	/// `REX.W FF /5`
+	/// `o64 FF /5`
 	///
 	/// `X64`
 	///
@@ -6176,7 +6176,7 @@ pub enum Code {
 	Push_rm32 = 770,
 	/// `PUSH r/m64`
 	///
-	/// `FF /6`
+	/// `o64 FF /6`
 	///
 	/// `X64`
 	///
@@ -6200,7 +6200,7 @@ pub enum Code {
 	Sldt_r32m16 = 773,
 	/// `SLDT r64/m16`
 	///
-	/// `REX.W 0F 00 /0`
+	/// `o64 0F 00 /0`
 	///
 	/// `X64`
 	///
@@ -6224,7 +6224,7 @@ pub enum Code {
 	Str_r32m16 = 776,
 	/// `STR r64/m16`
 	///
-	/// `REX.W 0F 00 /1`
+	/// `o64 0F 00 /1`
 	///
 	/// `X64`
 	///
@@ -6248,7 +6248,7 @@ pub enum Code {
 	Lldt_r32m16 = 779,
 	/// `LLDT r64/m16`
 	///
-	/// `REX.W 0F 00 /2`
+	/// `o64 0F 00 /2`
 	///
 	/// `X64`
 	///
@@ -6272,7 +6272,7 @@ pub enum Code {
 	Ltr_r32m16 = 782,
 	/// `LTR r64/m16`
 	///
-	/// `REX.W 0F 00 /3`
+	/// `o64 0F 00 /3`
 	///
 	/// `X64`
 	///
@@ -6296,7 +6296,7 @@ pub enum Code {
 	Verr_r32m16 = 785,
 	/// `VERR r64/m16`
 	///
-	/// `REX.W 0F 00 /4`
+	/// `o64 0F 00 /4`
 	///
 	/// `X64`
 	///
@@ -6320,7 +6320,7 @@ pub enum Code {
 	Verw_r32m16 = 788,
 	/// `VERW r64/m16`
 	///
-	/// `REX.W 0F 00 /5`
+	/// `o64 0F 00 /5`
 	///
 	/// `X64`
 	///
@@ -6456,7 +6456,7 @@ pub enum Code {
 	Smsw_r32m16 = 805,
 	/// `SMSW r64/m16`
 	///
-	/// `REX.W 0F 01 /4`
+	/// `o64 0F 01 /4`
 	///
 	/// `X64`
 	///
@@ -6488,7 +6488,7 @@ pub enum Code {
 	Lmsw_r32m16 = 809,
 	/// `LMSW r64/m16`
 	///
-	/// `REX.W 0F 01 /6`
+	/// `o64 0F 01 /6`
 	///
 	/// `X64`
 	///
@@ -6506,7 +6506,7 @@ pub enum Code {
 	///
 	/// `NP 0F 01 C0`
 	///
-	/// `ENCLV`
+	/// `OSS`
 	///
 	/// `16/32/64-bit`
 	Enclv = 812,
@@ -6568,7 +6568,7 @@ pub enum Code {
 	Monitord = 819,
 	/// `MONITOR`
 	///
-	/// `NP 0F 01 C8`
+	/// `a64 NP 0F 01 C8`
 	///
 	/// `MONITOR`
 	///
@@ -6672,7 +6672,7 @@ pub enum Code {
 	Vmrund = 832,
 	/// `VMRUN`
 	///
-	/// `0F 01 D8`
+	/// `a64 0F 01 D8`
 	///
 	/// `SVM`
 	///
@@ -6704,7 +6704,7 @@ pub enum Code {
 	Vmloadd = 836,
 	/// `VMLOAD`
 	///
-	/// `0F 01 DA`
+	/// `a64 0F 01 DA`
 	///
 	/// `SVM`
 	///
@@ -6728,7 +6728,7 @@ pub enum Code {
 	Vmsaved = 839,
 	/// `VMSAVE`
 	///
-	/// `0F 01 DB`
+	/// `a64 0F 01 DB`
 	///
 	/// `SVM`
 	///
@@ -6738,7 +6738,7 @@ pub enum Code {
 	///
 	/// `0F 01 DC`
 	///
-	/// `SKINIT or SVML`
+	/// `SKINIT or SVM`
 	///
 	/// `16/32/64-bit`
 	Stgi = 841,
@@ -6754,7 +6754,7 @@ pub enum Code {
 	///
 	/// `0F 01 DE`
 	///
-	/// `SKINIT or SVML`
+	/// `SKINIT or SVM`
 	///
 	/// `16/32/64-bit`
 	Skinit = 843,
@@ -6776,7 +6776,7 @@ pub enum Code {
 	Invlpgad = 845,
 	/// `INVLPGA`
 	///
-	/// `0F 01 DF`
+	/// `a64 0F 01 DF`
 	///
 	/// `SVM`
 	///
@@ -6848,7 +6848,7 @@ pub enum Code {
 	Monitorxd = 854,
 	/// `MONITORX`
 	///
-	/// `NP 0F 01 FA`
+	/// `a64 NP 0F 01 FA`
 	///
 	/// `MONITORX`
 	///
@@ -6888,7 +6888,7 @@ pub enum Code {
 	Clzerod = 859,
 	/// `CLZERO`
 	///
-	/// `0F 01 FC`
+	/// `a64 0F 01 FC`
 	///
 	/// `CLZERO`
 	///
@@ -6920,7 +6920,7 @@ pub enum Code {
 	Lar_r32_r32m16 = 863,
 	/// `LAR r64, r64/m16`
 	///
-	/// `REX.W 0F 02 /r`
+	/// `o64 0F 02 /r`
 	///
 	/// `X64`
 	///
@@ -6944,7 +6944,7 @@ pub enum Code {
 	Lsl_r32_r32m16 = 866,
 	/// `LSL r64, r64/m16`
 	///
-	/// `REX.W 0F 03 /r`
+	/// `o64 0F 03 /r`
 	///
 	/// `X64`
 	///
@@ -7000,7 +7000,7 @@ pub enum Code {
 	Sysretd = 873,
 	/// `SYSRETQ`
 	///
-	/// `REX.W 0F 07`
+	/// `o64 0F 07`
 	///
 	/// `SYSCALL`
 	///
@@ -7053,7 +7053,7 @@ pub enum Code {
 	/// `CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B`
 	///
 	/// `16/32/64-bit`
-	ReservedNop_rm16_r16_0F0D = 880,
+	Reservednop_rm16_r16_0F0D = 880,
 	/// `RESERVEDNOP r/m32, r32`
 	///
 	/// `o32 0F 0D /r`
@@ -7061,15 +7061,15 @@ pub enum Code {
 	/// `CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B`
 	///
 	/// `16/32/64-bit`
-	ReservedNop_rm32_r32_0F0D = 881,
+	Reservednop_rm32_r32_0F0D = 881,
 	/// `RESERVEDNOP r/m64, r64`
 	///
-	/// `REX.W 0F 0D /r`
+	/// `o64 0F 0D /r`
 	///
 	/// `CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B`
 	///
 	/// `64-bit`
-	ReservedNop_rm64_r64_0F0D = 882,
+	Reservednop_rm64_r64_0F0D = 882,
 	/// `PREFETCH m8`
 	///
 	/// `0F 0D /0`
@@ -8085,7 +8085,7 @@ pub enum Code {
 	/// `CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B`
 	///
 	/// `16/32/64-bit`
-	ReservedNop_rm16_r16_0F18 = 1009,
+	Reservednop_rm16_r16_0F18 = 1009,
 	/// `RESERVEDNOP r/m32, r32`
 	///
 	/// `o32 0F 18 /r`
@@ -8093,15 +8093,15 @@ pub enum Code {
 	/// `CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B`
 	///
 	/// `16/32/64-bit`
-	ReservedNop_rm32_r32_0F18 = 1010,
+	Reservednop_rm32_r32_0F18 = 1010,
 	/// `RESERVEDNOP r/m64, r64`
 	///
-	/// `REX.W 0F 18 /r`
+	/// `o64 0F 18 /r`
 	///
 	/// `CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B`
 	///
 	/// `64-bit`
-	ReservedNop_rm64_r64_0F18 = 1011,
+	Reservednop_rm64_r64_0F18 = 1011,
 	/// `RESERVEDNOP r/m16, r16`
 	///
 	/// `o16 0F 19 /r`
@@ -8109,7 +8109,7 @@ pub enum Code {
 	/// `CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B`
 	///
 	/// `16/32/64-bit`
-	ReservedNop_rm16_r16_0F19 = 1012,
+	Reservednop_rm16_r16_0F19 = 1012,
 	/// `RESERVEDNOP r/m32, r32`
 	///
 	/// `o32 0F 19 /r`
@@ -8117,15 +8117,15 @@ pub enum Code {
 	/// `CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B`
 	///
 	/// `16/32/64-bit`
-	ReservedNop_rm32_r32_0F19 = 1013,
+	Reservednop_rm32_r32_0F19 = 1013,
 	/// `RESERVEDNOP r/m64, r64`
 	///
-	/// `REX.W 0F 19 /r`
+	/// `o64 0F 19 /r`
 	///
 	/// `CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B`
 	///
 	/// `64-bit`
-	ReservedNop_rm64_r64_0F19 = 1014,
+	Reservednop_rm64_r64_0F19 = 1014,
 	/// `RESERVEDNOP r/m16, r16`
 	///
 	/// `o16 0F 1A /r`
@@ -8133,7 +8133,7 @@ pub enum Code {
 	/// `CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B`
 	///
 	/// `16/32/64-bit`
-	ReservedNop_rm16_r16_0F1A = 1015,
+	Reservednop_rm16_r16_0F1A = 1015,
 	/// `RESERVEDNOP r/m32, r32`
 	///
 	/// `o32 0F 1A /r`
@@ -8141,15 +8141,15 @@ pub enum Code {
 	/// `CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B`
 	///
 	/// `16/32/64-bit`
-	ReservedNop_rm32_r32_0F1A = 1016,
+	Reservednop_rm32_r32_0F1A = 1016,
 	/// `RESERVEDNOP r/m64, r64`
 	///
-	/// `REX.W 0F 1A /r`
+	/// `o64 0F 1A /r`
 	///
 	/// `CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B`
 	///
 	/// `64-bit`
-	ReservedNop_rm64_r64_0F1A = 1017,
+	Reservednop_rm64_r64_0F1A = 1017,
 	/// `RESERVEDNOP r/m16, r16`
 	///
 	/// `o16 0F 1B /r`
@@ -8157,7 +8157,7 @@ pub enum Code {
 	/// `CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B`
 	///
 	/// `16/32/64-bit`
-	ReservedNop_rm16_r16_0F1B = 1018,
+	Reservednop_rm16_r16_0F1B = 1018,
 	/// `RESERVEDNOP r/m32, r32`
 	///
 	/// `o32 0F 1B /r`
@@ -8165,15 +8165,15 @@ pub enum Code {
 	/// `CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B`
 	///
 	/// `16/32/64-bit`
-	ReservedNop_rm32_r32_0F1B = 1019,
+	Reservednop_rm32_r32_0F1B = 1019,
 	/// `RESERVEDNOP r/m64, r64`
 	///
-	/// `REX.W 0F 1B /r`
+	/// `o64 0F 1B /r`
 	///
 	/// `CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B`
 	///
 	/// `64-bit`
-	ReservedNop_rm64_r64_0F1B = 1020,
+	Reservednop_rm64_r64_0F1B = 1020,
 	/// `RESERVEDNOP r/m16, r16`
 	///
 	/// `o16 0F 1C /r`
@@ -8181,7 +8181,7 @@ pub enum Code {
 	/// `CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B`
 	///
 	/// `16/32/64-bit`
-	ReservedNop_rm16_r16_0F1C = 1021,
+	Reservednop_rm16_r16_0F1C = 1021,
 	/// `RESERVEDNOP r/m32, r32`
 	///
 	/// `o32 0F 1C /r`
@@ -8189,15 +8189,15 @@ pub enum Code {
 	/// `CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B`
 	///
 	/// `16/32/64-bit`
-	ReservedNop_rm32_r32_0F1C = 1022,
+	Reservednop_rm32_r32_0F1C = 1022,
 	/// `RESERVEDNOP r/m64, r64`
 	///
-	/// `REX.W 0F 1C /r`
+	/// `o64 0F 1C /r`
 	///
 	/// `CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B`
 	///
 	/// `64-bit`
-	ReservedNop_rm64_r64_0F1C = 1023,
+	Reservednop_rm64_r64_0F1C = 1023,
 	/// `RESERVEDNOP r/m16, r16`
 	///
 	/// `o16 0F 1D /r`
@@ -8205,7 +8205,7 @@ pub enum Code {
 	/// `CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B`
 	///
 	/// `16/32/64-bit`
-	ReservedNop_rm16_r16_0F1D = 1024,
+	Reservednop_rm16_r16_0F1D = 1024,
 	/// `RESERVEDNOP r/m32, r32`
 	///
 	/// `o32 0F 1D /r`
@@ -8213,15 +8213,15 @@ pub enum Code {
 	/// `CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B`
 	///
 	/// `16/32/64-bit`
-	ReservedNop_rm32_r32_0F1D = 1025,
+	Reservednop_rm32_r32_0F1D = 1025,
 	/// `RESERVEDNOP r/m64, r64`
 	///
-	/// `REX.W 0F 1D /r`
+	/// `o64 0F 1D /r`
 	///
 	/// `CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B`
 	///
 	/// `64-bit`
-	ReservedNop_rm64_r64_0F1D = 1026,
+	Reservednop_rm64_r64_0F1D = 1026,
 	/// `RESERVEDNOP r/m16, r16`
 	///
 	/// `o16 0F 1E /r`
@@ -8229,7 +8229,7 @@ pub enum Code {
 	/// `CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B`
 	///
 	/// `16/32/64-bit`
-	ReservedNop_rm16_r16_0F1E = 1027,
+	Reservednop_rm16_r16_0F1E = 1027,
 	/// `RESERVEDNOP r/m32, r32`
 	///
 	/// `o32 0F 1E /r`
@@ -8237,15 +8237,15 @@ pub enum Code {
 	/// `CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B`
 	///
 	/// `16/32/64-bit`
-	ReservedNop_rm32_r32_0F1E = 1028,
+	Reservednop_rm32_r32_0F1E = 1028,
 	/// `RESERVEDNOP r/m64, r64`
 	///
-	/// `REX.W 0F 1E /r`
+	/// `o64 0F 1E /r`
 	///
 	/// `CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B`
 	///
 	/// `64-bit`
-	ReservedNop_rm64_r64_0F1E = 1029,
+	Reservednop_rm64_r64_0F1E = 1029,
 	/// `RESERVEDNOP r/m16, r16`
 	///
 	/// `o16 0F 1F /r`
@@ -8253,7 +8253,7 @@ pub enum Code {
 	/// `CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B`
 	///
 	/// `16/32/64-bit`
-	ReservedNop_rm16_r16_0F1F = 1030,
+	Reservednop_rm16_r16_0F1F = 1030,
 	/// `RESERVEDNOP r/m32, r32`
 	///
 	/// `o32 0F 1F /r`
@@ -8261,15 +8261,15 @@ pub enum Code {
 	/// `CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B`
 	///
 	/// `16/32/64-bit`
-	ReservedNop_rm32_r32_0F1F = 1031,
+	Reservednop_rm32_r32_0F1F = 1031,
 	/// `RESERVEDNOP r/m64, r64`
 	///
-	/// `REX.W 0F 1F /r`
+	/// `o64 0F 1F /r`
 	///
 	/// `CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B`
 	///
 	/// `64-bit`
-	ReservedNop_rm64_r64_0F1F = 1032,
+	Reservednop_rm64_r64_0F1F = 1032,
 	/// `PREFETCHNTA m8`
 	///
 	/// `0F 18 /0`
@@ -8432,7 +8432,7 @@ pub enum Code {
 	Rdsspd_r32 = 1052,
 	/// `RDSSPQ r64`
 	///
-	/// `F3 REX.W 0F 1E /1`
+	/// `F3 o64 0F 1E /1`
 	///
 	/// `CET_SS`
 	///
@@ -8472,7 +8472,7 @@ pub enum Code {
 	Nop_rm32 = 1057,
 	/// `NOP r/m64`
 	///
-	/// `REX.W 0F 1F /0`
+	/// `o64 0F 1F /0`
 	///
 	/// `CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B`
 	///
@@ -8776,7 +8776,7 @@ pub enum Code {
 	Cvtsi2ss_xmm_rm32 = 1095,
 	/// `CVTSI2SS xmm1, r/m64`
 	///
-	/// `F3 REX.W 0F 2A /r`
+	/// `F3 o64 0F 2A /r`
 	///
 	/// `SSE`
 	///
@@ -8824,7 +8824,7 @@ pub enum Code {
 	Cvtsi2sd_xmm_rm32 = 1101,
 	/// `CVTSI2SD xmm1, r/m64`
 	///
-	/// `F2 REX.W 0F 2A /r`
+	/// `F2 o64 0F 2A /r`
 	///
 	/// `SSE2`
 	///
@@ -8846,7 +8846,7 @@ pub enum Code {
 	///
 	/// `64-bit`
 	VEX_Vcvtsi2sd_xmm_xmm_rm64 = 1104,
-	/// `VCVTSI2SD xmm1, xmm2, r/m32`
+	/// `VCVTSI2SD xmm1, xmm2, r/m32{er}`
 	///
 	/// `EVEX.LIG.F2.0F.W0 2A /r`
 	///
@@ -9000,7 +9000,7 @@ pub enum Code {
 	Cvttss2si_r32_xmmm32 = 1123,
 	/// `CVTTSS2SI r64, xmm1/m32`
 	///
-	/// `F3 REX.W 0F 2C /r`
+	/// `F3 o64 0F 2C /r`
 	///
 	/// `SSE`
 	///
@@ -9048,7 +9048,7 @@ pub enum Code {
 	Cvttsd2si_r32_xmmm64 = 1129,
 	/// `CVTTSD2SI r64, xmm1/m64`
 	///
-	/// `F2 REX.W 0F 2C /r`
+	/// `F2 o64 0F 2C /r`
 	///
 	/// `SSE2`
 	///
@@ -9112,7 +9112,7 @@ pub enum Code {
 	Cvtss2si_r32_xmmm32 = 1137,
 	/// `CVTSS2SI r64, xmm1/m32`
 	///
-	/// `F3 REX.W 0F 2D /r`
+	/// `F3 o64 0F 2D /r`
 	///
 	/// `SSE`
 	///
@@ -9160,7 +9160,7 @@ pub enum Code {
 	Cvtsd2si_r32_xmmm64 = 1143,
 	/// `CVTSD2SI r64, xmm1/m64`
 	///
-	/// `F2 REX.W 0F 2D /r`
+	/// `F2 o64 0F 2D /r`
 	///
 	/// `SSE2`
 	///
@@ -9344,7 +9344,7 @@ pub enum Code {
 	Sysexitd = 1166,
 	/// `SYSEXITQ`
 	///
-	/// `REX.W 0F 35`
+	/// `o64 0F 35`
 	///
 	/// `SEP`
 	///
@@ -9376,7 +9376,7 @@ pub enum Code {
 	Cmovo_r32_rm32 = 1170,
 	/// `CMOVO r64, r/m64`
 	///
-	/// `REX.W 0F 40 /r`
+	/// `o64 0F 40 /r`
 	///
 	/// `CMOV`
 	///
@@ -9400,7 +9400,7 @@ pub enum Code {
 	Cmovno_r32_rm32 = 1173,
 	/// `CMOVNO r64, r/m64`
 	///
-	/// `REX.W 0F 41 /r`
+	/// `o64 0F 41 /r`
 	///
 	/// `CMOV`
 	///
@@ -9424,7 +9424,7 @@ pub enum Code {
 	Cmovb_r32_rm32 = 1176,
 	/// `CMOVB r64, r/m64`
 	///
-	/// `REX.W 0F 42 /r`
+	/// `o64 0F 42 /r`
 	///
 	/// `CMOV`
 	///
@@ -9448,7 +9448,7 @@ pub enum Code {
 	Cmovae_r32_rm32 = 1179,
 	/// `CMOVAE r64, r/m64`
 	///
-	/// `REX.W 0F 43 /r`
+	/// `o64 0F 43 /r`
 	///
 	/// `CMOV`
 	///
@@ -9472,7 +9472,7 @@ pub enum Code {
 	Cmove_r32_rm32 = 1182,
 	/// `CMOVE r64, r/m64`
 	///
-	/// `REX.W 0F 44 /r`
+	/// `o64 0F 44 /r`
 	///
 	/// `CMOV`
 	///
@@ -9496,7 +9496,7 @@ pub enum Code {
 	Cmovne_r32_rm32 = 1185,
 	/// `CMOVNE r64, r/m64`
 	///
-	/// `REX.W 0F 45 /r`
+	/// `o64 0F 45 /r`
 	///
 	/// `CMOV`
 	///
@@ -9520,7 +9520,7 @@ pub enum Code {
 	Cmovbe_r32_rm32 = 1188,
 	/// `CMOVBE r64, r/m64`
 	///
-	/// `REX.W 0F 46 /r`
+	/// `o64 0F 46 /r`
 	///
 	/// `CMOV`
 	///
@@ -9544,7 +9544,7 @@ pub enum Code {
 	Cmova_r32_rm32 = 1191,
 	/// `CMOVA r64, r/m64`
 	///
-	/// `REX.W 0F 47 /r`
+	/// `o64 0F 47 /r`
 	///
 	/// `CMOV`
 	///
@@ -9568,7 +9568,7 @@ pub enum Code {
 	Cmovs_r32_rm32 = 1194,
 	/// `CMOVS r64, r/m64`
 	///
-	/// `REX.W 0F 48 /r`
+	/// `o64 0F 48 /r`
 	///
 	/// `CMOV`
 	///
@@ -9592,7 +9592,7 @@ pub enum Code {
 	Cmovns_r32_rm32 = 1197,
 	/// `CMOVNS r64, r/m64`
 	///
-	/// `REX.W 0F 49 /r`
+	/// `o64 0F 49 /r`
 	///
 	/// `CMOV`
 	///
@@ -9616,7 +9616,7 @@ pub enum Code {
 	Cmovp_r32_rm32 = 1200,
 	/// `CMOVP r64, r/m64`
 	///
-	/// `REX.W 0F 4A /r`
+	/// `o64 0F 4A /r`
 	///
 	/// `CMOV`
 	///
@@ -9640,7 +9640,7 @@ pub enum Code {
 	Cmovnp_r32_rm32 = 1203,
 	/// `CMOVNP r64, r/m64`
 	///
-	/// `REX.W 0F 4B /r`
+	/// `o64 0F 4B /r`
 	///
 	/// `CMOV`
 	///
@@ -9664,7 +9664,7 @@ pub enum Code {
 	Cmovl_r32_rm32 = 1206,
 	/// `CMOVL r64, r/m64`
 	///
-	/// `REX.W 0F 4C /r`
+	/// `o64 0F 4C /r`
 	///
 	/// `CMOV`
 	///
@@ -9688,7 +9688,7 @@ pub enum Code {
 	Cmovge_r32_rm32 = 1209,
 	/// `CMOVGE r64, r/m64`
 	///
-	/// `REX.W 0F 4D /r`
+	/// `o64 0F 4D /r`
 	///
 	/// `CMOV`
 	///
@@ -9712,7 +9712,7 @@ pub enum Code {
 	Cmovle_r32_rm32 = 1212,
 	/// `CMOVLE r64, r/m64`
 	///
-	/// `REX.W 0F 4E /r`
+	/// `o64 0F 4E /r`
 	///
 	/// `CMOV`
 	///
@@ -9736,7 +9736,7 @@ pub enum Code {
 	Cmovg_r32_rm32 = 1215,
 	/// `CMOVG r64, r/m64`
 	///
-	/// `REX.W 0F 4F /r`
+	/// `o64 0F 4F /r`
 	///
 	/// `CMOV`
 	///
@@ -10000,7 +10000,7 @@ pub enum Code {
 	Movmskps_r32_xmm = 1248,
 	/// `MOVMSKPS r64, xmm`
 	///
-	/// `NP REX.W 0F 50 /r`
+	/// `NP o64 0F 50 /r`
 	///
 	/// `SSE`
 	///
@@ -10048,7 +10048,7 @@ pub enum Code {
 	Movmskpd_r32_xmm = 1254,
 	/// `MOVMSKPD r64, xmm`
 	///
-	/// `66 REX.W 0F 50 /r`
+	/// `66 o64 0F 50 /r`
 	///
 	/// `SSE2`
 	///
@@ -12648,7 +12648,7 @@ pub enum Code {
 	Movd_mm_rm32 = 1579,
 	/// `MOVQ mm, r/m64`
 	///
-	/// `NP REX.W 0F 6E /r`
+	/// `NP o64 0F 6E /r`
 	///
 	/// `MMX`
 	///
@@ -12664,7 +12664,7 @@ pub enum Code {
 	Movd_xmm_rm32 = 1581,
 	/// `MOVQ xmm, r/m64`
 	///
-	/// `66 REX.W 0F 6E /r`
+	/// `66 o64 0F 6E /r`
 	///
 	/// `SSE2`
 	///
@@ -14294,7 +14294,7 @@ pub enum Code {
 	///
 	/// `16/32/64-bit`
 	EVEX_Vcvtudq2pd_ymm_k1z_xmmm128b32 = 1785,
-	/// `VCVTUDQ2PD zmm1 {k1}{z}, ymm2/m256/m32bcst`
+	/// `VCVTUDQ2PD zmm1 {k1}{z}, ymm2/m256/m32bcst{er}`
 	///
 	/// `EVEX.512.F3.0F.W0 7A /r`
 	///
@@ -14438,7 +14438,7 @@ pub enum Code {
 	///
 	/// `64-bit`
 	EVEX_Vcvtusi2ss_xmm_xmm_rm64_er = 1803,
-	/// `VCVTUSI2SD xmm1, xmm2, r/m32`
+	/// `VCVTUSI2SD xmm1, xmm2, r/m32{er}`
 	///
 	/// `EVEX.LIG.F2.0F.W0 7B /r`
 	///
@@ -14560,7 +14560,7 @@ pub enum Code {
 	Movd_rm32_mm = 1818,
 	/// `MOVQ r/m64, mm`
 	///
-	/// `NP REX.W 0F 7E /r`
+	/// `NP o64 0F 7E /r`
 	///
 	/// `MMX`
 	///
@@ -14576,7 +14576,7 @@ pub enum Code {
 	Movd_rm32_xmm = 1820,
 	/// `MOVQ r/m64, xmm`
 	///
-	/// `66 REX.W 0F 7E /r`
+	/// `66 o64 0F 7E /r`
 	///
 	/// `SSE2`
 	///
@@ -14856,7 +14856,7 @@ pub enum Code {
 	Jo_rel32_32 = 1855,
 	/// `JO rel32`
 	///
-	/// `0F 80 cd`
+	/// `o64 0F 80 cd`
 	///
 	/// `X64`
 	///
@@ -14880,7 +14880,7 @@ pub enum Code {
 	Jno_rel32_32 = 1858,
 	/// `JNO rel32`
 	///
-	/// `0F 81 cd`
+	/// `o64 0F 81 cd`
 	///
 	/// `X64`
 	///
@@ -14904,7 +14904,7 @@ pub enum Code {
 	Jb_rel32_32 = 1861,
 	/// `JB rel32`
 	///
-	/// `0F 82 cd`
+	/// `o64 0F 82 cd`
 	///
 	/// `X64`
 	///
@@ -14928,7 +14928,7 @@ pub enum Code {
 	Jae_rel32_32 = 1864,
 	/// `JAE rel32`
 	///
-	/// `0F 83 cd`
+	/// `o64 0F 83 cd`
 	///
 	/// `X64`
 	///
@@ -14952,7 +14952,7 @@ pub enum Code {
 	Je_rel32_32 = 1867,
 	/// `JE rel32`
 	///
-	/// `0F 84 cd`
+	/// `o64 0F 84 cd`
 	///
 	/// `X64`
 	///
@@ -14976,7 +14976,7 @@ pub enum Code {
 	Jne_rel32_32 = 1870,
 	/// `JNE rel32`
 	///
-	/// `0F 85 cd`
+	/// `o64 0F 85 cd`
 	///
 	/// `X64`
 	///
@@ -15000,7 +15000,7 @@ pub enum Code {
 	Jbe_rel32_32 = 1873,
 	/// `JBE rel32`
 	///
-	/// `0F 86 cd`
+	/// `o64 0F 86 cd`
 	///
 	/// `X64`
 	///
@@ -15024,7 +15024,7 @@ pub enum Code {
 	Ja_rel32_32 = 1876,
 	/// `JA rel32`
 	///
-	/// `0F 87 cd`
+	/// `o64 0F 87 cd`
 	///
 	/// `X64`
 	///
@@ -15048,7 +15048,7 @@ pub enum Code {
 	Js_rel32_32 = 1879,
 	/// `JS rel32`
 	///
-	/// `0F 88 cd`
+	/// `o64 0F 88 cd`
 	///
 	/// `X64`
 	///
@@ -15072,7 +15072,7 @@ pub enum Code {
 	Jns_rel32_32 = 1882,
 	/// `JNS rel32`
 	///
-	/// `0F 89 cd`
+	/// `o64 0F 89 cd`
 	///
 	/// `X64`
 	///
@@ -15096,7 +15096,7 @@ pub enum Code {
 	Jp_rel32_32 = 1885,
 	/// `JP rel32`
 	///
-	/// `0F 8A cd`
+	/// `o64 0F 8A cd`
 	///
 	/// `X64`
 	///
@@ -15120,7 +15120,7 @@ pub enum Code {
 	Jnp_rel32_32 = 1888,
 	/// `JNP rel32`
 	///
-	/// `0F 8B cd`
+	/// `o64 0F 8B cd`
 	///
 	/// `X64`
 	///
@@ -15144,7 +15144,7 @@ pub enum Code {
 	Jl_rel32_32 = 1891,
 	/// `JL rel32`
 	///
-	/// `0F 8C cd`
+	/// `o64 0F 8C cd`
 	///
 	/// `X64`
 	///
@@ -15168,7 +15168,7 @@ pub enum Code {
 	Jge_rel32_32 = 1894,
 	/// `JGE rel32`
 	///
-	/// `0F 8D cd`
+	/// `o64 0F 8D cd`
 	///
 	/// `X64`
 	///
@@ -15192,7 +15192,7 @@ pub enum Code {
 	Jle_rel32_32 = 1897,
 	/// `JLE rel32`
 	///
-	/// `0F 8E cd`
+	/// `o64 0F 8E cd`
 	///
 	/// `X64`
 	///
@@ -15216,7 +15216,7 @@ pub enum Code {
 	Jg_rel32_32 = 1900,
 	/// `JG rel32`
 	///
-	/// `0F 8F cd`
+	/// `o64 0F 8F cd`
 	///
 	/// `X64`
 	///
@@ -15560,7 +15560,7 @@ pub enum Code {
 	Pushd_FS = 1943,
 	/// `PUSH FS`
 	///
-	/// `0F A0`
+	/// `o64 0F A0`
 	///
 	/// `X64`
 	///
@@ -15584,7 +15584,7 @@ pub enum Code {
 	Popd_FS = 1946,
 	/// `POP FS`
 	///
-	/// `0F A1`
+	/// `o64 0F A1`
 	///
 	/// `X64`
 	///
@@ -15616,7 +15616,7 @@ pub enum Code {
 	Bt_rm32_r32 = 1950,
 	/// `BT r/m64, r64`
 	///
-	/// `REX.W 0F A3 /r`
+	/// `o64 0F A3 /r`
 	///
 	/// `X64`
 	///
@@ -15640,7 +15640,7 @@ pub enum Code {
 	Shld_rm32_r32_imm8 = 1953,
 	/// `SHLD r/m64, r64, imm8`
 	///
-	/// `REX.W 0F A4 /r ib`
+	/// `o64 0F A4 /r ib`
 	///
 	/// `X64`
 	///
@@ -15664,7 +15664,7 @@ pub enum Code {
 	Shld_rm32_r32_CL = 1956,
 	/// `SHLD r/m64, r64, CL`
 	///
-	/// `REX.W 0F A5 /r`
+	/// `o64 0F A5 /r`
 	///
 	/// `X64`
 	///
@@ -15688,7 +15688,7 @@ pub enum Code {
 	Montmul_32 = 1959,
 	/// `MONTMUL`
 	///
-	/// `F3 0F A6 C0`
+	/// `a64 F3 0F A6 C0`
 	///
 	/// `PADLOCK_PMM`
 	///
@@ -15712,7 +15712,7 @@ pub enum Code {
 	Xsha1_32 = 1962,
 	/// `XSHA1`
 	///
-	/// `F3 0F A6 C8`
+	/// `a64 F3 0F A6 C8`
 	///
 	/// `PADLOCK_PHE`
 	///
@@ -15736,7 +15736,7 @@ pub enum Code {
 	Xsha256_32 = 1965,
 	/// `XSHA256`
 	///
-	/// `F3 0F A6 D0`
+	/// `a64 F3 0F A6 D0`
 	///
 	/// `PADLOCK_PHE`
 	///
@@ -15776,7 +15776,7 @@ pub enum Code {
 	Xstore_32 = 1970,
 	/// `XSTORE`
 	///
-	/// `0F A7 C0`
+	/// `a64 0F A7 C0`
 	///
 	/// `PADLOCK_RNG`
 	///
@@ -15789,7 +15789,7 @@ pub enum Code {
 	/// `PADLOCK_ACE`
 	///
 	/// `16/32-bit`
-	XcryptEcb_16 = 1972,
+	Xcryptecb_16 = 1972,
 	/// `XCRYPTECB`
 	///
 	/// `a32 F3 0F A7 C8`
@@ -15797,15 +15797,15 @@ pub enum Code {
 	/// `PADLOCK_ACE`
 	///
 	/// `16/32/64-bit`
-	XcryptEcb_32 = 1973,
+	Xcryptecb_32 = 1973,
 	/// `XCRYPTECB`
 	///
-	/// `F3 0F A7 C8`
+	/// `a64 F3 0F A7 C8`
 	///
 	/// `PADLOCK_ACE`
 	///
 	/// `64-bit`
-	XcryptEcb_64 = 1974,
+	Xcryptecb_64 = 1974,
 	/// `XCRYPTCBC`
 	///
 	/// `a16 F3 0F A7 D0`
@@ -15813,7 +15813,7 @@ pub enum Code {
 	/// `PADLOCK_ACE`
 	///
 	/// `16/32-bit`
-	XcryptCbc_16 = 1975,
+	Xcryptcbc_16 = 1975,
 	/// `XCRYPTCBC`
 	///
 	/// `a32 F3 0F A7 D0`
@@ -15821,15 +15821,15 @@ pub enum Code {
 	/// `PADLOCK_ACE`
 	///
 	/// `16/32/64-bit`
-	XcryptCbc_32 = 1976,
+	Xcryptcbc_32 = 1976,
 	/// `XCRYPTCBC`
 	///
-	/// `F3 0F A7 D0`
+	/// `a64 F3 0F A7 D0`
 	///
 	/// `PADLOCK_ACE`
 	///
 	/// `64-bit`
-	XcryptCbc_64 = 1977,
+	Xcryptcbc_64 = 1977,
 	/// `XCRYPTCTR`
 	///
 	/// `a16 F3 0F A7 D8`
@@ -15837,7 +15837,7 @@ pub enum Code {
 	/// `PADLOCK_ACE`
 	///
 	/// `16/32-bit`
-	XcryptCtr_16 = 1978,
+	Xcryptctr_16 = 1978,
 	/// `XCRYPTCTR`
 	///
 	/// `a32 F3 0F A7 D8`
@@ -15845,15 +15845,15 @@ pub enum Code {
 	/// `PADLOCK_ACE`
 	///
 	/// `16/32/64-bit`
-	XcryptCtr_32 = 1979,
+	Xcryptctr_32 = 1979,
 	/// `XCRYPTCTR`
 	///
-	/// `F3 0F A7 D8`
+	/// `a64 F3 0F A7 D8`
 	///
 	/// `PADLOCK_ACE`
 	///
 	/// `64-bit`
-	XcryptCtr_64 = 1980,
+	Xcryptctr_64 = 1980,
 	/// `XCRYPTCFB`
 	///
 	/// `a16 F3 0F A7 E0`
@@ -15861,7 +15861,7 @@ pub enum Code {
 	/// `PADLOCK_ACE`
 	///
 	/// `16/32-bit`
-	XcryptCfb_16 = 1981,
+	Xcryptcfb_16 = 1981,
 	/// `XCRYPTCFB`
 	///
 	/// `a32 F3 0F A7 E0`
@@ -15869,15 +15869,15 @@ pub enum Code {
 	/// `PADLOCK_ACE`
 	///
 	/// `16/32/64-bit`
-	XcryptCfb_32 = 1982,
+	Xcryptcfb_32 = 1982,
 	/// `XCRYPTCFB`
 	///
-	/// `F3 0F A7 E0`
+	/// `a64 F3 0F A7 E0`
 	///
 	/// `PADLOCK_ACE`
 	///
 	/// `64-bit`
-	XcryptCfb_64 = 1983,
+	Xcryptcfb_64 = 1983,
 	/// `XCRYPTOFB`
 	///
 	/// `a16 F3 0F A7 E8`
@@ -15885,7 +15885,7 @@ pub enum Code {
 	/// `PADLOCK_ACE`
 	///
 	/// `16/32-bit`
-	XcryptOfb_16 = 1984,
+	Xcryptofb_16 = 1984,
 	/// `XCRYPTOFB`
 	///
 	/// `a32 F3 0F A7 E8`
@@ -15893,15 +15893,15 @@ pub enum Code {
 	/// `PADLOCK_ACE`
 	///
 	/// `16/32/64-bit`
-	XcryptOfb_32 = 1985,
+	Xcryptofb_32 = 1985,
 	/// `XCRYPTOFB`
 	///
-	/// `F3 0F A7 E8`
+	/// `a64 F3 0F A7 E8`
 	///
 	/// `PADLOCK_ACE`
 	///
 	/// `64-bit`
-	XcryptOfb_64 = 1986,
+	Xcryptofb_64 = 1986,
 	/// `IBTS r/m16, r16`
 	///
 	/// `o16 0F A7 /r`
@@ -15960,7 +15960,7 @@ pub enum Code {
 	Pushd_GS = 1993,
 	/// `PUSH GS`
 	///
-	/// `0F A8`
+	/// `o64 0F A8`
 	///
 	/// `X64`
 	///
@@ -15984,7 +15984,7 @@ pub enum Code {
 	Popd_GS = 1996,
 	/// `POP GS`
 	///
-	/// `0F A9`
+	/// `o64 0F A9`
 	///
 	/// `X64`
 	///
@@ -16016,7 +16016,7 @@ pub enum Code {
 	Bts_rm32_r32 = 2000,
 	/// `BTS r/m64, r64`
 	///
-	/// `REX.W 0F AB /r`
+	/// `o64 0F AB /r`
 	///
 	/// `X64`
 	///
@@ -16040,7 +16040,7 @@ pub enum Code {
 	Shrd_rm32_r32_imm8 = 2003,
 	/// `SHRD r/m64, r64, imm8`
 	///
-	/// `REX.W 0F AC /r ib`
+	/// `o64 0F AC /r ib`
 	///
 	/// `X64`
 	///
@@ -16064,7 +16064,7 @@ pub enum Code {
 	Shrd_rm32_r32_CL = 2006,
 	/// `SHRD r/m64, r64, CL`
 	///
-	/// `REX.W 0F AD /r`
+	/// `o64 0F AD /r`
 	///
 	/// `X64`
 	///
@@ -16080,7 +16080,7 @@ pub enum Code {
 	Fxsave_m512byte = 2008,
 	/// `FXSAVE64 m512byte`
 	///
-	/// `NP REX.W 0F AE /0`
+	/// `NP o64 0F AE /0`
 	///
 	/// `FXSR`
 	///
@@ -16096,7 +16096,7 @@ pub enum Code {
 	Rdfsbase_r32 = 2010,
 	/// `RDFSBASE r64`
 	///
-	/// `F3 REX.W 0F AE /0`
+	/// `F3 o64 0F AE /0`
 	///
 	/// `FSGSBASE`
 	///
@@ -16112,7 +16112,7 @@ pub enum Code {
 	Fxrstor_m512byte = 2012,
 	/// `FXRSTOR64 m512byte`
 	///
-	/// `NP REX.W 0F AE /1`
+	/// `NP o64 0F AE /1`
 	///
 	/// `FXSR`
 	///
@@ -16128,7 +16128,7 @@ pub enum Code {
 	Rdgsbase_r32 = 2014,
 	/// `RDGSBASE r64`
 	///
-	/// `F3 REX.W 0F AE /1`
+	/// `F3 o64 0F AE /1`
 	///
 	/// `FSGSBASE`
 	///
@@ -16152,7 +16152,7 @@ pub enum Code {
 	Wrfsbase_r32 = 2017,
 	/// `WRFSBASE r64`
 	///
-	/// `F3 REX.W 0F AE /2`
+	/// `F3 o64 0F AE /2`
 	///
 	/// `FSGSBASE`
 	///
@@ -16184,7 +16184,7 @@ pub enum Code {
 	Wrgsbase_r32 = 2021,
 	/// `WRGSBASE r64`
 	///
-	/// `F3 REX.W 0F AE /3`
+	/// `F3 o64 0F AE /3`
 	///
 	/// `FSGSBASE`
 	///
@@ -16208,7 +16208,7 @@ pub enum Code {
 	Xsave_mem = 2024,
 	/// `XSAVE64 mem`
 	///
-	/// `NP REX.W 0F AE /4`
+	/// `NP o64 0F AE /4`
 	///
 	/// `XSAVE`
 	///
@@ -16224,7 +16224,7 @@ pub enum Code {
 	Ptwrite_rm32 = 2026,
 	/// `PTWRITE r/m64`
 	///
-	/// `F3 REX.W 0F AE /4`
+	/// `F3 o64 0F AE /4`
 	///
 	/// `PTWRITE`
 	///
@@ -16240,7 +16240,7 @@ pub enum Code {
 	Xrstor_mem = 2028,
 	/// `XRSTOR64 mem`
 	///
-	/// `NP REX.W 0F AE /5`
+	/// `NP o64 0F AE /5`
 	///
 	/// `XSAVE`
 	///
@@ -16256,7 +16256,7 @@ pub enum Code {
 	Incsspd_r32 = 2030,
 	/// `INCSSPQ r64`
 	///
-	/// `F3 REX.W 0F AE /5`
+	/// `F3 o64 0F AE /5`
 	///
 	/// `CET_SS`
 	///
@@ -16272,7 +16272,7 @@ pub enum Code {
 	Xsaveopt_mem = 2032,
 	/// `XSAVEOPT64 mem`
 	///
-	/// `NP REX.W 0F AE /6`
+	/// `NP o64 0F AE /6`
 	///
 	/// `XSAVEOPT`
 	///
@@ -16296,7 +16296,7 @@ pub enum Code {
 	Tpause_r32 = 2035,
 	/// `TPAUSE r64, <edx>, <eax>`
 	///
-	/// `66 REX.W 0F AE /6`
+	/// `66 o64 0F AE /6`
 	///
 	/// `WAITPKG`
 	///
@@ -16328,7 +16328,7 @@ pub enum Code {
 	Umonitor_r32 = 2039,
 	/// `UMONITOR r64`
 	///
-	/// `F3 0F AE /6`
+	/// `a64 F3 0F AE /6`
 	///
 	/// `WAITPKG`
 	///
@@ -16344,7 +16344,7 @@ pub enum Code {
 	Umwait_r32 = 2041,
 	/// `UMWAIT r64, <edx>, <eax>`
 	///
-	/// `F2 REX.W 0F AE /6`
+	/// `F2 o64 0F AE /6`
 	///
 	/// `WAITPKG`
 	///
@@ -16584,7 +16584,7 @@ pub enum Code {
 	Imul_r32_rm32 = 2071,
 	/// `IMUL r64, r/m64`
 	///
-	/// `REX.W 0F AF /r`
+	/// `o64 0F AF /r`
 	///
 	/// `X64`
 	///
@@ -16616,7 +16616,7 @@ pub enum Code {
 	Cmpxchg_rm32_r32 = 2075,
 	/// `CMPXCHG r/m64, r64`
 	///
-	/// `REX.W 0F B1 /r`
+	/// `o64 0F B1 /r`
 	///
 	/// `X64`
 	///
@@ -16640,7 +16640,7 @@ pub enum Code {
 	Lss_r32_m1632 = 2078,
 	/// `LSS r64, m16:64`
 	///
-	/// `REX.W 0F B2 /r`
+	/// `o64 0F B2 /r`
 	///
 	/// `X64`
 	///
@@ -16664,7 +16664,7 @@ pub enum Code {
 	Btr_rm32_r32 = 2081,
 	/// `BTR r/m64, r64`
 	///
-	/// `REX.W 0F B3 /r`
+	/// `o64 0F B3 /r`
 	///
 	/// `X64`
 	///
@@ -16688,7 +16688,7 @@ pub enum Code {
 	Lfs_r32_m1632 = 2084,
 	/// `LFS r64, m16:64`
 	///
-	/// `REX.W 0F B4 /r`
+	/// `o64 0F B4 /r`
 	///
 	/// `X64`
 	///
@@ -16712,7 +16712,7 @@ pub enum Code {
 	Lgs_r32_m1632 = 2087,
 	/// `LGS r64, m16:64`
 	///
-	/// `REX.W 0F B5 /r`
+	/// `o64 0F B5 /r`
 	///
 	/// `X64`
 	///
@@ -16736,7 +16736,7 @@ pub enum Code {
 	Movzx_r32_rm8 = 2090,
 	/// `MOVZX r64, r/m8`
 	///
-	/// `REX.W 0F B6 /r`
+	/// `o64 0F B6 /r`
 	///
 	/// `X64`
 	///
@@ -16760,7 +16760,7 @@ pub enum Code {
 	Movzx_r32_rm16 = 2093,
 	/// `MOVZX r64, r/m16`
 	///
-	/// `REX.W 0F B7 /r`
+	/// `o64 0F B7 /r`
 	///
 	/// `X64`
 	///
@@ -16800,7 +16800,7 @@ pub enum Code {
 	Popcnt_r32_rm32 = 2098,
 	/// `POPCNT r64, r/m64`
 	///
-	/// `F3 REX.W 0F B8 /r`
+	/// `F3 o64 0F B8 /r`
 	///
 	/// `POPCNT`
 	///
@@ -16824,7 +16824,7 @@ pub enum Code {
 	Ud1_r32_rm32 = 2101,
 	/// `UD1 r64, r/m64`
 	///
-	/// `REX.W 0F B9 /r`
+	/// `o64 0F B9 /r`
 	///
 	/// `X64`
 	///
@@ -16848,7 +16848,7 @@ pub enum Code {
 	Bt_rm32_imm8 = 2104,
 	/// `BT r/m64, imm8`
 	///
-	/// `REX.W 0F BA /4 ib`
+	/// `o64 0F BA /4 ib`
 	///
 	/// `X64`
 	///
@@ -16872,7 +16872,7 @@ pub enum Code {
 	Bts_rm32_imm8 = 2107,
 	/// `BTS r/m64, imm8`
 	///
-	/// `REX.W 0F BA /5 ib`
+	/// `o64 0F BA /5 ib`
 	///
 	/// `X64`
 	///
@@ -16896,7 +16896,7 @@ pub enum Code {
 	Btr_rm32_imm8 = 2110,
 	/// `BTR r/m64, imm8`
 	///
-	/// `REX.W 0F BA /6 ib`
+	/// `o64 0F BA /6 ib`
 	///
 	/// `X64`
 	///
@@ -16920,7 +16920,7 @@ pub enum Code {
 	Btc_rm32_imm8 = 2113,
 	/// `BTC r/m64, imm8`
 	///
-	/// `REX.W 0F BA /7 ib`
+	/// `o64 0F BA /7 ib`
 	///
 	/// `X64`
 	///
@@ -16944,7 +16944,7 @@ pub enum Code {
 	Btc_rm32_r32 = 2116,
 	/// `BTC r/m64, r64`
 	///
-	/// `REX.W 0F BB /r`
+	/// `o64 0F BB /r`
 	///
 	/// `X64`
 	///
@@ -16968,7 +16968,7 @@ pub enum Code {
 	Bsf_r32_rm32 = 2119,
 	/// `BSF r64, r/m64`
 	///
-	/// `REX.W 0F BC /r`
+	/// `o64 0F BC /r`
 	///
 	/// `X64`
 	///
@@ -16992,7 +16992,7 @@ pub enum Code {
 	Tzcnt_r32_rm32 = 2122,
 	/// `TZCNT r64, r/m64`
 	///
-	/// `F3 REX.W 0F BC /r`
+	/// `F3 o64 0F BC /r`
 	///
 	/// `BMI1`
 	///
@@ -17016,7 +17016,7 @@ pub enum Code {
 	Bsr_r32_rm32 = 2125,
 	/// `BSR r64, r/m64`
 	///
-	/// `REX.W 0F BD /r`
+	/// `o64 0F BD /r`
 	///
 	/// `X64`
 	///
@@ -17040,7 +17040,7 @@ pub enum Code {
 	Lzcnt_r32_rm32 = 2128,
 	/// `LZCNT r64, r/m64`
 	///
-	/// `F3 REX.W 0F BD /r`
+	/// `F3 o64 0F BD /r`
 	///
 	/// `LZCNT`
 	///
@@ -17064,7 +17064,7 @@ pub enum Code {
 	Movsx_r32_rm8 = 2131,
 	/// `MOVSX r64, r/m8`
 	///
-	/// `REX.W 0F BE /r`
+	/// `o64 0F BE /r`
 	///
 	/// `X64`
 	///
@@ -17088,7 +17088,7 @@ pub enum Code {
 	Movsx_r32_rm16 = 2134,
 	/// `MOVSX r64, r/m16`
 	///
-	/// `REX.W 0F BF /r`
+	/// `o64 0F BF /r`
 	///
 	/// `X64`
 	///
@@ -17120,7 +17120,7 @@ pub enum Code {
 	Xadd_rm32_r32 = 2138,
 	/// `XADD r/m64, r64`
 	///
-	/// `REX.W 0F C1 /r`
+	/// `o64 0F C1 /r`
 	///
 	/// `X64`
 	///
@@ -17280,7 +17280,7 @@ pub enum Code {
 	Movnti_m32_r32 = 2158,
 	/// `MOVNTI m64, r64`
 	///
-	/// `NP REX.W 0F C3 /r`
+	/// `NP o64 0F C3 /r`
 	///
 	/// `SSE2`
 	///
@@ -17296,7 +17296,7 @@ pub enum Code {
 	Pinsrw_mm_r32m16_imm8 = 2160,
 	/// `PINSRW mm, r64/m16, imm8`
 	///
-	/// `NP REX.W 0F C4 /r ib`
+	/// `NP o64 0F C4 /r ib`
 	///
 	/// `SSE`
 	///
@@ -17312,7 +17312,7 @@ pub enum Code {
 	Pinsrw_xmm_r32m16_imm8 = 2162,
 	/// `PINSRW xmm, r64/m16, imm8`
 	///
-	/// `66 REX.W 0F C4 /r ib`
+	/// `66 o64 0F C4 /r ib`
 	///
 	/// `SSE2`
 	///
@@ -17360,7 +17360,7 @@ pub enum Code {
 	Pextrw_r32_mm_imm8 = 2168,
 	/// `PEXTRW r64, mm, imm8`
 	///
-	/// `NP REX.W 0F C5 /r ib`
+	/// `NP o64 0F C5 /r ib`
 	///
 	/// `SSE`
 	///
@@ -17376,7 +17376,7 @@ pub enum Code {
 	Pextrw_r32_xmm_imm8 = 2170,
 	/// `PEXTRW r64, xmm, imm8`
 	///
-	/// `66 REX.W 0F C5 /r ib`
+	/// `66 o64 0F C5 /r ib`
 	///
 	/// `SSE2`
 	///
@@ -17520,7 +17520,7 @@ pub enum Code {
 	Cmpxchg8b_m64 = 2188,
 	/// `CMPXCHG16B m128`
 	///
-	/// `REX.W 0F C7 /1`
+	/// `o64 0F C7 /1`
 	///
 	/// `CMPXCHG16B`
 	///
@@ -17536,7 +17536,7 @@ pub enum Code {
 	Xrstors_mem = 2190,
 	/// `XRSTORS64 mem`
 	///
-	/// `NP REX.W 0F C7 /3`
+	/// `NP o64 0F C7 /3`
 	///
 	/// `XSAVES`
 	///
@@ -17552,7 +17552,7 @@ pub enum Code {
 	Xsavec_mem = 2192,
 	/// `XSAVEC64 mem`
 	///
-	/// `NP REX.W 0F C7 /4`
+	/// `NP o64 0F C7 /4`
 	///
 	/// `XSAVEC`
 	///
@@ -17568,7 +17568,7 @@ pub enum Code {
 	Xsaves_mem = 2194,
 	/// `XSAVES64 mem`
 	///
-	/// `NP REX.W 0F C7 /5`
+	/// `NP o64 0F C7 /5`
 	///
 	/// `XSAVES`
 	///
@@ -17616,7 +17616,7 @@ pub enum Code {
 	Rdrand_r32 = 2200,
 	/// `RDRAND r64`
 	///
-	/// `REX.W 0F C7 /6`
+	/// `o64 0F C7 /6`
 	///
 	/// `RDRAND`
 	///
@@ -17648,7 +17648,7 @@ pub enum Code {
 	Rdseed_r32 = 2204,
 	/// `RDSEED r64`
 	///
-	/// `REX.W 0F C7 /7`
+	/// `o64 0F C7 /7`
 	///
 	/// `RDSEED`
 	///
@@ -17688,7 +17688,7 @@ pub enum Code {
 	Bswap_r32 = 2209,
 	/// `BSWAP r64`
 	///
-	/// `REX.W 0F C8+ro`
+	/// `o64 0F C8+ro`
 	///
 	/// `X64`
 	///
@@ -18072,7 +18072,7 @@ pub enum Code {
 	Pmovmskb_r32_mm = 2257,
 	/// `PMOVMSKB r64, mm`
 	///
-	/// `NP REX.W 0F D7 /r`
+	/// `NP o64 0F D7 /r`
 	///
 	/// `SSE`
 	///
@@ -18088,7 +18088,7 @@ pub enum Code {
 	Pmovmskb_r32_xmm = 2259,
 	/// `PMOVMSKB r64, xmm`
 	///
-	/// `66 REX.W 0F D7 /r`
+	/// `66 o64 0F D7 /r`
 	///
 	/// `SSE2`
 	///
@@ -19070,7 +19070,7 @@ pub enum Code {
 	///
 	/// `16/32/64-bit`
 	EVEX_Vcvtdq2pd_ymm_k1z_xmmm128b32 = 2382,
-	/// `VCVTDQ2PD zmm1 {k1}{z}, ymm2/m256/m32bcst`
+	/// `VCVTDQ2PD zmm1 {k1}{z}, ymm2/m256/m32bcst{er}`
 	///
 	/// `EVEX.512.F3.0F.W0 E6 /r`
 	///
@@ -20496,7 +20496,7 @@ pub enum Code {
 	Ud0_r32_rm32 = 2560,
 	/// `UD0 r64, r/m64`
 	///
-	/// `REX.W 0F FF /r`
+	/// `o64 0F FF /r`
 	///
 	/// `X64`
 	///
@@ -21510,22 +21510,22 @@ pub enum Code {
 	///
 	/// `16/32/64-bit`
 	VEX_Vptest_ymm_ymmm256 = 2687,
-	/// `VBROADCASTSS xmm1, xmm2/m32`
+	/// `VBROADCASTSS xmm1, m32`
 	///
 	/// `VEX.128.66.0F38.W0 18 /r`
 	///
-	/// `AVX (reg,mem) or AVX2 (reg,reg)`
+	/// `AVX`
 	///
 	/// `16/32/64-bit`
-	VEX_Vbroadcastss_xmm_xmmm32 = 2688,
-	/// `VBROADCASTSS ymm1, xmm2/m32`
+	VEX_Vbroadcastss_xmm_m32 = 2688,
+	/// `VBROADCASTSS ymm1, m32`
 	///
 	/// `VEX.256.66.0F38.W0 18 /r`
 	///
-	/// `AVX (reg,mem) or AVX2 (reg,reg)`
+	/// `AVX`
 	///
 	/// `16/32/64-bit`
-	VEX_Vbroadcastss_ymm_xmmm32 = 2689,
+	VEX_Vbroadcastss_ymm_m32 = 2689,
 	/// `VBROADCASTSS xmm1 {k1}{z}, xmm2/m32`
 	///
 	/// `EVEX.128.66.0F38.W0 18 /r`
@@ -21550,14 +21550,14 @@ pub enum Code {
 	///
 	/// `16/32/64-bit`
 	EVEX_Vbroadcastss_zmm_k1z_xmmm32 = 2692,
-	/// `VBROADCASTSD ymm1, xmm2/m64`
+	/// `VBROADCASTSD ymm1, m64`
 	///
 	/// `VEX.256.66.0F38.W0 19 /r`
 	///
-	/// `AVX (reg,mem) or AVX2 (reg,reg)`
+	/// `AVX`
 	///
 	/// `16/32/64-bit`
-	VEX_Vbroadcastsd_ymm_xmmm64 = 2693,
+	VEX_Vbroadcastsd_ymm_m64 = 2693,
 	/// `VBROADCASTF32X2 ymm1 {k1}{z}, xmm2/m64`
 	///
 	/// `EVEX.256.66.0F38.W0 19 /r`
@@ -29304,7 +29304,7 @@ pub enum Code {
 	Movbe_r32_m32 = 3661,
 	/// `MOVBE r64, m64`
 	///
-	/// `REX.W 0F 38 F0 /r`
+	/// `o64 0F 38 F0 /r`
 	///
 	/// `MOVBE`
 	///
@@ -29320,7 +29320,7 @@ pub enum Code {
 	Crc32_r32_rm8 = 3663,
 	/// `CRC32 r64, r/m8`
 	///
-	/// `F2 REX.W 0F 38 F0 /r`
+	/// `F2 o64 0F 38 F0 /r`
 	///
 	/// `SSE4.2`
 	///
@@ -29344,7 +29344,7 @@ pub enum Code {
 	Movbe_m32_r32 = 3666,
 	/// `MOVBE m64, r64`
 	///
-	/// `REX.W 0F 38 F1 /r`
+	/// `o64 0F 38 F1 /r`
 	///
 	/// `MOVBE`
 	///
@@ -29368,7 +29368,7 @@ pub enum Code {
 	Crc32_r32_rm32 = 3669,
 	/// `CRC32 r64, r/m64`
 	///
-	/// `F2 REX.W 0F 38 F1 /r`
+	/// `F2 o64 0F 38 F1 /r`
 	///
 	/// `SSE4.2`
 	///
@@ -29464,7 +29464,7 @@ pub enum Code {
 	Wrussd_m32_r32 = 3681,
 	/// `WRUSSQ m64, r64`
 	///
-	/// `66 REX.W 0F 38 F5 /r`
+	/// `66 o64 0F 38 F5 /r`
 	///
 	/// `CET_SS`
 	///
@@ -29512,7 +29512,7 @@ pub enum Code {
 	Wrssd_m32_r32 = 3687,
 	/// `WRSSQ m64, r64`
 	///
-	/// `NP REX.W 0F 38 F6 /r`
+	/// `NP o64 0F 38 F6 /r`
 	///
 	/// `CET_SS`
 	///
@@ -29528,7 +29528,7 @@ pub enum Code {
 	Adcx_r32_rm32 = 3689,
 	/// `ADCX r64, r/m64`
 	///
-	/// `66 REX.W 0F 38 F6 /r`
+	/// `66 o64 0F 38 F6 /r`
 	///
 	/// `ADX`
 	///
@@ -29544,7 +29544,7 @@ pub enum Code {
 	Adox_r32_rm32 = 3691,
 	/// `ADOX r64, r/m64`
 	///
-	/// `F3 REX.W 0F 38 F6 /r`
+	/// `F3 o64 0F 38 F6 /r`
 	///
 	/// `ADX`
 	///
@@ -29648,7 +29648,7 @@ pub enum Code {
 	Movdir64b_r32_m512 = 3704,
 	/// `MOVDIR64B r64, m512`
 	///
-	/// `66 0F 38 F8 /r`
+	/// `a64 66 0F 38 F8 /r`
 	///
 	/// `MOVDIR64B`
 	///
@@ -29656,7 +29656,7 @@ pub enum Code {
 	Movdir64b_r64_m512 = 3705,
 	/// `ENQCMDS r16, m512`
 	///
-	/// `a16 F3 0F 38 F8 /r`
+	/// `a16 F3 0F 38 F8 !(11):rrr:bbb`
 	///
 	/// `ENQCMD`
 	///
@@ -29664,7 +29664,7 @@ pub enum Code {
 	Enqcmds_r16_m512 = 3706,
 	/// `ENQCMDS r32, m512`
 	///
-	/// `a32 F3 0F 38 F8 /r`
+	/// `a32 F3 0F 38 F8 !(11):rrr:bbb`
 	///
 	/// `ENQCMD`
 	///
@@ -29672,7 +29672,7 @@ pub enum Code {
 	Enqcmds_r32_m512 = 3707,
 	/// `ENQCMDS r64, m512`
 	///
-	/// `F3 0F 38 F8 /r`
+	/// `a64 F3 0F 38 F8 !(11):rrr:bbb`
 	///
 	/// `ENQCMD`
 	///
@@ -29680,7 +29680,7 @@ pub enum Code {
 	Enqcmds_r64_m512 = 3708,
 	/// `ENQCMD r16, m512`
 	///
-	/// `a16 F2 0F 38 F8 /r`
+	/// `a16 F2 0F 38 F8 !(11):rrr:bbb`
 	///
 	/// `ENQCMD`
 	///
@@ -29688,7 +29688,7 @@ pub enum Code {
 	Enqcmd_r16_m512 = 3709,
 	/// `ENQCMD r32, m512`
 	///
-	/// `a32 F2 0F 38 F8 /r`
+	/// `a32 F2 0F 38 F8 !(11):rrr:bbb`
 	///
 	/// `ENQCMD`
 	///
@@ -29696,7 +29696,7 @@ pub enum Code {
 	Enqcmd_r32_m512 = 3710,
 	/// `ENQCMD r64, m512`
 	///
-	/// `F2 0F 38 F8 /r`
+	/// `a64 F2 0F 38 F8 !(11):rrr:bbb`
 	///
 	/// `ENQCMD`
 	///
@@ -29712,7 +29712,7 @@ pub enum Code {
 	Movdiri_m32_r32 = 3712,
 	/// `MOVDIRI m64, r64`
 	///
-	/// `NP REX.W 0F 38 F9 /r`
+	/// `NP o64 0F 38 F9 /r`
 	///
 	/// `MOVDIRI`
 	///
@@ -30200,7 +30200,7 @@ pub enum Code {
 	Pextrb_r32m8_xmm_imm8 = 3773,
 	/// `PEXTRB r64/m8, xmm2, imm8`
 	///
-	/// `66 REX.W 0F 3A 14 /r ib`
+	/// `66 o64 0F 3A 14 /r ib`
 	///
 	/// `SSE4.1`
 	///
@@ -30248,7 +30248,7 @@ pub enum Code {
 	Pextrw_r32m16_xmm_imm8 = 3779,
 	/// `PEXTRW r64/m16, xmm, imm8`
 	///
-	/// `66 REX.W 0F 3A 15 /r ib`
+	/// `66 o64 0F 3A 15 /r ib`
 	///
 	/// `SSE4.1`
 	///
@@ -30296,7 +30296,7 @@ pub enum Code {
 	Pextrd_rm32_xmm_imm8 = 3785,
 	/// `PEXTRQ r/m64, xmm2, imm8`
 	///
-	/// `66 REX.W 0F 3A 16 /r ib`
+	/// `66 o64 0F 3A 16 /r ib`
 	///
 	/// `SSE4.1`
 	///
@@ -30344,7 +30344,7 @@ pub enum Code {
 	Extractps_rm32_xmm_imm8 = 3791,
 	/// `EXTRACTPS r64/m32, xmm1, imm8`
 	///
-	/// `66 REX.W 0F 3A 17 /r ib`
+	/// `66 o64 0F 3A 17 /r ib`
 	///
 	/// `SSE4.1`
 	///
@@ -30640,7 +30640,7 @@ pub enum Code {
 	Pinsrb_xmm_r32m8_imm8 = 3828,
 	/// `PINSRB xmm1, r64/m8, imm8`
 	///
-	/// `66 REX.W 0F 3A 20 /r ib`
+	/// `66 o64 0F 3A 20 /r ib`
 	///
 	/// `SSE4.1`
 	///
@@ -30712,7 +30712,7 @@ pub enum Code {
 	Pinsrd_xmm_rm32_imm8 = 3837,
 	/// `PINSRQ xmm1, r/m64, imm8`
 	///
-	/// `66 REX.W 0F 3A 22 /r ib`
+	/// `66 o64 0F 3A 22 /r ib`
 	///
 	/// `SSE4.1`
 	///
@@ -31342,70 +31342,70 @@ pub enum Code {
 	///
 	/// `16/32/64-bit`
 	VEX_Vperm2i128_ymm_ymm_ymmm256_imm8 = 3916,
-	/// `VPERMIL2PS xmm1, xmm2, xmm3/m128, xmm4, imm2`
+	/// `VPERMIL2PS xmm1, xmm2, xmm3/m128, xmm4, imm4`
 	///
 	/// `VEX.128.66.0F3A.W0 48 /r /is5`
 	///
 	/// `XOP`
 	///
 	/// `16/32/64-bit`
-	VEX_Vpermil2ps_xmm_xmm_xmmm128_xmm_imm2 = 3917,
-	/// `VPERMIL2PS ymm1, ymm2, ymm3/m256, ymm4, imm2`
+	VEX_Vpermil2ps_xmm_xmm_xmmm128_xmm_imm4 = 3917,
+	/// `VPERMIL2PS ymm1, ymm2, ymm3/m256, ymm4, imm4`
 	///
 	/// `VEX.256.66.0F3A.W0 48 /r /is5`
 	///
 	/// `XOP`
 	///
 	/// `16/32/64-bit`
-	VEX_Vpermil2ps_ymm_ymm_ymmm256_ymm_imm2 = 3918,
-	/// `VPERMIL2PS xmm1, xmm2, xmm3, xmm4/m128, imm2`
+	VEX_Vpermil2ps_ymm_ymm_ymmm256_ymm_imm4 = 3918,
+	/// `VPERMIL2PS xmm1, xmm2, xmm3, xmm4/m128, imm4`
 	///
 	/// `VEX.128.66.0F3A.W1 48 /r /is5`
 	///
 	/// `XOP`
 	///
 	/// `16/32/64-bit`
-	VEX_Vpermil2ps_xmm_xmm_xmm_xmmm128_imm2 = 3919,
-	/// `VPERMIL2PS ymm1, ymm2, ymm3, ymm4/m256, imm2`
+	VEX_Vpermil2ps_xmm_xmm_xmm_xmmm128_imm4 = 3919,
+	/// `VPERMIL2PS ymm1, ymm2, ymm3, ymm4/m256, imm4`
 	///
 	/// `VEX.256.66.0F3A.W1 48 /r /is5`
 	///
 	/// `XOP`
 	///
 	/// `16/32/64-bit`
-	VEX_Vpermil2ps_ymm_ymm_ymm_ymmm256_imm2 = 3920,
-	/// `VPERMIL2PD xmm1, xmm2, xmm3/m128, xmm4, imm2`
+	VEX_Vpermil2ps_ymm_ymm_ymm_ymmm256_imm4 = 3920,
+	/// `VPERMIL2PD xmm1, xmm2, xmm3/m128, xmm4, imm4`
 	///
 	/// `VEX.128.66.0F3A.W0 49 /r /is5`
 	///
 	/// `XOP`
 	///
 	/// `16/32/64-bit`
-	VEX_Vpermil2pd_xmm_xmm_xmmm128_xmm_imm2 = 3921,
-	/// `VPERMIL2PD ymm1, ymm2, ymm3/m256, ymm4, imm2`
+	VEX_Vpermil2pd_xmm_xmm_xmmm128_xmm_imm4 = 3921,
+	/// `VPERMIL2PD ymm1, ymm2, ymm3/m256, ymm4, imm4`
 	///
 	/// `VEX.256.66.0F3A.W0 49 /r /is5`
 	///
 	/// `XOP`
 	///
 	/// `16/32/64-bit`
-	VEX_Vpermil2pd_ymm_ymm_ymmm256_ymm_imm2 = 3922,
-	/// `VPERMIL2PD xmm1, xmm2, xmm3, xmm4/m128, imm2`
+	VEX_Vpermil2pd_ymm_ymm_ymmm256_ymm_imm4 = 3922,
+	/// `VPERMIL2PD xmm1, xmm2, xmm3, xmm4/m128, imm4`
 	///
 	/// `VEX.128.66.0F3A.W1 49 /r /is5`
 	///
 	/// `XOP`
 	///
 	/// `16/32/64-bit`
-	VEX_Vpermil2pd_xmm_xmm_xmm_xmmm128_imm2 = 3923,
-	/// `VPERMIL2PD ymm1, ymm2, ymm3, ymm4/m256, imm2`
+	VEX_Vpermil2pd_xmm_xmm_xmm_xmmm128_imm4 = 3923,
+	/// `VPERMIL2PD ymm1, ymm2, ymm3, ymm4/m256, imm4`
 	///
 	/// `VEX.256.66.0F3A.W1 49 /r /is5`
 	///
 	/// `XOP`
 	///
 	/// `16/32/64-bit`
-	VEX_Vpermil2pd_ymm_ymm_ymm_ymmm256_imm2 = 3924,
+	VEX_Vpermil2pd_ymm_ymm_ymm_ymmm256_imm4 = 3924,
 	/// `VBLENDVPS xmm1, xmm2, xmm3/m128, xmm4`
 	///
 	/// `VEX.128.66.0F3A.W0 4A /r /is4`
@@ -31784,7 +31784,7 @@ pub enum Code {
 	Pcmpestrm_xmm_xmmm128_imm8 = 3971,
 	/// `PCMPESTRM64 xmm1, xmm2/m128, imm8`
 	///
-	/// `66 REX.W 0F 3A 60 /r ib`
+	/// `66 o64 0F 3A 60 /r ib`
 	///
 	/// `SSE4.2`
 	///
@@ -31816,7 +31816,7 @@ pub enum Code {
 	Pcmpestri_xmm_xmmm128_imm8 = 3975,
 	/// `PCMPESTRI64 xmm1, xmm2/m128, imm8`
 	///
-	/// `66 REX.W 0F 3A 61 /r ib`
+	/// `66 o64 0F 3A 61 /r ib`
 	///
 	/// `SSE4.2`
 	///
@@ -33422,7 +33422,7 @@ pub enum Code {
 	///
 	/// `64-bit`
 	XOP_Lwpval_r64_rm32_imm32 = 4176,
-	/// `PI2FW mm1, mm2/m64`
+	/// `PI2FW mm, mm/m64`
 	///
 	/// `0F 0F /r 0C`
 	///
@@ -33430,7 +33430,7 @@ pub enum Code {
 	///
 	/// `16/32/64-bit`
 	D3NOW_Pi2fw_mm_mmm64 = 4177,
-	/// `PI2FD mm1, mm2/m64`
+	/// `PI2FD mm, mm/m64`
 	///
 	/// `0F 0F /r 0D`
 	///
@@ -33438,7 +33438,7 @@ pub enum Code {
 	///
 	/// `16/32/64-bit`
 	D3NOW_Pi2fd_mm_mmm64 = 4178,
-	/// `PF2IW mm1, mm2/m64`
+	/// `PF2IW mm, mm/m64`
 	///
 	/// `0F 0F /r 1C`
 	///
@@ -33446,7 +33446,7 @@ pub enum Code {
 	///
 	/// `16/32/64-bit`
 	D3NOW_Pf2iw_mm_mmm64 = 4179,
-	/// `PF2ID mm1, mm2/m64`
+	/// `PF2ID mm, mm/m64`
 	///
 	/// `0F 0F /r 1D`
 	///
@@ -33454,7 +33454,7 @@ pub enum Code {
 	///
 	/// `16/32/64-bit`
 	D3NOW_Pf2id_mm_mmm64 = 4180,
-	/// `PFRCPV mm1, mm2/m64`
+	/// `PFRCPV mm, mm/m64`
 	///
 	/// `0F 0F /r 86`
 	///
@@ -33462,7 +33462,7 @@ pub enum Code {
 	///
 	/// `16/32/64-bit`
 	D3NOW_Pfrcpv_mm_mmm64 = 4181,
-	/// `PFRSQRTV mm1, mm2/m64`
+	/// `PFRSQRTV mm, mm/m64`
 	///
 	/// `0F 0F /r 87`
 	///
@@ -33470,7 +33470,7 @@ pub enum Code {
 	///
 	/// `16/32/64-bit`
 	D3NOW_Pfrsqrtv_mm_mmm64 = 4182,
-	/// `PFNACC mm1, mm2/m64`
+	/// `PFNACC mm, mm/m64`
 	///
 	/// `0F 0F /r 8A`
 	///
@@ -33478,7 +33478,7 @@ pub enum Code {
 	///
 	/// `16/32/64-bit`
 	D3NOW_Pfnacc_mm_mmm64 = 4183,
-	/// `PFPNACC mm1, mm2/m64`
+	/// `PFPNACC mm, mm/m64`
 	///
 	/// `0F 0F /r 8E`
 	///
@@ -33486,7 +33486,7 @@ pub enum Code {
 	///
 	/// `16/32/64-bit`
 	D3NOW_Pfpnacc_mm_mmm64 = 4184,
-	/// `PFCMPGE mm1, mm2/m64`
+	/// `PFCMPGE mm, mm/m64`
 	///
 	/// `0F 0F /r 90`
 	///
@@ -33494,7 +33494,7 @@ pub enum Code {
 	///
 	/// `16/32/64-bit`
 	D3NOW_Pfcmpge_mm_mmm64 = 4185,
-	/// `PFMIN mm1, mm2/m64`
+	/// `PFMIN mm, mm/m64`
 	///
 	/// `0F 0F /r 94`
 	///
@@ -33502,7 +33502,7 @@ pub enum Code {
 	///
 	/// `16/32/64-bit`
 	D3NOW_Pfmin_mm_mmm64 = 4186,
-	/// `PFRCP mm1, mm2/m64`
+	/// `PFRCP mm, mm/m64`
 	///
 	/// `0F 0F /r 96`
 	///
@@ -33510,7 +33510,7 @@ pub enum Code {
 	///
 	/// `16/32/64-bit`
 	D3NOW_Pfrcp_mm_mmm64 = 4187,
-	/// `PFRSQRT mm1, mm2/m64`
+	/// `PFRSQRT mm, mm/m64`
 	///
 	/// `0F 0F /r 97`
 	///
@@ -33518,7 +33518,7 @@ pub enum Code {
 	///
 	/// `16/32/64-bit`
 	D3NOW_Pfrsqrt_mm_mmm64 = 4188,
-	/// `PFSUB mm1, mm2/m64`
+	/// `PFSUB mm, mm/m64`
 	///
 	/// `0F 0F /r 9A`
 	///
@@ -33526,7 +33526,7 @@ pub enum Code {
 	///
 	/// `16/32/64-bit`
 	D3NOW_Pfsub_mm_mmm64 = 4189,
-	/// `PFADD mm1, mm2/m64`
+	/// `PFADD mm, mm/m64`
 	///
 	/// `0F 0F /r 9E`
 	///
@@ -33534,7 +33534,7 @@ pub enum Code {
 	///
 	/// `16/32/64-bit`
 	D3NOW_Pfadd_mm_mmm64 = 4190,
-	/// `PFCMPGT mm1, mm2/m64`
+	/// `PFCMPGT mm, mm/m64`
 	///
 	/// `0F 0F /r A0`
 	///
@@ -33542,7 +33542,7 @@ pub enum Code {
 	///
 	/// `16/32/64-bit`
 	D3NOW_Pfcmpgt_mm_mmm64 = 4191,
-	/// `PFMAX mm1, mm2/m64`
+	/// `PFMAX mm, mm/m64`
 	///
 	/// `0F 0F /r A4`
 	///
@@ -33550,7 +33550,7 @@ pub enum Code {
 	///
 	/// `16/32/64-bit`
 	D3NOW_Pfmax_mm_mmm64 = 4192,
-	/// `PFRCPIT1 mm1, mm2/m64`
+	/// `PFRCPIT1 mm, mm/m64`
 	///
 	/// `0F 0F /r A6`
 	///
@@ -33558,7 +33558,7 @@ pub enum Code {
 	///
 	/// `16/32/64-bit`
 	D3NOW_Pfrcpit1_mm_mmm64 = 4193,
-	/// `PFRSQIT1 mm1, mm2/m64`
+	/// `PFRSQIT1 mm, mm/m64`
 	///
 	/// `0F 0F /r A7`
 	///
@@ -33566,7 +33566,7 @@ pub enum Code {
 	///
 	/// `16/32/64-bit`
 	D3NOW_Pfrsqit1_mm_mmm64 = 4194,
-	/// `PFSUBR mm1, mm2/m64`
+	/// `PFSUBR mm, mm/m64`
 	///
 	/// `0F 0F /r AA`
 	///
@@ -33574,7 +33574,7 @@ pub enum Code {
 	///
 	/// `16/32/64-bit`
 	D3NOW_Pfsubr_mm_mmm64 = 4195,
-	/// `PFACC mm1, mm2/m64`
+	/// `PFACC mm, mm/m64`
 	///
 	/// `0F 0F /r AE`
 	///
@@ -33582,7 +33582,7 @@ pub enum Code {
 	///
 	/// `16/32/64-bit`
 	D3NOW_Pfacc_mm_mmm64 = 4196,
-	/// `PFCMPEQ mm1, mm2/m64`
+	/// `PFCMPEQ mm, mm/m64`
 	///
 	/// `0F 0F /r B0`
 	///
@@ -33590,7 +33590,7 @@ pub enum Code {
 	///
 	/// `16/32/64-bit`
 	D3NOW_Pfcmpeq_mm_mmm64 = 4197,
-	/// `PFMUL mm1, mm2/m64`
+	/// `PFMUL mm, mm/m64`
 	///
 	/// `0F 0F /r B4`
 	///
@@ -33598,7 +33598,7 @@ pub enum Code {
 	///
 	/// `16/32/64-bit`
 	D3NOW_Pfmul_mm_mmm64 = 4198,
-	/// `PFRCPIT2 mm1, mm2/m64`
+	/// `PFRCPIT2 mm, mm/m64`
 	///
 	/// `0F 0F /r B6`
 	///
@@ -33606,7 +33606,7 @@ pub enum Code {
 	///
 	/// `16/32/64-bit`
 	D3NOW_Pfrcpit2_mm_mmm64 = 4199,
-	/// `PMULHRW mm1, mm2/m64`
+	/// `PMULHRW mm, mm/m64`
 	///
 	/// `0F 0F /r B7`
 	///
@@ -33614,7 +33614,7 @@ pub enum Code {
 	///
 	/// `16/32/64-bit`
 	D3NOW_Pmulhrw_mm_mmm64 = 4200,
-	/// `PSWAPD mm1, mm2/m64`
+	/// `PSWAPD mm, mm/m64`
 	///
 	/// `0F 0F /r BB`
 	///
@@ -33622,7 +33622,7 @@ pub enum Code {
 	///
 	/// `16/32/64-bit`
 	D3NOW_Pswapd_mm_mmm64 = 4201,
-	/// `PAVGUSB mm1, mm2/m64`
+	/// `PAVGUSB mm, mm/m64`
 	///
 	/// `0F 0F /r BF`
 	///
@@ -33634,7 +33634,7 @@ pub enum Code {
 	///
 	/// `F3 0F 01 FE`
 	///
-	/// `SNP`
+	/// `SEV-SNP`
 	///
 	/// `64-bit`
 	Rmpadjust = 4203,
@@ -33642,7 +33642,7 @@ pub enum Code {
 	///
 	/// `F2 0F 01 FE`
 	///
-	/// `SNP`
+	/// `SEV-SNP`
 	///
 	/// `64-bit`
 	Rmpupdate = 4204,
@@ -33650,7 +33650,7 @@ pub enum Code {
 	///
 	/// `F3 0F 01 FF`
 	///
-	/// `SNP`
+	/// `SEV-SNP`
 	///
 	/// `64-bit`
 	Psmash = 4205,
@@ -33658,7 +33658,7 @@ pub enum Code {
 	///
 	/// `a16 F2 0F 01 FF`
 	///
-	/// `SNP`
+	/// `SEV-SNP`
 	///
 	/// `16/32-bit`
 	Pvalidatew = 4206,
@@ -33666,15 +33666,15 @@ pub enum Code {
 	///
 	/// `a32 F2 0F 01 FF`
 	///
-	/// `SNP`
+	/// `SEV-SNP`
 	///
 	/// `16/32/64-bit`
 	Pvalidated = 4207,
 	/// `PVALIDATE`
 	///
-	/// `F2 0F 01 FF`
+	/// `a64 F2 0F 01 FF`
 	///
-	/// `SNP`
+	/// `SEV-SNP`
 	///
 	/// `64-bit`
 	Pvalidateq = 4208,
@@ -33720,7 +33720,7 @@ pub enum Code {
 	Invlpgbd = 4213,
 	/// `INVLPGB`
 	///
-	/// `NP 0F 01 FE`
+	/// `a64 NP 0F 01 FE`
 	///
 	/// `INVLPGB`
 	///
@@ -33741,7 +33741,7 @@ pub enum Code {
 	/// `PREFETCHW`
 	///
 	/// `16/32/64-bit`
-	PrefetchReserved3_m8 = 4216,
+	Prefetchreserved3_m8 = 4216,
 	/// `PREFETCH m8`
 	///
 	/// `0F 0D /4`
@@ -33749,7 +33749,7 @@ pub enum Code {
 	/// `PREFETCHW`
 	///
 	/// `16/32/64-bit`
-	PrefetchReserved4_m8 = 4217,
+	Prefetchreserved4_m8 = 4217,
 	/// `PREFETCH m8`
 	///
 	/// `0F 0D /5`
@@ -33757,7 +33757,7 @@ pub enum Code {
 	/// `PREFETCHW`
 	///
 	/// `16/32/64-bit`
-	PrefetchReserved5_m8 = 4218,
+	Prefetchreserved5_m8 = 4218,
 	/// `PREFETCH m8`
 	///
 	/// `0F 0D /6`
@@ -33765,7 +33765,7 @@ pub enum Code {
 	/// `PREFETCHW`
 	///
 	/// `16/32/64-bit`
-	PrefetchReserved6_m8 = 4219,
+	Prefetchreserved6_m8 = 4219,
 	/// `PREFETCH m8`
 	///
 	/// `0F 0D /7`
@@ -33773,7 +33773,7 @@ pub enum Code {
 	/// `PREFETCHW`
 	///
 	/// `16/32/64-bit`
-	PrefetchReserved7_m8 = 4220,
+	Prefetchreserved7_m8 = 4220,
 	/// `UD0`
 	///
 	/// `0F FF`
@@ -33786,13 +33786,13 @@ pub enum Code {
 	///
 	/// `F3 0F 01 D9`
 	///
-	/// `SVM`
+	/// `SEV-ES`
 	///
 	/// `16/32/64-bit`
 	Vmgexit = 4222,
 	/// `GETSECQ`
 	///
-	/// `NP REX.W 0F 37`
+	/// `NP o64 0F 37`
 	///
 	/// `SMX`
 	///
@@ -34046,7 +34046,7 @@ pub enum Code {
 	///
 	/// `16/32-bit`
 	Altinst = 4254,
-	/// `PAVEB mm1, mm2/m64`
+	/// `PAVEB mm, mm/m64`
 	///
 	/// `0F 50 /r`
 	///
@@ -34054,7 +34054,7 @@ pub enum Code {
 	///
 	/// `16/32-bit`
 	Paveb_mm_mmm64 = 4255,
-	/// `PADDSIW mm1, mm2/m64`
+	/// `PADDSIW mm, mm/m64`
 	///
 	/// `0F 51 /r`
 	///
@@ -34062,7 +34062,7 @@ pub enum Code {
 	///
 	/// `16/32-bit`
 	Paddsiw_mm_mmm64 = 4256,
-	/// `PMAGW mm1, mm2/m64`
+	/// `PMAGW mm, mm/m64`
 	///
 	/// `0F 52 /r`
 	///
@@ -34070,7 +34070,7 @@ pub enum Code {
 	///
 	/// `16/32-bit`
 	Pmagw_mm_mmm64 = 4257,
-	/// `PDISTIB mm1, m64`
+	/// `PDISTIB mm, m64`
 	///
 	/// `0F 54 /r`
 	///
@@ -34078,7 +34078,7 @@ pub enum Code {
 	///
 	/// `16/32-bit`
 	Pdistib_mm_m64 = 4258,
-	/// `PSUBSIW mm1, mm2/m64`
+	/// `PSUBSIW mm, mm/m64`
 	///
 	/// `0F 55 /r`
 	///
@@ -34086,7 +34086,7 @@ pub enum Code {
 	///
 	/// `16/32-bit`
 	Psubsiw_mm_mmm64 = 4259,
-	/// `PMVZB mm1, m64`
+	/// `PMVZB mm, m64`
 	///
 	/// `0F 58 /r`
 	///
@@ -34094,7 +34094,7 @@ pub enum Code {
 	///
 	/// `16/32-bit`
 	Pmvzb_mm_m64 = 4260,
-	/// `PMULHRW mm1, mm2/m64`
+	/// `PMULHRW mm, mm/m64`
 	///
 	/// `0F 59 /r`
 	///
@@ -34102,7 +34102,7 @@ pub enum Code {
 	///
 	/// `16/32-bit`
 	Pmulhrw_mm_mmm64 = 4261,
-	/// `PMVNZB mm1, m64`
+	/// `PMVNZB mm, m64`
 	///
 	/// `0F 5A /r`
 	///
@@ -34110,7 +34110,7 @@ pub enum Code {
 	///
 	/// `16/32-bit`
 	Pmvnzb_mm_m64 = 4262,
-	/// `PMVLZB mm1, m64`
+	/// `PMVLZB mm, m64`
 	///
 	/// `0F 5B /r`
 	///
@@ -34118,7 +34118,7 @@ pub enum Code {
 	///
 	/// `16/32-bit`
 	Pmvlzb_mm_m64 = 4263,
-	/// `PMVGEZB mm1, m64`
+	/// `PMVGEZB mm, m64`
 	///
 	/// `0F 5C /r`
 	///
@@ -34126,7 +34126,7 @@ pub enum Code {
 	///
 	/// `16/32-bit`
 	Pmvgezb_mm_m64 = 4264,
-	/// `PMULHRIW mm1, mm2/m64`
+	/// `PMULHRIW mm, mm/m64`
 	///
 	/// `0F 5D /r`
 	///
@@ -34134,7 +34134,7 @@ pub enum Code {
 	///
 	/// `16/32-bit`
 	Pmulhriw_mm_mmm64 = 4265,
-	/// `PMACHRIW mm1, m64`
+	/// `PMACHRIW mm, m64`
 	///
 	/// `0F 5E /r`
 	///
@@ -34238,9 +34238,273 @@ pub enum Code {
 	///
 	/// `16/32-bit`
 	Frinear = 4278,
+	/// `TDCALL`
+	///
+	/// `66 0F 01 CC`
+	///
+	/// `TDX`
+	///
+	/// `16/32/64-bit`
+	Tdcall = 4279,
+	/// `SEAMRET`
+	///
+	/// `66 0F 01 CD`
+	///
+	/// `TDX`
+	///
+	/// `64-bit`
+	Seamret = 4280,
+	/// `SEAMOPS`
+	///
+	/// `66 0F 01 CE`
+	///
+	/// `TDX`
+	///
+	/// `64-bit`
+	Seamops = 4281,
+	/// `SEAMCALL`
+	///
+	/// `66 0F 01 CF`
+	///
+	/// `TDX`
+	///
+	/// `64-bit`
+	Seamcall = 4282,
+	/// `AESENCWIDE128KL m384, <XMM0-7>`
+	///
+	/// `F3 0F 38 D8 !(11):000:bbb`
+	///
+	/// `AESKLE and WIDE_KL`
+	///
+	/// `16/32/64-bit`
+	Aesencwide128kl_m384 = 4283,
+	/// `AESDECWIDE128KL m384, <XMM0-7>`
+	///
+	/// `F3 0F 38 D8 !(11):001:bbb`
+	///
+	/// `AESKLE and WIDE_KL`
+	///
+	/// `16/32/64-bit`
+	Aesdecwide128kl_m384 = 4284,
+	/// `AESENCWIDE256KL m512, <XMM0-7>`
+	///
+	/// `F3 0F 38 D8 !(11):010:bbb`
+	///
+	/// `AESKLE and WIDE_KL`
+	///
+	/// `16/32/64-bit`
+	Aesencwide256kl_m512 = 4285,
+	/// `AESDECWIDE256KL m512, <XMM0-7>`
+	///
+	/// `F3 0F 38 D8 !(11):011:bbb`
+	///
+	/// `AESKLE and WIDE_KL`
+	///
+	/// `16/32/64-bit`
+	Aesdecwide256kl_m512 = 4286,
+	/// `LOADIWKEY xmm1, xmm2, <EAX>, <XMM0>`
+	///
+	/// `F3 0F 38 DC 11:rrr:bbb`
+	///
+	/// `KL`
+	///
+	/// `16/32/64-bit`
+	Loadiwkey_xmm_xmm = 4287,
+	/// `AESENC128KL xmm, m384`
+	///
+	/// `F3 0F 38 DC !(11):rrr:bbb`
+	///
+	/// `AESKLE`
+	///
+	/// `16/32/64-bit`
+	Aesenc128kl_xmm_m384 = 4288,
+	/// `AESDEC128KL xmm, m384`
+	///
+	/// `F3 0F 38 DD !(11):rrr:bbb`
+	///
+	/// `AESKLE`
+	///
+	/// `16/32/64-bit`
+	Aesdec128kl_xmm_m384 = 4289,
+	/// `AESENC256KL xmm, m512`
+	///
+	/// `F3 0F 38 DE !(11):rrr:bbb`
+	///
+	/// `AESKLE`
+	///
+	/// `16/32/64-bit`
+	Aesenc256kl_xmm_m512 = 4290,
+	/// `AESDEC256KL xmm, m512`
+	///
+	/// `F3 0F 38 DF !(11):rrr:bbb`
+	///
+	/// `AESKLE`
+	///
+	/// `16/32/64-bit`
+	Aesdec256kl_xmm_m512 = 4291,
+	/// `ENCODEKEY128 r32, r32, <XMM0-2>, <XMM4-6>`
+	///
+	/// `F3 0F 38 FA 11:rrr:bbb`
+	///
+	/// `AESKLE`
+	///
+	/// `16/32/64-bit`
+	Encodekey128_r32_r32 = 4292,
+	/// `ENCODEKEY256 r32, r32, <XMM0-6>`
+	///
+	/// `F3 0F 38 FB 11:rrr:bbb`
+	///
+	/// `AESKLE`
+	///
+	/// `16/32/64-bit`
+	Encodekey256_r32_r32 = 4293,
+	/// `VBROADCASTSS xmm1, xmm2`
+	///
+	/// `VEX.128.66.0F38.W0 18 /r`
+	///
+	/// `AVX2`
+	///
+	/// `16/32/64-bit`
+	VEX_Vbroadcastss_xmm_xmm = 4294,
+	/// `VBROADCASTSS ymm1, xmm2`
+	///
+	/// `VEX.256.66.0F38.W0 18 /r`
+	///
+	/// `AVX2`
+	///
+	/// `16/32/64-bit`
+	VEX_Vbroadcastss_ymm_xmm = 4295,
+	/// `VBROADCASTSD ymm1, xmm2`
+	///
+	/// `VEX.256.66.0F38.W0 19 /r`
+	///
+	/// `AVX2`
+	///
+	/// `16/32/64-bit`
+	VEX_Vbroadcastsd_ymm_xmm = 4296,
+	/// `VMGEXIT`
+	///
+	/// `F2 0F 01 D9`
+	///
+	/// `SEV-ES`
+	///
+	/// `16/32/64-bit`
+	Vmgexit_F2 = 4297,
+	/// `UIRET`
+	///
+	/// `F3 0F 01 EC`
+	///
+	/// `UINTR`
+	///
+	/// `64-bit`
+	Uiret = 4298,
+	/// `TESTUI`
+	///
+	/// `F3 0F 01 ED`
+	///
+	/// `UINTR`
+	///
+	/// `64-bit`
+	Testui = 4299,
+	/// `CLUI`
+	///
+	/// `F3 0F 01 EE`
+	///
+	/// `UINTR`
+	///
+	/// `64-bit`
+	Clui = 4300,
+	/// `STUI`
+	///
+	/// `F3 0F 01 EF`
+	///
+	/// `UINTR`
+	///
+	/// `64-bit`
+	Stui = 4301,
+	/// `SENDUIPI r64`
+	///
+	/// `F3 0F C7 /6`
+	///
+	/// `UINTR`
+	///
+	/// `64-bit`
+	Senduipi_r64 = 4302,
+	/// `HRESET imm8, <EAX>`
+	///
+	/// `F3 0F 3A F0 C0 ib`
+	///
+	/// `HRESET`
+	///
+	/// `16/32/64-bit`
+	Hreset_imm8 = 4303,
+	/// `VPDPBUSD xmm1, xmm2, xmm3/m128`
+	///
+	/// `VEX.128.66.0F38.W0 50 /r`
+	///
+	/// `AVX-VNNI`
+	///
+	/// `16/32/64-bit`
+	VEX_Vpdpbusd_xmm_xmm_xmmm128 = 4304,
+	/// `VPDPBUSD ymm1, ymm2, ymm3/m256`
+	///
+	/// `VEX.256.66.0F38.W0 50 /r`
+	///
+	/// `AVX-VNNI`
+	///
+	/// `16/32/64-bit`
+	VEX_Vpdpbusd_ymm_ymm_ymmm256 = 4305,
+	/// `VPDPBUSDS xmm1, xmm2, xmm3/m128`
+	///
+	/// `VEX.128.66.0F38.W0 51 /r`
+	///
+	/// `AVX-VNNI`
+	///
+	/// `16/32/64-bit`
+	VEX_Vpdpbusds_xmm_xmm_xmmm128 = 4306,
+	/// `VPDPBUSDS ymm1, ymm2, ymm3/m256`
+	///
+	/// `VEX.256.66.0F38.W0 51 /r`
+	///
+	/// `AVX-VNNI`
+	///
+	/// `16/32/64-bit`
+	VEX_Vpdpbusds_ymm_ymm_ymmm256 = 4307,
+	/// `VPDPWSSD xmm1, xmm2, xmm3/m128`
+	///
+	/// `VEX.128.66.0F38.W0 52 /r`
+	///
+	/// `AVX-VNNI`
+	///
+	/// `16/32/64-bit`
+	VEX_Vpdpwssd_xmm_xmm_xmmm128 = 4308,
+	/// `VPDPWSSD ymm1, ymm2, ymm3/m256`
+	///
+	/// `VEX.256.66.0F38.W0 52 /r`
+	///
+	/// `AVX-VNNI`
+	///
+	/// `16/32/64-bit`
+	VEX_Vpdpwssd_ymm_ymm_ymmm256 = 4309,
+	/// `VPDPWSSDS xmm1, xmm2, xmm3/m128`
+	///
+	/// `VEX.128.66.0F38.W0 53 /r`
+	///
+	/// `AVX-VNNI`
+	///
+	/// `16/32/64-bit`
+	VEX_Vpdpwssds_xmm_xmm_xmmm128 = 4310,
+	/// `VPDPWSSDS ymm1, ymm2, ymm3/m256`
+	///
+	/// `VEX.256.66.0F38.W0 53 /r`
+	///
+	/// `AVX-VNNI`
+	///
+	/// `16/32/64-bit`
+	VEX_Vpdpwssds_ymm_ymm_ymmm256 = 4311,
 }
 #[cfg_attr(feature = "cargo-fmt", rustfmt::skip)]
-static GEN_DEBUG_CODE: [&str; 4279] = [
+static GEN_DEBUG_CODE: [&str; 4312] = [
 	"INVALID",
 	"DeclareByte",
 	"DeclareWord",
@@ -34763,7 +35027,7 @@ static GEN_DEBUG_CODE: [&str; 4279] = [
 	"Fstenv_m28byte",
 	"Fnstcw_m2byte",
 	"Fstcw_m2byte",
-	"Fld_st0_sti",
+	"Fld_sti",
 	"Fxch_st0_sti",
 	"Fnop",
 	"Fstpnce_sti",
@@ -35121,9 +35385,9 @@ static GEN_DEBUG_CODE: [&str; 4279] = [
 	"Wbnoinvd",
 	"Cl1invmb",
 	"Ud2",
-	"ReservedNop_rm16_r16_0F0D",
-	"ReservedNop_rm32_r32_0F0D",
-	"ReservedNop_rm64_r64_0F0D",
+	"Reservednop_rm16_r16_0F0D",
+	"Reservednop_rm32_r32_0F0D",
+	"Reservednop_rm64_r64_0F0D",
 	"Prefetch_m8",
 	"Prefetchw_m8",
 	"Prefetchwt1_m8",
@@ -35250,30 +35514,30 @@ static GEN_DEBUG_CODE: [&str; 4279] = [
 	"Movhpd_m64_xmm",
 	"VEX_Vmovhpd_m64_xmm",
 	"EVEX_Vmovhpd_m64_xmm",
-	"ReservedNop_rm16_r16_0F18",
-	"ReservedNop_rm32_r32_0F18",
-	"ReservedNop_rm64_r64_0F18",
-	"ReservedNop_rm16_r16_0F19",
-	"ReservedNop_rm32_r32_0F19",
-	"ReservedNop_rm64_r64_0F19",
-	"ReservedNop_rm16_r16_0F1A",
-	"ReservedNop_rm32_r32_0F1A",
-	"ReservedNop_rm64_r64_0F1A",
-	"ReservedNop_rm16_r16_0F1B",
-	"ReservedNop_rm32_r32_0F1B",
-	"ReservedNop_rm64_r64_0F1B",
-	"ReservedNop_rm16_r16_0F1C",
-	"ReservedNop_rm32_r32_0F1C",
-	"ReservedNop_rm64_r64_0F1C",
-	"ReservedNop_rm16_r16_0F1D",
-	"ReservedNop_rm32_r32_0F1D",
-	"ReservedNop_rm64_r64_0F1D",
-	"ReservedNop_rm16_r16_0F1E",
-	"ReservedNop_rm32_r32_0F1E",
-	"ReservedNop_rm64_r64_0F1E",
-	"ReservedNop_rm16_r16_0F1F",
-	"ReservedNop_rm32_r32_0F1F",
-	"ReservedNop_rm64_r64_0F1F",
+	"Reservednop_rm16_r16_0F18",
+	"Reservednop_rm32_r32_0F18",
+	"Reservednop_rm64_r64_0F18",
+	"Reservednop_rm16_r16_0F19",
+	"Reservednop_rm32_r32_0F19",
+	"Reservednop_rm64_r64_0F19",
+	"Reservednop_rm16_r16_0F1A",
+	"Reservednop_rm32_r32_0F1A",
+	"Reservednop_rm64_r64_0F1A",
+	"Reservednop_rm16_r16_0F1B",
+	"Reservednop_rm32_r32_0F1B",
+	"Reservednop_rm64_r64_0F1B",
+	"Reservednop_rm16_r16_0F1C",
+	"Reservednop_rm32_r32_0F1C",
+	"Reservednop_rm64_r64_0F1C",
+	"Reservednop_rm16_r16_0F1D",
+	"Reservednop_rm32_r32_0F1D",
+	"Reservednop_rm64_r64_0F1D",
+	"Reservednop_rm16_r16_0F1E",
+	"Reservednop_rm32_r32_0F1E",
+	"Reservednop_rm64_r64_0F1E",
+	"Reservednop_rm16_r16_0F1F",
+	"Reservednop_rm32_r32_0F1F",
+	"Reservednop_rm64_r64_0F1F",
 	"Prefetchnta_m8",
 	"Prefetcht0_m8",
 	"Prefetcht1_m8",
@@ -36213,21 +36477,21 @@ static GEN_DEBUG_CODE: [&str; 4279] = [
 	"Xstore_16",
 	"Xstore_32",
 	"Xstore_64",
-	"XcryptEcb_16",
-	"XcryptEcb_32",
-	"XcryptEcb_64",
-	"XcryptCbc_16",
-	"XcryptCbc_32",
-	"XcryptCbc_64",
-	"XcryptCtr_16",
-	"XcryptCtr_32",
-	"XcryptCtr_64",
-	"XcryptCfb_16",
-	"XcryptCfb_32",
-	"XcryptCfb_64",
-	"XcryptOfb_16",
-	"XcryptOfb_32",
-	"XcryptOfb_64",
+	"Xcryptecb_16",
+	"Xcryptecb_32",
+	"Xcryptecb_64",
+	"Xcryptcbc_16",
+	"Xcryptcbc_32",
+	"Xcryptcbc_64",
+	"Xcryptctr_16",
+	"Xcryptctr_32",
+	"Xcryptctr_64",
+	"Xcryptcfb_16",
+	"Xcryptcfb_32",
+	"Xcryptcfb_64",
+	"Xcryptofb_16",
+	"Xcryptofb_32",
+	"Xcryptofb_64",
 	"Ibts_rm16_r16",
 	"Ibts_rm32_r32",
 	"Cmpxchg486_rm8_r8",
@@ -36929,12 +37193,12 @@ static GEN_DEBUG_CODE: [&str; 4279] = [
 	"Ptest_xmm_xmmm128",
 	"VEX_Vptest_xmm_xmmm128",
 	"VEX_Vptest_ymm_ymmm256",
-	"VEX_Vbroadcastss_xmm_xmmm32",
-	"VEX_Vbroadcastss_ymm_xmmm32",
+	"VEX_Vbroadcastss_xmm_m32",
+	"VEX_Vbroadcastss_ymm_m32",
 	"EVEX_Vbroadcastss_xmm_k1z_xmmm32",
 	"EVEX_Vbroadcastss_ymm_k1z_xmmm32",
 	"EVEX_Vbroadcastss_zmm_k1z_xmmm32",
-	"VEX_Vbroadcastsd_ymm_xmmm64",
+	"VEX_Vbroadcastsd_ymm_m64",
 	"EVEX_Vbroadcastf32x2_ymm_k1z_xmmm64",
 	"EVEX_Vbroadcastf32x2_zmm_k1z_xmmm64",
 	"EVEX_Vbroadcastsd_ymm_k1z_xmmm64",
@@ -38158,14 +38422,14 @@ static GEN_DEBUG_CODE: [&str; 4279] = [
 	"EVEX_Vpclmulqdq_ymm_ymm_ymmm256_imm8",
 	"EVEX_Vpclmulqdq_zmm_zmm_zmmm512_imm8",
 	"VEX_Vperm2i128_ymm_ymm_ymmm256_imm8",
-	"VEX_Vpermil2ps_xmm_xmm_xmmm128_xmm_imm2",
-	"VEX_Vpermil2ps_ymm_ymm_ymmm256_ymm_imm2",
-	"VEX_Vpermil2ps_xmm_xmm_xmm_xmmm128_imm2",
-	"VEX_Vpermil2ps_ymm_ymm_ymm_ymmm256_imm2",
-	"VEX_Vpermil2pd_xmm_xmm_xmmm128_xmm_imm2",
-	"VEX_Vpermil2pd_ymm_ymm_ymmm256_ymm_imm2",
-	"VEX_Vpermil2pd_xmm_xmm_xmm_xmmm128_imm2",
-	"VEX_Vpermil2pd_ymm_ymm_ymm_ymmm256_imm2",
+	"VEX_Vpermil2ps_xmm_xmm_xmmm128_xmm_imm4",
+	"VEX_Vpermil2ps_ymm_ymm_ymmm256_ymm_imm4",
+	"VEX_Vpermil2ps_xmm_xmm_xmm_xmmm128_imm4",
+	"VEX_Vpermil2ps_ymm_ymm_ymm_ymmm256_imm4",
+	"VEX_Vpermil2pd_xmm_xmm_xmmm128_xmm_imm4",
+	"VEX_Vpermil2pd_ymm_ymm_ymmm256_ymm_imm4",
+	"VEX_Vpermil2pd_xmm_xmm_xmm_xmmm128_imm4",
+	"VEX_Vpermil2pd_ymm_ymm_ymm_ymmm256_imm4",
 	"VEX_Vblendvps_xmm_xmm_xmmm128_xmm",
 	"VEX_Vblendvps_ymm_ymm_ymmm256_ymm",
 	"VEX_Vblendvpd_xmm_xmm_xmmm128_xmm",
@@ -38457,11 +38721,11 @@ static GEN_DEBUG_CODE: [&str; 4279] = [
 	"Invlpgbd",
 	"Invlpgbq",
 	"Tlbsync",
-	"PrefetchReserved3_m8",
-	"PrefetchReserved4_m8",
-	"PrefetchReserved5_m8",
-	"PrefetchReserved6_m8",
-	"PrefetchReserved7_m8",
+	"Prefetchreserved3_m8",
+	"Prefetchreserved4_m8",
+	"Prefetchreserved5_m8",
+	"Prefetchreserved6_m8",
+	"Prefetchreserved7_m8",
 	"Ud0",
 	"Vmgexit",
 	"Getsecq",
@@ -38520,6 +38784,39 @@ static GEN_DEBUG_CODE: [&str; 4279] = [
 	"Cyrix_DEDD",
 	"Cyrix_DEDE",
 	"Frinear",
+	"Tdcall",
+	"Seamret",
+	"Seamops",
+	"Seamcall",
+	"Aesencwide128kl_m384",
+	"Aesdecwide128kl_m384",
+	"Aesencwide256kl_m512",
+	"Aesdecwide256kl_m512",
+	"Loadiwkey_xmm_xmm",
+	"Aesenc128kl_xmm_m384",
+	"Aesdec128kl_xmm_m384",
+	"Aesenc256kl_xmm_m512",
+	"Aesdec256kl_xmm_m512",
+	"Encodekey128_r32_r32",
+	"Encodekey256_r32_r32",
+	"VEX_Vbroadcastss_xmm_xmm",
+	"VEX_Vbroadcastss_ymm_xmm",
+	"VEX_Vbroadcastsd_ymm_xmm",
+	"Vmgexit_F2",
+	"Uiret",
+	"Testui",
+	"Clui",
+	"Stui",
+	"Senduipi_r64",
+	"Hreset_imm8",
+	"VEX_Vpdpbusd_xmm_xmm_xmmm128",
+	"VEX_Vpdpbusd_ymm_ymm_ymmm256",
+	"VEX_Vpdpbusds_xmm_xmm_xmmm128",
+	"VEX_Vpdpbusds_ymm_ymm_ymmm256",
+	"VEX_Vpdpwssd_xmm_xmm_xmmm128",
+	"VEX_Vpdpwssd_ymm_ymm_ymmm256",
+	"VEX_Vpdpwssds_xmm_xmm_xmmm128",
+	"VEX_Vpdpwssds_ymm_ymm_ymmm256",
 ];
 impl fmt::Debug for Code {
 	#[inline]
@@ -38567,7 +38864,7 @@ impl Code {
 
 #[cfg(feature = "instr_info")]
 impl Code {
-	/// Gets the encoding, eg. legacy, VEX, EVEX, ...
+	/// Gets the encoding, eg. Legacy, 3DNow!, VEX, EVEX, XOP
 	///
 	/// # Examples
 	///
@@ -38616,7 +38913,7 @@ impl Code {
 		unsafe { *super::info::cpuid_table::CPUID.get_unchecked(index) }
 	}
 
-	/// Gets flow control info
+	/// Gets control flow info
 	///
 	/// # Examples
 	///
@@ -38637,18 +38934,11 @@ impl Code {
 		}
 	}
 
-	/// Checks if the instruction isn't available in real mode or virtual 8086 mode
-	#[cfg_attr(has_must_use, must_use)]
-	#[inline]
-	pub fn is_protected_mode(self) -> bool {
-		unsafe { (*super::info::info_table::TABLE.get_unchecked((self as usize) * 2) & InfoFlags1::PROTECTED_MODE) != 0 }
-	}
-
-	/// Checks if this is a privileged instruction
+	/// Checks if it's a privileged instruction (all CPL=0 instructions (except `VMCALL`) and IOPL instructions `IN`, `INS`, `OUT`, `OUTS`, `CLI`, `STI`)
 	#[cfg_attr(has_must_use, must_use)]
 	#[inline]
 	pub fn is_privileged(self) -> bool {
-		unsafe { (*super::info::info_table::TABLE.get_unchecked((self as usize) * 2) & InfoFlags1::PRIVILEGED) != 0 }
+		unsafe { (*super::info::info_table::TABLE.get_unchecked((self as usize) * 2 + 1) & InfoFlags2::PRIVILEGED) != 0 }
 	}
 
 	/// Checks if this is an instruction that implicitly uses the stack pointer (`SP`/`ESP`/`RSP`), eg. `CALL`, `PUSH`, `POP`, `RET`, etc.
@@ -38667,14 +38957,14 @@ impl Code {
 	#[cfg_attr(has_must_use, must_use)]
 	#[inline]
 	pub fn is_stack_instruction(self) -> bool {
-		unsafe { (*super::info::info_table::TABLE.get_unchecked((self as usize) * 2) & InfoFlags1::STACK_INSTRUCTION) != 0 }
+		unsafe { (*super::info::info_table::TABLE.get_unchecked((self as usize) * 2 + 1) & InfoFlags2::STACK_INSTRUCTION) != 0 }
 	}
 
 	/// Checks if it's an instruction that saves or restores too many registers (eg. `FXRSTOR`, `XSAVE`, etc).
 	#[cfg_attr(has_must_use, must_use)]
 	#[inline]
 	pub fn is_save_restore_instruction(self) -> bool {
-		unsafe { (*super::info::info_table::TABLE.get_unchecked((self as usize) * 2) & InfoFlags1::SAVE_RESTORE) != 0 }
+		unsafe { (*super::info::info_table::TABLE.get_unchecked((self as usize) * 2 + 1) & InfoFlags2::SAVE_RESTORE) != 0 }
 	}
 
 	/// Checks if it's a `Jcc NEAR` instruction
@@ -38937,5 +39227,62 @@ impl Code {
 		}
 
 		self
+	}
+}
+
+impl Code {
+	#[cfg_attr(has_must_use, must_use)]
+	pub(crate) fn ignores_segment(self) -> bool {
+		#[cfg_attr(feature = "cargo-fmt", rustfmt::skip)]
+		match self {
+			// GENERATOR-BEGIN: IgnoresSegmentTable
+			// ⚠️This was generated by GENERATOR!🦹‍♂️
+			Code::Lea_r16_m
+			| Code::Lea_r32_m
+			| Code::Lea_r64_m
+			| Code::Bndcl_bnd_rm32
+			| Code::Bndcl_bnd_rm64
+			| Code::Bndcu_bnd_rm32
+			| Code::Bndcu_bnd_rm64
+			| Code::Bndmk_bnd_m32
+			| Code::Bndmk_bnd_m64
+			| Code::Bndcn_bnd_rm32
+			| Code::Bndcn_bnd_rm64
+			=> true,
+			// GENERATOR-END: IgnoresSegmentTable
+			_ => false,
+		}
+	}
+
+	#[cfg_attr(has_must_use, must_use)]
+	#[inline]
+	pub(crate) fn ignores_index(self) -> bool {
+		#[cfg_attr(feature = "cargo-fmt", rustfmt::skip)]
+		match self {
+			// GENERATOR-BEGIN: IgnoresIndexTable
+			// ⚠️This was generated by GENERATOR!🦹‍♂️
+			Code::Bndldx_bnd_mib
+			| Code::Bndstx_mib_bnd
+			=> true,
+			// GENERATOR-END: IgnoresIndexTable
+			_ => false,
+		}
+	}
+
+	#[cfg_attr(has_must_use, must_use)]
+	#[inline]
+	pub(crate) fn is_tile_stride_index(self) -> bool {
+		#[cfg_attr(feature = "cargo-fmt", rustfmt::skip)]
+		match self {
+			// GENERATOR-BEGIN: TileStrideIndexTable
+			// ⚠️This was generated by GENERATOR!🦹‍♂️
+			#[cfg(not(feature = "no_vex"))]
+			Code::VEX_Tileloaddt1_tmm_sibmem
+			| Code::VEX_Tilestored_sibmem_tmm
+			| Code::VEX_Tileloadd_tmm_sibmem
+			=> true,
+			// GENERATOR-END: TileStrideIndexTable
+			_ => false,
+		}
 	}
 }

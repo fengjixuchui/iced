@@ -223,16 +223,16 @@ namespace Iced.Intel {
 				ModRM |= (byte)(handler.RmGroupIndex | 0xC0);
 			}
 
-			switch (handler.Encodable) {
-			case Encodable.Any:
+			switch (handler.EncFlags3 & (EncFlags3.Bit16or32 | EncFlags3.Bit64)) {
+			case EncFlags3.Bit16or32 | EncFlags3.Bit64:
 				break;
 
-			case Encodable.Only1632:
+			case EncFlags3.Bit16or32:
 				if (bitness == 64)
 					ErrorMessage = ERROR_ONLY_1632_BIT_MODE;
 				break;
 
-			case Encodable.Only64:
+			case EncFlags3.Bit64:
 				if (bitness != 64)
 					ErrorMessage = ERROR_ONLY_64_BIT_MODE;
 				break;
@@ -242,19 +242,20 @@ namespace Iced.Intel {
 			}
 
 			switch (handler.OpSize) {
-			case OperandSize.None:
+			case CodeSize.Unknown:
 				break;
 
-			case OperandSize.Size16:
+			case CodeSize.Code16:
 				EncoderFlags |= opSize16Flags;
 				break;
 
-			case OperandSize.Size32:
+			case CodeSize.Code32:
 				EncoderFlags |= opSize32Flags;
 				break;
 
-			case OperandSize.Size64:
-				EncoderFlags |= EncoderFlags.W;
+			case CodeSize.Code64:
+				if ((handler.EncFlags3 & EncFlags3.DefaultOpSize64) == 0)
+					EncoderFlags |= EncoderFlags.W;
 				break;
 
 			default:
@@ -262,41 +263,40 @@ namespace Iced.Intel {
 			}
 
 			switch (handler.AddrSize) {
-			case AddressSize.None:
+			case CodeSize.Unknown:
 				break;
 
-			case AddressSize.Size16:
+			case CodeSize.Code16:
 				EncoderFlags |= adrSize16Flags;
 				break;
 
-			case AddressSize.Size32:
+			case CodeSize.Code32:
 				EncoderFlags |= adrSize32Flags;
 				break;
 
-			case AddressSize.Size64:
+			case CodeSize.Code64:
 				break;
 
 			default:
 				throw new InvalidOperationException();
 			}
 
-			if ((handler.Flags & OpCodeHandlerFlags.DeclareData) == 0) {
+			if (!handler.IsDeclareData) {
 				var ops = handler.Operands;
 				if (instruction.OpCount != ops.Length)
 					ErrorMessage = $"Expected {ops.Length} operand(s) but the instruction has {instruction.OpCount} operand(s)";
 				for (int i = 0; i < ops.Length; i++)
 					ops[i].Encode(this, instruction, i);
 
-				if ((handler.Flags & OpCodeHandlerFlags.Fwait) != 0)
+				if ((handler.EncFlags3 & EncFlags3.Fwait) != 0)
 					WriteByteInternal(0x9B);
 
 				handler.Encode(this, instruction);
 
 				var opCode = OpCode;
-				if (opCode <= 0x000000FF)
+				if (!handler.Is2ByteOpCode)
 					WriteByteInternal(opCode);
 				else {
-					Debug.Assert(opCode <= 0x0000FFFF);
 					WriteByteInternal(opCode >> 8);
 					WriteByteInternal(opCode);
 				}
@@ -313,7 +313,7 @@ namespace Iced.Intel {
 			}
 
 			uint instrLen = (uint)currentRip - (uint)rip;
-			if (instrLen > IcedConstants.MaxInstructionLength && (handler.Flags & OpCodeHandlerFlags.DeclareData) == 0)
+			if (instrLen > IcedConstants.MaxInstructionLength && !handler.IsDeclareData)
 				ErrorMessage = $"Instruction length > {IcedConstants.MaxInstructionLength} bytes";
 			errorMessage = this.errorMessage;
 			if (!(errorMessage is null)) {
@@ -722,10 +722,10 @@ namespace Iced.Intel {
 			return 0;
 		}
 
-		bool TryConvertToDisp8N(in Instruction instruction, int displ, out sbyte compressedValue) {
+		bool TryConvertToDisp8N(int displ, out sbyte compressedValue) {
 			var tryConvertToDisp8N = handler.TryConvertToDisp8N;
 			if (!(tryConvertToDisp8N is null))
-				return tryConvertToDisp8N(this, instruction, handler, displ, out compressedValue);
+				return tryConvertToDisp8N(this, handler, displ, out compressedValue);
 			if (sbyte.MinValue <= displ && displ <= sbyte.MaxValue) {
 				compressedValue = (sbyte)displ;
 				return true;
@@ -777,7 +777,7 @@ namespace Iced.Intel {
 					Displ = 0;
 				}
 				if (displSize == 1) {
-					if (TryConvertToDisp8N(instruction, (short)Displ, out sbyte compressedValue))
+					if (TryConvertToDisp8N((short)Displ, out sbyte compressedValue))
 						Displ = (byte)compressedValue;
 					else
 						displSize = 2;
@@ -896,7 +896,7 @@ namespace Iced.Intel {
 			}
 
 			if (displSize == 1) {
-				if (TryConvertToDisp8N(instruction, (short)Displ, out sbyte compressedValue))
+				if (TryConvertToDisp8N((short)Displ, out sbyte compressedValue))
 					Displ = (byte)compressedValue;
 				else
 					displSize = addrSize / 8;
@@ -962,7 +962,7 @@ namespace Iced.Intel {
 			new byte[6] { 0x26, 0x2E, 0x36, 0x3E, 0x64, 0x65 };
 
 		internal void WritePrefixes(in Instruction instruction, bool canWriteF3 = true) {
-			Debug.Assert((handler.Flags & OpCodeHandlerFlags.DeclareData) == 0);
+			Debug.Assert(!handler.IsDeclareData);
 			var seg = instruction.SegmentPrefix;
 			if (seg != Register.None) {
 				Debug.Assert((uint)(seg - Register.ES) < (uint)SegmentOverrides.Length);
@@ -981,7 +981,7 @@ namespace Iced.Intel {
 		}
 
 		void WriteModRM() {
-			Debug.Assert((handler.Flags & OpCodeHandlerFlags.DeclareData) == 0);
+			Debug.Assert(!handler.IsDeclareData);
 			Debug.Assert((EncoderFlags & (EncoderFlags.ModRM | EncoderFlags.Displ)) != 0);
 			if ((EncoderFlags & EncoderFlags.ModRM) != 0) {
 				WriteByteInternal(ModRM);
@@ -1053,7 +1053,7 @@ namespace Iced.Intel {
 		}
 
 		void WriteImmediate() {
-			Debug.Assert((handler.Flags & OpCodeHandlerFlags.DeclareData) == 0);
+			Debug.Assert(!handler.IsDeclareData);
 			ushort ip;
 			uint eip;
 			ulong rip;

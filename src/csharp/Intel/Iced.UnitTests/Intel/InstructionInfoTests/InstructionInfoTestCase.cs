@@ -38,7 +38,6 @@ namespace Iced.UnitTests.Intel.InstructionInfoTests {
 		public RflagsBits RflagsSet = RflagsBits.None;
 		public int StackPointerIncrement = 0;
 		public bool IsPrivileged = false;
-		public bool IsProtectedMode = false;
 		public bool IsStackInstruction = false;
 		public bool IsSaveRestoreInstruction = false;
 		public bool IsSpecial = false;
@@ -50,6 +49,9 @@ namespace Iced.UnitTests.Intel.InstructionInfoTests {
 		public OpAccess Op2Access = OpAccess.None;
 		public OpAccess Op3Access = OpAccess.None;
 		public OpAccess Op4Access = OpAccess.None;
+		public int FpuTopIncrement = 0;
+		public bool FpuConditionalTop = false;
+		public bool FpuWritesTop = false;
 	}
 }
 #endif

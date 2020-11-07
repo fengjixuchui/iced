@@ -21,13 +21,12 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-using System.IO;
 using System.Linq;
 using Generator.Enums;
 using Generator.IO;
 
 namespace Generator.Decoder.Rust {
-	[Generator(TargetLanguage.Rust, GeneratorNames.Enums_Table)]
+	[Generator(TargetLanguage.Rust)]
 	sealed class EnumHashTableGen {
 		readonly IdentifierConverter idConverter;
 		readonly GeneratorContext generatorContext;
@@ -69,7 +68,7 @@ namespace Generator.Decoder.Rust {
 				("CC_g_hash", genTypes[TypeIds.CC_g], false, "test_utils/from_str_conv/cc_table.rs"),
 			};
 			foreach (var info in infos) {
-				var filename = Path.Combine(generatorContext.RustDir, Path.Combine(info.filename.Split('/')));
+				var filename = generatorContext.Types.Dirs.GetRustFilename(info.filename.Split('/'));
 				new FileUpdater(TargetLanguage.Rust, info.id, filename).Generate(writer => WriteHash(writer, info.lowerCase, info.enumType));
 			}
 		}

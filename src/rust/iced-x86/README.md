@@ -15,7 +15,7 @@ It can be used for static analysis of x86/x64 binaries, to rewrite code (eg. rem
 - ✔️The decoder is 4x+ faster than other similar libraries and doesn't allocate any memory
 - ✔️Small decoded instructions, only 32 bytes
 - ✔️The encoder can be used to re-encode decoded instructions at any address
-- ✔️API to get instruction info, eg. read/written registers, memory and rflags bits; CPUID feature flag, flow control info, etc
+- ✔️API to get instruction info, eg. read/written registers, memory and rflags bits; CPUID feature flag, control flow info, etc
 - ✔️Supports `#![no_std]` and `WebAssembly`
 - ✔️Supports `rustc` `1.20.0` or later
 - ✔️Few dependencies (`static_assertions` and `lazy_static`)
@@ -27,14 +27,14 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-iced-x86 = "1.8.0"
+iced-x86 = "1.9.1"
 ```
 
 Or to customize which features to use:
 
 ```toml
 [dependencies.iced-x86]
-version = "1.8.0"
+version = "1.9.1"
 default-features = false
 # See below for all features
 features = ["std", "decoder", "masm"]
@@ -59,7 +59,7 @@ You can enable/disable these in your `Cargo.toml` file.
 - `intel`: (✔️Enabled by default) Enables the Intel (XED) formatter
 - `masm`: (✔️Enabled by default) Enables the masm formatter
 - `nasm`: (✔️Enabled by default) Enables the nasm formatter
-- `fast_fmt`: (✔️Enabled by default) Enables `FastFormatter` (masm syntax) which is ~1.6x faster than the other formatters (the time includes decoding + formatting). Use it if formatting speed is more important than being able to re-assemble formatted instructions or if targeting wasm (this formatter uses less code).
+- `fast_fmt`: (✔️Enabled by default) Enables `FastFormatter` (masm syntax) which is ~1.9x faster than the other formatters (the time includes decoding + formatting). Use it if formatting speed is more important than being able to re-assemble formatted instructions or if targeting wasm (this formatter uses less code).
 - `db`: Enables creating `db`, `dw`, `dd`, `dq` instructions. It's not enabled by default because it's possible to store up to 16 bytes in the instruction and then use another method to read an enum value.
 - `std`: (✔️Enabled by default) Enables the `std` crate. `std` or `no_std` must be defined, but not both.
 - `no_std`: Enables `#![no_std]`. `std` or `no_std` must be defined, but not both. This feature uses the `alloc` crate (`rustc` `1.36.0+`) and the `hashbrown` crate.
@@ -71,20 +71,8 @@ You can enable/disable these in your `Cargo.toml` file.
 
 If you use `no_vex`, `no_evex`, `no_xop` or `no_d3now`, you should run the generator again (before building iced) to generate even smaller output.
 
-[.NET Core](https://dotnet.microsoft.com/download) is required. Help:
-
-```sh
-dotnet run -p src/csharp/Intel/Generator/Generator.csproj -- --help
-```
-
-No VEX, EVEX, XOP, 3DNow!:
-
-```sh
-dotnet run -p src/csharp/Intel/Generator/Generator.csproj -- --no-vex --no-evex --no-xop --no-3dnow
-```
-
-[`BlockEncoder`]: https://docs.rs/iced-x86/1.8.0/iced_x86/struct.BlockEncoder.html
-[`OpCodeInfo`]: https://docs.rs/iced-x86/1.8.0/iced_x86/struct.OpCodeInfo.html
+[`BlockEncoder`]: https://docs.rs/iced-x86/1.9.1/iced_x86/struct.BlockEncoder.html
+[`OpCodeInfo`]: https://docs.rs/iced-x86/1.9.1/iced_x86/struct.OpCodeInfo.html
 
 ## How-tos
 
@@ -102,13 +90,13 @@ dotnet run -p src/csharp/Intel/Generator/Generator.csproj -- --no-vex --no-evex 
 This example uses a [`Decoder`] and one of the [`Formatter`]s to decode and format the code,
 eg. [`GasFormatter`], [`IntelFormatter`], [`MasmFormatter`], [`NasmFormatter`], [`FastFormatter`].
 
-[`Decoder`]: https://docs.rs/iced-x86/1.8.0/iced_x86/struct.Decoder.html
-[`Formatter`]: https://docs.rs/iced-x86/1.8.0/iced_x86/trait.Formatter.html
-[`GasFormatter`]: https://docs.rs/iced-x86/1.8.0/iced_x86/struct.GasFormatter.html
-[`IntelFormatter`]: https://docs.rs/iced-x86/1.8.0/iced_x86/struct.IntelFormatter.html
-[`MasmFormatter`]: https://docs.rs/iced-x86/1.8.0/iced_x86/struct.MasmFormatter.html
-[`NasmFormatter`]: https://docs.rs/iced-x86/1.8.0/iced_x86/struct.NasmFormatter.html
-[`FastFormatter`]: https://docs.rs/iced-x86/1.8.0/iced_x86/struct.FastFormatter.html
+[`Decoder`]: https://docs.rs/iced-x86/1.9.1/iced_x86/struct.Decoder.html
+[`Formatter`]: https://docs.rs/iced-x86/1.9.1/iced_x86/trait.Formatter.html
+[`GasFormatter`]: https://docs.rs/iced-x86/1.9.1/iced_x86/struct.GasFormatter.html
+[`IntelFormatter`]: https://docs.rs/iced-x86/1.9.1/iced_x86/struct.IntelFormatter.html
+[`MasmFormatter`]: https://docs.rs/iced-x86/1.9.1/iced_x86/struct.MasmFormatter.html
+[`NasmFormatter`]: https://docs.rs/iced-x86/1.9.1/iced_x86/struct.NasmFormatter.html
+[`FastFormatter`]: https://docs.rs/iced-x86/1.9.1/iced_x86/struct.FastFormatter.html
 
 ```rust
 use iced_x86::{Decoder, DecoderOptions, Formatter, Instruction, NasmFormatter};
@@ -135,7 +123,7 @@ pub(crate) fn how_to_disassemble() {
     decoder.set_ip(EXAMPLE_CODE_RIP);
 
     // Formatters: Masm*, Nasm*, Gas* (AT&T) and Intel* (XED).
-    // There's also `FastFormatter` which is ~1.6x faster. Use it if formatting speed is more
+    // There's also `FastFormatter` which is ~1.9x faster. Use it if formatting speed is more
     // important than being able to re-assemble formatted instructions.
     let mut formatter = NasmFormatter::new();
 
@@ -195,8 +183,8 @@ static EXAMPLE_CODE: &[u8] = &[
 
 This example uses a [`BlockEncoder`] to encode created [`Instruction`]s. This example needs the `db` feature because it creates `db` "instructions".
 
-[`BlockEncoder`]: https://docs.rs/iced-x86/1.8.0/iced_x86/struct.BlockEncoder.html
-[`Instruction`]: https://docs.rs/iced-x86/1.8.0/iced_x86/struct.Instruction.html
+[`BlockEncoder`]: https://docs.rs/iced-x86/1.9.1/iced_x86/struct.BlockEncoder.html
+[`Instruction`]: https://docs.rs/iced-x86/1.9.1/iced_x86/struct.Instruction.html
 
 ```rust
 use iced_x86::{
@@ -327,8 +315,8 @@ Output:
 
 Creates a custom [`SymbolResolver`] that is called by a [`Formatter`].
 
-[`SymbolResolver`]: https://docs.rs/iced-x86/1.8.0/iced_x86/trait.SymbolResolver.html
-[`Formatter`]: https://docs.rs/iced-x86/1.8.0/iced_x86/trait.Formatter.html
+[`SymbolResolver`]: https://docs.rs/iced-x86/1.9.1/iced_x86/trait.SymbolResolver.html
+[`Formatter`]: https://docs.rs/iced-x86/1.9.1/iced_x86/trait.Formatter.html
 
 ```rust
 use iced_x86::{
@@ -384,11 +372,11 @@ Creates a custom [`FormatterOutput`] that is called by a [`Formatter`].
 
 This example will fail to compile unless you install the `colored` crate, see below.
 
-[`FormatterOutput`]: https://docs.rs/iced-x86/1.8.0/iced_x86/trait.FormatterOutput.html
-[`Formatter`]: https://docs.rs/iced-x86/1.8.0/iced_x86/trait.Formatter.html
+[`FormatterOutput`]: https://docs.rs/iced-x86/1.9.1/iced_x86/trait.FormatterOutput.html
+[`Formatter`]: https://docs.rs/iced-x86/1.9.1/iced_x86/trait.Formatter.html
 
 ```rust compile_fail
-// This example uses crate colored = "1.9.2"
+// This example uses crate colored = "2.0.0"
 use colored::{ColoredString, Colorize};
 use iced_x86::{
     Decoder, DecoderOptions, Formatter, FormatterOutput, FormatterTextKind, IntelFormatter,
@@ -532,7 +520,7 @@ pub(crate) fn how_to_move_code() {
     for instr in &mut decoder {
         orig_instructions.push(instr);
         total_bytes += instr.len() as u32;
-        if instr.code() == Code::INVALID {
+        if instr.is_invalid() {
             panic!("Found garbage");
         }
         if total_bytes >= required_bytes {
@@ -650,8 +638,8 @@ static EXAMPLE_CODE: &[u8] = &[
 Shows how to get used registers/memory and other info. It uses [`Instruction`] methods
 and an [`InstructionInfoFactory`] to get this info.
 
-[`Instruction`]: https://docs.rs/iced-x86/1.8.0/iced_x86/struct.Instruction.html
-[`InstructionInfoFactory`]: https://docs.rs/iced-x86/1.8.0/iced_x86/struct.InstructionInfoFactory.html
+[`Instruction`]: https://docs.rs/iced-x86/1.9.1/iced_x86/struct.Instruction.html
+[`InstructionInfoFactory`]: https://docs.rs/iced-x86/1.9.1/iced_x86/struct.InstructionInfoFactory.html
 
 ```rust
 use iced_x86::{
@@ -661,7 +649,7 @@ use iced_x86::{
 /*
 This method produces the following output:
 00007FFAC46ACDA4 mov [rsp+10h],rbx
-    OpCode: REX.W 89 /r
+    OpCode: o64 89 /r
     Instruction: MOV r/m64, r64
     Encoding: Legacy
     Mnemonic: Mov
@@ -678,7 +666,7 @@ This method produces the following output:
     Used reg: RBX:Read
     Used mem: [SS:RSP+0x10;UInt64;Write]
 00007FFAC46ACDA9 mov [rsp+18h],rsi
-    OpCode: REX.W 89 /r
+    OpCode: o64 89 /r
     Instruction: MOV r/m64, r64
     Encoding: Legacy
     Mnemonic: Mov
@@ -695,7 +683,7 @@ This method produces the following output:
     Used reg: RSI:Read
     Used mem: [SS:RSP+0x18;UInt64;Write]
 00007FFAC46ACDAE push rbp
-    OpCode: 50+ro
+    OpCode: o64 50+ro
     Instruction: PUSH r64
     Encoding: Legacy
     Mnemonic: Push
@@ -709,7 +697,7 @@ This method produces the following output:
     Used reg: RSP:ReadWrite
     Used mem: [SS:RSP+0xFFFFFFFFFFFFFFF8;UInt64;Write]
 00007FFAC46ACDAF push rdi
-    OpCode: 50+ro
+    OpCode: o64 50+ro
     Instruction: PUSH r64
     Encoding: Legacy
     Mnemonic: Push
@@ -723,7 +711,7 @@ This method produces the following output:
     Used reg: RSP:ReadWrite
     Used mem: [SS:RSP+0xFFFFFFFFFFFFFFF8;UInt64;Write]
 00007FFAC46ACDB0 push r14
-    OpCode: 50+ro
+    OpCode: o64 50+ro
     Instruction: PUSH r64
     Encoding: Legacy
     Mnemonic: Push
@@ -737,7 +725,7 @@ This method produces the following output:
     Used reg: RSP:ReadWrite
     Used mem: [SS:RSP+0xFFFFFFFFFFFFFFF8;UInt64;Write]
 00007FFAC46ACDB2 lea rbp,[rsp-100h]
-    OpCode: REX.W 8D /r
+    OpCode: o64 8D /r
     Instruction: LEA r64, m
     Encoding: Legacy
     Mnemonic: Lea
@@ -752,7 +740,7 @@ This method produces the following output:
     Used reg: RBP:Write
     Used reg: RSP:Read
 00007FFAC46ACDBA sub rsp,200h
-    OpCode: REX.W 81 /5 id
+    OpCode: o64 81 /5 id
     Instruction: SUB r/m64, imm32
     Encoding: Legacy
     Mnemonic: Sub
@@ -768,7 +756,7 @@ This method produces the following output:
     Op1: imm32sex64
     Used reg: RSP:ReadWrite
 00007FFAC46ACDC1 mov rax,[7FFAC47524E0h]
-    OpCode: REX.W 8B /r
+    OpCode: o64 8B /r
     Instruction: MOV r64, r/m64
     Encoding: Legacy
     Mnemonic: Mov
@@ -784,7 +772,7 @@ This method produces the following output:
     Used reg: RAX:Write
     Used mem: [DS:0x7FFAC47524E0;UInt64;Read]
 00007FFAC46ACDC8 xor rax,rsp
-    OpCode: REX.W 33 /r
+    OpCode: o64 33 /r
     Instruction: XOR r64, r/m64
     Encoding: Legacy
     Mnemonic: Xor
@@ -802,7 +790,7 @@ This method produces the following output:
     Used reg: RAX:ReadWrite
     Used reg: RSP:Read
 00007FFAC46ACDCB mov [rbp+0F0h],rax
-    OpCode: REX.W 89 /r
+    OpCode: o64 89 /r
     Instruction: MOV r/m64, r64
     Encoding: Legacy
     Mnemonic: Mov
@@ -819,7 +807,7 @@ This method produces the following output:
     Used reg: RAX:Read
     Used mem: [SS:RBP+0xF0;UInt64;Write]
 00007FFAC46ACDD2 mov r8,[7FFAC474F208h]
-    OpCode: REX.W 8B /r
+    OpCode: o64 8B /r
     Instruction: MOV r64, r/m64
     Encoding: Legacy
     Mnemonic: Mov
@@ -835,7 +823,7 @@ This method produces the following output:
     Used reg: R8:Write
     Used mem: [DS:0x7FFAC474F208;UInt64;Read]
 00007FFAC46ACDD9 lea rax,[7FFAC46F4A58h]
-    OpCode: REX.W 8D /r
+    OpCode: o64 8D /r
     Instruction: LEA r64, m
     Encoding: Legacy
     Mnemonic: Lea
@@ -890,6 +878,7 @@ pub(crate) fn how_to_get_instruction_info() {
 
         let op_code = instr.op_code();
         let info = info_factory.info(&instr);
+        let fpu_info = instr.fpu_stack_increment_info();
         println!("    OpCode: {}", op_code.op_code_string());
         println!("    Instruction: {}", op_code.instruction_string());
         println!("    Encoding: {:?}", instr.encoding());
@@ -910,6 +899,17 @@ pub(crate) fn how_to_get_instruction_info() {
                 "    Displacement offset = {}, size = {}",
                 offsets.displacement_offset(),
                 offsets.displacement_size()
+            );
+        }
+        if fpu_info.writes_top() {
+            if fpu_info.increment() == 0 {
+                println!("    FPU TOP: the instruction overwrites TOP");
+            } else {
+                println!("    FPU TOP inc: {}", fpu_info.increment());
+            }
+            println!(
+                "    FPU TOP cond write: {}",
+                if fpu_info.conditional() { "true" } else { "false" }
             );
         }
         if offsets.has_immediate() {
@@ -1010,6 +1010,9 @@ fn flags(rf: u32) -> String {
     }
     if (rf & RflagsBits::AC) != 0 {
         append(&mut sb, "AC");
+    }
+    if (rf & RflagsBits::UIF) != 0 {
+        append(&mut sb, "UIF");
     }
     if sb.is_empty() {
         sb.push_str("<empty>");

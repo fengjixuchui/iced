@@ -874,8 +874,6 @@ impl GasFormatter {
 				instruction,
 				operand,
 				instruction_operand,
-				instruction.memory_size(),
-				instruction.segment_prefix(),
 				instruction.memory_segment(),
 				Register::SI,
 				Register::None,
@@ -889,8 +887,6 @@ impl GasFormatter {
 				instruction,
 				operand,
 				instruction_operand,
-				instruction.memory_size(),
-				instruction.segment_prefix(),
 				instruction.memory_segment(),
 				Register::ESI,
 				Register::None,
@@ -904,8 +900,6 @@ impl GasFormatter {
 				instruction,
 				operand,
 				instruction_operand,
-				instruction.memory_size(),
-				instruction.segment_prefix(),
 				instruction.memory_segment(),
 				Register::RSI,
 				Register::None,
@@ -919,8 +913,6 @@ impl GasFormatter {
 				instruction,
 				operand,
 				instruction_operand,
-				instruction.memory_size(),
-				instruction.segment_prefix(),
 				instruction.memory_segment(),
 				Register::DI,
 				Register::None,
@@ -934,8 +926,6 @@ impl GasFormatter {
 				instruction,
 				operand,
 				instruction_operand,
-				instruction.memory_size(),
-				instruction.segment_prefix(),
 				instruction.memory_segment(),
 				Register::EDI,
 				Register::None,
@@ -949,8 +939,6 @@ impl GasFormatter {
 				instruction,
 				operand,
 				instruction_operand,
-				instruction.memory_size(),
-				instruction.segment_prefix(),
 				instruction.memory_segment(),
 				Register::RDI,
 				Register::None,
@@ -959,58 +947,20 @@ impl GasFormatter {
 				0,
 				8,
 			),
-			InstrOpKind::MemoryESDI => self.format_memory(
-				output,
-				instruction,
-				operand,
-				instruction_operand,
-				instruction.memory_size(),
-				instruction.segment_prefix(),
-				Register::ES,
-				Register::DI,
-				Register::None,
-				0,
-				0,
-				0,
-				2,
-			),
-			InstrOpKind::MemoryESEDI => self.format_memory(
-				output,
-				instruction,
-				operand,
-				instruction_operand,
-				instruction.memory_size(),
-				instruction.segment_prefix(),
-				Register::ES,
-				Register::EDI,
-				Register::None,
-				0,
-				0,
-				0,
-				4,
-			),
-			InstrOpKind::MemoryESRDI => self.format_memory(
-				output,
-				instruction,
-				operand,
-				instruction_operand,
-				instruction.memory_size(),
-				instruction.segment_prefix(),
-				Register::ES,
-				Register::RDI,
-				Register::None,
-				0,
-				0,
-				0,
-				8,
-			),
+			InstrOpKind::MemoryESDI => {
+				self.format_memory(output, instruction, operand, instruction_operand, Register::ES, Register::DI, Register::None, 0, 0, 0, 2)
+			}
+			InstrOpKind::MemoryESEDI => {
+				self.format_memory(output, instruction, operand, instruction_operand, Register::ES, Register::EDI, Register::None, 0, 0, 0, 4)
+			}
+			InstrOpKind::MemoryESRDI => {
+				self.format_memory(output, instruction, operand, instruction_operand, Register::ES, Register::RDI, Register::None, 0, 0, 0, 8)
+			}
 			InstrOpKind::Memory64 => self.format_memory(
 				output,
 				instruction,
 				operand,
 				instruction_operand,
-				instruction.memory_size(),
-				instruction.segment_prefix(),
 				instruction.memory_segment(),
 				Register::None,
 				Register::None,
@@ -1034,8 +984,6 @@ impl GasFormatter {
 					instruction,
 					operand,
 					instruction_operand,
-					instruction.memory_size(),
-					instruction.segment_prefix(),
 					instruction.memory_segment(),
 					base_reg,
 					index_reg,
@@ -1093,10 +1041,12 @@ impl GasFormatter {
 			),
 		}
 
-		if operand + 1 == op_info.op_count as u32 && instruction.has_op_mask() {
-			output.write("{", FormatterTextKind::Punctuation);
-			GasFormatter::format_register_internal(&self.d, output, instruction, operand, instruction_operand, instruction.op_mask() as u32);
-			output.write("}", FormatterTextKind::Punctuation);
+		if operand + 1 == op_info.op_count as u32 && super::super::instruction_internal::internal_has_op_mask_or_zeroing_masking(instruction) {
+			if instruction.has_op_mask() {
+				output.write("{", FormatterTextKind::Punctuation);
+				GasFormatter::format_register_internal(&self.d, output, instruction, operand, instruction_operand, instruction.op_mask() as u32);
+				output.write("}", FormatterTextKind::Punctuation);
+			}
 			if instruction.zeroing_masking() {
 				GasFormatter::format_decorator(
 					&self.d.options,
@@ -1152,9 +1102,8 @@ impl GasFormatter {
 
 	#[cfg_attr(feature = "cargo-clippy", allow(clippy::too_many_arguments))]
 	fn format_memory(
-		&mut self, output: &mut FormatterOutput, instruction: &Instruction, operand: u32, instruction_operand: Option<u32>, mem_size: MemorySize,
-		seg_override: Register, seg_reg: Register, mut base_reg: Register, index_reg: Register, scale: u32, mut displ_size: u32, mut displ: i64,
-		addr_size: u32,
+		&mut self, output: &mut FormatterOutput, instruction: &Instruction, operand: u32, instruction_operand: Option<u32>, seg_reg: Register,
+		mut base_reg: Register, index_reg: Register, scale: u32, mut displ_size: u32, mut displ: i64, addr_size: u32,
 	) {
 		debug_assert!((scale as usize) < SCALE_NUMBERS.len());
 		debug_assert!(get_address_size_in_bytes(base_reg, index_reg, displ_size, instruction.code_size()) == addr_size);
@@ -1194,11 +1143,13 @@ impl GasFormatter {
 			None
 		};
 
-		let use_scale = if addr_size == 2 { false } else { scale != 0 || self.d.options.always_show_scale() };
+		let use_scale =
+			if addr_size == 2 || !show_index_scale(instruction, &self.d.options) { false } else { scale != 0 || self.d.options.always_show_scale() };
 
 		let has_base_or_index_reg = base_reg != Register::None || index_reg != Register::None;
 
 		let code_size = instruction.code_size();
+		let seg_override = instruction.segment_prefix();
 		let notrack_prefix = seg_override == Register::DS
 			&& is_notrack_prefix_branch(instruction.code())
 			&& !((code_size == CodeSize::Code16 || code_size == CodeSize::Code32)
@@ -1233,16 +1184,7 @@ impl GasFormatter {
 				let is_signed;
 				if has_base_or_index_reg {
 					is_signed = number_options.signed_number;
-					if addr_size == 4 {
-						if number_options.signed_number && (displ as i32) < 0 {
-							output.write("-", FormatterTextKind::Operator);
-							displ = (displ as i32).wrapping_neg() as u32 as i64;
-						}
-						if number_options.displacement_leading_zeroes {
-							debug_assert!(displ_size <= 4);
-							displ_size = 4;
-						}
-					} else if addr_size == 8 {
+					if addr_size == 8 {
 						if number_options.signed_number && displ < 0 {
 							output.write("-", FormatterTextKind::Operator);
 							displ = displ.wrapping_neg();
@@ -1250,6 +1192,15 @@ impl GasFormatter {
 						if number_options.displacement_leading_zeroes {
 							debug_assert!(displ_size <= 8);
 							displ_size = 8;
+						}
+					} else if addr_size == 4 {
+						if number_options.signed_number && (displ as i32) < 0 {
+							output.write("-", FormatterTextKind::Operator);
+							displ = (displ as i32).wrapping_neg() as u32 as i64;
+						}
+						if number_options.displacement_leading_zeroes {
+							debug_assert!(displ_size <= 4);
+							displ_size = 4;
 						}
 					} else {
 						debug_assert_eq!(2, addr_size);
@@ -1313,23 +1264,23 @@ impl GasFormatter {
 
 				if index_reg != Register::None {
 					GasFormatter::format_register_internal(&self.d, output, instruction, operand, instruction_operand, index_reg as u32);
-				}
 
-				if use_scale {
-					output.write(",", FormatterTextKind::Punctuation);
-					if self.d.options.gas_space_after_memory_operand_comma() {
-						output.write(" ", FormatterTextKind::Text);
+					if use_scale {
+						output.write(",", FormatterTextKind::Punctuation);
+						if self.d.options.gas_space_after_memory_operand_comma() {
+							output.write(" ", FormatterTextKind::Text);
+						}
+
+						output.write_number(
+							instruction,
+							operand,
+							instruction_operand,
+							SCALE_NUMBERS[scale as usize],
+							1u64 << scale,
+							NumberKind::Int32,
+							FormatterTextKind::Number,
+						);
 					}
-
-					output.write_number(
-						instruction,
-						operand,
-						instruction_operand,
-						SCALE_NUMBERS[scale as usize],
-						1u64 << scale,
-						NumberKind::Int32,
-						FormatterTextKind::Number,
-					);
 				}
 			}
 
@@ -1339,6 +1290,7 @@ impl GasFormatter {
 			output.write(")", FormatterTextKind::Punctuation);
 		}
 
+		let mem_size = instruction.memory_size();
 		debug_assert!((mem_size as usize) < self.d.all_memory_sizes.len());
 		let bcst_to = self.d.all_memory_sizes[mem_size as usize];
 		if !bcst_to.is_default() {

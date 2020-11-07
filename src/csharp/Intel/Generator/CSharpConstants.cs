@@ -21,8 +21,10 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+using System;
 using System.IO;
 using System.Linq;
+using Generator.Enums;
 
 namespace Generator {
 	static class CSharpConstants {
@@ -57,6 +59,7 @@ namespace Generator {
 		public const string DecoderOrEncoderDefine = "DECODER || ENCODER";
 		public const string DecoderOrEncoderOrInstrInfoDefine = "DECODER || ENCODER || INSTR_INFO";
 		public const string AnyFormatterDefine = "GAS || INTEL || MASM || NASM || FAST_FMT";
+		public const string GasIntelNasmFormatterDefine = "GAS || INTEL || NASM";
 		public const string GasFormatterDefine = "GAS";
 		public const string IntelFormatterDefine = "INTEL";
 		public const string MasmFormatterDefine = "MASM";
@@ -66,7 +69,17 @@ namespace Generator {
 		public const string PragmaMissingDocsDisable = "#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member";
 		public const string PragmaMissingDocsRestore = "#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member";
 
-		public static string GetDirectory(GeneratorContext generatorContext, string @namespace) =>
-			Path.Combine(new[] { generatorContext.CSharpDir }.Concat(@namespace.Split('.').Skip(1)).ToArray());
+		public static string GetFilename(GenTypes genTypes, string @namespace, params string[] names) =>
+			Path.Combine(new[] { genTypes.Dirs.CSharpDir }.Concat(@namespace.Split('.').Skip(1)).Concat(names).ToArray());
+
+		public static string? GetDefine(EncodingKind encoding) =>
+			encoding switch {
+				EncodingKind.Legacy => null,
+				EncodingKind.VEX => VexDefine,
+				EncodingKind.EVEX => EvexDefine,
+				EncodingKind.XOP => XopDefine,
+				EncodingKind.D3NOW => D3nowDefine,
+				_ => throw new InvalidOperationException(),
+			};
 	}
 }

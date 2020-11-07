@@ -63,7 +63,7 @@ namespace Iced.UnitTests.Intel.InstructionInfoTests {
 			int lineNo = 0;
 			foreach (var line in File.ReadLines(filename)) {
 				lineNo++;
-				if (line.Length == 0 || line.StartsWith("#"))
+				if (line.Length == 0 || line[0] == '#')
 					continue;
 
 				(string hexBytes, Code code, DecoderOptions options, InstructionInfoTestCase testCase) info;
@@ -113,12 +113,6 @@ namespace Iced.UnitTests.Intel.InstructionInfoTests {
 				}
 
 				switch (key) {
-				case InstructionInfoKeys.IsProtectedMode:
-					if (value != string.Empty)
-						throw new Exception($"Invalid key-value value, '{keyValue}'");
-					testCase.IsProtectedMode = true;
-					break;
-
 				case InstructionInfoKeys.IsPrivileged:
 					if (value != string.Empty)
 						throw new Exception($"Invalid key-value value, '{keyValue}'");
@@ -263,6 +257,23 @@ namespace Iced.UnitTests.Intel.InstructionInfoTests {
 						throw new Exception($"Invalid key-value value, '{keyValue}'");
 					break;
 
+				case InstructionInfoKeys.FpuTopIncrement:
+					testCase.FpuTopIncrement = NumberConverter.ToInt32(value);
+					testCase.FpuWritesTop = true;
+					break;
+
+				case InstructionInfoKeys.FpuConditionalTop:
+					if (value != string.Empty)
+						throw new Exception($"Invalid key-value value, '{keyValue}'");
+					testCase.FpuConditionalTop = true;
+					break;
+
+				case InstructionInfoKeys.FpuWritesTop:
+					if (value != string.Empty)
+						throw new Exception($"Invalid key-value value, '{keyValue}'");
+					testCase.FpuWritesTop = true;
+					break;
+
 				default:
 					throw new Exception($"Invalid key-value value, '{keyValue}'");
 				}
@@ -298,23 +309,23 @@ namespace Iced.UnitTests.Intel.InstructionInfoTests {
 			if (!ToEnumConverter.TryMemorySize(elems[1].Trim(), out var memorySize))
 				return false;
 
-			if (!TryParseMemExpr(toRegister, expr, out var segReg, out var baseReg, out var indexReg, out int scale, out ulong displ))
+			if (!TryParseMemExpr(toRegister, expr, bitness, out var segReg, out var baseReg, out var indexReg, out int scale, out ulong displ, out var addressSize, out var vsibSize))
 				return false;
 
-			switch (bitness) {
-			case 16:
+			switch (addressSize) {
+			case CodeSize.Code16:
 				if (!(short.MinValue <= (long)displ && (long)displ <= short.MaxValue) && displ > ushort.MaxValue)
 					return false;
 				displ = (ushort)displ;
 				break;
 
-			case 32:
+			case CodeSize.Code32:
 				if (!(int.MinValue <= (long)displ && (long)displ <= int.MaxValue) && displ > uint.MaxValue)
 					return false;
 				displ = (uint)displ;
 				break;
 
-			case 64:
+			case CodeSize.Code64:
 				break;
 
 			default:
@@ -322,23 +333,39 @@ namespace Iced.UnitTests.Intel.InstructionInfoTests {
 			}
 
 			if (access != OpAccess.NoMemAccess)
-				testCase.UsedMemory.Add(new UsedMemory(segReg, baseReg, indexReg, scale, displ, memorySize, access));
+				testCase.UsedMemory.Add(new UsedMemory(segReg, baseReg, indexReg, scale, displ, memorySize, access, addressSize, vsibSize));
 
 			return true;
 		}
 
-		static bool TryParseMemExpr(Dictionary<string, Register> toRegister, string value, out Register segReg, out Register baseReg, out Register indexReg, out int scale, out ulong displ) {
+		static bool TryParseMemExpr(Dictionary<string, Register> toRegister, string value, int bitness, out Register segReg, out Register baseReg, out Register indexReg, out int scale, out ulong displ, out CodeSize addressSize, out int vsibSize) {
 			segReg = Register.None;
 			baseReg = Register.None;
 			indexReg = Register.None;
 			scale = 1;
 			displ = 0;
+			addressSize = CodeSize.Unknown;
+			vsibSize = 0;
+
+			var memArgs = value.Split('|');
+			value = memArgs[0];
+			for (int i = 1; i < memArgs.Length; i++) {
+				var option = memArgs[i];
+				switch (option) {
+				case MiscInstrInfoTestConstants.MemSizeOption_Addr16: addressSize = CodeSize.Code16; break;
+				case MiscInstrInfoTestConstants.MemSizeOption_Addr32: addressSize = CodeSize.Code32; break;
+				case MiscInstrInfoTestConstants.MemSizeOption_Addr64: addressSize = CodeSize.Code64; break;
+				case MiscInstrInfoTestConstants.MemSizeOption_Vsib32: vsibSize = 4; break;
+				case MiscInstrInfoTestConstants.MemSizeOption_Vsib64: vsibSize = 8; break;
+				default: return false;
+				}
+			}
 
 			bool hasBase = false;
 			foreach (var tmp in value.Split(plusSeparator)) {
 				var s = tmp;
 				bool isIndex = hasBase;
-				int segIndex = s.IndexOf(":");
+				int segIndex = s.IndexOf(":", StringComparison.Ordinal);
 				if (segIndex >= 0) {
 					var segRegString = s.Substring(0, segIndex);
 					s = s.Substring(segIndex + 1);
@@ -348,13 +375,13 @@ namespace Iced.UnitTests.Intel.InstructionInfoTests {
 						return false;
 				}
 				if (s.IndexOf('*') >= 0) {
-					if (s.EndsWith("*1"))
+					if (s.EndsWith("*1", StringComparison.Ordinal))
 						scale = 1;
-					else if (s.EndsWith("*2"))
+					else if (s.EndsWith("*2", StringComparison.Ordinal))
 						scale = 2;
-					else if (s.EndsWith("*4"))
+					else if (s.EndsWith("*4", StringComparison.Ordinal))
 						scale = 4;
-					else if (s.EndsWith("*8"))
+					else if (s.EndsWith("*8", StringComparison.Ordinal))
 						scale = 8;
 					else
 						return false;
@@ -371,7 +398,7 @@ namespace Iced.UnitTests.Intel.InstructionInfoTests {
 				}
 				else {
 					var numString = s;
-					if (numString.StartsWith("0x")) {
+					if (numString.StartsWith("0x", StringComparison.Ordinal)) {
 						numString = numString.Substring(2);
 						if (!ulong.TryParse(numString, NumberStyles.HexNumber, null, out displ))
 							return false;
@@ -383,36 +410,91 @@ namespace Iced.UnitTests.Intel.InstructionInfoTests {
 				}
 			}
 
+			if (addressSize == CodeSize.Unknown) {
+				var reg = baseReg != Register.None ? baseReg : indexReg;
+				if (reg.IsGPR16())
+					addressSize = CodeSize.Code16;
+				else if (reg.IsGPR32())
+					addressSize = CodeSize.Code32;
+				else if (reg.IsGPR64())
+					addressSize = CodeSize.Code64;
+			}
+			if (addressSize == CodeSize.Unknown) {
+				addressSize = bitness switch {
+					16 => CodeSize.Code16,
+					32 => CodeSize.Code32,
+					64 => CodeSize.Code64,
+					_ => throw new InvalidOperationException(),
+				};
+			}
+			if (vsibSize == 0 && indexReg.IsVectorRegister())
+				return false;
+			if (vsibSize != 0 && !indexReg.IsVectorRegister())
+				return false;
+
 			return segReg != Register.None;
+		}
+
+		static bool TrySplit(string value, char sep, out string left, out string right) {
+			int index = value.IndexOf(sep);
+			if (index >= 0) {
+				left = value.Substring(0, index).Trim();
+				right = value.Substring(index + 1).Trim();
+				return true;
+			}
+			else {
+				left = null;
+				right = null;
+				return false;
+			}
+		}
+
+		static bool TryGetRegister(Dictionary<string, Register> toRegister, string regString, EncodingKind encoding, OpAccess access, out Register register) {
+			if (!toRegister.TryGetValue(regString, out register))
+				return false;
+
+			if (encoding != EncodingKind.Legacy && encoding != EncodingKind.D3NOW) {
+				switch (access) {
+				case OpAccess.None:
+				case OpAccess.Read:
+				case OpAccess.NoMemAccess:
+				case OpAccess.CondRead:
+					break;
+
+				case OpAccess.Write:
+				case OpAccess.CondWrite:
+				case OpAccess.ReadWrite:
+				case OpAccess.ReadCondWrite:
+					if (Register.XMM0 <= register && register <= IcedConstants.VMM_last && !regString.StartsWith(MiscInstrInfoTestConstants.VMM_prefix, StringComparison.OrdinalIgnoreCase))
+						throw new Exception($"Register {regString} is written ({access}) but {MiscInstrInfoTestConstants.VMM_prefix} pseudo register should be used instead");
+					break;
+
+				default:
+					throw new InvalidOperationException();
+				}
+			}
+
+			return true;
 		}
 
 		static bool AddRegisters(Dictionary<string, Register> toRegister, string value, OpAccess access, InstructionInfoTestCase testCase) {
 			foreach (var tmp in value.Split(semicolonSeparator, StringSplitOptions.RemoveEmptyEntries)) {
 				var regString = tmp.Trim();
-				if (!toRegister.TryGetValue(regString, out var reg))
-					return false;
-
-				if (testCase.Encoding != EncodingKind.Legacy && testCase.Encoding != EncodingKind.D3NOW) {
-					switch (access) {
-					case OpAccess.None:
-					case OpAccess.Read:
-					case OpAccess.NoMemAccess:
-					case OpAccess.CondRead:
-						break;
-
-					case OpAccess.Write:
-					case OpAccess.CondWrite:
-					case OpAccess.ReadWrite:
-					case OpAccess.ReadCondWrite:
-						if (Register.XMM0 <= reg && reg <= IcedConstants.VMM_last && !regString.StartsWith(MiscInstrInfoTestConstants.VMM_prefix, StringComparison.OrdinalIgnoreCase))
-							throw new Exception($"Register {regString} is written ({access}) but {MiscInstrInfoTestConstants.VMM_prefix} pseudo register should be used instead");
-						break;
-
-					default:
-						throw new InvalidOperationException();
-					}
+				if (TrySplit(regString, '-', out var firstRegStr, out var lastRegStr)) {
+					if (!TryGetRegister(toRegister, firstRegStr, testCase.Encoding, access, out var firstReg))
+						return false;
+					if (!TryGetRegister(toRegister, lastRegStr, testCase.Encoding, access, out var lastReg))
+						return false;
+					if (lastReg < firstReg)
+						throw new Exception($"Invalid register range: {regString}");
+					for (var reg = firstReg; reg <= lastReg; reg++)
+						testCase.UsedRegisters.Add(new UsedRegister(reg, access));
 				}
-				testCase.UsedRegisters.Add(new UsedRegister(reg, access));
+				else {
+					if (!TryGetRegister(toRegister, regString, testCase.Encoding, access, out var register))
+						return false;
+					testCase.UsedRegisters.Add(new UsedRegister(register, access));
+				}
 			}
 			return true;
 		}
@@ -420,44 +502,21 @@ namespace Iced.UnitTests.Intel.InstructionInfoTests {
 		static bool ParseRflags(string value, ref RflagsBits rflags) {
 			foreach (var c in value) {
 				switch (c) {
-				case RflagsBitsConstants.AF:
-					rflags |= RflagsBits.AF;
-					break;
-
-				case RflagsBitsConstants.CF:
-					rflags |= RflagsBits.CF;
-					break;
-
-				case RflagsBitsConstants.OF:
-					rflags |= RflagsBits.OF;
-					break;
-
-				case RflagsBitsConstants.PF:
-					rflags |= RflagsBits.PF;
-					break;
-
-				case RflagsBitsConstants.SF:
-					rflags |= RflagsBits.SF;
-					break;
-
-				case RflagsBitsConstants.ZF:
-					rflags |= RflagsBits.ZF;
-					break;
-
-				case RflagsBitsConstants.IF:
-					rflags |= RflagsBits.IF;
-					break;
-
-				case RflagsBitsConstants.DF:
-					rflags |= RflagsBits.DF;
-					break;
-
-				case RflagsBitsConstants.AC:
-					rflags |= RflagsBits.AC;
-					break;
-
-				default:
-					return false;
+				case RflagsBitsConstants.AF: rflags |= RflagsBits.AF; break;
+				case RflagsBitsConstants.CF: rflags |= RflagsBits.CF; break;
+				case RflagsBitsConstants.OF: rflags |= RflagsBits.OF; break;
+				case RflagsBitsConstants.PF: rflags |= RflagsBits.PF; break;
+				case RflagsBitsConstants.SF: rflags |= RflagsBits.SF; break;
+				case RflagsBitsConstants.ZF: rflags |= RflagsBits.ZF; break;
+				case RflagsBitsConstants.IF: rflags |= RflagsBits.IF; break;
+				case RflagsBitsConstants.DF: rflags |= RflagsBits.DF; break;
+				case RflagsBitsConstants.AC: rflags |= RflagsBits.AC; break;
+				case RflagsBitsConstants.C0: rflags |= RflagsBits.C0; break;
+				case RflagsBitsConstants.C1: rflags |= RflagsBits.C1; break;
+				case RflagsBitsConstants.C2: rflags |= RflagsBits.C2; break;
+				case RflagsBitsConstants.C3: rflags |= RflagsBits.C3; break;
+				case RflagsBitsConstants.UIF: rflags |= RflagsBits.UIF; break;
+				default: return false;
 				}
 			}
 

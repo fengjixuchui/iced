@@ -182,7 +182,10 @@ pub(super) fn get_flow_control(instruction: &Instruction) -> FormatterFlowContro
 		| Code::Call_rel32_32
 		| Code::Call_rel32_64
 		=> FormatterFlowControl::NearCall,
-		Code::Jo_rel16
+		Code::Jmp_rel16
+		| Code::Jmp_rel32_32
+		| Code::Jmp_rel32_64
+		| Code::Jo_rel16
 		| Code::Jo_rel32_32
 		| Code::Jo_rel32_64
 		| Code::Jno_rel16
@@ -230,17 +233,14 @@ pub(super) fn get_flow_control(instruction: &Instruction) -> FormatterFlowContro
 		| Code::Jg_rel16
 		| Code::Jg_rel32_32
 		| Code::Jg_rel32_64
-		| Code::Jmp_rel16
-		| Code::Jmp_rel32_32
-		| Code::Jmp_rel32_64
 		| Code::Jmpe_disp16
 		| Code::Jmpe_disp32
 		=> FormatterFlowControl::NearBranch,
-		Code::Call_ptr1632
-		| Code::Call_ptr1616
+		Code::Call_ptr1616
+		| Code::Call_ptr1632
 		=> FormatterFlowControl::FarCall,
-		Code::Jmp_ptr1632
-		| Code::Jmp_ptr1616
+		Code::Jmp_ptr1616
+		| Code::Jmp_ptr1632
 		=> FormatterFlowControl::FarBranch,
 		Code::Xbegin_rel16
 		| Code::Xbegin_rel32
@@ -275,6 +275,10 @@ pub(super) fn get_segment_register_prefix_kind(register: Register) -> PrefixKind
 	const_assert_eq!(PrefixKind::FS as u32, PrefixKind::ES as u32 + 4);
 	const_assert_eq!(PrefixKind::GS as u32, PrefixKind::ES as u32 + 5);
 	unsafe { mem::transmute(((register as u32 - Register::ES as u32) + PrefixKind::ES as u32) as u8) }
+}
+
+pub(super) fn show_index_scale(instruction: &Instruction, options: &FormatterOptions) -> bool {
+	options.show_useless_prefixes() || !instruction.code().ignores_index()
 }
 
 pub(super) fn show_segment_prefix(default_seg_reg: Register, instruction: &Instruction, options: &FormatterOptions) -> bool {

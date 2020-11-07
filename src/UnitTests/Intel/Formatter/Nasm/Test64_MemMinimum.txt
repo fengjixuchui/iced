@@ -7475,21 +7475,21 @@ insertq xmm2, xmm1, -0x5b, -3
 extrq xmm2, xmm1
 insertq xmm2, xmm1
 vpermil2ps xmm2, xmm6, xmm3, xmm4, 0
-vpermil2ps xmm2, xmm6, [rax], xmm4, 1
-vpermil2ps ymm2, ymm6, ymm3, ymm5, 0
-vpermil2ps ymm2, ymm6, [rax], ymm5, 2
-vpermil2ps xmm2, xmm6, xmm4, xmm3, 0
-vpermil2ps xmm2, xmm6, xmm4, [rax], 1
-vpermil2ps ymm2, ymm6, ymm5, ymm3, 0
-vpermil2ps ymm2, ymm6, ymm5, [rax], 2
+vpermil2ps xmm2, xmm6, [rax], xmm4, 4
+vpermil2ps ymm2, ymm6, ymm3, ymm5, 1
+vpermil2ps ymm2, ymm6, [rax], ymm5, 5
+vpermil2ps xmm2, xmm6, xmm4, xmm3, 2
+vpermil2ps xmm2, xmm6, xmm4, [rax], 6
+vpermil2ps ymm2, ymm6, ymm5, ymm3, 3
+vpermil2ps ymm2, ymm6, ymm5, [rax], 7
 vpermil2pd xmm2, xmm6, xmm3, xmm4, 0
-vpermil2pd xmm2, xmm6, [rax], xmm4, 1
-vpermil2pd ymm2, ymm6, ymm3, ymm5, 0
-vpermil2pd ymm2, ymm6, [rax], ymm5, 2
-vpermil2pd xmm2, xmm6, xmm4, xmm3, 0
-vpermil2pd xmm2, xmm6, xmm4, [rax], 1
-vpermil2pd ymm2, ymm6, ymm5, ymm3, 0
-vpermil2pd ymm2, ymm6, ymm5, [rax], 2
+vpermil2pd xmm2, xmm6, [rax], xmm4, 8
+vpermil2pd ymm2, ymm6, ymm3, ymm5, 1
+vpermil2pd ymm2, ymm6, [rax], ymm5, 9
+vpermil2pd xmm2, xmm6, xmm4, xmm3, 2
+vpermil2pd xmm2, xmm6, xmm4, [rax], 0xa
+vpermil2pd ymm2, ymm6, ymm5, ymm3, 3
+vpermil2pd ymm2, ymm6, ymm5, [rax], 0xf
 vfmaddsubps xmm2, xmm6, xmm3, xmm4
 vfmaddsubps xmm2, xmm6, [rax], xmm4
 vfmaddsubps ymm2, ymm6, ymm3, ymm5
@@ -8349,6 +8349,7 @@ prefetch [rax]
 prefetch [rax]
 ud0
 vmgexit
+vmgexit
 ldtilecfg [rax]
 tilerelease
 sttilecfg [rax]
@@ -8367,3 +8368,41 @@ tdpbssd tmm2, tmm3, tmm4
 tdpbf16ps tmm0, tmm1, tmm2
 tdpbf16ps tmm3, tmm4, tmm5
 tdpbf16ps tmm6, tmm7, tmm0
+vunpcklps xmm2{z}, xmm6, [rax+4]{1to4}
+tdcall
+seamret
+seamops
+seamcall
+aesencwide128kl [rax]
+aesdecwide128kl [rax]
+aesencwide256kl [rax]
+aesdecwide256kl [rax]
+loadiwkey xmm2, xmm3
+aesenc128kl xmm2, [rax]
+aesdec128kl xmm2, [rax]
+aesenc256kl xmm2, [rax]
+aesdec256kl xmm2, [rax]
+encodekey128 edx, ebx
+encodekey256 edx, ebx
+uiret
+testui
+clui
+stui
+senduipi rcx
+hreset -0x5b
+vpdpbusd xmm2, xmm6, [rax]
+vpdpbusd xmm2, xmm6, xmm3
+vpdpbusd ymm2, ymm6, [rax]
+vpdpbusd ymm2, ymm6, ymm3
+vpdpbusds xmm2, xmm6, [rax]
+vpdpbusds xmm2, xmm6, xmm3
+vpdpbusds ymm2, ymm6, [rax]
+vpdpbusds ymm2, ymm6, ymm3
+vpdpwssd xmm2, xmm6, [rax]
+vpdpwssd xmm2, xmm6, xmm3
+vpdpwssd ymm2, ymm6, [rax]
+vpdpwssd ymm2, ymm6, ymm3
+vpdpwssds xmm2, xmm6, [rax]
+vpdpwssds xmm2, xmm6, xmm3
+vpdpwssds ymm2, ymm6, [rax]
+vpdpwssds ymm2, ymm6, ymm3

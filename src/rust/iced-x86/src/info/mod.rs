@@ -90,7 +90,8 @@ pub struct UsedMemory {
 	scale: u8,
 	memory_size: MemorySize,
 	access: OpAccess,
-	_pad: u16,
+	address_size: CodeSize,
+	vsib_size: u8,
 }
 
 impl UsedMemory {
@@ -98,20 +99,49 @@ impl UsedMemory {
 	///
 	/// # Arguments
 	///
-	/// * `segment`: Effective segment register
+	/// * `segment`: Effective segment register or [`Register::None`] if the segment register is ignored
 	/// * `base`: Base register
 	/// * `index`: Index register
 	/// * `scale`: 1, 2, 4 or 8
 	/// * `displacement`: Displacement
 	/// * `memory_size`: Memory size
 	/// * `access`: Access
+	///
+	/// [`Register::None`]: enum.Register.html#variant.None
 	#[cfg_attr(has_must_use, must_use)]
 	#[inline]
 	pub fn new(segment: Register, base: Register, index: Register, scale: u32, displacement: u64, memory_size: MemorySize, access: OpAccess) -> Self {
-		Self { segment, base, index, scale: scale as u8, displacement, memory_size, access, _pad: 0 }
+		Self { segment, base, index, scale: scale as u8, displacement, memory_size, access, address_size: CodeSize::Unknown, vsib_size: 0 }
 	}
 
-	/// Effective segment register
+	/// Creates a new instance
+	///
+	/// # Arguments
+	///
+	/// * `segment`: Effective segment register or [`Register::None`] if the segment register is ignored
+	/// * `base`: Base register
+	/// * `index`: Index register
+	/// * `scale`: 1, 2, 4 or 8
+	/// * `displacement`: Displacement
+	/// * `memory_size`: Memory size
+	/// * `access`: Access
+	/// * `address_size`: Address size
+	/// * `vsib_size`: VSIB size (`0`, `4` or `8`)
+	///
+	/// [`Register::None`]: enum.Register.html#variant.None
+	#[cfg_attr(has_must_use, must_use)]
+	#[inline]
+	pub fn new2(
+		segment: Register, base: Register, index: Register, scale: u32, displacement: u64, memory_size: MemorySize, access: OpAccess,
+		address_size: CodeSize, vsib_size: u32,
+	) -> Self {
+		debug_assert!(vsib_size == 0 || vsib_size == 4 || vsib_size == 8);
+		Self { segment, base, index, scale: scale as u8, displacement, memory_size, access, address_size, vsib_size: vsib_size as u8 }
+	}
+
+	/// Effective segment register or [`Register::None`] if the segment register is ignored
+	///
+	/// [`Register::None`]: enum.Register.html#variant.None
 	#[cfg_attr(has_must_use, must_use)]
 	#[inline]
 	pub fn segment(&self) -> Register {
@@ -163,6 +193,110 @@ impl UsedMemory {
 	pub fn access(&self) -> OpAccess {
 		self.access
 	}
+
+	/// Address size
+	#[cfg_attr(has_must_use, must_use)]
+	#[inline]
+	pub fn address_size(&self) -> CodeSize {
+		self.address_size
+	}
+
+	/// VSIB size (`0`, `4` or `8`)
+	#[cfg_attr(has_must_use, must_use)]
+	#[inline]
+	pub fn vsib_size(&self) -> u32 {
+		self.vsib_size as u32
+	}
+
+	/// Gets the virtual address of a used memory location. See also [`try_virtual_address()`]
+	///
+	/// [`try_virtual_address()`]: #method.try_virtual_address
+	///
+	/// # Panics
+	///
+	/// Panics if virtual address computation fails.
+	///
+	/// # Arguments
+	///
+	/// * `get_register_value`: Function that returns the value of a register or the base address of a segment register.
+	///
+	/// # Call-back function args
+	///
+	/// * Arg 1: `register`: Register. If it's a segment register, the call-back should return the segment's base address, not the segment's register value.
+	/// * Arg 2: `element_index`: Only used if it's a vsib memory operand. This is the element index of the vector index register.
+	/// * Arg 3: `element_size`: Only used if it's a vsib memory operand. Size in bytes of elements in vector index register (4 or 8).
+	#[cfg_attr(has_must_use, must_use)]
+	#[inline]
+	pub fn virtual_address<F>(&self, element_index: usize, mut get_register_value: F) -> u64
+	where
+		F: FnMut(Register, usize, usize) -> u64,
+	{
+		self.try_virtual_address(element_index, |r, i, s| Some(get_register_value(r, i, s))).unwrap()
+	}
+
+	/// Gets the virtual address of a used memory location, or `None` if register resolution fails.
+	///
+	/// # Arguments
+	///
+	/// * `get_register_value`: Function that returns the value of a register or the base address of a segment register, or `None` on failure.
+	///
+	/// # Call-back function args
+	///
+	/// * Arg 1: `register`: Register. If it's a segment register, the call-back should return the segment's base address, not the segment's register value.
+	/// * Arg 2: `element_index`: Only used if it's a vsib memory operand. This is the element index of the vector index register.
+	/// * Arg 3: `element_size`: Only used if it's a vsib memory operand. Size in bytes of elements in vector index register (4 or 8).
+	#[cfg_attr(has_must_use, must_use)]
+	#[inline]
+	pub fn try_virtual_address<F>(&self, element_index: usize, mut get_register_value: F) -> Option<u64>
+	where
+		F: FnMut(Register, usize, usize) -> Option<u64>,
+	{
+		let mut effective = self.displacement;
+
+		match self.base {
+			Register::None => {}
+			_ => {
+				let base = match get_register_value(self.base, 0, 0) {
+					Some(v) => v,
+					None => return None,
+				};
+				effective = effective.wrapping_add(base)
+			}
+		}
+
+		match self.index {
+			Register::None => {}
+			_ => {
+				let mut index = match get_register_value(self.index, element_index, self.vsib_size as usize) {
+					Some(v) => v,
+					None => return None,
+				};
+				if self.vsib_size == 4 {
+					index = index as i32 as u64;
+				}
+				effective = effective.wrapping_add(index.wrapping_mul(self.scale as u64))
+			}
+		}
+
+		match self.address_size {
+			CodeSize::Code16 => effective = effective as u16 as u64,
+			CodeSize::Code32 => effective = effective as u32 as u64,
+			_ => {}
+		}
+
+		match self.segment {
+			Register::None => {}
+			_ => {
+				let segment_base = match get_register_value(self.segment, 0, 0) {
+					Some(v) => v,
+					None => return None,
+				};
+				effective = effective.wrapping_add(segment_base)
+			}
+		}
+
+		Some(effective)
+	}
 }
 
 impl fmt::Debug for UsedMemory {
@@ -202,10 +336,9 @@ impl fmt::Debug for UsedMemory {
 
 struct IIFlags;
 impl IIFlags {
-	const SAVE_RESTORE: u8 = 0x01;
-	const STACK_INSTRUCTION: u8 = 0x02;
-	const PROTECTED_MODE: u8 = 0x04;
-	const PRIVILEGED: u8 = 0x08;
+	const SAVE_RESTORE: u8 = 0x20;
+	const STACK_INSTRUCTION: u8 = 0x40;
+	const PRIVILEGED: u8 = 0x80;
 }
 
 /// Contains information about an instruction, eg. read/written registers, read/written `RFLAGS` bits, `CPUID` feature bit, etc.
@@ -270,14 +403,7 @@ impl InstructionInfo {
 		self.used_memory_locations.as_slice()
 	}
 
-	/// `true` if the instruction isn't available in real mode or virtual 8086 mode
-	#[cfg_attr(has_must_use, must_use)]
-	#[inline]
-	pub fn is_protected_mode(&self) -> bool {
-		(self.flags & IIFlags::PROTECTED_MODE) != 0
-	}
-
-	/// `true` if this is a privileged instruction
+	/// `true` if it's a privileged instruction (all CPL=0 instructions (except `VMCALL`) and IOPL instructions `IN`, `INS`, `OUT`, `OUTS`, `CLI`, `STI`)
 	#[cfg_attr(has_must_use, must_use)]
 	#[inline]
 	pub fn is_privileged(&self) -> bool {
@@ -304,7 +430,7 @@ impl InstructionInfo {
 		(self.flags & IIFlags::SAVE_RESTORE) != 0
 	}
 
-	/// Instruction encoding, eg. legacy, VEX, EVEX, ...
+	/// Instruction encoding, eg. Legacy, 3DNow!, VEX, EVEX, XOP
 	#[cfg_attr(has_must_use, must_use)]
 	#[inline]
 	pub fn encoding(&self) -> EncodingKind {
@@ -318,7 +444,7 @@ impl InstructionInfo {
 		unsafe { *self::cpuid_table::CPUID.get_unchecked(self.cpuid_feature_internal) }
 	}
 
-	/// Flow control info
+	/// Control flow info
 	#[cfg_attr(has_must_use, must_use)]
 	#[inline]
 	pub fn flow_control(&self) -> FlowControl {

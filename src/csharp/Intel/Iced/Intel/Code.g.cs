@@ -64,7 +64,7 @@ namespace Iced.Intel {
 		Add_rm32_r32 = 7,
 		/// <summary><c>ADD r/m64, r64</c><br/>
 		/// <br/>
-		/// <c>REX.W 01 /r</c><br/>
+		/// <c>o64 01 /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -96,7 +96,7 @@ namespace Iced.Intel {
 		Add_r32_rm32 = 11,
 		/// <summary><c>ADD r64, r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W 03 /r</c><br/>
+		/// <c>o64 03 /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -128,7 +128,7 @@ namespace Iced.Intel {
 		Add_EAX_imm32 = 15,
 		/// <summary><c>ADD RAX, imm32</c><br/>
 		/// <br/>
-		/// <c>REX.W 05 id</c><br/>
+		/// <c>o64 05 id</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -192,7 +192,7 @@ namespace Iced.Intel {
 		Or_rm32_r32 = 23,
 		/// <summary><c>OR r/m64, r64</c><br/>
 		/// <br/>
-		/// <c>REX.W 09 /r</c><br/>
+		/// <c>o64 09 /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -224,7 +224,7 @@ namespace Iced.Intel {
 		Or_r32_rm32 = 27,
 		/// <summary><c>OR r64, r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0B /r</c><br/>
+		/// <c>o64 0B /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -256,7 +256,7 @@ namespace Iced.Intel {
 		Or_EAX_imm32 = 31,
 		/// <summary><c>OR RAX, imm32</c><br/>
 		/// <br/>
-		/// <c>REX.W 0D id</c><br/>
+		/// <c>o64 0D id</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -284,7 +284,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>8086</c><br/>
 		/// <br/>
-		/// <c>16/32-bit</c></summary>
+		/// <c>16-bit</c></summary>
 		Popw_CS = 35,
 		/// <summary><c>ADC r/m8, r8</c><br/>
 		/// <br/>
@@ -312,7 +312,7 @@ namespace Iced.Intel {
 		Adc_rm32_r32 = 38,
 		/// <summary><c>ADC r/m64, r64</c><br/>
 		/// <br/>
-		/// <c>REX.W 11 /r</c><br/>
+		/// <c>o64 11 /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -344,7 +344,7 @@ namespace Iced.Intel {
 		Adc_r32_rm32 = 42,
 		/// <summary><c>ADC r64, r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W 13 /r</c><br/>
+		/// <c>o64 13 /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -376,7 +376,7 @@ namespace Iced.Intel {
 		Adc_EAX_imm32 = 46,
 		/// <summary><c>ADC RAX, imm32</c><br/>
 		/// <br/>
-		/// <c>REX.W 15 id</c><br/>
+		/// <c>o64 15 id</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -440,7 +440,7 @@ namespace Iced.Intel {
 		Sbb_rm32_r32 = 54,
 		/// <summary><c>SBB r/m64, r64</c><br/>
 		/// <br/>
-		/// <c>REX.W 19 /r</c><br/>
+		/// <c>o64 19 /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -472,7 +472,7 @@ namespace Iced.Intel {
 		Sbb_r32_rm32 = 58,
 		/// <summary><c>SBB r64, r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W 1B /r</c><br/>
+		/// <c>o64 1B /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -504,7 +504,7 @@ namespace Iced.Intel {
 		Sbb_EAX_imm32 = 62,
 		/// <summary><c>SBB RAX, imm32</c><br/>
 		/// <br/>
-		/// <c>REX.W 1D id</c><br/>
+		/// <c>o64 1D id</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -568,7 +568,7 @@ namespace Iced.Intel {
 		And_rm32_r32 = 70,
 		/// <summary><c>AND r/m64, r64</c><br/>
 		/// <br/>
-		/// <c>REX.W 21 /r</c><br/>
+		/// <c>o64 21 /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -600,7 +600,7 @@ namespace Iced.Intel {
 		And_r32_rm32 = 74,
 		/// <summary><c>AND r64, r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W 23 /r</c><br/>
+		/// <c>o64 23 /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -632,7 +632,7 @@ namespace Iced.Intel {
 		And_EAX_imm32 = 78,
 		/// <summary><c>AND RAX, imm32</c><br/>
 		/// <br/>
-		/// <c>REX.W 25 id</c><br/>
+		/// <c>o64 25 id</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -672,7 +672,7 @@ namespace Iced.Intel {
 		Sub_rm32_r32 = 83,
 		/// <summary><c>SUB r/m64, r64</c><br/>
 		/// <br/>
-		/// <c>REX.W 29 /r</c><br/>
+		/// <c>o64 29 /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -704,7 +704,7 @@ namespace Iced.Intel {
 		Sub_r32_rm32 = 87,
 		/// <summary><c>SUB r64, r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W 2B /r</c><br/>
+		/// <c>o64 2B /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -736,7 +736,7 @@ namespace Iced.Intel {
 		Sub_EAX_imm32 = 91,
 		/// <summary><c>SUB RAX, imm32</c><br/>
 		/// <br/>
-		/// <c>REX.W 2D id</c><br/>
+		/// <c>o64 2D id</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -776,7 +776,7 @@ namespace Iced.Intel {
 		Xor_rm32_r32 = 96,
 		/// <summary><c>XOR r/m64, r64</c><br/>
 		/// <br/>
-		/// <c>REX.W 31 /r</c><br/>
+		/// <c>o64 31 /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -808,7 +808,7 @@ namespace Iced.Intel {
 		Xor_r32_rm32 = 100,
 		/// <summary><c>XOR r64, r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W 33 /r</c><br/>
+		/// <c>o64 33 /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -840,7 +840,7 @@ namespace Iced.Intel {
 		Xor_EAX_imm32 = 104,
 		/// <summary><c>XOR RAX, imm32</c><br/>
 		/// <br/>
-		/// <c>REX.W 35 id</c><br/>
+		/// <c>o64 35 id</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -880,7 +880,7 @@ namespace Iced.Intel {
 		Cmp_rm32_r32 = 109,
 		/// <summary><c>CMP r/m64, r64</c><br/>
 		/// <br/>
-		/// <c>REX.W 39 /r</c><br/>
+		/// <c>o64 39 /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -912,7 +912,7 @@ namespace Iced.Intel {
 		Cmp_r32_rm32 = 113,
 		/// <summary><c>CMP r64, r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W 3B /r</c><br/>
+		/// <c>o64 3B /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -944,7 +944,7 @@ namespace Iced.Intel {
 		Cmp_EAX_imm32 = 117,
 		/// <summary><c>CMP RAX, imm32</c><br/>
 		/// <br/>
-		/// <c>REX.W 3D id</c><br/>
+		/// <c>o64 3D id</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -1008,7 +1008,7 @@ namespace Iced.Intel {
 		Push_r32 = 125,
 		/// <summary><c>PUSH r64</c><br/>
 		/// <br/>
-		/// <c>50+ro</c><br/>
+		/// <c>o64 50+ro</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -1032,7 +1032,7 @@ namespace Iced.Intel {
 		Pop_r32 = 128,
 		/// <summary><c>POP r64</c><br/>
 		/// <br/>
-		/// <c>58+ro</c><br/>
+		/// <c>o64 58+ro</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -1120,7 +1120,7 @@ namespace Iced.Intel {
 		Movsxd_r32_rm32 = 139,
 		/// <summary><c>MOVSXD r64, r/m32</c><br/>
 		/// <br/>
-		/// <c>REX.W 63 /r</c><br/>
+		/// <c>o64 63 /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -1144,7 +1144,7 @@ namespace Iced.Intel {
 		Pushd_imm32 = 142,
 		/// <summary><c>PUSH imm32</c><br/>
 		/// <br/>
-		/// <c>68 id</c><br/>
+		/// <c>o64 68 id</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -1168,7 +1168,7 @@ namespace Iced.Intel {
 		Imul_r32_rm32_imm32 = 145,
 		/// <summary><c>IMUL r64, r/m64, imm32</c><br/>
 		/// <br/>
-		/// <c>REX.W 69 /r id</c><br/>
+		/// <c>o64 69 /r id</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -1192,7 +1192,7 @@ namespace Iced.Intel {
 		Pushd_imm8 = 148,
 		/// <summary><c>PUSH imm8</c><br/>
 		/// <br/>
-		/// <c>6A ib</c><br/>
+		/// <c>o64 6A ib</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -1216,7 +1216,7 @@ namespace Iced.Intel {
 		Imul_r32_rm32_imm8 = 151,
 		/// <summary><c>IMUL r64, r/m64, imm8</c><br/>
 		/// <br/>
-		/// <c>REX.W 6B /r ib</c><br/>
+		/// <c>o64 6B /r ib</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -1288,7 +1288,7 @@ namespace Iced.Intel {
 		Jo_rel8_32 = 160,
 		/// <summary><c>JO rel8</c><br/>
 		/// <br/>
-		/// <c>70 cb</c><br/>
+		/// <c>o64 70 cb</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -1312,7 +1312,7 @@ namespace Iced.Intel {
 		Jno_rel8_32 = 163,
 		/// <summary><c>JNO rel8</c><br/>
 		/// <br/>
-		/// <c>71 cb</c><br/>
+		/// <c>o64 71 cb</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -1336,7 +1336,7 @@ namespace Iced.Intel {
 		Jb_rel8_32 = 166,
 		/// <summary><c>JB rel8</c><br/>
 		/// <br/>
-		/// <c>72 cb</c><br/>
+		/// <c>o64 72 cb</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -1360,7 +1360,7 @@ namespace Iced.Intel {
 		Jae_rel8_32 = 169,
 		/// <summary><c>JAE rel8</c><br/>
 		/// <br/>
-		/// <c>73 cb</c><br/>
+		/// <c>o64 73 cb</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -1384,7 +1384,7 @@ namespace Iced.Intel {
 		Je_rel8_32 = 172,
 		/// <summary><c>JE rel8</c><br/>
 		/// <br/>
-		/// <c>74 cb</c><br/>
+		/// <c>o64 74 cb</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -1408,7 +1408,7 @@ namespace Iced.Intel {
 		Jne_rel8_32 = 175,
 		/// <summary><c>JNE rel8</c><br/>
 		/// <br/>
-		/// <c>75 cb</c><br/>
+		/// <c>o64 75 cb</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -1432,7 +1432,7 @@ namespace Iced.Intel {
 		Jbe_rel8_32 = 178,
 		/// <summary><c>JBE rel8</c><br/>
 		/// <br/>
-		/// <c>76 cb</c><br/>
+		/// <c>o64 76 cb</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -1456,7 +1456,7 @@ namespace Iced.Intel {
 		Ja_rel8_32 = 181,
 		/// <summary><c>JA rel8</c><br/>
 		/// <br/>
-		/// <c>77 cb</c><br/>
+		/// <c>o64 77 cb</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -1480,7 +1480,7 @@ namespace Iced.Intel {
 		Js_rel8_32 = 184,
 		/// <summary><c>JS rel8</c><br/>
 		/// <br/>
-		/// <c>78 cb</c><br/>
+		/// <c>o64 78 cb</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -1504,7 +1504,7 @@ namespace Iced.Intel {
 		Jns_rel8_32 = 187,
 		/// <summary><c>JNS rel8</c><br/>
 		/// <br/>
-		/// <c>79 cb</c><br/>
+		/// <c>o64 79 cb</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -1528,7 +1528,7 @@ namespace Iced.Intel {
 		Jp_rel8_32 = 190,
 		/// <summary><c>JP rel8</c><br/>
 		/// <br/>
-		/// <c>7A cb</c><br/>
+		/// <c>o64 7A cb</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -1552,7 +1552,7 @@ namespace Iced.Intel {
 		Jnp_rel8_32 = 193,
 		/// <summary><c>JNP rel8</c><br/>
 		/// <br/>
-		/// <c>7B cb</c><br/>
+		/// <c>o64 7B cb</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -1576,7 +1576,7 @@ namespace Iced.Intel {
 		Jl_rel8_32 = 196,
 		/// <summary><c>JL rel8</c><br/>
 		/// <br/>
-		/// <c>7C cb</c><br/>
+		/// <c>o64 7C cb</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -1600,7 +1600,7 @@ namespace Iced.Intel {
 		Jge_rel8_32 = 199,
 		/// <summary><c>JGE rel8</c><br/>
 		/// <br/>
-		/// <c>7D cb</c><br/>
+		/// <c>o64 7D cb</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -1624,7 +1624,7 @@ namespace Iced.Intel {
 		Jle_rel8_32 = 202,
 		/// <summary><c>JLE rel8</c><br/>
 		/// <br/>
-		/// <c>7E cb</c><br/>
+		/// <c>o64 7E cb</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -1648,7 +1648,7 @@ namespace Iced.Intel {
 		Jg_rel8_32 = 205,
 		/// <summary><c>JG rel8</c><br/>
 		/// <br/>
-		/// <c>7F cb</c><br/>
+		/// <c>o64 7F cb</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -1736,7 +1736,7 @@ namespace Iced.Intel {
 		Add_rm32_imm32 = 216,
 		/// <summary><c>ADD r/m64, imm32</c><br/>
 		/// <br/>
-		/// <c>REX.W 81 /0 id</c><br/>
+		/// <c>o64 81 /0 id</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -1760,7 +1760,7 @@ namespace Iced.Intel {
 		Or_rm32_imm32 = 219,
 		/// <summary><c>OR r/m64, imm32</c><br/>
 		/// <br/>
-		/// <c>REX.W 81 /1 id</c><br/>
+		/// <c>o64 81 /1 id</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -1784,7 +1784,7 @@ namespace Iced.Intel {
 		Adc_rm32_imm32 = 222,
 		/// <summary><c>ADC r/m64, imm32</c><br/>
 		/// <br/>
-		/// <c>REX.W 81 /2 id</c><br/>
+		/// <c>o64 81 /2 id</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -1808,7 +1808,7 @@ namespace Iced.Intel {
 		Sbb_rm32_imm32 = 225,
 		/// <summary><c>SBB r/m64, imm32</c><br/>
 		/// <br/>
-		/// <c>REX.W 81 /3 id</c><br/>
+		/// <c>o64 81 /3 id</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -1832,7 +1832,7 @@ namespace Iced.Intel {
 		And_rm32_imm32 = 228,
 		/// <summary><c>AND r/m64, imm32</c><br/>
 		/// <br/>
-		/// <c>REX.W 81 /4 id</c><br/>
+		/// <c>o64 81 /4 id</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -1856,7 +1856,7 @@ namespace Iced.Intel {
 		Sub_rm32_imm32 = 231,
 		/// <summary><c>SUB r/m64, imm32</c><br/>
 		/// <br/>
-		/// <c>REX.W 81 /5 id</c><br/>
+		/// <c>o64 81 /5 id</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -1880,7 +1880,7 @@ namespace Iced.Intel {
 		Xor_rm32_imm32 = 234,
 		/// <summary><c>XOR r/m64, imm32</c><br/>
 		/// <br/>
-		/// <c>REX.W 81 /6 id</c><br/>
+		/// <c>o64 81 /6 id</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -1904,7 +1904,7 @@ namespace Iced.Intel {
 		Cmp_rm32_imm32 = 237,
 		/// <summary><c>CMP r/m64, imm32</c><br/>
 		/// <br/>
-		/// <c>REX.W 81 /7 id</c><br/>
+		/// <c>o64 81 /7 id</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -1992,7 +1992,7 @@ namespace Iced.Intel {
 		Add_rm32_imm8 = 248,
 		/// <summary><c>ADD r/m64, imm8</c><br/>
 		/// <br/>
-		/// <c>REX.W 83 /0 ib</c><br/>
+		/// <c>o64 83 /0 ib</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -2016,7 +2016,7 @@ namespace Iced.Intel {
 		Or_rm32_imm8 = 251,
 		/// <summary><c>OR r/m64, imm8</c><br/>
 		/// <br/>
-		/// <c>REX.W 83 /1 ib</c><br/>
+		/// <c>o64 83 /1 ib</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -2040,7 +2040,7 @@ namespace Iced.Intel {
 		Adc_rm32_imm8 = 254,
 		/// <summary><c>ADC r/m64, imm8</c><br/>
 		/// <br/>
-		/// <c>REX.W 83 /2 ib</c><br/>
+		/// <c>o64 83 /2 ib</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -2064,7 +2064,7 @@ namespace Iced.Intel {
 		Sbb_rm32_imm8 = 257,
 		/// <summary><c>SBB r/m64, imm8</c><br/>
 		/// <br/>
-		/// <c>REX.W 83 /3 ib</c><br/>
+		/// <c>o64 83 /3 ib</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -2088,7 +2088,7 @@ namespace Iced.Intel {
 		And_rm32_imm8 = 260,
 		/// <summary><c>AND r/m64, imm8</c><br/>
 		/// <br/>
-		/// <c>REX.W 83 /4 ib</c><br/>
+		/// <c>o64 83 /4 ib</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -2112,7 +2112,7 @@ namespace Iced.Intel {
 		Sub_rm32_imm8 = 263,
 		/// <summary><c>SUB r/m64, imm8</c><br/>
 		/// <br/>
-		/// <c>REX.W 83 /5 ib</c><br/>
+		/// <c>o64 83 /5 ib</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -2136,7 +2136,7 @@ namespace Iced.Intel {
 		Xor_rm32_imm8 = 266,
 		/// <summary><c>XOR r/m64, imm8</c><br/>
 		/// <br/>
-		/// <c>REX.W 83 /6 ib</c><br/>
+		/// <c>o64 83 /6 ib</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -2160,7 +2160,7 @@ namespace Iced.Intel {
 		Cmp_rm32_imm8 = 269,
 		/// <summary><c>CMP r/m64, imm8</c><br/>
 		/// <br/>
-		/// <c>REX.W 83 /7 ib</c><br/>
+		/// <c>o64 83 /7 ib</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -2192,7 +2192,7 @@ namespace Iced.Intel {
 		Test_rm32_r32 = 273,
 		/// <summary><c>TEST r/m64, r64</c><br/>
 		/// <br/>
-		/// <c>REX.W 85 /r</c><br/>
+		/// <c>o64 85 /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -2224,7 +2224,7 @@ namespace Iced.Intel {
 		Xchg_rm32_r32 = 277,
 		/// <summary><c>XCHG r/m64, r64</c><br/>
 		/// <br/>
-		/// <c>REX.W 87 /r</c><br/>
+		/// <c>o64 87 /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -2256,7 +2256,7 @@ namespace Iced.Intel {
 		Mov_rm32_r32 = 281,
 		/// <summary><c>MOV r/m64, r64</c><br/>
 		/// <br/>
-		/// <c>REX.W 89 /r</c><br/>
+		/// <c>o64 89 /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -2288,7 +2288,7 @@ namespace Iced.Intel {
 		Mov_r32_rm32 = 285,
 		/// <summary><c>MOV r64, r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W 8B /r</c><br/>
+		/// <c>o64 8B /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -2312,7 +2312,7 @@ namespace Iced.Intel {
 		Mov_r32m16_Sreg = 288,
 		/// <summary><c>MOV r64/m16, Sreg</c><br/>
 		/// <br/>
-		/// <c>REX.W 8C /r</c><br/>
+		/// <c>o64 8C /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -2336,7 +2336,7 @@ namespace Iced.Intel {
 		Lea_r32_m = 291,
 		/// <summary><c>LEA r64, m</c><br/>
 		/// <br/>
-		/// <c>REX.W 8D /r</c><br/>
+		/// <c>o64 8D /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -2360,7 +2360,7 @@ namespace Iced.Intel {
 		Mov_Sreg_r32m16 = 294,
 		/// <summary><c>MOV Sreg, r64/m16</c><br/>
 		/// <br/>
-		/// <c>REX.W 8E /r</c><br/>
+		/// <c>o64 8E /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -2384,7 +2384,7 @@ namespace Iced.Intel {
 		Pop_rm32 = 297,
 		/// <summary><c>POP r/m64</c><br/>
 		/// <br/>
-		/// <c>8F /0</c><br/>
+		/// <c>o64 8F /0</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -2408,7 +2408,7 @@ namespace Iced.Intel {
 		Nopd = 300,
 		/// <summary><c>NOP</c><br/>
 		/// <br/>
-		/// <c>REX.W 90</c><br/>
+		/// <c>o64 90</c><br/>
 		/// <br/>
 		/// <c>8086+</c><br/>
 		/// <br/>
@@ -2432,7 +2432,7 @@ namespace Iced.Intel {
 		Xchg_r32_EAX = 303,
 		/// <summary><c>XCHG r64, RAX</c><br/>
 		/// <br/>
-		/// <c>REX.W 90+ro</c><br/>
+		/// <c>o64 90+ro</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -2464,7 +2464,7 @@ namespace Iced.Intel {
 		Cwde = 307,
 		/// <summary><c>CDQE</c><br/>
 		/// <br/>
-		/// <c>REX.W 98</c><br/>
+		/// <c>o64 98</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -2488,7 +2488,7 @@ namespace Iced.Intel {
 		Cdq = 310,
 		/// <summary><c>CQO</c><br/>
 		/// <br/>
-		/// <c>REX.W 99</c><br/>
+		/// <c>o64 99</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -2536,7 +2536,7 @@ namespace Iced.Intel {
 		Pushfd = 316,
 		/// <summary><c>PUSHFQ</c><br/>
 		/// <br/>
-		/// <c>9C</c><br/>
+		/// <c>o64 9C</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -2560,7 +2560,7 @@ namespace Iced.Intel {
 		Popfd = 319,
 		/// <summary><c>POPFQ</c><br/>
 		/// <br/>
-		/// <c>9D</c><br/>
+		/// <c>o64 9D</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -2608,7 +2608,7 @@ namespace Iced.Intel {
 		Mov_EAX_moffs32 = 325,
 		/// <summary><c>MOV RAX, moffs64</c><br/>
 		/// <br/>
-		/// <c>REX.W A1 mo</c><br/>
+		/// <c>o64 A1 mo</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -2640,7 +2640,7 @@ namespace Iced.Intel {
 		Mov_moffs32_EAX = 329,
 		/// <summary><c>MOV moffs64, RAX</c><br/>
 		/// <br/>
-		/// <c>REX.W A3 mo</c><br/>
+		/// <c>o64 A3 mo</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -2672,7 +2672,7 @@ namespace Iced.Intel {
 		Movsd_m32_m32 = 333,
 		/// <summary><c>MOVSQ</c><br/>
 		/// <br/>
-		/// <c>REX.W A5</c><br/>
+		/// <c>o64 A5</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -2704,7 +2704,7 @@ namespace Iced.Intel {
 		Cmpsd_m32_m32 = 337,
 		/// <summary><c>CMPSQ</c><br/>
 		/// <br/>
-		/// <c>REX.W A7</c><br/>
+		/// <c>o64 A7</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -2736,7 +2736,7 @@ namespace Iced.Intel {
 		Test_EAX_imm32 = 341,
 		/// <summary><c>TEST RAX, imm32</c><br/>
 		/// <br/>
-		/// <c>REX.W A9 id</c><br/>
+		/// <c>o64 A9 id</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -2768,7 +2768,7 @@ namespace Iced.Intel {
 		Stosd_m32_EAX = 345,
 		/// <summary><c>STOSQ</c><br/>
 		/// <br/>
-		/// <c>REX.W AB</c><br/>
+		/// <c>o64 AB</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -2800,7 +2800,7 @@ namespace Iced.Intel {
 		Lodsd_EAX_m32 = 349,
 		/// <summary><c>LODSQ</c><br/>
 		/// <br/>
-		/// <c>REX.W AD</c><br/>
+		/// <c>o64 AD</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -2832,7 +2832,7 @@ namespace Iced.Intel {
 		Scasd_EAX_m32 = 353,
 		/// <summary><c>SCASQ</c><br/>
 		/// <br/>
-		/// <c>REX.W AF</c><br/>
+		/// <c>o64 AF</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -2864,7 +2864,7 @@ namespace Iced.Intel {
 		Mov_r32_imm32 = 357,
 		/// <summary><c>MOV r64, imm64</c><br/>
 		/// <br/>
-		/// <c>REX.W B8+ro io</c><br/>
+		/// <c>o64 B8+ro io</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -2952,7 +2952,7 @@ namespace Iced.Intel {
 		Rol_rm32_imm8 = 368,
 		/// <summary><c>ROL r/m64, imm8</c><br/>
 		/// <br/>
-		/// <c>REX.W C1 /0 ib</c><br/>
+		/// <c>o64 C1 /0 ib</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -2976,7 +2976,7 @@ namespace Iced.Intel {
 		Ror_rm32_imm8 = 371,
 		/// <summary><c>ROR r/m64, imm8</c><br/>
 		/// <br/>
-		/// <c>REX.W C1 /1 ib</c><br/>
+		/// <c>o64 C1 /1 ib</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -3000,7 +3000,7 @@ namespace Iced.Intel {
 		Rcl_rm32_imm8 = 374,
 		/// <summary><c>RCL r/m64, imm8</c><br/>
 		/// <br/>
-		/// <c>REX.W C1 /2 ib</c><br/>
+		/// <c>o64 C1 /2 ib</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -3024,7 +3024,7 @@ namespace Iced.Intel {
 		Rcr_rm32_imm8 = 377,
 		/// <summary><c>RCR r/m64, imm8</c><br/>
 		/// <br/>
-		/// <c>REX.W C1 /3 ib</c><br/>
+		/// <c>o64 C1 /3 ib</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -3048,7 +3048,7 @@ namespace Iced.Intel {
 		Shl_rm32_imm8 = 380,
 		/// <summary><c>SHL r/m64, imm8</c><br/>
 		/// <br/>
-		/// <c>REX.W C1 /4 ib</c><br/>
+		/// <c>o64 C1 /4 ib</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -3072,7 +3072,7 @@ namespace Iced.Intel {
 		Shr_rm32_imm8 = 383,
 		/// <summary><c>SHR r/m64, imm8</c><br/>
 		/// <br/>
-		/// <c>REX.W C1 /5 ib</c><br/>
+		/// <c>o64 C1 /5 ib</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -3096,7 +3096,7 @@ namespace Iced.Intel {
 		Sal_rm32_imm8 = 386,
 		/// <summary><c>SAL r/m64, imm8</c><br/>
 		/// <br/>
-		/// <c>REX.W C1 /6 ib</c><br/>
+		/// <c>o64 C1 /6 ib</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -3120,7 +3120,7 @@ namespace Iced.Intel {
 		Sar_rm32_imm8 = 389,
 		/// <summary><c>SAR r/m64, imm8</c><br/>
 		/// <br/>
-		/// <c>REX.W C1 /7 ib</c><br/>
+		/// <c>o64 C1 /7 ib</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -3144,7 +3144,7 @@ namespace Iced.Intel {
 		Retnd_imm16 = 392,
 		/// <summary><c>RET imm16</c><br/>
 		/// <br/>
-		/// <c>C2 iw</c><br/>
+		/// <c>o64 C2 iw</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -3168,7 +3168,7 @@ namespace Iced.Intel {
 		Retnd = 395,
 		/// <summary><c>RET</c><br/>
 		/// <br/>
-		/// <c>C3</c><br/>
+		/// <c>o64 C3</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -3240,7 +3240,7 @@ namespace Iced.Intel {
 		Mov_rm32_imm32 = 404,
 		/// <summary><c>MOV r/m64, imm32</c><br/>
 		/// <br/>
-		/// <c>REX.W C7 /0 id</c><br/>
+		/// <c>o64 C7 /0 id</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -3280,7 +3280,7 @@ namespace Iced.Intel {
 		Enterd_imm16_imm8 = 409,
 		/// <summary><c>ENTER imm16, imm8</c><br/>
 		/// <br/>
-		/// <c>C8 iw ib</c><br/>
+		/// <c>o64 C8 iw ib</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -3304,7 +3304,7 @@ namespace Iced.Intel {
 		Leaved = 412,
 		/// <summary><c>LEAVE</c><br/>
 		/// <br/>
-		/// <c>C9</c><br/>
+		/// <c>o64 C9</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -3328,7 +3328,7 @@ namespace Iced.Intel {
 		Retfd_imm16 = 415,
 		/// <summary><c>RETF imm16</c><br/>
 		/// <br/>
-		/// <c>REX.W CA iw</c><br/>
+		/// <c>o64 CA iw</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -3352,7 +3352,7 @@ namespace Iced.Intel {
 		Retfd = 418,
 		/// <summary><c>RETF</c><br/>
 		/// <br/>
-		/// <c>REX.W CB</c><br/>
+		/// <c>o64 CB</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -3400,7 +3400,7 @@ namespace Iced.Intel {
 		Iretd = 424,
 		/// <summary><c>IRETQ</c><br/>
 		/// <br/>
-		/// <c>REX.W CF</c><br/>
+		/// <c>o64 CF</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -3488,7 +3488,7 @@ namespace Iced.Intel {
 		Rol_rm32_1 = 435,
 		/// <summary><c>ROL r/m64, 1</c><br/>
 		/// <br/>
-		/// <c>REX.W D1 /0</c><br/>
+		/// <c>o64 D1 /0</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -3512,7 +3512,7 @@ namespace Iced.Intel {
 		Ror_rm32_1 = 438,
 		/// <summary><c>ROR r/m64, 1</c><br/>
 		/// <br/>
-		/// <c>REX.W D1 /1</c><br/>
+		/// <c>o64 D1 /1</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -3536,7 +3536,7 @@ namespace Iced.Intel {
 		Rcl_rm32_1 = 441,
 		/// <summary><c>RCL r/m64, 1</c><br/>
 		/// <br/>
-		/// <c>REX.W D1 /2</c><br/>
+		/// <c>o64 D1 /2</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -3560,7 +3560,7 @@ namespace Iced.Intel {
 		Rcr_rm32_1 = 444,
 		/// <summary><c>RCR r/m64, 1</c><br/>
 		/// <br/>
-		/// <c>REX.W D1 /3</c><br/>
+		/// <c>o64 D1 /3</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -3584,7 +3584,7 @@ namespace Iced.Intel {
 		Shl_rm32_1 = 447,
 		/// <summary><c>SHL r/m64, 1</c><br/>
 		/// <br/>
-		/// <c>REX.W D1 /4</c><br/>
+		/// <c>o64 D1 /4</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -3608,7 +3608,7 @@ namespace Iced.Intel {
 		Shr_rm32_1 = 450,
 		/// <summary><c>SHR r/m64, 1</c><br/>
 		/// <br/>
-		/// <c>REX.W D1 /5</c><br/>
+		/// <c>o64 D1 /5</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -3632,7 +3632,7 @@ namespace Iced.Intel {
 		Sal_rm32_1 = 453,
 		/// <summary><c>SAL r/m64, 1</c><br/>
 		/// <br/>
-		/// <c>REX.W D1 /6</c><br/>
+		/// <c>o64 D1 /6</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -3656,7 +3656,7 @@ namespace Iced.Intel {
 		Sar_rm32_1 = 456,
 		/// <summary><c>SAR r/m64, 1</c><br/>
 		/// <br/>
-		/// <c>REX.W D1 /7</c><br/>
+		/// <c>o64 D1 /7</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -3744,7 +3744,7 @@ namespace Iced.Intel {
 		Rol_rm32_CL = 467,
 		/// <summary><c>ROL r/m64, CL</c><br/>
 		/// <br/>
-		/// <c>REX.W D3 /0</c><br/>
+		/// <c>o64 D3 /0</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -3768,7 +3768,7 @@ namespace Iced.Intel {
 		Ror_rm32_CL = 470,
 		/// <summary><c>ROR r/m64, CL</c><br/>
 		/// <br/>
-		/// <c>REX.W D3 /1</c><br/>
+		/// <c>o64 D3 /1</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -3792,7 +3792,7 @@ namespace Iced.Intel {
 		Rcl_rm32_CL = 473,
 		/// <summary><c>RCL r/m64, CL</c><br/>
 		/// <br/>
-		/// <c>REX.W D3 /2</c><br/>
+		/// <c>o64 D3 /2</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -3816,7 +3816,7 @@ namespace Iced.Intel {
 		Rcr_rm32_CL = 476,
 		/// <summary><c>RCR r/m64, CL</c><br/>
 		/// <br/>
-		/// <c>REX.W D3 /3</c><br/>
+		/// <c>o64 D3 /3</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -3840,7 +3840,7 @@ namespace Iced.Intel {
 		Shl_rm32_CL = 479,
 		/// <summary><c>SHL r/m64, CL</c><br/>
 		/// <br/>
-		/// <c>REX.W D3 /4</c><br/>
+		/// <c>o64 D3 /4</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -3864,7 +3864,7 @@ namespace Iced.Intel {
 		Shr_rm32_CL = 482,
 		/// <summary><c>SHR r/m64, CL</c><br/>
 		/// <br/>
-		/// <c>REX.W D3 /5</c><br/>
+		/// <c>o64 D3 /5</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -3888,7 +3888,7 @@ namespace Iced.Intel {
 		Sal_rm32_CL = 485,
 		/// <summary><c>SAL r/m64, CL</c><br/>
 		/// <br/>
-		/// <c>REX.W D3 /6</c><br/>
+		/// <c>o64 D3 /6</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -3912,7 +3912,7 @@ namespace Iced.Intel {
 		Sar_rm32_CL = 488,
 		/// <summary><c>SAR r/m64, CL</c><br/>
 		/// <br/>
-		/// <c>REX.W D3 /7</c><br/>
+		/// <c>o64 D3 /7</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -4181,7 +4181,7 @@ namespace Iced.Intel {
 		/// <c>8087+</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		Fld_st0_sti = 522,
+		Fld_sti = 522,
 		/// <summary><c>FXCH ST(i)</c><br/>
 		/// <br/>
 		/// <c>D9 C8+i</c><br/>
@@ -5288,7 +5288,7 @@ namespace Iced.Intel {
 		Loopne_rel8_32_ECX = 660,
 		/// <summary><c>LOOPNE rel8</c><br/>
 		/// <br/>
-		/// <c>a32 E0 cb</c><br/>
+		/// <c>a32 o64 E0 cb</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -5296,7 +5296,7 @@ namespace Iced.Intel {
 		Loopne_rel8_64_ECX = 661,
 		/// <summary><c>LOOPNE rel8</c><br/>
 		/// <br/>
-		/// <c>o16 E0 cb</c><br/>
+		/// <c>a64 o16 E0 cb</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -5304,7 +5304,7 @@ namespace Iced.Intel {
 		Loopne_rel8_16_RCX = 662,
 		/// <summary><c>LOOPNE rel8</c><br/>
 		/// <br/>
-		/// <c>E0 cb</c><br/>
+		/// <c>a64 o64 E0 cb</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -5344,7 +5344,7 @@ namespace Iced.Intel {
 		Loope_rel8_32_ECX = 667,
 		/// <summary><c>LOOPE rel8</c><br/>
 		/// <br/>
-		/// <c>a32 E1 cb</c><br/>
+		/// <c>a32 o64 E1 cb</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -5352,7 +5352,7 @@ namespace Iced.Intel {
 		Loope_rel8_64_ECX = 668,
 		/// <summary><c>LOOPE rel8</c><br/>
 		/// <br/>
-		/// <c>o16 E1 cb</c><br/>
+		/// <c>a64 o16 E1 cb</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -5360,7 +5360,7 @@ namespace Iced.Intel {
 		Loope_rel8_16_RCX = 669,
 		/// <summary><c>LOOPE rel8</c><br/>
 		/// <br/>
-		/// <c>E1 cb</c><br/>
+		/// <c>a64 o64 E1 cb</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -5400,7 +5400,7 @@ namespace Iced.Intel {
 		Loop_rel8_32_ECX = 674,
 		/// <summary><c>LOOP rel8</c><br/>
 		/// <br/>
-		/// <c>a32 E2 cb</c><br/>
+		/// <c>a32 o64 E2 cb</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -5408,7 +5408,7 @@ namespace Iced.Intel {
 		Loop_rel8_64_ECX = 675,
 		/// <summary><c>LOOP rel8</c><br/>
 		/// <br/>
-		/// <c>o16 E2 cb</c><br/>
+		/// <c>a64 o16 E2 cb</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -5416,7 +5416,7 @@ namespace Iced.Intel {
 		Loop_rel8_16_RCX = 676,
 		/// <summary><c>LOOP rel8</c><br/>
 		/// <br/>
-		/// <c>E2 cb</c><br/>
+		/// <c>a64 o64 E2 cb</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -5456,7 +5456,7 @@ namespace Iced.Intel {
 		Jecxz_rel8_32 = 681,
 		/// <summary><c>JECXZ rel8</c><br/>
 		/// <br/>
-		/// <c>a32 E3 cb</c><br/>
+		/// <c>a32 o64 E3 cb</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -5464,7 +5464,7 @@ namespace Iced.Intel {
 		Jecxz_rel8_64 = 682,
 		/// <summary><c>JRCXZ rel8</c><br/>
 		/// <br/>
-		/// <c>o16 E3 cb</c><br/>
+		/// <c>a64 o16 E3 cb</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -5472,7 +5472,7 @@ namespace Iced.Intel {
 		Jrcxz_rel8_16 = 683,
 		/// <summary><c>JRCXZ rel8</c><br/>
 		/// <br/>
-		/// <c>E3 cb</c><br/>
+		/// <c>a64 o64 E3 cb</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -5544,7 +5544,7 @@ namespace Iced.Intel {
 		Call_rel32_32 = 692,
 		/// <summary><c>CALL rel32</c><br/>
 		/// <br/>
-		/// <c>E8 cd</c><br/>
+		/// <c>o64 E8 cd</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -5568,7 +5568,7 @@ namespace Iced.Intel {
 		Jmp_rel32_32 = 695,
 		/// <summary><c>JMP rel32</c><br/>
 		/// <br/>
-		/// <c>E9 cd</c><br/>
+		/// <c>o64 E9 cd</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -5608,7 +5608,7 @@ namespace Iced.Intel {
 		Jmp_rel8_32 = 700,
 		/// <summary><c>JMP rel8</c><br/>
 		/// <br/>
-		/// <c>EB cb</c><br/>
+		/// <c>o64 EB cb</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -5768,7 +5768,7 @@ namespace Iced.Intel {
 		Test_rm32_imm32 = 720,
 		/// <summary><c>TEST r/m64, imm32</c><br/>
 		/// <br/>
-		/// <c>REX.W F7 /0 id</c><br/>
+		/// <c>o64 F7 /0 id</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -5792,7 +5792,7 @@ namespace Iced.Intel {
 		Test_rm32_imm32_F7r1 = 723,
 		/// <summary><c>TEST r/m64, imm32</c><br/>
 		/// <br/>
-		/// <c>REX.W F7 /1 id</c><br/>
+		/// <c>o64 F7 /1 id</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -5816,7 +5816,7 @@ namespace Iced.Intel {
 		Not_rm32 = 726,
 		/// <summary><c>NOT r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W F7 /2</c><br/>
+		/// <c>o64 F7 /2</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -5840,7 +5840,7 @@ namespace Iced.Intel {
 		Neg_rm32 = 729,
 		/// <summary><c>NEG r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W F7 /3</c><br/>
+		/// <c>o64 F7 /3</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -5864,7 +5864,7 @@ namespace Iced.Intel {
 		Mul_rm32 = 732,
 		/// <summary><c>MUL r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W F7 /4</c><br/>
+		/// <c>o64 F7 /4</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -5888,7 +5888,7 @@ namespace Iced.Intel {
 		Imul_rm32 = 735,
 		/// <summary><c>IMUL r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W F7 /5</c><br/>
+		/// <c>o64 F7 /5</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -5912,7 +5912,7 @@ namespace Iced.Intel {
 		Div_rm32 = 738,
 		/// <summary><c>DIV r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W F7 /6</c><br/>
+		/// <c>o64 F7 /6</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -5936,7 +5936,7 @@ namespace Iced.Intel {
 		Idiv_rm32 = 741,
 		/// <summary><c>IDIV r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W F7 /7</c><br/>
+		/// <c>o64 F7 /7</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -6024,7 +6024,7 @@ namespace Iced.Intel {
 		Inc_rm32 = 752,
 		/// <summary><c>INC r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W FF /0</c><br/>
+		/// <c>o64 FF /0</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -6048,7 +6048,7 @@ namespace Iced.Intel {
 		Dec_rm32 = 755,
 		/// <summary><c>DEC r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W FF /1</c><br/>
+		/// <c>o64 FF /1</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -6072,7 +6072,7 @@ namespace Iced.Intel {
 		Call_rm32 = 758,
 		/// <summary><c>CALL r/m64</c><br/>
 		/// <br/>
-		/// <c>FF /2</c><br/>
+		/// <c>o64 FF /2</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -6096,7 +6096,7 @@ namespace Iced.Intel {
 		Call_m1632 = 761,
 		/// <summary><c>CALL m16:64</c><br/>
 		/// <br/>
-		/// <c>REX.W FF /3</c><br/>
+		/// <c>o64 FF /3</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -6120,7 +6120,7 @@ namespace Iced.Intel {
 		Jmp_rm32 = 764,
 		/// <summary><c>JMP r/m64</c><br/>
 		/// <br/>
-		/// <c>FF /4</c><br/>
+		/// <c>o64 FF /4</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -6144,7 +6144,7 @@ namespace Iced.Intel {
 		Jmp_m1632 = 767,
 		/// <summary><c>JMP m16:64</c><br/>
 		/// <br/>
-		/// <c>REX.W FF /5</c><br/>
+		/// <c>o64 FF /5</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -6168,7 +6168,7 @@ namespace Iced.Intel {
 		Push_rm32 = 770,
 		/// <summary><c>PUSH r/m64</c><br/>
 		/// <br/>
-		/// <c>FF /6</c><br/>
+		/// <c>o64 FF /6</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -6192,7 +6192,7 @@ namespace Iced.Intel {
 		Sldt_r32m16 = 773,
 		/// <summary><c>SLDT r64/m16</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 00 /0</c><br/>
+		/// <c>o64 0F 00 /0</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -6216,7 +6216,7 @@ namespace Iced.Intel {
 		Str_r32m16 = 776,
 		/// <summary><c>STR r64/m16</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 00 /1</c><br/>
+		/// <c>o64 0F 00 /1</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -6240,7 +6240,7 @@ namespace Iced.Intel {
 		Lldt_r32m16 = 779,
 		/// <summary><c>LLDT r64/m16</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 00 /2</c><br/>
+		/// <c>o64 0F 00 /2</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -6264,7 +6264,7 @@ namespace Iced.Intel {
 		Ltr_r32m16 = 782,
 		/// <summary><c>LTR r64/m16</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 00 /3</c><br/>
+		/// <c>o64 0F 00 /3</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -6288,7 +6288,7 @@ namespace Iced.Intel {
 		Verr_r32m16 = 785,
 		/// <summary><c>VERR r64/m16</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 00 /4</c><br/>
+		/// <c>o64 0F 00 /4</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -6312,7 +6312,7 @@ namespace Iced.Intel {
 		Verw_r32m16 = 788,
 		/// <summary><c>VERW r64/m16</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 00 /5</c><br/>
+		/// <c>o64 0F 00 /5</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -6448,7 +6448,7 @@ namespace Iced.Intel {
 		Smsw_r32m16 = 805,
 		/// <summary><c>SMSW r64/m16</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 01 /4</c><br/>
+		/// <c>o64 0F 01 /4</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -6480,7 +6480,7 @@ namespace Iced.Intel {
 		Lmsw_r32m16 = 809,
 		/// <summary><c>LMSW r64/m16</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 01 /6</c><br/>
+		/// <c>o64 0F 01 /6</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -6498,7 +6498,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>NP 0F 01 C0</c><br/>
 		/// <br/>
-		/// <c>ENCLV</c><br/>
+		/// <c>OSS</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		Enclv = 812,
@@ -6560,7 +6560,7 @@ namespace Iced.Intel {
 		Monitord = 819,
 		/// <summary><c>MONITOR</c><br/>
 		/// <br/>
-		/// <c>NP 0F 01 C8</c><br/>
+		/// <c>a64 NP 0F 01 C8</c><br/>
 		/// <br/>
 		/// <c>MONITOR</c><br/>
 		/// <br/>
@@ -6664,7 +6664,7 @@ namespace Iced.Intel {
 		Vmrund = 832,
 		/// <summary><c>VMRUN</c><br/>
 		/// <br/>
-		/// <c>0F 01 D8</c><br/>
+		/// <c>a64 0F 01 D8</c><br/>
 		/// <br/>
 		/// <c>SVM</c><br/>
 		/// <br/>
@@ -6696,7 +6696,7 @@ namespace Iced.Intel {
 		Vmloadd = 836,
 		/// <summary><c>VMLOAD</c><br/>
 		/// <br/>
-		/// <c>0F 01 DA</c><br/>
+		/// <c>a64 0F 01 DA</c><br/>
 		/// <br/>
 		/// <c>SVM</c><br/>
 		/// <br/>
@@ -6720,7 +6720,7 @@ namespace Iced.Intel {
 		Vmsaved = 839,
 		/// <summary><c>VMSAVE</c><br/>
 		/// <br/>
-		/// <c>0F 01 DB</c><br/>
+		/// <c>a64 0F 01 DB</c><br/>
 		/// <br/>
 		/// <c>SVM</c><br/>
 		/// <br/>
@@ -6730,7 +6730,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>0F 01 DC</c><br/>
 		/// <br/>
-		/// <c>SKINIT or SVML</c><br/>
+		/// <c>SKINIT or SVM</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		Stgi = 841,
@@ -6746,7 +6746,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>0F 01 DE</c><br/>
 		/// <br/>
-		/// <c>SKINIT or SVML</c><br/>
+		/// <c>SKINIT or SVM</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		Skinit = 843,
@@ -6768,7 +6768,7 @@ namespace Iced.Intel {
 		Invlpgad = 845,
 		/// <summary><c>INVLPGA</c><br/>
 		/// <br/>
-		/// <c>0F 01 DF</c><br/>
+		/// <c>a64 0F 01 DF</c><br/>
 		/// <br/>
 		/// <c>SVM</c><br/>
 		/// <br/>
@@ -6840,7 +6840,7 @@ namespace Iced.Intel {
 		Monitorxd = 854,
 		/// <summary><c>MONITORX</c><br/>
 		/// <br/>
-		/// <c>NP 0F 01 FA</c><br/>
+		/// <c>a64 NP 0F 01 FA</c><br/>
 		/// <br/>
 		/// <c>MONITORX</c><br/>
 		/// <br/>
@@ -6880,7 +6880,7 @@ namespace Iced.Intel {
 		Clzerod = 859,
 		/// <summary><c>CLZERO</c><br/>
 		/// <br/>
-		/// <c>0F 01 FC</c><br/>
+		/// <c>a64 0F 01 FC</c><br/>
 		/// <br/>
 		/// <c>CLZERO</c><br/>
 		/// <br/>
@@ -6912,7 +6912,7 @@ namespace Iced.Intel {
 		Lar_r32_r32m16 = 863,
 		/// <summary><c>LAR r64, r64/m16</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 02 /r</c><br/>
+		/// <c>o64 0F 02 /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -6936,7 +6936,7 @@ namespace Iced.Intel {
 		Lsl_r32_r32m16 = 866,
 		/// <summary><c>LSL r64, r64/m16</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 03 /r</c><br/>
+		/// <c>o64 0F 03 /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -6992,7 +6992,7 @@ namespace Iced.Intel {
 		Sysretd = 873,
 		/// <summary><c>SYSRETQ</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 07</c><br/>
+		/// <c>o64 0F 07</c><br/>
 		/// <br/>
 		/// <c>SYSCALL</c><br/>
 		/// <br/>
@@ -7045,7 +7045,7 @@ namespace Iced.Intel {
 		/// <c>CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		ReservedNop_rm16_r16_0F0D = 880,
+		Reservednop_rm16_r16_0F0D = 880,
 		/// <summary><c>RESERVEDNOP r/m32, r32</c><br/>
 		/// <br/>
 		/// <c>o32 0F 0D /r</c><br/>
@@ -7053,15 +7053,15 @@ namespace Iced.Intel {
 		/// <c>CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		ReservedNop_rm32_r32_0F0D = 881,
+		Reservednop_rm32_r32_0F0D = 881,
 		/// <summary><c>RESERVEDNOP r/m64, r64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 0D /r</c><br/>
+		/// <c>o64 0F 0D /r</c><br/>
 		/// <br/>
 		/// <c>CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B</c><br/>
 		/// <br/>
 		/// <c>64-bit</c></summary>
-		ReservedNop_rm64_r64_0F0D = 882,
+		Reservednop_rm64_r64_0F0D = 882,
 		/// <summary><c>PREFETCH m8</c><br/>
 		/// <br/>
 		/// <c>0F 0D /0</c><br/>
@@ -8077,7 +8077,7 @@ namespace Iced.Intel {
 		/// <c>CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		ReservedNop_rm16_r16_0F18 = 1009,
+		Reservednop_rm16_r16_0F18 = 1009,
 		/// <summary><c>RESERVEDNOP r/m32, r32</c><br/>
 		/// <br/>
 		/// <c>o32 0F 18 /r</c><br/>
@@ -8085,15 +8085,15 @@ namespace Iced.Intel {
 		/// <c>CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		ReservedNop_rm32_r32_0F18 = 1010,
+		Reservednop_rm32_r32_0F18 = 1010,
 		/// <summary><c>RESERVEDNOP r/m64, r64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 18 /r</c><br/>
+		/// <c>o64 0F 18 /r</c><br/>
 		/// <br/>
 		/// <c>CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B</c><br/>
 		/// <br/>
 		/// <c>64-bit</c></summary>
-		ReservedNop_rm64_r64_0F18 = 1011,
+		Reservednop_rm64_r64_0F18 = 1011,
 		/// <summary><c>RESERVEDNOP r/m16, r16</c><br/>
 		/// <br/>
 		/// <c>o16 0F 19 /r</c><br/>
@@ -8101,7 +8101,7 @@ namespace Iced.Intel {
 		/// <c>CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		ReservedNop_rm16_r16_0F19 = 1012,
+		Reservednop_rm16_r16_0F19 = 1012,
 		/// <summary><c>RESERVEDNOP r/m32, r32</c><br/>
 		/// <br/>
 		/// <c>o32 0F 19 /r</c><br/>
@@ -8109,15 +8109,15 @@ namespace Iced.Intel {
 		/// <c>CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		ReservedNop_rm32_r32_0F19 = 1013,
+		Reservednop_rm32_r32_0F19 = 1013,
 		/// <summary><c>RESERVEDNOP r/m64, r64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 19 /r</c><br/>
+		/// <c>o64 0F 19 /r</c><br/>
 		/// <br/>
 		/// <c>CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B</c><br/>
 		/// <br/>
 		/// <c>64-bit</c></summary>
-		ReservedNop_rm64_r64_0F19 = 1014,
+		Reservednop_rm64_r64_0F19 = 1014,
 		/// <summary><c>RESERVEDNOP r/m16, r16</c><br/>
 		/// <br/>
 		/// <c>o16 0F 1A /r</c><br/>
@@ -8125,7 +8125,7 @@ namespace Iced.Intel {
 		/// <c>CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		ReservedNop_rm16_r16_0F1A = 1015,
+		Reservednop_rm16_r16_0F1A = 1015,
 		/// <summary><c>RESERVEDNOP r/m32, r32</c><br/>
 		/// <br/>
 		/// <c>o32 0F 1A /r</c><br/>
@@ -8133,15 +8133,15 @@ namespace Iced.Intel {
 		/// <c>CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		ReservedNop_rm32_r32_0F1A = 1016,
+		Reservednop_rm32_r32_0F1A = 1016,
 		/// <summary><c>RESERVEDNOP r/m64, r64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 1A /r</c><br/>
+		/// <c>o64 0F 1A /r</c><br/>
 		/// <br/>
 		/// <c>CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B</c><br/>
 		/// <br/>
 		/// <c>64-bit</c></summary>
-		ReservedNop_rm64_r64_0F1A = 1017,
+		Reservednop_rm64_r64_0F1A = 1017,
 		/// <summary><c>RESERVEDNOP r/m16, r16</c><br/>
 		/// <br/>
 		/// <c>o16 0F 1B /r</c><br/>
@@ -8149,7 +8149,7 @@ namespace Iced.Intel {
 		/// <c>CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		ReservedNop_rm16_r16_0F1B = 1018,
+		Reservednop_rm16_r16_0F1B = 1018,
 		/// <summary><c>RESERVEDNOP r/m32, r32</c><br/>
 		/// <br/>
 		/// <c>o32 0F 1B /r</c><br/>
@@ -8157,15 +8157,15 @@ namespace Iced.Intel {
 		/// <c>CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		ReservedNop_rm32_r32_0F1B = 1019,
+		Reservednop_rm32_r32_0F1B = 1019,
 		/// <summary><c>RESERVEDNOP r/m64, r64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 1B /r</c><br/>
+		/// <c>o64 0F 1B /r</c><br/>
 		/// <br/>
 		/// <c>CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B</c><br/>
 		/// <br/>
 		/// <c>64-bit</c></summary>
-		ReservedNop_rm64_r64_0F1B = 1020,
+		Reservednop_rm64_r64_0F1B = 1020,
 		/// <summary><c>RESERVEDNOP r/m16, r16</c><br/>
 		/// <br/>
 		/// <c>o16 0F 1C /r</c><br/>
@@ -8173,7 +8173,7 @@ namespace Iced.Intel {
 		/// <c>CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		ReservedNop_rm16_r16_0F1C = 1021,
+		Reservednop_rm16_r16_0F1C = 1021,
 		/// <summary><c>RESERVEDNOP r/m32, r32</c><br/>
 		/// <br/>
 		/// <c>o32 0F 1C /r</c><br/>
@@ -8181,15 +8181,15 @@ namespace Iced.Intel {
 		/// <c>CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		ReservedNop_rm32_r32_0F1C = 1022,
+		Reservednop_rm32_r32_0F1C = 1022,
 		/// <summary><c>RESERVEDNOP r/m64, r64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 1C /r</c><br/>
+		/// <c>o64 0F 1C /r</c><br/>
 		/// <br/>
 		/// <c>CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B</c><br/>
 		/// <br/>
 		/// <c>64-bit</c></summary>
-		ReservedNop_rm64_r64_0F1C = 1023,
+		Reservednop_rm64_r64_0F1C = 1023,
 		/// <summary><c>RESERVEDNOP r/m16, r16</c><br/>
 		/// <br/>
 		/// <c>o16 0F 1D /r</c><br/>
@@ -8197,7 +8197,7 @@ namespace Iced.Intel {
 		/// <c>CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		ReservedNop_rm16_r16_0F1D = 1024,
+		Reservednop_rm16_r16_0F1D = 1024,
 		/// <summary><c>RESERVEDNOP r/m32, r32</c><br/>
 		/// <br/>
 		/// <c>o32 0F 1D /r</c><br/>
@@ -8205,15 +8205,15 @@ namespace Iced.Intel {
 		/// <c>CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		ReservedNop_rm32_r32_0F1D = 1025,
+		Reservednop_rm32_r32_0F1D = 1025,
 		/// <summary><c>RESERVEDNOP r/m64, r64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 1D /r</c><br/>
+		/// <c>o64 0F 1D /r</c><br/>
 		/// <br/>
 		/// <c>CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B</c><br/>
 		/// <br/>
 		/// <c>64-bit</c></summary>
-		ReservedNop_rm64_r64_0F1D = 1026,
+		Reservednop_rm64_r64_0F1D = 1026,
 		/// <summary><c>RESERVEDNOP r/m16, r16</c><br/>
 		/// <br/>
 		/// <c>o16 0F 1E /r</c><br/>
@@ -8221,7 +8221,7 @@ namespace Iced.Intel {
 		/// <c>CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		ReservedNop_rm16_r16_0F1E = 1027,
+		Reservednop_rm16_r16_0F1E = 1027,
 		/// <summary><c>RESERVEDNOP r/m32, r32</c><br/>
 		/// <br/>
 		/// <c>o32 0F 1E /r</c><br/>
@@ -8229,15 +8229,15 @@ namespace Iced.Intel {
 		/// <c>CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		ReservedNop_rm32_r32_0F1E = 1028,
+		Reservednop_rm32_r32_0F1E = 1028,
 		/// <summary><c>RESERVEDNOP r/m64, r64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 1E /r</c><br/>
+		/// <c>o64 0F 1E /r</c><br/>
 		/// <br/>
 		/// <c>CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B</c><br/>
 		/// <br/>
 		/// <c>64-bit</c></summary>
-		ReservedNop_rm64_r64_0F1E = 1029,
+		Reservednop_rm64_r64_0F1E = 1029,
 		/// <summary><c>RESERVEDNOP r/m16, r16</c><br/>
 		/// <br/>
 		/// <c>o16 0F 1F /r</c><br/>
@@ -8245,7 +8245,7 @@ namespace Iced.Intel {
 		/// <c>CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		ReservedNop_rm16_r16_0F1F = 1030,
+		Reservednop_rm16_r16_0F1F = 1030,
 		/// <summary><c>RESERVEDNOP r/m32, r32</c><br/>
 		/// <br/>
 		/// <c>o32 0F 1F /r</c><br/>
@@ -8253,15 +8253,15 @@ namespace Iced.Intel {
 		/// <c>CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		ReservedNop_rm32_r32_0F1F = 1031,
+		Reservednop_rm32_r32_0F1F = 1031,
 		/// <summary><c>RESERVEDNOP r/m64, r64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 1F /r</c><br/>
+		/// <c>o64 0F 1F /r</c><br/>
 		/// <br/>
 		/// <c>CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B</c><br/>
 		/// <br/>
 		/// <c>64-bit</c></summary>
-		ReservedNop_rm64_r64_0F1F = 1032,
+		Reservednop_rm64_r64_0F1F = 1032,
 		/// <summary><c>PREFETCHNTA m8</c><br/>
 		/// <br/>
 		/// <c>0F 18 /0</c><br/>
@@ -8424,7 +8424,7 @@ namespace Iced.Intel {
 		Rdsspd_r32 = 1052,
 		/// <summary><c>RDSSPQ r64</c><br/>
 		/// <br/>
-		/// <c>F3 REX.W 0F 1E /1</c><br/>
+		/// <c>F3 o64 0F 1E /1</c><br/>
 		/// <br/>
 		/// <c>CET_SS</c><br/>
 		/// <br/>
@@ -8464,7 +8464,7 @@ namespace Iced.Intel {
 		Nop_rm32 = 1057,
 		/// <summary><c>NOP r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 1F /0</c><br/>
+		/// <c>o64 0F 1F /0</c><br/>
 		/// <br/>
 		/// <c>CPUID.01H.EAX[Bits 11:8] = 0110B or 1111B</c><br/>
 		/// <br/>
@@ -8768,7 +8768,7 @@ namespace Iced.Intel {
 		Cvtsi2ss_xmm_rm32 = 1095,
 		/// <summary><c>CVTSI2SS xmm1, r/m64</c><br/>
 		/// <br/>
-		/// <c>F3 REX.W 0F 2A /r</c><br/>
+		/// <c>F3 o64 0F 2A /r</c><br/>
 		/// <br/>
 		/// <c>SSE</c><br/>
 		/// <br/>
@@ -8816,7 +8816,7 @@ namespace Iced.Intel {
 		Cvtsi2sd_xmm_rm32 = 1101,
 		/// <summary><c>CVTSI2SD xmm1, r/m64</c><br/>
 		/// <br/>
-		/// <c>F2 REX.W 0F 2A /r</c><br/>
+		/// <c>F2 o64 0F 2A /r</c><br/>
 		/// <br/>
 		/// <c>SSE2</c><br/>
 		/// <br/>
@@ -8838,7 +8838,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>64-bit</c></summary>
 		VEX_Vcvtsi2sd_xmm_xmm_rm64 = 1104,
-		/// <summary><c>VCVTSI2SD xmm1, xmm2, r/m32</c><br/>
+		/// <summary><c>VCVTSI2SD xmm1, xmm2, r/m32{er}</c><br/>
 		/// <br/>
 		/// <c>EVEX.LIG.F2.0F.W0 2A /r</c><br/>
 		/// <br/>
@@ -8992,7 +8992,7 @@ namespace Iced.Intel {
 		Cvttss2si_r32_xmmm32 = 1123,
 		/// <summary><c>CVTTSS2SI r64, xmm1/m32</c><br/>
 		/// <br/>
-		/// <c>F3 REX.W 0F 2C /r</c><br/>
+		/// <c>F3 o64 0F 2C /r</c><br/>
 		/// <br/>
 		/// <c>SSE</c><br/>
 		/// <br/>
@@ -9040,7 +9040,7 @@ namespace Iced.Intel {
 		Cvttsd2si_r32_xmmm64 = 1129,
 		/// <summary><c>CVTTSD2SI r64, xmm1/m64</c><br/>
 		/// <br/>
-		/// <c>F2 REX.W 0F 2C /r</c><br/>
+		/// <c>F2 o64 0F 2C /r</c><br/>
 		/// <br/>
 		/// <c>SSE2</c><br/>
 		/// <br/>
@@ -9104,7 +9104,7 @@ namespace Iced.Intel {
 		Cvtss2si_r32_xmmm32 = 1137,
 		/// <summary><c>CVTSS2SI r64, xmm1/m32</c><br/>
 		/// <br/>
-		/// <c>F3 REX.W 0F 2D /r</c><br/>
+		/// <c>F3 o64 0F 2D /r</c><br/>
 		/// <br/>
 		/// <c>SSE</c><br/>
 		/// <br/>
@@ -9152,7 +9152,7 @@ namespace Iced.Intel {
 		Cvtsd2si_r32_xmmm64 = 1143,
 		/// <summary><c>CVTSD2SI r64, xmm1/m64</c><br/>
 		/// <br/>
-		/// <c>F2 REX.W 0F 2D /r</c><br/>
+		/// <c>F2 o64 0F 2D /r</c><br/>
 		/// <br/>
 		/// <c>SSE2</c><br/>
 		/// <br/>
@@ -9336,7 +9336,7 @@ namespace Iced.Intel {
 		Sysexitd = 1166,
 		/// <summary><c>SYSEXITQ</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 35</c><br/>
+		/// <c>o64 0F 35</c><br/>
 		/// <br/>
 		/// <c>SEP</c><br/>
 		/// <br/>
@@ -9368,7 +9368,7 @@ namespace Iced.Intel {
 		Cmovo_r32_rm32 = 1170,
 		/// <summary><c>CMOVO r64, r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 40 /r</c><br/>
+		/// <c>o64 0F 40 /r</c><br/>
 		/// <br/>
 		/// <c>CMOV</c><br/>
 		/// <br/>
@@ -9392,7 +9392,7 @@ namespace Iced.Intel {
 		Cmovno_r32_rm32 = 1173,
 		/// <summary><c>CMOVNO r64, r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 41 /r</c><br/>
+		/// <c>o64 0F 41 /r</c><br/>
 		/// <br/>
 		/// <c>CMOV</c><br/>
 		/// <br/>
@@ -9416,7 +9416,7 @@ namespace Iced.Intel {
 		Cmovb_r32_rm32 = 1176,
 		/// <summary><c>CMOVB r64, r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 42 /r</c><br/>
+		/// <c>o64 0F 42 /r</c><br/>
 		/// <br/>
 		/// <c>CMOV</c><br/>
 		/// <br/>
@@ -9440,7 +9440,7 @@ namespace Iced.Intel {
 		Cmovae_r32_rm32 = 1179,
 		/// <summary><c>CMOVAE r64, r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 43 /r</c><br/>
+		/// <c>o64 0F 43 /r</c><br/>
 		/// <br/>
 		/// <c>CMOV</c><br/>
 		/// <br/>
@@ -9464,7 +9464,7 @@ namespace Iced.Intel {
 		Cmove_r32_rm32 = 1182,
 		/// <summary><c>CMOVE r64, r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 44 /r</c><br/>
+		/// <c>o64 0F 44 /r</c><br/>
 		/// <br/>
 		/// <c>CMOV</c><br/>
 		/// <br/>
@@ -9488,7 +9488,7 @@ namespace Iced.Intel {
 		Cmovne_r32_rm32 = 1185,
 		/// <summary><c>CMOVNE r64, r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 45 /r</c><br/>
+		/// <c>o64 0F 45 /r</c><br/>
 		/// <br/>
 		/// <c>CMOV</c><br/>
 		/// <br/>
@@ -9512,7 +9512,7 @@ namespace Iced.Intel {
 		Cmovbe_r32_rm32 = 1188,
 		/// <summary><c>CMOVBE r64, r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 46 /r</c><br/>
+		/// <c>o64 0F 46 /r</c><br/>
 		/// <br/>
 		/// <c>CMOV</c><br/>
 		/// <br/>
@@ -9536,7 +9536,7 @@ namespace Iced.Intel {
 		Cmova_r32_rm32 = 1191,
 		/// <summary><c>CMOVA r64, r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 47 /r</c><br/>
+		/// <c>o64 0F 47 /r</c><br/>
 		/// <br/>
 		/// <c>CMOV</c><br/>
 		/// <br/>
@@ -9560,7 +9560,7 @@ namespace Iced.Intel {
 		Cmovs_r32_rm32 = 1194,
 		/// <summary><c>CMOVS r64, r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 48 /r</c><br/>
+		/// <c>o64 0F 48 /r</c><br/>
 		/// <br/>
 		/// <c>CMOV</c><br/>
 		/// <br/>
@@ -9584,7 +9584,7 @@ namespace Iced.Intel {
 		Cmovns_r32_rm32 = 1197,
 		/// <summary><c>CMOVNS r64, r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 49 /r</c><br/>
+		/// <c>o64 0F 49 /r</c><br/>
 		/// <br/>
 		/// <c>CMOV</c><br/>
 		/// <br/>
@@ -9608,7 +9608,7 @@ namespace Iced.Intel {
 		Cmovp_r32_rm32 = 1200,
 		/// <summary><c>CMOVP r64, r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 4A /r</c><br/>
+		/// <c>o64 0F 4A /r</c><br/>
 		/// <br/>
 		/// <c>CMOV</c><br/>
 		/// <br/>
@@ -9632,7 +9632,7 @@ namespace Iced.Intel {
 		Cmovnp_r32_rm32 = 1203,
 		/// <summary><c>CMOVNP r64, r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 4B /r</c><br/>
+		/// <c>o64 0F 4B /r</c><br/>
 		/// <br/>
 		/// <c>CMOV</c><br/>
 		/// <br/>
@@ -9656,7 +9656,7 @@ namespace Iced.Intel {
 		Cmovl_r32_rm32 = 1206,
 		/// <summary><c>CMOVL r64, r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 4C /r</c><br/>
+		/// <c>o64 0F 4C /r</c><br/>
 		/// <br/>
 		/// <c>CMOV</c><br/>
 		/// <br/>
@@ -9680,7 +9680,7 @@ namespace Iced.Intel {
 		Cmovge_r32_rm32 = 1209,
 		/// <summary><c>CMOVGE r64, r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 4D /r</c><br/>
+		/// <c>o64 0F 4D /r</c><br/>
 		/// <br/>
 		/// <c>CMOV</c><br/>
 		/// <br/>
@@ -9704,7 +9704,7 @@ namespace Iced.Intel {
 		Cmovle_r32_rm32 = 1212,
 		/// <summary><c>CMOVLE r64, r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 4E /r</c><br/>
+		/// <c>o64 0F 4E /r</c><br/>
 		/// <br/>
 		/// <c>CMOV</c><br/>
 		/// <br/>
@@ -9728,7 +9728,7 @@ namespace Iced.Intel {
 		Cmovg_r32_rm32 = 1215,
 		/// <summary><c>CMOVG r64, r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 4F /r</c><br/>
+		/// <c>o64 0F 4F /r</c><br/>
 		/// <br/>
 		/// <c>CMOV</c><br/>
 		/// <br/>
@@ -9992,7 +9992,7 @@ namespace Iced.Intel {
 		Movmskps_r32_xmm = 1248,
 		/// <summary><c>MOVMSKPS r64, xmm</c><br/>
 		/// <br/>
-		/// <c>NP REX.W 0F 50 /r</c><br/>
+		/// <c>NP o64 0F 50 /r</c><br/>
 		/// <br/>
 		/// <c>SSE</c><br/>
 		/// <br/>
@@ -10040,7 +10040,7 @@ namespace Iced.Intel {
 		Movmskpd_r32_xmm = 1254,
 		/// <summary><c>MOVMSKPD r64, xmm</c><br/>
 		/// <br/>
-		/// <c>66 REX.W 0F 50 /r</c><br/>
+		/// <c>66 o64 0F 50 /r</c><br/>
 		/// <br/>
 		/// <c>SSE2</c><br/>
 		/// <br/>
@@ -12640,7 +12640,7 @@ namespace Iced.Intel {
 		Movd_mm_rm32 = 1579,
 		/// <summary><c>MOVQ mm, r/m64</c><br/>
 		/// <br/>
-		/// <c>NP REX.W 0F 6E /r</c><br/>
+		/// <c>NP o64 0F 6E /r</c><br/>
 		/// <br/>
 		/// <c>MMX</c><br/>
 		/// <br/>
@@ -12656,7 +12656,7 @@ namespace Iced.Intel {
 		Movd_xmm_rm32 = 1581,
 		/// <summary><c>MOVQ xmm, r/m64</c><br/>
 		/// <br/>
-		/// <c>66 REX.W 0F 6E /r</c><br/>
+		/// <c>66 o64 0F 6E /r</c><br/>
 		/// <br/>
 		/// <c>SSE2</c><br/>
 		/// <br/>
@@ -14286,7 +14286,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		EVEX_Vcvtudq2pd_ymm_k1z_xmmm128b32 = 1785,
-		/// <summary><c>VCVTUDQ2PD zmm1 {k1}{z}, ymm2/m256/m32bcst</c><br/>
+		/// <summary><c>VCVTUDQ2PD zmm1 {k1}{z}, ymm2/m256/m32bcst{er}</c><br/>
 		/// <br/>
 		/// <c>EVEX.512.F3.0F.W0 7A /r</c><br/>
 		/// <br/>
@@ -14430,7 +14430,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>64-bit</c></summary>
 		EVEX_Vcvtusi2ss_xmm_xmm_rm64_er = 1803,
-		/// <summary><c>VCVTUSI2SD xmm1, xmm2, r/m32</c><br/>
+		/// <summary><c>VCVTUSI2SD xmm1, xmm2, r/m32{er}</c><br/>
 		/// <br/>
 		/// <c>EVEX.LIG.F2.0F.W0 7B /r</c><br/>
 		/// <br/>
@@ -14552,7 +14552,7 @@ namespace Iced.Intel {
 		Movd_rm32_mm = 1818,
 		/// <summary><c>MOVQ r/m64, mm</c><br/>
 		/// <br/>
-		/// <c>NP REX.W 0F 7E /r</c><br/>
+		/// <c>NP o64 0F 7E /r</c><br/>
 		/// <br/>
 		/// <c>MMX</c><br/>
 		/// <br/>
@@ -14568,7 +14568,7 @@ namespace Iced.Intel {
 		Movd_rm32_xmm = 1820,
 		/// <summary><c>MOVQ r/m64, xmm</c><br/>
 		/// <br/>
-		/// <c>66 REX.W 0F 7E /r</c><br/>
+		/// <c>66 o64 0F 7E /r</c><br/>
 		/// <br/>
 		/// <c>SSE2</c><br/>
 		/// <br/>
@@ -14848,7 +14848,7 @@ namespace Iced.Intel {
 		Jo_rel32_32 = 1855,
 		/// <summary><c>JO rel32</c><br/>
 		/// <br/>
-		/// <c>0F 80 cd</c><br/>
+		/// <c>o64 0F 80 cd</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -14872,7 +14872,7 @@ namespace Iced.Intel {
 		Jno_rel32_32 = 1858,
 		/// <summary><c>JNO rel32</c><br/>
 		/// <br/>
-		/// <c>0F 81 cd</c><br/>
+		/// <c>o64 0F 81 cd</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -14896,7 +14896,7 @@ namespace Iced.Intel {
 		Jb_rel32_32 = 1861,
 		/// <summary><c>JB rel32</c><br/>
 		/// <br/>
-		/// <c>0F 82 cd</c><br/>
+		/// <c>o64 0F 82 cd</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -14920,7 +14920,7 @@ namespace Iced.Intel {
 		Jae_rel32_32 = 1864,
 		/// <summary><c>JAE rel32</c><br/>
 		/// <br/>
-		/// <c>0F 83 cd</c><br/>
+		/// <c>o64 0F 83 cd</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -14944,7 +14944,7 @@ namespace Iced.Intel {
 		Je_rel32_32 = 1867,
 		/// <summary><c>JE rel32</c><br/>
 		/// <br/>
-		/// <c>0F 84 cd</c><br/>
+		/// <c>o64 0F 84 cd</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -14968,7 +14968,7 @@ namespace Iced.Intel {
 		Jne_rel32_32 = 1870,
 		/// <summary><c>JNE rel32</c><br/>
 		/// <br/>
-		/// <c>0F 85 cd</c><br/>
+		/// <c>o64 0F 85 cd</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -14992,7 +14992,7 @@ namespace Iced.Intel {
 		Jbe_rel32_32 = 1873,
 		/// <summary><c>JBE rel32</c><br/>
 		/// <br/>
-		/// <c>0F 86 cd</c><br/>
+		/// <c>o64 0F 86 cd</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -15016,7 +15016,7 @@ namespace Iced.Intel {
 		Ja_rel32_32 = 1876,
 		/// <summary><c>JA rel32</c><br/>
 		/// <br/>
-		/// <c>0F 87 cd</c><br/>
+		/// <c>o64 0F 87 cd</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -15040,7 +15040,7 @@ namespace Iced.Intel {
 		Js_rel32_32 = 1879,
 		/// <summary><c>JS rel32</c><br/>
 		/// <br/>
-		/// <c>0F 88 cd</c><br/>
+		/// <c>o64 0F 88 cd</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -15064,7 +15064,7 @@ namespace Iced.Intel {
 		Jns_rel32_32 = 1882,
 		/// <summary><c>JNS rel32</c><br/>
 		/// <br/>
-		/// <c>0F 89 cd</c><br/>
+		/// <c>o64 0F 89 cd</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -15088,7 +15088,7 @@ namespace Iced.Intel {
 		Jp_rel32_32 = 1885,
 		/// <summary><c>JP rel32</c><br/>
 		/// <br/>
-		/// <c>0F 8A cd</c><br/>
+		/// <c>o64 0F 8A cd</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -15112,7 +15112,7 @@ namespace Iced.Intel {
 		Jnp_rel32_32 = 1888,
 		/// <summary><c>JNP rel32</c><br/>
 		/// <br/>
-		/// <c>0F 8B cd</c><br/>
+		/// <c>o64 0F 8B cd</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -15136,7 +15136,7 @@ namespace Iced.Intel {
 		Jl_rel32_32 = 1891,
 		/// <summary><c>JL rel32</c><br/>
 		/// <br/>
-		/// <c>0F 8C cd</c><br/>
+		/// <c>o64 0F 8C cd</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -15160,7 +15160,7 @@ namespace Iced.Intel {
 		Jge_rel32_32 = 1894,
 		/// <summary><c>JGE rel32</c><br/>
 		/// <br/>
-		/// <c>0F 8D cd</c><br/>
+		/// <c>o64 0F 8D cd</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -15184,7 +15184,7 @@ namespace Iced.Intel {
 		Jle_rel32_32 = 1897,
 		/// <summary><c>JLE rel32</c><br/>
 		/// <br/>
-		/// <c>0F 8E cd</c><br/>
+		/// <c>o64 0F 8E cd</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -15208,7 +15208,7 @@ namespace Iced.Intel {
 		Jg_rel32_32 = 1900,
 		/// <summary><c>JG rel32</c><br/>
 		/// <br/>
-		/// <c>0F 8F cd</c><br/>
+		/// <c>o64 0F 8F cd</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -15552,7 +15552,7 @@ namespace Iced.Intel {
 		Pushd_FS = 1943,
 		/// <summary><c>PUSH FS</c><br/>
 		/// <br/>
-		/// <c>0F A0</c><br/>
+		/// <c>o64 0F A0</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -15576,7 +15576,7 @@ namespace Iced.Intel {
 		Popd_FS = 1946,
 		/// <summary><c>POP FS</c><br/>
 		/// <br/>
-		/// <c>0F A1</c><br/>
+		/// <c>o64 0F A1</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -15608,7 +15608,7 @@ namespace Iced.Intel {
 		Bt_rm32_r32 = 1950,
 		/// <summary><c>BT r/m64, r64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F A3 /r</c><br/>
+		/// <c>o64 0F A3 /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -15632,7 +15632,7 @@ namespace Iced.Intel {
 		Shld_rm32_r32_imm8 = 1953,
 		/// <summary><c>SHLD r/m64, r64, imm8</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F A4 /r ib</c><br/>
+		/// <c>o64 0F A4 /r ib</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -15656,7 +15656,7 @@ namespace Iced.Intel {
 		Shld_rm32_r32_CL = 1956,
 		/// <summary><c>SHLD r/m64, r64, CL</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F A5 /r</c><br/>
+		/// <c>o64 0F A5 /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -15680,7 +15680,7 @@ namespace Iced.Intel {
 		Montmul_32 = 1959,
 		/// <summary><c>MONTMUL</c><br/>
 		/// <br/>
-		/// <c>F3 0F A6 C0</c><br/>
+		/// <c>a64 F3 0F A6 C0</c><br/>
 		/// <br/>
 		/// <c>PADLOCK_PMM</c><br/>
 		/// <br/>
@@ -15704,7 +15704,7 @@ namespace Iced.Intel {
 		Xsha1_32 = 1962,
 		/// <summary><c>XSHA1</c><br/>
 		/// <br/>
-		/// <c>F3 0F A6 C8</c><br/>
+		/// <c>a64 F3 0F A6 C8</c><br/>
 		/// <br/>
 		/// <c>PADLOCK_PHE</c><br/>
 		/// <br/>
@@ -15728,7 +15728,7 @@ namespace Iced.Intel {
 		Xsha256_32 = 1965,
 		/// <summary><c>XSHA256</c><br/>
 		/// <br/>
-		/// <c>F3 0F A6 D0</c><br/>
+		/// <c>a64 F3 0F A6 D0</c><br/>
 		/// <br/>
 		/// <c>PADLOCK_PHE</c><br/>
 		/// <br/>
@@ -15768,7 +15768,7 @@ namespace Iced.Intel {
 		Xstore_32 = 1970,
 		/// <summary><c>XSTORE</c><br/>
 		/// <br/>
-		/// <c>0F A7 C0</c><br/>
+		/// <c>a64 0F A7 C0</c><br/>
 		/// <br/>
 		/// <c>PADLOCK_RNG</c><br/>
 		/// <br/>
@@ -15781,7 +15781,7 @@ namespace Iced.Intel {
 		/// <c>PADLOCK_ACE</c><br/>
 		/// <br/>
 		/// <c>16/32-bit</c></summary>
-		XcryptEcb_16 = 1972,
+		Xcryptecb_16 = 1972,
 		/// <summary><c>XCRYPTECB</c><br/>
 		/// <br/>
 		/// <c>a32 F3 0F A7 C8</c><br/>
@@ -15789,15 +15789,15 @@ namespace Iced.Intel {
 		/// <c>PADLOCK_ACE</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		XcryptEcb_32 = 1973,
+		Xcryptecb_32 = 1973,
 		/// <summary><c>XCRYPTECB</c><br/>
 		/// <br/>
-		/// <c>F3 0F A7 C8</c><br/>
+		/// <c>a64 F3 0F A7 C8</c><br/>
 		/// <br/>
 		/// <c>PADLOCK_ACE</c><br/>
 		/// <br/>
 		/// <c>64-bit</c></summary>
-		XcryptEcb_64 = 1974,
+		Xcryptecb_64 = 1974,
 		/// <summary><c>XCRYPTCBC</c><br/>
 		/// <br/>
 		/// <c>a16 F3 0F A7 D0</c><br/>
@@ -15805,7 +15805,7 @@ namespace Iced.Intel {
 		/// <c>PADLOCK_ACE</c><br/>
 		/// <br/>
 		/// <c>16/32-bit</c></summary>
-		XcryptCbc_16 = 1975,
+		Xcryptcbc_16 = 1975,
 		/// <summary><c>XCRYPTCBC</c><br/>
 		/// <br/>
 		/// <c>a32 F3 0F A7 D0</c><br/>
@@ -15813,15 +15813,15 @@ namespace Iced.Intel {
 		/// <c>PADLOCK_ACE</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		XcryptCbc_32 = 1976,
+		Xcryptcbc_32 = 1976,
 		/// <summary><c>XCRYPTCBC</c><br/>
 		/// <br/>
-		/// <c>F3 0F A7 D0</c><br/>
+		/// <c>a64 F3 0F A7 D0</c><br/>
 		/// <br/>
 		/// <c>PADLOCK_ACE</c><br/>
 		/// <br/>
 		/// <c>64-bit</c></summary>
-		XcryptCbc_64 = 1977,
+		Xcryptcbc_64 = 1977,
 		/// <summary><c>XCRYPTCTR</c><br/>
 		/// <br/>
 		/// <c>a16 F3 0F A7 D8</c><br/>
@@ -15829,7 +15829,7 @@ namespace Iced.Intel {
 		/// <c>PADLOCK_ACE</c><br/>
 		/// <br/>
 		/// <c>16/32-bit</c></summary>
-		XcryptCtr_16 = 1978,
+		Xcryptctr_16 = 1978,
 		/// <summary><c>XCRYPTCTR</c><br/>
 		/// <br/>
 		/// <c>a32 F3 0F A7 D8</c><br/>
@@ -15837,15 +15837,15 @@ namespace Iced.Intel {
 		/// <c>PADLOCK_ACE</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		XcryptCtr_32 = 1979,
+		Xcryptctr_32 = 1979,
 		/// <summary><c>XCRYPTCTR</c><br/>
 		/// <br/>
-		/// <c>F3 0F A7 D8</c><br/>
+		/// <c>a64 F3 0F A7 D8</c><br/>
 		/// <br/>
 		/// <c>PADLOCK_ACE</c><br/>
 		/// <br/>
 		/// <c>64-bit</c></summary>
-		XcryptCtr_64 = 1980,
+		Xcryptctr_64 = 1980,
 		/// <summary><c>XCRYPTCFB</c><br/>
 		/// <br/>
 		/// <c>a16 F3 0F A7 E0</c><br/>
@@ -15853,7 +15853,7 @@ namespace Iced.Intel {
 		/// <c>PADLOCK_ACE</c><br/>
 		/// <br/>
 		/// <c>16/32-bit</c></summary>
-		XcryptCfb_16 = 1981,
+		Xcryptcfb_16 = 1981,
 		/// <summary><c>XCRYPTCFB</c><br/>
 		/// <br/>
 		/// <c>a32 F3 0F A7 E0</c><br/>
@@ -15861,15 +15861,15 @@ namespace Iced.Intel {
 		/// <c>PADLOCK_ACE</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		XcryptCfb_32 = 1982,
+		Xcryptcfb_32 = 1982,
 		/// <summary><c>XCRYPTCFB</c><br/>
 		/// <br/>
-		/// <c>F3 0F A7 E0</c><br/>
+		/// <c>a64 F3 0F A7 E0</c><br/>
 		/// <br/>
 		/// <c>PADLOCK_ACE</c><br/>
 		/// <br/>
 		/// <c>64-bit</c></summary>
-		XcryptCfb_64 = 1983,
+		Xcryptcfb_64 = 1983,
 		/// <summary><c>XCRYPTOFB</c><br/>
 		/// <br/>
 		/// <c>a16 F3 0F A7 E8</c><br/>
@@ -15877,7 +15877,7 @@ namespace Iced.Intel {
 		/// <c>PADLOCK_ACE</c><br/>
 		/// <br/>
 		/// <c>16/32-bit</c></summary>
-		XcryptOfb_16 = 1984,
+		Xcryptofb_16 = 1984,
 		/// <summary><c>XCRYPTOFB</c><br/>
 		/// <br/>
 		/// <c>a32 F3 0F A7 E8</c><br/>
@@ -15885,15 +15885,15 @@ namespace Iced.Intel {
 		/// <c>PADLOCK_ACE</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		XcryptOfb_32 = 1985,
+		Xcryptofb_32 = 1985,
 		/// <summary><c>XCRYPTOFB</c><br/>
 		/// <br/>
-		/// <c>F3 0F A7 E8</c><br/>
+		/// <c>a64 F3 0F A7 E8</c><br/>
 		/// <br/>
 		/// <c>PADLOCK_ACE</c><br/>
 		/// <br/>
 		/// <c>64-bit</c></summary>
-		XcryptOfb_64 = 1986,
+		Xcryptofb_64 = 1986,
 		/// <summary><c>IBTS r/m16, r16</c><br/>
 		/// <br/>
 		/// <c>o16 0F A7 /r</c><br/>
@@ -15952,7 +15952,7 @@ namespace Iced.Intel {
 		Pushd_GS = 1993,
 		/// <summary><c>PUSH GS</c><br/>
 		/// <br/>
-		/// <c>0F A8</c><br/>
+		/// <c>o64 0F A8</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -15976,7 +15976,7 @@ namespace Iced.Intel {
 		Popd_GS = 1996,
 		/// <summary><c>POP GS</c><br/>
 		/// <br/>
-		/// <c>0F A9</c><br/>
+		/// <c>o64 0F A9</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -16008,7 +16008,7 @@ namespace Iced.Intel {
 		Bts_rm32_r32 = 2000,
 		/// <summary><c>BTS r/m64, r64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F AB /r</c><br/>
+		/// <c>o64 0F AB /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -16032,7 +16032,7 @@ namespace Iced.Intel {
 		Shrd_rm32_r32_imm8 = 2003,
 		/// <summary><c>SHRD r/m64, r64, imm8</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F AC /r ib</c><br/>
+		/// <c>o64 0F AC /r ib</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -16056,7 +16056,7 @@ namespace Iced.Intel {
 		Shrd_rm32_r32_CL = 2006,
 		/// <summary><c>SHRD r/m64, r64, CL</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F AD /r</c><br/>
+		/// <c>o64 0F AD /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -16072,7 +16072,7 @@ namespace Iced.Intel {
 		Fxsave_m512byte = 2008,
 		/// <summary><c>FXSAVE64 m512byte</c><br/>
 		/// <br/>
-		/// <c>NP REX.W 0F AE /0</c><br/>
+		/// <c>NP o64 0F AE /0</c><br/>
 		/// <br/>
 		/// <c>FXSR</c><br/>
 		/// <br/>
@@ -16088,7 +16088,7 @@ namespace Iced.Intel {
 		Rdfsbase_r32 = 2010,
 		/// <summary><c>RDFSBASE r64</c><br/>
 		/// <br/>
-		/// <c>F3 REX.W 0F AE /0</c><br/>
+		/// <c>F3 o64 0F AE /0</c><br/>
 		/// <br/>
 		/// <c>FSGSBASE</c><br/>
 		/// <br/>
@@ -16104,7 +16104,7 @@ namespace Iced.Intel {
 		Fxrstor_m512byte = 2012,
 		/// <summary><c>FXRSTOR64 m512byte</c><br/>
 		/// <br/>
-		/// <c>NP REX.W 0F AE /1</c><br/>
+		/// <c>NP o64 0F AE /1</c><br/>
 		/// <br/>
 		/// <c>FXSR</c><br/>
 		/// <br/>
@@ -16120,7 +16120,7 @@ namespace Iced.Intel {
 		Rdgsbase_r32 = 2014,
 		/// <summary><c>RDGSBASE r64</c><br/>
 		/// <br/>
-		/// <c>F3 REX.W 0F AE /1</c><br/>
+		/// <c>F3 o64 0F AE /1</c><br/>
 		/// <br/>
 		/// <c>FSGSBASE</c><br/>
 		/// <br/>
@@ -16144,7 +16144,7 @@ namespace Iced.Intel {
 		Wrfsbase_r32 = 2017,
 		/// <summary><c>WRFSBASE r64</c><br/>
 		/// <br/>
-		/// <c>F3 REX.W 0F AE /2</c><br/>
+		/// <c>F3 o64 0F AE /2</c><br/>
 		/// <br/>
 		/// <c>FSGSBASE</c><br/>
 		/// <br/>
@@ -16176,7 +16176,7 @@ namespace Iced.Intel {
 		Wrgsbase_r32 = 2021,
 		/// <summary><c>WRGSBASE r64</c><br/>
 		/// <br/>
-		/// <c>F3 REX.W 0F AE /3</c><br/>
+		/// <c>F3 o64 0F AE /3</c><br/>
 		/// <br/>
 		/// <c>FSGSBASE</c><br/>
 		/// <br/>
@@ -16200,7 +16200,7 @@ namespace Iced.Intel {
 		Xsave_mem = 2024,
 		/// <summary><c>XSAVE64 mem</c><br/>
 		/// <br/>
-		/// <c>NP REX.W 0F AE /4</c><br/>
+		/// <c>NP o64 0F AE /4</c><br/>
 		/// <br/>
 		/// <c>XSAVE</c><br/>
 		/// <br/>
@@ -16216,7 +16216,7 @@ namespace Iced.Intel {
 		Ptwrite_rm32 = 2026,
 		/// <summary><c>PTWRITE r/m64</c><br/>
 		/// <br/>
-		/// <c>F3 REX.W 0F AE /4</c><br/>
+		/// <c>F3 o64 0F AE /4</c><br/>
 		/// <br/>
 		/// <c>PTWRITE</c><br/>
 		/// <br/>
@@ -16232,7 +16232,7 @@ namespace Iced.Intel {
 		Xrstor_mem = 2028,
 		/// <summary><c>XRSTOR64 mem</c><br/>
 		/// <br/>
-		/// <c>NP REX.W 0F AE /5</c><br/>
+		/// <c>NP o64 0F AE /5</c><br/>
 		/// <br/>
 		/// <c>XSAVE</c><br/>
 		/// <br/>
@@ -16248,7 +16248,7 @@ namespace Iced.Intel {
 		Incsspd_r32 = 2030,
 		/// <summary><c>INCSSPQ r64</c><br/>
 		/// <br/>
-		/// <c>F3 REX.W 0F AE /5</c><br/>
+		/// <c>F3 o64 0F AE /5</c><br/>
 		/// <br/>
 		/// <c>CET_SS</c><br/>
 		/// <br/>
@@ -16264,7 +16264,7 @@ namespace Iced.Intel {
 		Xsaveopt_mem = 2032,
 		/// <summary><c>XSAVEOPT64 mem</c><br/>
 		/// <br/>
-		/// <c>NP REX.W 0F AE /6</c><br/>
+		/// <c>NP o64 0F AE /6</c><br/>
 		/// <br/>
 		/// <c>XSAVEOPT</c><br/>
 		/// <br/>
@@ -16288,7 +16288,7 @@ namespace Iced.Intel {
 		Tpause_r32 = 2035,
 		/// <summary><c>TPAUSE r64, &lt;edx&gt;, &lt;eax&gt;</c><br/>
 		/// <br/>
-		/// <c>66 REX.W 0F AE /6</c><br/>
+		/// <c>66 o64 0F AE /6</c><br/>
 		/// <br/>
 		/// <c>WAITPKG</c><br/>
 		/// <br/>
@@ -16320,7 +16320,7 @@ namespace Iced.Intel {
 		Umonitor_r32 = 2039,
 		/// <summary><c>UMONITOR r64</c><br/>
 		/// <br/>
-		/// <c>F3 0F AE /6</c><br/>
+		/// <c>a64 F3 0F AE /6</c><br/>
 		/// <br/>
 		/// <c>WAITPKG</c><br/>
 		/// <br/>
@@ -16336,7 +16336,7 @@ namespace Iced.Intel {
 		Umwait_r32 = 2041,
 		/// <summary><c>UMWAIT r64, &lt;edx&gt;, &lt;eax&gt;</c><br/>
 		/// <br/>
-		/// <c>F2 REX.W 0F AE /6</c><br/>
+		/// <c>F2 o64 0F AE /6</c><br/>
 		/// <br/>
 		/// <c>WAITPKG</c><br/>
 		/// <br/>
@@ -16576,7 +16576,7 @@ namespace Iced.Intel {
 		Imul_r32_rm32 = 2071,
 		/// <summary><c>IMUL r64, r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F AF /r</c><br/>
+		/// <c>o64 0F AF /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -16608,7 +16608,7 @@ namespace Iced.Intel {
 		Cmpxchg_rm32_r32 = 2075,
 		/// <summary><c>CMPXCHG r/m64, r64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F B1 /r</c><br/>
+		/// <c>o64 0F B1 /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -16632,7 +16632,7 @@ namespace Iced.Intel {
 		Lss_r32_m1632 = 2078,
 		/// <summary><c>LSS r64, m16:64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F B2 /r</c><br/>
+		/// <c>o64 0F B2 /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -16656,7 +16656,7 @@ namespace Iced.Intel {
 		Btr_rm32_r32 = 2081,
 		/// <summary><c>BTR r/m64, r64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F B3 /r</c><br/>
+		/// <c>o64 0F B3 /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -16680,7 +16680,7 @@ namespace Iced.Intel {
 		Lfs_r32_m1632 = 2084,
 		/// <summary><c>LFS r64, m16:64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F B4 /r</c><br/>
+		/// <c>o64 0F B4 /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -16704,7 +16704,7 @@ namespace Iced.Intel {
 		Lgs_r32_m1632 = 2087,
 		/// <summary><c>LGS r64, m16:64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F B5 /r</c><br/>
+		/// <c>o64 0F B5 /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -16728,7 +16728,7 @@ namespace Iced.Intel {
 		Movzx_r32_rm8 = 2090,
 		/// <summary><c>MOVZX r64, r/m8</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F B6 /r</c><br/>
+		/// <c>o64 0F B6 /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -16752,7 +16752,7 @@ namespace Iced.Intel {
 		Movzx_r32_rm16 = 2093,
 		/// <summary><c>MOVZX r64, r/m16</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F B7 /r</c><br/>
+		/// <c>o64 0F B7 /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -16792,7 +16792,7 @@ namespace Iced.Intel {
 		Popcnt_r32_rm32 = 2098,
 		/// <summary><c>POPCNT r64, r/m64</c><br/>
 		/// <br/>
-		/// <c>F3 REX.W 0F B8 /r</c><br/>
+		/// <c>F3 o64 0F B8 /r</c><br/>
 		/// <br/>
 		/// <c>POPCNT</c><br/>
 		/// <br/>
@@ -16816,7 +16816,7 @@ namespace Iced.Intel {
 		Ud1_r32_rm32 = 2101,
 		/// <summary><c>UD1 r64, r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F B9 /r</c><br/>
+		/// <c>o64 0F B9 /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -16840,7 +16840,7 @@ namespace Iced.Intel {
 		Bt_rm32_imm8 = 2104,
 		/// <summary><c>BT r/m64, imm8</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F BA /4 ib</c><br/>
+		/// <c>o64 0F BA /4 ib</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -16864,7 +16864,7 @@ namespace Iced.Intel {
 		Bts_rm32_imm8 = 2107,
 		/// <summary><c>BTS r/m64, imm8</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F BA /5 ib</c><br/>
+		/// <c>o64 0F BA /5 ib</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -16888,7 +16888,7 @@ namespace Iced.Intel {
 		Btr_rm32_imm8 = 2110,
 		/// <summary><c>BTR r/m64, imm8</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F BA /6 ib</c><br/>
+		/// <c>o64 0F BA /6 ib</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -16912,7 +16912,7 @@ namespace Iced.Intel {
 		Btc_rm32_imm8 = 2113,
 		/// <summary><c>BTC r/m64, imm8</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F BA /7 ib</c><br/>
+		/// <c>o64 0F BA /7 ib</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -16936,7 +16936,7 @@ namespace Iced.Intel {
 		Btc_rm32_r32 = 2116,
 		/// <summary><c>BTC r/m64, r64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F BB /r</c><br/>
+		/// <c>o64 0F BB /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -16960,7 +16960,7 @@ namespace Iced.Intel {
 		Bsf_r32_rm32 = 2119,
 		/// <summary><c>BSF r64, r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F BC /r</c><br/>
+		/// <c>o64 0F BC /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -16984,7 +16984,7 @@ namespace Iced.Intel {
 		Tzcnt_r32_rm32 = 2122,
 		/// <summary><c>TZCNT r64, r/m64</c><br/>
 		/// <br/>
-		/// <c>F3 REX.W 0F BC /r</c><br/>
+		/// <c>F3 o64 0F BC /r</c><br/>
 		/// <br/>
 		/// <c>BMI1</c><br/>
 		/// <br/>
@@ -17008,7 +17008,7 @@ namespace Iced.Intel {
 		Bsr_r32_rm32 = 2125,
 		/// <summary><c>BSR r64, r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F BD /r</c><br/>
+		/// <c>o64 0F BD /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -17032,7 +17032,7 @@ namespace Iced.Intel {
 		Lzcnt_r32_rm32 = 2128,
 		/// <summary><c>LZCNT r64, r/m64</c><br/>
 		/// <br/>
-		/// <c>F3 REX.W 0F BD /r</c><br/>
+		/// <c>F3 o64 0F BD /r</c><br/>
 		/// <br/>
 		/// <c>LZCNT</c><br/>
 		/// <br/>
@@ -17056,7 +17056,7 @@ namespace Iced.Intel {
 		Movsx_r32_rm8 = 2131,
 		/// <summary><c>MOVSX r64, r/m8</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F BE /r</c><br/>
+		/// <c>o64 0F BE /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -17080,7 +17080,7 @@ namespace Iced.Intel {
 		Movsx_r32_rm16 = 2134,
 		/// <summary><c>MOVSX r64, r/m16</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F BF /r</c><br/>
+		/// <c>o64 0F BF /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -17112,7 +17112,7 @@ namespace Iced.Intel {
 		Xadd_rm32_r32 = 2138,
 		/// <summary><c>XADD r/m64, r64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F C1 /r</c><br/>
+		/// <c>o64 0F C1 /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -17272,7 +17272,7 @@ namespace Iced.Intel {
 		Movnti_m32_r32 = 2158,
 		/// <summary><c>MOVNTI m64, r64</c><br/>
 		/// <br/>
-		/// <c>NP REX.W 0F C3 /r</c><br/>
+		/// <c>NP o64 0F C3 /r</c><br/>
 		/// <br/>
 		/// <c>SSE2</c><br/>
 		/// <br/>
@@ -17288,7 +17288,7 @@ namespace Iced.Intel {
 		Pinsrw_mm_r32m16_imm8 = 2160,
 		/// <summary><c>PINSRW mm, r64/m16, imm8</c><br/>
 		/// <br/>
-		/// <c>NP REX.W 0F C4 /r ib</c><br/>
+		/// <c>NP o64 0F C4 /r ib</c><br/>
 		/// <br/>
 		/// <c>SSE</c><br/>
 		/// <br/>
@@ -17304,7 +17304,7 @@ namespace Iced.Intel {
 		Pinsrw_xmm_r32m16_imm8 = 2162,
 		/// <summary><c>PINSRW xmm, r64/m16, imm8</c><br/>
 		/// <br/>
-		/// <c>66 REX.W 0F C4 /r ib</c><br/>
+		/// <c>66 o64 0F C4 /r ib</c><br/>
 		/// <br/>
 		/// <c>SSE2</c><br/>
 		/// <br/>
@@ -17352,7 +17352,7 @@ namespace Iced.Intel {
 		Pextrw_r32_mm_imm8 = 2168,
 		/// <summary><c>PEXTRW r64, mm, imm8</c><br/>
 		/// <br/>
-		/// <c>NP REX.W 0F C5 /r ib</c><br/>
+		/// <c>NP o64 0F C5 /r ib</c><br/>
 		/// <br/>
 		/// <c>SSE</c><br/>
 		/// <br/>
@@ -17368,7 +17368,7 @@ namespace Iced.Intel {
 		Pextrw_r32_xmm_imm8 = 2170,
 		/// <summary><c>PEXTRW r64, xmm, imm8</c><br/>
 		/// <br/>
-		/// <c>66 REX.W 0F C5 /r ib</c><br/>
+		/// <c>66 o64 0F C5 /r ib</c><br/>
 		/// <br/>
 		/// <c>SSE2</c><br/>
 		/// <br/>
@@ -17512,7 +17512,7 @@ namespace Iced.Intel {
 		Cmpxchg8b_m64 = 2188,
 		/// <summary><c>CMPXCHG16B m128</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F C7 /1</c><br/>
+		/// <c>o64 0F C7 /1</c><br/>
 		/// <br/>
 		/// <c>CMPXCHG16B</c><br/>
 		/// <br/>
@@ -17528,7 +17528,7 @@ namespace Iced.Intel {
 		Xrstors_mem = 2190,
 		/// <summary><c>XRSTORS64 mem</c><br/>
 		/// <br/>
-		/// <c>NP REX.W 0F C7 /3</c><br/>
+		/// <c>NP o64 0F C7 /3</c><br/>
 		/// <br/>
 		/// <c>XSAVES</c><br/>
 		/// <br/>
@@ -17544,7 +17544,7 @@ namespace Iced.Intel {
 		Xsavec_mem = 2192,
 		/// <summary><c>XSAVEC64 mem</c><br/>
 		/// <br/>
-		/// <c>NP REX.W 0F C7 /4</c><br/>
+		/// <c>NP o64 0F C7 /4</c><br/>
 		/// <br/>
 		/// <c>XSAVEC</c><br/>
 		/// <br/>
@@ -17560,7 +17560,7 @@ namespace Iced.Intel {
 		Xsaves_mem = 2194,
 		/// <summary><c>XSAVES64 mem</c><br/>
 		/// <br/>
-		/// <c>NP REX.W 0F C7 /5</c><br/>
+		/// <c>NP o64 0F C7 /5</c><br/>
 		/// <br/>
 		/// <c>XSAVES</c><br/>
 		/// <br/>
@@ -17608,7 +17608,7 @@ namespace Iced.Intel {
 		Rdrand_r32 = 2200,
 		/// <summary><c>RDRAND r64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F C7 /6</c><br/>
+		/// <c>o64 0F C7 /6</c><br/>
 		/// <br/>
 		/// <c>RDRAND</c><br/>
 		/// <br/>
@@ -17640,7 +17640,7 @@ namespace Iced.Intel {
 		Rdseed_r32 = 2204,
 		/// <summary><c>RDSEED r64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F C7 /7</c><br/>
+		/// <c>o64 0F C7 /7</c><br/>
 		/// <br/>
 		/// <c>RDSEED</c><br/>
 		/// <br/>
@@ -17680,7 +17680,7 @@ namespace Iced.Intel {
 		Bswap_r32 = 2209,
 		/// <summary><c>BSWAP r64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F C8+ro</c><br/>
+		/// <c>o64 0F C8+ro</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -18064,7 +18064,7 @@ namespace Iced.Intel {
 		Pmovmskb_r32_mm = 2257,
 		/// <summary><c>PMOVMSKB r64, mm</c><br/>
 		/// <br/>
-		/// <c>NP REX.W 0F D7 /r</c><br/>
+		/// <c>NP o64 0F D7 /r</c><br/>
 		/// <br/>
 		/// <c>SSE</c><br/>
 		/// <br/>
@@ -18080,7 +18080,7 @@ namespace Iced.Intel {
 		Pmovmskb_r32_xmm = 2259,
 		/// <summary><c>PMOVMSKB r64, xmm</c><br/>
 		/// <br/>
-		/// <c>66 REX.W 0F D7 /r</c><br/>
+		/// <c>66 o64 0F D7 /r</c><br/>
 		/// <br/>
 		/// <c>SSE2</c><br/>
 		/// <br/>
@@ -19062,7 +19062,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		EVEX_Vcvtdq2pd_ymm_k1z_xmmm128b32 = 2382,
-		/// <summary><c>VCVTDQ2PD zmm1 {k1}{z}, ymm2/m256/m32bcst</c><br/>
+		/// <summary><c>VCVTDQ2PD zmm1 {k1}{z}, ymm2/m256/m32bcst{er}</c><br/>
 		/// <br/>
 		/// <c>EVEX.512.F3.0F.W0 E6 /r</c><br/>
 		/// <br/>
@@ -20488,7 +20488,7 @@ namespace Iced.Intel {
 		Ud0_r32_rm32 = 2560,
 		/// <summary><c>UD0 r64, r/m64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F FF /r</c><br/>
+		/// <c>o64 0F FF /r</c><br/>
 		/// <br/>
 		/// <c>X64</c><br/>
 		/// <br/>
@@ -21502,22 +21502,22 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		VEX_Vptest_ymm_ymmm256 = 2687,
-		/// <summary><c>VBROADCASTSS xmm1, xmm2/m32</c><br/>
+		/// <summary><c>VBROADCASTSS xmm1, m32</c><br/>
 		/// <br/>
 		/// <c>VEX.128.66.0F38.W0 18 /r</c><br/>
 		/// <br/>
-		/// <c>AVX (reg,mem) or AVX2 (reg,reg)</c><br/>
+		/// <c>AVX</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		VEX_Vbroadcastss_xmm_xmmm32 = 2688,
-		/// <summary><c>VBROADCASTSS ymm1, xmm2/m32</c><br/>
+		VEX_Vbroadcastss_xmm_m32 = 2688,
+		/// <summary><c>VBROADCASTSS ymm1, m32</c><br/>
 		/// <br/>
 		/// <c>VEX.256.66.0F38.W0 18 /r</c><br/>
 		/// <br/>
-		/// <c>AVX (reg,mem) or AVX2 (reg,reg)</c><br/>
+		/// <c>AVX</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		VEX_Vbroadcastss_ymm_xmmm32 = 2689,
+		VEX_Vbroadcastss_ymm_m32 = 2689,
 		/// <summary><c>VBROADCASTSS xmm1 {k1}{z}, xmm2/m32</c><br/>
 		/// <br/>
 		/// <c>EVEX.128.66.0F38.W0 18 /r</c><br/>
@@ -21542,14 +21542,14 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		EVEX_Vbroadcastss_zmm_k1z_xmmm32 = 2692,
-		/// <summary><c>VBROADCASTSD ymm1, xmm2/m64</c><br/>
+		/// <summary><c>VBROADCASTSD ymm1, m64</c><br/>
 		/// <br/>
 		/// <c>VEX.256.66.0F38.W0 19 /r</c><br/>
 		/// <br/>
-		/// <c>AVX (reg,mem) or AVX2 (reg,reg)</c><br/>
+		/// <c>AVX</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		VEX_Vbroadcastsd_ymm_xmmm64 = 2693,
+		VEX_Vbroadcastsd_ymm_m64 = 2693,
 		/// <summary><c>VBROADCASTF32X2 ymm1 {k1}{z}, xmm2/m64</c><br/>
 		/// <br/>
 		/// <c>EVEX.256.66.0F38.W0 19 /r</c><br/>
@@ -29296,7 +29296,7 @@ namespace Iced.Intel {
 		Movbe_r32_m32 = 3661,
 		/// <summary><c>MOVBE r64, m64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 38 F0 /r</c><br/>
+		/// <c>o64 0F 38 F0 /r</c><br/>
 		/// <br/>
 		/// <c>MOVBE</c><br/>
 		/// <br/>
@@ -29312,7 +29312,7 @@ namespace Iced.Intel {
 		Crc32_r32_rm8 = 3663,
 		/// <summary><c>CRC32 r64, r/m8</c><br/>
 		/// <br/>
-		/// <c>F2 REX.W 0F 38 F0 /r</c><br/>
+		/// <c>F2 o64 0F 38 F0 /r</c><br/>
 		/// <br/>
 		/// <c>SSE4.2</c><br/>
 		/// <br/>
@@ -29336,7 +29336,7 @@ namespace Iced.Intel {
 		Movbe_m32_r32 = 3666,
 		/// <summary><c>MOVBE m64, r64</c><br/>
 		/// <br/>
-		/// <c>REX.W 0F 38 F1 /r</c><br/>
+		/// <c>o64 0F 38 F1 /r</c><br/>
 		/// <br/>
 		/// <c>MOVBE</c><br/>
 		/// <br/>
@@ -29360,7 +29360,7 @@ namespace Iced.Intel {
 		Crc32_r32_rm32 = 3669,
 		/// <summary><c>CRC32 r64, r/m64</c><br/>
 		/// <br/>
-		/// <c>F2 REX.W 0F 38 F1 /r</c><br/>
+		/// <c>F2 o64 0F 38 F1 /r</c><br/>
 		/// <br/>
 		/// <c>SSE4.2</c><br/>
 		/// <br/>
@@ -29456,7 +29456,7 @@ namespace Iced.Intel {
 		Wrussd_m32_r32 = 3681,
 		/// <summary><c>WRUSSQ m64, r64</c><br/>
 		/// <br/>
-		/// <c>66 REX.W 0F 38 F5 /r</c><br/>
+		/// <c>66 o64 0F 38 F5 /r</c><br/>
 		/// <br/>
 		/// <c>CET_SS</c><br/>
 		/// <br/>
@@ -29504,7 +29504,7 @@ namespace Iced.Intel {
 		Wrssd_m32_r32 = 3687,
 		/// <summary><c>WRSSQ m64, r64</c><br/>
 		/// <br/>
-		/// <c>NP REX.W 0F 38 F6 /r</c><br/>
+		/// <c>NP o64 0F 38 F6 /r</c><br/>
 		/// <br/>
 		/// <c>CET_SS</c><br/>
 		/// <br/>
@@ -29520,7 +29520,7 @@ namespace Iced.Intel {
 		Adcx_r32_rm32 = 3689,
 		/// <summary><c>ADCX r64, r/m64</c><br/>
 		/// <br/>
-		/// <c>66 REX.W 0F 38 F6 /r</c><br/>
+		/// <c>66 o64 0F 38 F6 /r</c><br/>
 		/// <br/>
 		/// <c>ADX</c><br/>
 		/// <br/>
@@ -29536,7 +29536,7 @@ namespace Iced.Intel {
 		Adox_r32_rm32 = 3691,
 		/// <summary><c>ADOX r64, r/m64</c><br/>
 		/// <br/>
-		/// <c>F3 REX.W 0F 38 F6 /r</c><br/>
+		/// <c>F3 o64 0F 38 F6 /r</c><br/>
 		/// <br/>
 		/// <c>ADX</c><br/>
 		/// <br/>
@@ -29640,7 +29640,7 @@ namespace Iced.Intel {
 		Movdir64b_r32_m512 = 3704,
 		/// <summary><c>MOVDIR64B r64, m512</c><br/>
 		/// <br/>
-		/// <c>66 0F 38 F8 /r</c><br/>
+		/// <c>a64 66 0F 38 F8 /r</c><br/>
 		/// <br/>
 		/// <c>MOVDIR64B</c><br/>
 		/// <br/>
@@ -29648,7 +29648,7 @@ namespace Iced.Intel {
 		Movdir64b_r64_m512 = 3705,
 		/// <summary><c>ENQCMDS r16, m512</c><br/>
 		/// <br/>
-		/// <c>a16 F3 0F 38 F8 /r</c><br/>
+		/// <c>a16 F3 0F 38 F8 !(11):rrr:bbb</c><br/>
 		/// <br/>
 		/// <c>ENQCMD</c><br/>
 		/// <br/>
@@ -29656,7 +29656,7 @@ namespace Iced.Intel {
 		Enqcmds_r16_m512 = 3706,
 		/// <summary><c>ENQCMDS r32, m512</c><br/>
 		/// <br/>
-		/// <c>a32 F3 0F 38 F8 /r</c><br/>
+		/// <c>a32 F3 0F 38 F8 !(11):rrr:bbb</c><br/>
 		/// <br/>
 		/// <c>ENQCMD</c><br/>
 		/// <br/>
@@ -29664,7 +29664,7 @@ namespace Iced.Intel {
 		Enqcmds_r32_m512 = 3707,
 		/// <summary><c>ENQCMDS r64, m512</c><br/>
 		/// <br/>
-		/// <c>F3 0F 38 F8 /r</c><br/>
+		/// <c>a64 F3 0F 38 F8 !(11):rrr:bbb</c><br/>
 		/// <br/>
 		/// <c>ENQCMD</c><br/>
 		/// <br/>
@@ -29672,7 +29672,7 @@ namespace Iced.Intel {
 		Enqcmds_r64_m512 = 3708,
 		/// <summary><c>ENQCMD r16, m512</c><br/>
 		/// <br/>
-		/// <c>a16 F2 0F 38 F8 /r</c><br/>
+		/// <c>a16 F2 0F 38 F8 !(11):rrr:bbb</c><br/>
 		/// <br/>
 		/// <c>ENQCMD</c><br/>
 		/// <br/>
@@ -29680,7 +29680,7 @@ namespace Iced.Intel {
 		Enqcmd_r16_m512 = 3709,
 		/// <summary><c>ENQCMD r32, m512</c><br/>
 		/// <br/>
-		/// <c>a32 F2 0F 38 F8 /r</c><br/>
+		/// <c>a32 F2 0F 38 F8 !(11):rrr:bbb</c><br/>
 		/// <br/>
 		/// <c>ENQCMD</c><br/>
 		/// <br/>
@@ -29688,7 +29688,7 @@ namespace Iced.Intel {
 		Enqcmd_r32_m512 = 3710,
 		/// <summary><c>ENQCMD r64, m512</c><br/>
 		/// <br/>
-		/// <c>F2 0F 38 F8 /r</c><br/>
+		/// <c>a64 F2 0F 38 F8 !(11):rrr:bbb</c><br/>
 		/// <br/>
 		/// <c>ENQCMD</c><br/>
 		/// <br/>
@@ -29704,7 +29704,7 @@ namespace Iced.Intel {
 		Movdiri_m32_r32 = 3712,
 		/// <summary><c>MOVDIRI m64, r64</c><br/>
 		/// <br/>
-		/// <c>NP REX.W 0F 38 F9 /r</c><br/>
+		/// <c>NP o64 0F 38 F9 /r</c><br/>
 		/// <br/>
 		/// <c>MOVDIRI</c><br/>
 		/// <br/>
@@ -30192,7 +30192,7 @@ namespace Iced.Intel {
 		Pextrb_r32m8_xmm_imm8 = 3773,
 		/// <summary><c>PEXTRB r64/m8, xmm2, imm8</c><br/>
 		/// <br/>
-		/// <c>66 REX.W 0F 3A 14 /r ib</c><br/>
+		/// <c>66 o64 0F 3A 14 /r ib</c><br/>
 		/// <br/>
 		/// <c>SSE4.1</c><br/>
 		/// <br/>
@@ -30240,7 +30240,7 @@ namespace Iced.Intel {
 		Pextrw_r32m16_xmm_imm8 = 3779,
 		/// <summary><c>PEXTRW r64/m16, xmm, imm8</c><br/>
 		/// <br/>
-		/// <c>66 REX.W 0F 3A 15 /r ib</c><br/>
+		/// <c>66 o64 0F 3A 15 /r ib</c><br/>
 		/// <br/>
 		/// <c>SSE4.1</c><br/>
 		/// <br/>
@@ -30288,7 +30288,7 @@ namespace Iced.Intel {
 		Pextrd_rm32_xmm_imm8 = 3785,
 		/// <summary><c>PEXTRQ r/m64, xmm2, imm8</c><br/>
 		/// <br/>
-		/// <c>66 REX.W 0F 3A 16 /r ib</c><br/>
+		/// <c>66 o64 0F 3A 16 /r ib</c><br/>
 		/// <br/>
 		/// <c>SSE4.1</c><br/>
 		/// <br/>
@@ -30336,7 +30336,7 @@ namespace Iced.Intel {
 		Extractps_rm32_xmm_imm8 = 3791,
 		/// <summary><c>EXTRACTPS r64/m32, xmm1, imm8</c><br/>
 		/// <br/>
-		/// <c>66 REX.W 0F 3A 17 /r ib</c><br/>
+		/// <c>66 o64 0F 3A 17 /r ib</c><br/>
 		/// <br/>
 		/// <c>SSE4.1</c><br/>
 		/// <br/>
@@ -30632,7 +30632,7 @@ namespace Iced.Intel {
 		Pinsrb_xmm_r32m8_imm8 = 3828,
 		/// <summary><c>PINSRB xmm1, r64/m8, imm8</c><br/>
 		/// <br/>
-		/// <c>66 REX.W 0F 3A 20 /r ib</c><br/>
+		/// <c>66 o64 0F 3A 20 /r ib</c><br/>
 		/// <br/>
 		/// <c>SSE4.1</c><br/>
 		/// <br/>
@@ -30704,7 +30704,7 @@ namespace Iced.Intel {
 		Pinsrd_xmm_rm32_imm8 = 3837,
 		/// <summary><c>PINSRQ xmm1, r/m64, imm8</c><br/>
 		/// <br/>
-		/// <c>66 REX.W 0F 3A 22 /r ib</c><br/>
+		/// <c>66 o64 0F 3A 22 /r ib</c><br/>
 		/// <br/>
 		/// <c>SSE4.1</c><br/>
 		/// <br/>
@@ -31334,70 +31334,70 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		VEX_Vperm2i128_ymm_ymm_ymmm256_imm8 = 3916,
-		/// <summary><c>VPERMIL2PS xmm1, xmm2, xmm3/m128, xmm4, imm2</c><br/>
+		/// <summary><c>VPERMIL2PS xmm1, xmm2, xmm3/m128, xmm4, imm4</c><br/>
 		/// <br/>
 		/// <c>VEX.128.66.0F3A.W0 48 /r /is5</c><br/>
 		/// <br/>
 		/// <c>XOP</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		VEX_Vpermil2ps_xmm_xmm_xmmm128_xmm_imm2 = 3917,
-		/// <summary><c>VPERMIL2PS ymm1, ymm2, ymm3/m256, ymm4, imm2</c><br/>
+		VEX_Vpermil2ps_xmm_xmm_xmmm128_xmm_imm4 = 3917,
+		/// <summary><c>VPERMIL2PS ymm1, ymm2, ymm3/m256, ymm4, imm4</c><br/>
 		/// <br/>
 		/// <c>VEX.256.66.0F3A.W0 48 /r /is5</c><br/>
 		/// <br/>
 		/// <c>XOP</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		VEX_Vpermil2ps_ymm_ymm_ymmm256_ymm_imm2 = 3918,
-		/// <summary><c>VPERMIL2PS xmm1, xmm2, xmm3, xmm4/m128, imm2</c><br/>
+		VEX_Vpermil2ps_ymm_ymm_ymmm256_ymm_imm4 = 3918,
+		/// <summary><c>VPERMIL2PS xmm1, xmm2, xmm3, xmm4/m128, imm4</c><br/>
 		/// <br/>
 		/// <c>VEX.128.66.0F3A.W1 48 /r /is5</c><br/>
 		/// <br/>
 		/// <c>XOP</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		VEX_Vpermil2ps_xmm_xmm_xmm_xmmm128_imm2 = 3919,
-		/// <summary><c>VPERMIL2PS ymm1, ymm2, ymm3, ymm4/m256, imm2</c><br/>
+		VEX_Vpermil2ps_xmm_xmm_xmm_xmmm128_imm4 = 3919,
+		/// <summary><c>VPERMIL2PS ymm1, ymm2, ymm3, ymm4/m256, imm4</c><br/>
 		/// <br/>
 		/// <c>VEX.256.66.0F3A.W1 48 /r /is5</c><br/>
 		/// <br/>
 		/// <c>XOP</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		VEX_Vpermil2ps_ymm_ymm_ymm_ymmm256_imm2 = 3920,
-		/// <summary><c>VPERMIL2PD xmm1, xmm2, xmm3/m128, xmm4, imm2</c><br/>
+		VEX_Vpermil2ps_ymm_ymm_ymm_ymmm256_imm4 = 3920,
+		/// <summary><c>VPERMIL2PD xmm1, xmm2, xmm3/m128, xmm4, imm4</c><br/>
 		/// <br/>
 		/// <c>VEX.128.66.0F3A.W0 49 /r /is5</c><br/>
 		/// <br/>
 		/// <c>XOP</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		VEX_Vpermil2pd_xmm_xmm_xmmm128_xmm_imm2 = 3921,
-		/// <summary><c>VPERMIL2PD ymm1, ymm2, ymm3/m256, ymm4, imm2</c><br/>
+		VEX_Vpermil2pd_xmm_xmm_xmmm128_xmm_imm4 = 3921,
+		/// <summary><c>VPERMIL2PD ymm1, ymm2, ymm3/m256, ymm4, imm4</c><br/>
 		/// <br/>
 		/// <c>VEX.256.66.0F3A.W0 49 /r /is5</c><br/>
 		/// <br/>
 		/// <c>XOP</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		VEX_Vpermil2pd_ymm_ymm_ymmm256_ymm_imm2 = 3922,
-		/// <summary><c>VPERMIL2PD xmm1, xmm2, xmm3, xmm4/m128, imm2</c><br/>
+		VEX_Vpermil2pd_ymm_ymm_ymmm256_ymm_imm4 = 3922,
+		/// <summary><c>VPERMIL2PD xmm1, xmm2, xmm3, xmm4/m128, imm4</c><br/>
 		/// <br/>
 		/// <c>VEX.128.66.0F3A.W1 49 /r /is5</c><br/>
 		/// <br/>
 		/// <c>XOP</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		VEX_Vpermil2pd_xmm_xmm_xmm_xmmm128_imm2 = 3923,
-		/// <summary><c>VPERMIL2PD ymm1, ymm2, ymm3, ymm4/m256, imm2</c><br/>
+		VEX_Vpermil2pd_xmm_xmm_xmm_xmmm128_imm4 = 3923,
+		/// <summary><c>VPERMIL2PD ymm1, ymm2, ymm3, ymm4/m256, imm4</c><br/>
 		/// <br/>
 		/// <c>VEX.256.66.0F3A.W1 49 /r /is5</c><br/>
 		/// <br/>
 		/// <c>XOP</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		VEX_Vpermil2pd_ymm_ymm_ymm_ymmm256_imm2 = 3924,
+		VEX_Vpermil2pd_ymm_ymm_ymm_ymmm256_imm4 = 3924,
 		/// <summary><c>VBLENDVPS xmm1, xmm2, xmm3/m128, xmm4</c><br/>
 		/// <br/>
 		/// <c>VEX.128.66.0F3A.W0 4A /r /is4</c><br/>
@@ -31776,7 +31776,7 @@ namespace Iced.Intel {
 		Pcmpestrm_xmm_xmmm128_imm8 = 3971,
 		/// <summary><c>PCMPESTRM64 xmm1, xmm2/m128, imm8</c><br/>
 		/// <br/>
-		/// <c>66 REX.W 0F 3A 60 /r ib</c><br/>
+		/// <c>66 o64 0F 3A 60 /r ib</c><br/>
 		/// <br/>
 		/// <c>SSE4.2</c><br/>
 		/// <br/>
@@ -31808,7 +31808,7 @@ namespace Iced.Intel {
 		Pcmpestri_xmm_xmmm128_imm8 = 3975,
 		/// <summary><c>PCMPESTRI64 xmm1, xmm2/m128, imm8</c><br/>
 		/// <br/>
-		/// <c>66 REX.W 0F 3A 61 /r ib</c><br/>
+		/// <c>66 o64 0F 3A 61 /r ib</c><br/>
 		/// <br/>
 		/// <c>SSE4.2</c><br/>
 		/// <br/>
@@ -33414,7 +33414,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>64-bit</c></summary>
 		XOP_Lwpval_r64_rm32_imm32 = 4176,
-		/// <summary><c>PI2FW mm1, mm2/m64</c><br/>
+		/// <summary><c>PI2FW mm, mm/m64</c><br/>
 		/// <br/>
 		/// <c>0F 0F /r 0C</c><br/>
 		/// <br/>
@@ -33422,7 +33422,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		D3NOW_Pi2fw_mm_mmm64 = 4177,
-		/// <summary><c>PI2FD mm1, mm2/m64</c><br/>
+		/// <summary><c>PI2FD mm, mm/m64</c><br/>
 		/// <br/>
 		/// <c>0F 0F /r 0D</c><br/>
 		/// <br/>
@@ -33430,7 +33430,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		D3NOW_Pi2fd_mm_mmm64 = 4178,
-		/// <summary><c>PF2IW mm1, mm2/m64</c><br/>
+		/// <summary><c>PF2IW mm, mm/m64</c><br/>
 		/// <br/>
 		/// <c>0F 0F /r 1C</c><br/>
 		/// <br/>
@@ -33438,7 +33438,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		D3NOW_Pf2iw_mm_mmm64 = 4179,
-		/// <summary><c>PF2ID mm1, mm2/m64</c><br/>
+		/// <summary><c>PF2ID mm, mm/m64</c><br/>
 		/// <br/>
 		/// <c>0F 0F /r 1D</c><br/>
 		/// <br/>
@@ -33446,7 +33446,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		D3NOW_Pf2id_mm_mmm64 = 4180,
-		/// <summary><c>PFRCPV mm1, mm2/m64</c><br/>
+		/// <summary><c>PFRCPV mm, mm/m64</c><br/>
 		/// <br/>
 		/// <c>0F 0F /r 86</c><br/>
 		/// <br/>
@@ -33454,7 +33454,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		D3NOW_Pfrcpv_mm_mmm64 = 4181,
-		/// <summary><c>PFRSQRTV mm1, mm2/m64</c><br/>
+		/// <summary><c>PFRSQRTV mm, mm/m64</c><br/>
 		/// <br/>
 		/// <c>0F 0F /r 87</c><br/>
 		/// <br/>
@@ -33462,7 +33462,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		D3NOW_Pfrsqrtv_mm_mmm64 = 4182,
-		/// <summary><c>PFNACC mm1, mm2/m64</c><br/>
+		/// <summary><c>PFNACC mm, mm/m64</c><br/>
 		/// <br/>
 		/// <c>0F 0F /r 8A</c><br/>
 		/// <br/>
@@ -33470,7 +33470,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		D3NOW_Pfnacc_mm_mmm64 = 4183,
-		/// <summary><c>PFPNACC mm1, mm2/m64</c><br/>
+		/// <summary><c>PFPNACC mm, mm/m64</c><br/>
 		/// <br/>
 		/// <c>0F 0F /r 8E</c><br/>
 		/// <br/>
@@ -33478,7 +33478,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		D3NOW_Pfpnacc_mm_mmm64 = 4184,
-		/// <summary><c>PFCMPGE mm1, mm2/m64</c><br/>
+		/// <summary><c>PFCMPGE mm, mm/m64</c><br/>
 		/// <br/>
 		/// <c>0F 0F /r 90</c><br/>
 		/// <br/>
@@ -33486,7 +33486,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		D3NOW_Pfcmpge_mm_mmm64 = 4185,
-		/// <summary><c>PFMIN mm1, mm2/m64</c><br/>
+		/// <summary><c>PFMIN mm, mm/m64</c><br/>
 		/// <br/>
 		/// <c>0F 0F /r 94</c><br/>
 		/// <br/>
@@ -33494,7 +33494,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		D3NOW_Pfmin_mm_mmm64 = 4186,
-		/// <summary><c>PFRCP mm1, mm2/m64</c><br/>
+		/// <summary><c>PFRCP mm, mm/m64</c><br/>
 		/// <br/>
 		/// <c>0F 0F /r 96</c><br/>
 		/// <br/>
@@ -33502,7 +33502,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		D3NOW_Pfrcp_mm_mmm64 = 4187,
-		/// <summary><c>PFRSQRT mm1, mm2/m64</c><br/>
+		/// <summary><c>PFRSQRT mm, mm/m64</c><br/>
 		/// <br/>
 		/// <c>0F 0F /r 97</c><br/>
 		/// <br/>
@@ -33510,7 +33510,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		D3NOW_Pfrsqrt_mm_mmm64 = 4188,
-		/// <summary><c>PFSUB mm1, mm2/m64</c><br/>
+		/// <summary><c>PFSUB mm, mm/m64</c><br/>
 		/// <br/>
 		/// <c>0F 0F /r 9A</c><br/>
 		/// <br/>
@@ -33518,7 +33518,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		D3NOW_Pfsub_mm_mmm64 = 4189,
-		/// <summary><c>PFADD mm1, mm2/m64</c><br/>
+		/// <summary><c>PFADD mm, mm/m64</c><br/>
 		/// <br/>
 		/// <c>0F 0F /r 9E</c><br/>
 		/// <br/>
@@ -33526,7 +33526,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		D3NOW_Pfadd_mm_mmm64 = 4190,
-		/// <summary><c>PFCMPGT mm1, mm2/m64</c><br/>
+		/// <summary><c>PFCMPGT mm, mm/m64</c><br/>
 		/// <br/>
 		/// <c>0F 0F /r A0</c><br/>
 		/// <br/>
@@ -33534,7 +33534,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		D3NOW_Pfcmpgt_mm_mmm64 = 4191,
-		/// <summary><c>PFMAX mm1, mm2/m64</c><br/>
+		/// <summary><c>PFMAX mm, mm/m64</c><br/>
 		/// <br/>
 		/// <c>0F 0F /r A4</c><br/>
 		/// <br/>
@@ -33542,7 +33542,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		D3NOW_Pfmax_mm_mmm64 = 4192,
-		/// <summary><c>PFRCPIT1 mm1, mm2/m64</c><br/>
+		/// <summary><c>PFRCPIT1 mm, mm/m64</c><br/>
 		/// <br/>
 		/// <c>0F 0F /r A6</c><br/>
 		/// <br/>
@@ -33550,7 +33550,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		D3NOW_Pfrcpit1_mm_mmm64 = 4193,
-		/// <summary><c>PFRSQIT1 mm1, mm2/m64</c><br/>
+		/// <summary><c>PFRSQIT1 mm, mm/m64</c><br/>
 		/// <br/>
 		/// <c>0F 0F /r A7</c><br/>
 		/// <br/>
@@ -33558,7 +33558,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		D3NOW_Pfrsqit1_mm_mmm64 = 4194,
-		/// <summary><c>PFSUBR mm1, mm2/m64</c><br/>
+		/// <summary><c>PFSUBR mm, mm/m64</c><br/>
 		/// <br/>
 		/// <c>0F 0F /r AA</c><br/>
 		/// <br/>
@@ -33566,7 +33566,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		D3NOW_Pfsubr_mm_mmm64 = 4195,
-		/// <summary><c>PFACC mm1, mm2/m64</c><br/>
+		/// <summary><c>PFACC mm, mm/m64</c><br/>
 		/// <br/>
 		/// <c>0F 0F /r AE</c><br/>
 		/// <br/>
@@ -33574,7 +33574,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		D3NOW_Pfacc_mm_mmm64 = 4196,
-		/// <summary><c>PFCMPEQ mm1, mm2/m64</c><br/>
+		/// <summary><c>PFCMPEQ mm, mm/m64</c><br/>
 		/// <br/>
 		/// <c>0F 0F /r B0</c><br/>
 		/// <br/>
@@ -33582,7 +33582,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		D3NOW_Pfcmpeq_mm_mmm64 = 4197,
-		/// <summary><c>PFMUL mm1, mm2/m64</c><br/>
+		/// <summary><c>PFMUL mm, mm/m64</c><br/>
 		/// <br/>
 		/// <c>0F 0F /r B4</c><br/>
 		/// <br/>
@@ -33590,7 +33590,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		D3NOW_Pfmul_mm_mmm64 = 4198,
-		/// <summary><c>PFRCPIT2 mm1, mm2/m64</c><br/>
+		/// <summary><c>PFRCPIT2 mm, mm/m64</c><br/>
 		/// <br/>
 		/// <c>0F 0F /r B6</c><br/>
 		/// <br/>
@@ -33598,7 +33598,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		D3NOW_Pfrcpit2_mm_mmm64 = 4199,
-		/// <summary><c>PMULHRW mm1, mm2/m64</c><br/>
+		/// <summary><c>PMULHRW mm, mm/m64</c><br/>
 		/// <br/>
 		/// <c>0F 0F /r B7</c><br/>
 		/// <br/>
@@ -33606,7 +33606,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		D3NOW_Pmulhrw_mm_mmm64 = 4200,
-		/// <summary><c>PSWAPD mm1, mm2/m64</c><br/>
+		/// <summary><c>PSWAPD mm, mm/m64</c><br/>
 		/// <br/>
 		/// <c>0F 0F /r BB</c><br/>
 		/// <br/>
@@ -33614,7 +33614,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		D3NOW_Pswapd_mm_mmm64 = 4201,
-		/// <summary><c>PAVGUSB mm1, mm2/m64</c><br/>
+		/// <summary><c>PAVGUSB mm, mm/m64</c><br/>
 		/// <br/>
 		/// <c>0F 0F /r BF</c><br/>
 		/// <br/>
@@ -33626,7 +33626,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>F3 0F 01 FE</c><br/>
 		/// <br/>
-		/// <c>SNP</c><br/>
+		/// <c>SEV-SNP</c><br/>
 		/// <br/>
 		/// <c>64-bit</c></summary>
 		Rmpadjust = 4203,
@@ -33634,7 +33634,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>F2 0F 01 FE</c><br/>
 		/// <br/>
-		/// <c>SNP</c><br/>
+		/// <c>SEV-SNP</c><br/>
 		/// <br/>
 		/// <c>64-bit</c></summary>
 		Rmpupdate = 4204,
@@ -33642,7 +33642,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>F3 0F 01 FF</c><br/>
 		/// <br/>
-		/// <c>SNP</c><br/>
+		/// <c>SEV-SNP</c><br/>
 		/// <br/>
 		/// <c>64-bit</c></summary>
 		Psmash = 4205,
@@ -33650,7 +33650,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>a16 F2 0F 01 FF</c><br/>
 		/// <br/>
-		/// <c>SNP</c><br/>
+		/// <c>SEV-SNP</c><br/>
 		/// <br/>
 		/// <c>16/32-bit</c></summary>
 		Pvalidatew = 4206,
@@ -33658,15 +33658,15 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>a32 F2 0F 01 FF</c><br/>
 		/// <br/>
-		/// <c>SNP</c><br/>
+		/// <c>SEV-SNP</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		Pvalidated = 4207,
 		/// <summary><c>PVALIDATE</c><br/>
 		/// <br/>
-		/// <c>F2 0F 01 FF</c><br/>
+		/// <c>a64 F2 0F 01 FF</c><br/>
 		/// <br/>
-		/// <c>SNP</c><br/>
+		/// <c>SEV-SNP</c><br/>
 		/// <br/>
 		/// <c>64-bit</c></summary>
 		Pvalidateq = 4208,
@@ -33712,7 +33712,7 @@ namespace Iced.Intel {
 		Invlpgbd = 4213,
 		/// <summary><c>INVLPGB</c><br/>
 		/// <br/>
-		/// <c>NP 0F 01 FE</c><br/>
+		/// <c>a64 NP 0F 01 FE</c><br/>
 		/// <br/>
 		/// <c>INVLPGB</c><br/>
 		/// <br/>
@@ -33733,7 +33733,7 @@ namespace Iced.Intel {
 		/// <c>PREFETCHW</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		PrefetchReserved3_m8 = 4216,
+		Prefetchreserved3_m8 = 4216,
 		/// <summary><c>PREFETCH m8</c><br/>
 		/// <br/>
 		/// <c>0F 0D /4</c><br/>
@@ -33741,7 +33741,7 @@ namespace Iced.Intel {
 		/// <c>PREFETCHW</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		PrefetchReserved4_m8 = 4217,
+		Prefetchreserved4_m8 = 4217,
 		/// <summary><c>PREFETCH m8</c><br/>
 		/// <br/>
 		/// <c>0F 0D /5</c><br/>
@@ -33749,7 +33749,7 @@ namespace Iced.Intel {
 		/// <c>PREFETCHW</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		PrefetchReserved5_m8 = 4218,
+		Prefetchreserved5_m8 = 4218,
 		/// <summary><c>PREFETCH m8</c><br/>
 		/// <br/>
 		/// <c>0F 0D /6</c><br/>
@@ -33757,7 +33757,7 @@ namespace Iced.Intel {
 		/// <c>PREFETCHW</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		PrefetchReserved6_m8 = 4219,
+		Prefetchreserved6_m8 = 4219,
 		/// <summary><c>PREFETCH m8</c><br/>
 		/// <br/>
 		/// <c>0F 0D /7</c><br/>
@@ -33765,7 +33765,7 @@ namespace Iced.Intel {
 		/// <c>PREFETCHW</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
-		PrefetchReserved7_m8 = 4220,
+		Prefetchreserved7_m8 = 4220,
 		/// <summary><c>UD0</c><br/>
 		/// <br/>
 		/// <c>0F FF</c><br/>
@@ -33778,13 +33778,13 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>F3 0F 01 D9</c><br/>
 		/// <br/>
-		/// <c>SVM</c><br/>
+		/// <c>SEV-ES</c><br/>
 		/// <br/>
 		/// <c>16/32/64-bit</c></summary>
 		Vmgexit = 4222,
 		/// <summary><c>GETSECQ</c><br/>
 		/// <br/>
-		/// <c>NP REX.W 0F 37</c><br/>
+		/// <c>NP o64 0F 37</c><br/>
 		/// <br/>
 		/// <c>SMX</c><br/>
 		/// <br/>
@@ -34038,7 +34038,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32-bit</c></summary>
 		Altinst = 4254,
-		/// <summary><c>PAVEB mm1, mm2/m64</c><br/>
+		/// <summary><c>PAVEB mm, mm/m64</c><br/>
 		/// <br/>
 		/// <c>0F 50 /r</c><br/>
 		/// <br/>
@@ -34046,7 +34046,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32-bit</c></summary>
 		Paveb_mm_mmm64 = 4255,
-		/// <summary><c>PADDSIW mm1, mm2/m64</c><br/>
+		/// <summary><c>PADDSIW mm, mm/m64</c><br/>
 		/// <br/>
 		/// <c>0F 51 /r</c><br/>
 		/// <br/>
@@ -34054,7 +34054,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32-bit</c></summary>
 		Paddsiw_mm_mmm64 = 4256,
-		/// <summary><c>PMAGW mm1, mm2/m64</c><br/>
+		/// <summary><c>PMAGW mm, mm/m64</c><br/>
 		/// <br/>
 		/// <c>0F 52 /r</c><br/>
 		/// <br/>
@@ -34062,7 +34062,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32-bit</c></summary>
 		Pmagw_mm_mmm64 = 4257,
-		/// <summary><c>PDISTIB mm1, m64</c><br/>
+		/// <summary><c>PDISTIB mm, m64</c><br/>
 		/// <br/>
 		/// <c>0F 54 /r</c><br/>
 		/// <br/>
@@ -34070,7 +34070,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32-bit</c></summary>
 		Pdistib_mm_m64 = 4258,
-		/// <summary><c>PSUBSIW mm1, mm2/m64</c><br/>
+		/// <summary><c>PSUBSIW mm, mm/m64</c><br/>
 		/// <br/>
 		/// <c>0F 55 /r</c><br/>
 		/// <br/>
@@ -34078,7 +34078,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32-bit</c></summary>
 		Psubsiw_mm_mmm64 = 4259,
-		/// <summary><c>PMVZB mm1, m64</c><br/>
+		/// <summary><c>PMVZB mm, m64</c><br/>
 		/// <br/>
 		/// <c>0F 58 /r</c><br/>
 		/// <br/>
@@ -34086,7 +34086,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32-bit</c></summary>
 		Pmvzb_mm_m64 = 4260,
-		/// <summary><c>PMULHRW mm1, mm2/m64</c><br/>
+		/// <summary><c>PMULHRW mm, mm/m64</c><br/>
 		/// <br/>
 		/// <c>0F 59 /r</c><br/>
 		/// <br/>
@@ -34094,7 +34094,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32-bit</c></summary>
 		Pmulhrw_mm_mmm64 = 4261,
-		/// <summary><c>PMVNZB mm1, m64</c><br/>
+		/// <summary><c>PMVNZB mm, m64</c><br/>
 		/// <br/>
 		/// <c>0F 5A /r</c><br/>
 		/// <br/>
@@ -34102,7 +34102,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32-bit</c></summary>
 		Pmvnzb_mm_m64 = 4262,
-		/// <summary><c>PMVLZB mm1, m64</c><br/>
+		/// <summary><c>PMVLZB mm, m64</c><br/>
 		/// <br/>
 		/// <c>0F 5B /r</c><br/>
 		/// <br/>
@@ -34110,7 +34110,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32-bit</c></summary>
 		Pmvlzb_mm_m64 = 4263,
-		/// <summary><c>PMVGEZB mm1, m64</c><br/>
+		/// <summary><c>PMVGEZB mm, m64</c><br/>
 		/// <br/>
 		/// <c>0F 5C /r</c><br/>
 		/// <br/>
@@ -34118,7 +34118,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32-bit</c></summary>
 		Pmvgezb_mm_m64 = 4264,
-		/// <summary><c>PMULHRIW mm1, mm2/m64</c><br/>
+		/// <summary><c>PMULHRIW mm, mm/m64</c><br/>
 		/// <br/>
 		/// <c>0F 5D /r</c><br/>
 		/// <br/>
@@ -34126,7 +34126,7 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32-bit</c></summary>
 		Pmulhriw_mm_mmm64 = 4265,
-		/// <summary><c>PMACHRIW mm1, m64</c><br/>
+		/// <summary><c>PMACHRIW mm, m64</c><br/>
 		/// <br/>
 		/// <c>0F 5E /r</c><br/>
 		/// <br/>
@@ -34230,5 +34230,269 @@ namespace Iced.Intel {
 		/// <br/>
 		/// <c>16/32-bit</c></summary>
 		Frinear = 4278,
+		/// <summary><c>TDCALL</c><br/>
+		/// <br/>
+		/// <c>66 0F 01 CC</c><br/>
+		/// <br/>
+		/// <c>TDX</c><br/>
+		/// <br/>
+		/// <c>16/32/64-bit</c></summary>
+		Tdcall = 4279,
+		/// <summary><c>SEAMRET</c><br/>
+		/// <br/>
+		/// <c>66 0F 01 CD</c><br/>
+		/// <br/>
+		/// <c>TDX</c><br/>
+		/// <br/>
+		/// <c>64-bit</c></summary>
+		Seamret = 4280,
+		/// <summary><c>SEAMOPS</c><br/>
+		/// <br/>
+		/// <c>66 0F 01 CE</c><br/>
+		/// <br/>
+		/// <c>TDX</c><br/>
+		/// <br/>
+		/// <c>64-bit</c></summary>
+		Seamops = 4281,
+		/// <summary><c>SEAMCALL</c><br/>
+		/// <br/>
+		/// <c>66 0F 01 CF</c><br/>
+		/// <br/>
+		/// <c>TDX</c><br/>
+		/// <br/>
+		/// <c>64-bit</c></summary>
+		Seamcall = 4282,
+		/// <summary><c>AESENCWIDE128KL m384, &lt;XMM0-7&gt;</c><br/>
+		/// <br/>
+		/// <c>F3 0F 38 D8 !(11):000:bbb</c><br/>
+		/// <br/>
+		/// <c>AESKLE and WIDE_KL</c><br/>
+		/// <br/>
+		/// <c>16/32/64-bit</c></summary>
+		Aesencwide128kl_m384 = 4283,
+		/// <summary><c>AESDECWIDE128KL m384, &lt;XMM0-7&gt;</c><br/>
+		/// <br/>
+		/// <c>F3 0F 38 D8 !(11):001:bbb</c><br/>
+		/// <br/>
+		/// <c>AESKLE and WIDE_KL</c><br/>
+		/// <br/>
+		/// <c>16/32/64-bit</c></summary>
+		Aesdecwide128kl_m384 = 4284,
+		/// <summary><c>AESENCWIDE256KL m512, &lt;XMM0-7&gt;</c><br/>
+		/// <br/>
+		/// <c>F3 0F 38 D8 !(11):010:bbb</c><br/>
+		/// <br/>
+		/// <c>AESKLE and WIDE_KL</c><br/>
+		/// <br/>
+		/// <c>16/32/64-bit</c></summary>
+		Aesencwide256kl_m512 = 4285,
+		/// <summary><c>AESDECWIDE256KL m512, &lt;XMM0-7&gt;</c><br/>
+		/// <br/>
+		/// <c>F3 0F 38 D8 !(11):011:bbb</c><br/>
+		/// <br/>
+		/// <c>AESKLE and WIDE_KL</c><br/>
+		/// <br/>
+		/// <c>16/32/64-bit</c></summary>
+		Aesdecwide256kl_m512 = 4286,
+		/// <summary><c>LOADIWKEY xmm1, xmm2, &lt;EAX&gt;, &lt;XMM0&gt;</c><br/>
+		/// <br/>
+		/// <c>F3 0F 38 DC 11:rrr:bbb</c><br/>
+		/// <br/>
+		/// <c>KL</c><br/>
+		/// <br/>
+		/// <c>16/32/64-bit</c></summary>
+		Loadiwkey_xmm_xmm = 4287,
+		/// <summary><c>AESENC128KL xmm, m384</c><br/>
+		/// <br/>
+		/// <c>F3 0F 38 DC !(11):rrr:bbb</c><br/>
+		/// <br/>
+		/// <c>AESKLE</c><br/>
+		/// <br/>
+		/// <c>16/32/64-bit</c></summary>
+		Aesenc128kl_xmm_m384 = 4288,
+		/// <summary><c>AESDEC128KL xmm, m384</c><br/>
+		/// <br/>
+		/// <c>F3 0F 38 DD !(11):rrr:bbb</c><br/>
+		/// <br/>
+		/// <c>AESKLE</c><br/>
+		/// <br/>
+		/// <c>16/32/64-bit</c></summary>
+		Aesdec128kl_xmm_m384 = 4289,
+		/// <summary><c>AESENC256KL xmm, m512</c><br/>
+		/// <br/>
+		/// <c>F3 0F 38 DE !(11):rrr:bbb</c><br/>
+		/// <br/>
+		/// <c>AESKLE</c><br/>
+		/// <br/>
+		/// <c>16/32/64-bit</c></summary>
+		Aesenc256kl_xmm_m512 = 4290,
+		/// <summary><c>AESDEC256KL xmm, m512</c><br/>
+		/// <br/>
+		/// <c>F3 0F 38 DF !(11):rrr:bbb</c><br/>
+		/// <br/>
+		/// <c>AESKLE</c><br/>
+		/// <br/>
+		/// <c>16/32/64-bit</c></summary>
+		Aesdec256kl_xmm_m512 = 4291,
+		/// <summary><c>ENCODEKEY128 r32, r32, &lt;XMM0-2&gt;, &lt;XMM4-6&gt;</c><br/>
+		/// <br/>
+		/// <c>F3 0F 38 FA 11:rrr:bbb</c><br/>
+		/// <br/>
+		/// <c>AESKLE</c><br/>
+		/// <br/>
+		/// <c>16/32/64-bit</c></summary>
+		Encodekey128_r32_r32 = 4292,
+		/// <summary><c>ENCODEKEY256 r32, r32, &lt;XMM0-6&gt;</c><br/>
+		/// <br/>
+		/// <c>F3 0F 38 FB 11:rrr:bbb</c><br/>
+		/// <br/>
+		/// <c>AESKLE</c><br/>
+		/// <br/>
+		/// <c>16/32/64-bit</c></summary>
+		Encodekey256_r32_r32 = 4293,
+		/// <summary><c>VBROADCASTSS xmm1, xmm2</c><br/>
+		/// <br/>
+		/// <c>VEX.128.66.0F38.W0 18 /r</c><br/>
+		/// <br/>
+		/// <c>AVX2</c><br/>
+		/// <br/>
+		/// <c>16/32/64-bit</c></summary>
+		VEX_Vbroadcastss_xmm_xmm = 4294,
+		/// <summary><c>VBROADCASTSS ymm1, xmm2</c><br/>
+		/// <br/>
+		/// <c>VEX.256.66.0F38.W0 18 /r</c><br/>
+		/// <br/>
+		/// <c>AVX2</c><br/>
+		/// <br/>
+		/// <c>16/32/64-bit</c></summary>
+		VEX_Vbroadcastss_ymm_xmm = 4295,
+		/// <summary><c>VBROADCASTSD ymm1, xmm2</c><br/>
+		/// <br/>
+		/// <c>VEX.256.66.0F38.W0 19 /r</c><br/>
+		/// <br/>
+		/// <c>AVX2</c><br/>
+		/// <br/>
+		/// <c>16/32/64-bit</c></summary>
+		VEX_Vbroadcastsd_ymm_xmm = 4296,
+		/// <summary><c>VMGEXIT</c><br/>
+		/// <br/>
+		/// <c>F2 0F 01 D9</c><br/>
+		/// <br/>
+		/// <c>SEV-ES</c><br/>
+		/// <br/>
+		/// <c>16/32/64-bit</c></summary>
+		Vmgexit_F2 = 4297,
+		/// <summary><c>UIRET</c><br/>
+		/// <br/>
+		/// <c>F3 0F 01 EC</c><br/>
+		/// <br/>
+		/// <c>UINTR</c><br/>
+		/// <br/>
+		/// <c>64-bit</c></summary>
+		Uiret = 4298,
+		/// <summary><c>TESTUI</c><br/>
+		/// <br/>
+		/// <c>F3 0F 01 ED</c><br/>
+		/// <br/>
+		/// <c>UINTR</c><br/>
+		/// <br/>
+		/// <c>64-bit</c></summary>
+		Testui = 4299,
+		/// <summary><c>CLUI</c><br/>
+		/// <br/>
+		/// <c>F3 0F 01 EE</c><br/>
+		/// <br/>
+		/// <c>UINTR</c><br/>
+		/// <br/>
+		/// <c>64-bit</c></summary>
+		Clui = 4300,
+		/// <summary><c>STUI</c><br/>
+		/// <br/>
+		/// <c>F3 0F 01 EF</c><br/>
+		/// <br/>
+		/// <c>UINTR</c><br/>
+		/// <br/>
+		/// <c>64-bit</c></summary>
+		Stui = 4301,
+		/// <summary><c>SENDUIPI r64</c><br/>
+		/// <br/>
+		/// <c>F3 0F C7 /6</c><br/>
+		/// <br/>
+		/// <c>UINTR</c><br/>
+		/// <br/>
+		/// <c>64-bit</c></summary>
+		Senduipi_r64 = 4302,
+		/// <summary><c>HRESET imm8, &lt;EAX&gt;</c><br/>
+		/// <br/>
+		/// <c>F3 0F 3A F0 C0 ib</c><br/>
+		/// <br/>
+		/// <c>HRESET</c><br/>
+		/// <br/>
+		/// <c>16/32/64-bit</c></summary>
+		Hreset_imm8 = 4303,
+		/// <summary><c>VPDPBUSD xmm1, xmm2, xmm3/m128</c><br/>
+		/// <br/>
+		/// <c>VEX.128.66.0F38.W0 50 /r</c><br/>
+		/// <br/>
+		/// <c>AVX-VNNI</c><br/>
+		/// <br/>
+		/// <c>16/32/64-bit</c></summary>
+		VEX_Vpdpbusd_xmm_xmm_xmmm128 = 4304,
+		/// <summary><c>VPDPBUSD ymm1, ymm2, ymm3/m256</c><br/>
+		/// <br/>
+		/// <c>VEX.256.66.0F38.W0 50 /r</c><br/>
+		/// <br/>
+		/// <c>AVX-VNNI</c><br/>
+		/// <br/>
+		/// <c>16/32/64-bit</c></summary>
+		VEX_Vpdpbusd_ymm_ymm_ymmm256 = 4305,
+		/// <summary><c>VPDPBUSDS xmm1, xmm2, xmm3/m128</c><br/>
+		/// <br/>
+		/// <c>VEX.128.66.0F38.W0 51 /r</c><br/>
+		/// <br/>
+		/// <c>AVX-VNNI</c><br/>
+		/// <br/>
+		/// <c>16/32/64-bit</c></summary>
+		VEX_Vpdpbusds_xmm_xmm_xmmm128 = 4306,
+		/// <summary><c>VPDPBUSDS ymm1, ymm2, ymm3/m256</c><br/>
+		/// <br/>
+		/// <c>VEX.256.66.0F38.W0 51 /r</c><br/>
+		/// <br/>
+		/// <c>AVX-VNNI</c><br/>
+		/// <br/>
+		/// <c>16/32/64-bit</c></summary>
+		VEX_Vpdpbusds_ymm_ymm_ymmm256 = 4307,
+		/// <summary><c>VPDPWSSD xmm1, xmm2, xmm3/m128</c><br/>
+		/// <br/>
+		/// <c>VEX.128.66.0F38.W0 52 /r</c><br/>
+		/// <br/>
+		/// <c>AVX-VNNI</c><br/>
+		/// <br/>
+		/// <c>16/32/64-bit</c></summary>
+		VEX_Vpdpwssd_xmm_xmm_xmmm128 = 4308,
+		/// <summary><c>VPDPWSSD ymm1, ymm2, ymm3/m256</c><br/>
+		/// <br/>
+		/// <c>VEX.256.66.0F38.W0 52 /r</c><br/>
+		/// <br/>
+		/// <c>AVX-VNNI</c><br/>
+		/// <br/>
+		/// <c>16/32/64-bit</c></summary>
+		VEX_Vpdpwssd_ymm_ymm_ymmm256 = 4309,
+		/// <summary><c>VPDPWSSDS xmm1, xmm2, xmm3/m128</c><br/>
+		/// <br/>
+		/// <c>VEX.128.66.0F38.W0 53 /r</c><br/>
+		/// <br/>
+		/// <c>AVX-VNNI</c><br/>
+		/// <br/>
+		/// <c>16/32/64-bit</c></summary>
+		VEX_Vpdpwssds_xmm_xmm_xmmm128 = 4310,
+		/// <summary><c>VPDPWSSDS ymm1, ymm2, ymm3/m256</c><br/>
+		/// <br/>
+		/// <c>VEX.256.66.0F38.W0 53 /r</c><br/>
+		/// <br/>
+		/// <c>AVX-VNNI</c><br/>
+		/// <br/>
+		/// <c>16/32/64-bit</c></summary>
+		VEX_Vpdpwssds_ymm_ymm_ymmm256 = 4311,
 	}
 }

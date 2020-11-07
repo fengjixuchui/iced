@@ -159,9 +159,9 @@ pub(super) static TO_MNEMONIC: [Mnemonic; IcedConstants::NUMBER_OF_CODE_VALUES] 
 	Mnemonic::Pop,// Pop_r32
 	Mnemonic::Pop,// Pop_r64
 	Mnemonic::Pusha,// Pushaw
-	Mnemonic::Pusha,// Pushad
+	Mnemonic::Pushad,// Pushad
 	Mnemonic::Popa,// Popaw
-	Mnemonic::Popa,// Popad
+	Mnemonic::Popad,// Popad
 	Mnemonic::Bound,// Bound_r16_m1616
 	Mnemonic::Bound,// Bound_r32_m3232
 	Mnemonic::Arpl,// Arpl_rm16_r16
@@ -344,11 +344,11 @@ pub(super) static TO_MNEMONIC: [Mnemonic; IcedConstants::NUMBER_OF_CODE_VALUES] 
 	Mnemonic::Call,// Call_ptr1632
 	Mnemonic::Wait,// Wait
 	Mnemonic::Pushf,// Pushfw
-	Mnemonic::Pushf,// Pushfd
-	Mnemonic::Pushf,// Pushfq
+	Mnemonic::Pushfd,// Pushfd
+	Mnemonic::Pushfq,// Pushfq
 	Mnemonic::Popf,// Popfw
-	Mnemonic::Popf,// Popfd
-	Mnemonic::Popf,// Popfq
+	Mnemonic::Popfd,// Popfd
+	Mnemonic::Popfq,// Popfq
 	Mnemonic::Sahf,// Sahf
 	Mnemonic::Lahf,// Lahf
 	Mnemonic::Mov,// Mov_AL_moffs8
@@ -448,12 +448,12 @@ pub(super) static TO_MNEMONIC: [Mnemonic; IcedConstants::NUMBER_OF_CODE_VALUES] 
 	Mnemonic::Retf,// Retfw
 	Mnemonic::Retf,// Retfd
 	Mnemonic::Retf,// Retfq
-	Mnemonic::Int,// Int3
+	Mnemonic::Int3,// Int3
 	Mnemonic::Int,// Int_imm8
 	Mnemonic::Into,// Into
 	Mnemonic::Iret,// Iretw
-	Mnemonic::Iret,// Iretd
-	Mnemonic::Iret,// Iretq
+	Mnemonic::Iretd,// Iretd
+	Mnemonic::Iretq,// Iretq
 	Mnemonic::Rol,// Rol_rm8_1
 	Mnemonic::Ror,// Ror_rm8_1
 	Mnemonic::Rcl,// Rcl_rm8_1
@@ -550,7 +550,7 @@ pub(super) static TO_MNEMONIC: [Mnemonic; IcedConstants::NUMBER_OF_CODE_VALUES] 
 	Mnemonic::Fstenv,// Fstenv_m28byte
 	Mnemonic::Fnstcw,// Fnstcw_m2byte
 	Mnemonic::Fstcw,// Fstcw_m2byte
-	Mnemonic::Fld,// Fld_st0_sti
+	Mnemonic::Fld,// Fld_sti
 	Mnemonic::Fxch,// Fxch_st0_sti
 	Mnemonic::Fnop,// Fnop
 	Mnemonic::Fstpnce,// Fstpnce_sti
@@ -908,9 +908,9 @@ pub(super) static TO_MNEMONIC: [Mnemonic; IcedConstants::NUMBER_OF_CODE_VALUES] 
 	Mnemonic::Wbnoinvd,// Wbnoinvd
 	Mnemonic::Cl1invmb,// Cl1invmb
 	Mnemonic::Ud2,// Ud2
-	Mnemonic::ReservedNop,// ReservedNop_rm16_r16_0F0D
-	Mnemonic::ReservedNop,// ReservedNop_rm32_r32_0F0D
-	Mnemonic::ReservedNop,// ReservedNop_rm64_r64_0F0D
+	Mnemonic::Reservednop,// Reservednop_rm16_r16_0F0D
+	Mnemonic::Reservednop,// Reservednop_rm32_r32_0F0D
+	Mnemonic::Reservednop,// Reservednop_rm64_r64_0F0D
 	Mnemonic::Prefetch,// Prefetch_m8
 	Mnemonic::Prefetchw,// Prefetchw_m8
 	Mnemonic::Prefetchwt1,// Prefetchwt1_m8
@@ -1037,30 +1037,30 @@ pub(super) static TO_MNEMONIC: [Mnemonic; IcedConstants::NUMBER_OF_CODE_VALUES] 
 	Mnemonic::Movhpd,// Movhpd_m64_xmm
 	Mnemonic::Vmovhpd,// VEX_Vmovhpd_m64_xmm
 	Mnemonic::Vmovhpd,// EVEX_Vmovhpd_m64_xmm
-	Mnemonic::ReservedNop,// ReservedNop_rm16_r16_0F18
-	Mnemonic::ReservedNop,// ReservedNop_rm32_r32_0F18
-	Mnemonic::ReservedNop,// ReservedNop_rm64_r64_0F18
-	Mnemonic::ReservedNop,// ReservedNop_rm16_r16_0F19
-	Mnemonic::ReservedNop,// ReservedNop_rm32_r32_0F19
-	Mnemonic::ReservedNop,// ReservedNop_rm64_r64_0F19
-	Mnemonic::ReservedNop,// ReservedNop_rm16_r16_0F1A
-	Mnemonic::ReservedNop,// ReservedNop_rm32_r32_0F1A
-	Mnemonic::ReservedNop,// ReservedNop_rm64_r64_0F1A
-	Mnemonic::ReservedNop,// ReservedNop_rm16_r16_0F1B
-	Mnemonic::ReservedNop,// ReservedNop_rm32_r32_0F1B
-	Mnemonic::ReservedNop,// ReservedNop_rm64_r64_0F1B
-	Mnemonic::ReservedNop,// ReservedNop_rm16_r16_0F1C
-	Mnemonic::ReservedNop,// ReservedNop_rm32_r32_0F1C
-	Mnemonic::ReservedNop,// ReservedNop_rm64_r64_0F1C
-	Mnemonic::ReservedNop,// ReservedNop_rm16_r16_0F1D
-	Mnemonic::ReservedNop,// ReservedNop_rm32_r32_0F1D
-	Mnemonic::ReservedNop,// ReservedNop_rm64_r64_0F1D
-	Mnemonic::ReservedNop,// ReservedNop_rm16_r16_0F1E
-	Mnemonic::ReservedNop,// ReservedNop_rm32_r32_0F1E
-	Mnemonic::ReservedNop,// ReservedNop_rm64_r64_0F1E
-	Mnemonic::ReservedNop,// ReservedNop_rm16_r16_0F1F
-	Mnemonic::ReservedNop,// ReservedNop_rm32_r32_0F1F
-	Mnemonic::ReservedNop,// ReservedNop_rm64_r64_0F1F
+	Mnemonic::Reservednop,// Reservednop_rm16_r16_0F18
+	Mnemonic::Reservednop,// Reservednop_rm32_r32_0F18
+	Mnemonic::Reservednop,// Reservednop_rm64_r64_0F18
+	Mnemonic::Reservednop,// Reservednop_rm16_r16_0F19
+	Mnemonic::Reservednop,// Reservednop_rm32_r32_0F19
+	Mnemonic::Reservednop,// Reservednop_rm64_r64_0F19
+	Mnemonic::Reservednop,// Reservednop_rm16_r16_0F1A
+	Mnemonic::Reservednop,// Reservednop_rm32_r32_0F1A
+	Mnemonic::Reservednop,// Reservednop_rm64_r64_0F1A
+	Mnemonic::Reservednop,// Reservednop_rm16_r16_0F1B
+	Mnemonic::Reservednop,// Reservednop_rm32_r32_0F1B
+	Mnemonic::Reservednop,// Reservednop_rm64_r64_0F1B
+	Mnemonic::Reservednop,// Reservednop_rm16_r16_0F1C
+	Mnemonic::Reservednop,// Reservednop_rm32_r32_0F1C
+	Mnemonic::Reservednop,// Reservednop_rm64_r64_0F1C
+	Mnemonic::Reservednop,// Reservednop_rm16_r16_0F1D
+	Mnemonic::Reservednop,// Reservednop_rm32_r32_0F1D
+	Mnemonic::Reservednop,// Reservednop_rm64_r64_0F1D
+	Mnemonic::Reservednop,// Reservednop_rm16_r16_0F1E
+	Mnemonic::Reservednop,// Reservednop_rm32_r32_0F1E
+	Mnemonic::Reservednop,// Reservednop_rm64_r64_0F1E
+	Mnemonic::Reservednop,// Reservednop_rm16_r16_0F1F
+	Mnemonic::Reservednop,// Reservednop_rm32_r32_0F1F
+	Mnemonic::Reservednop,// Reservednop_rm64_r64_0F1F
 	Mnemonic::Prefetchnta,// Prefetchnta_m8
 	Mnemonic::Prefetcht0,// Prefetcht0_m8
 	Mnemonic::Prefetcht1,// Prefetcht1_m8
@@ -2000,21 +2000,21 @@ pub(super) static TO_MNEMONIC: [Mnemonic; IcedConstants::NUMBER_OF_CODE_VALUES] 
 	Mnemonic::Xstore,// Xstore_16
 	Mnemonic::Xstore,// Xstore_32
 	Mnemonic::Xstore,// Xstore_64
-	Mnemonic::Xcryptecb,// XcryptEcb_16
-	Mnemonic::Xcryptecb,// XcryptEcb_32
-	Mnemonic::Xcryptecb,// XcryptEcb_64
-	Mnemonic::Xcryptcbc,// XcryptCbc_16
-	Mnemonic::Xcryptcbc,// XcryptCbc_32
-	Mnemonic::Xcryptcbc,// XcryptCbc_64
-	Mnemonic::Xcryptctr,// XcryptCtr_16
-	Mnemonic::Xcryptctr,// XcryptCtr_32
-	Mnemonic::Xcryptctr,// XcryptCtr_64
-	Mnemonic::Xcryptcfb,// XcryptCfb_16
-	Mnemonic::Xcryptcfb,// XcryptCfb_32
-	Mnemonic::Xcryptcfb,// XcryptCfb_64
-	Mnemonic::Xcryptofb,// XcryptOfb_16
-	Mnemonic::Xcryptofb,// XcryptOfb_32
-	Mnemonic::Xcryptofb,// XcryptOfb_64
+	Mnemonic::Xcryptecb,// Xcryptecb_16
+	Mnemonic::Xcryptecb,// Xcryptecb_32
+	Mnemonic::Xcryptecb,// Xcryptecb_64
+	Mnemonic::Xcryptcbc,// Xcryptcbc_16
+	Mnemonic::Xcryptcbc,// Xcryptcbc_32
+	Mnemonic::Xcryptcbc,// Xcryptcbc_64
+	Mnemonic::Xcryptctr,// Xcryptctr_16
+	Mnemonic::Xcryptctr,// Xcryptctr_32
+	Mnemonic::Xcryptctr,// Xcryptctr_64
+	Mnemonic::Xcryptcfb,// Xcryptcfb_16
+	Mnemonic::Xcryptcfb,// Xcryptcfb_32
+	Mnemonic::Xcryptcfb,// Xcryptcfb_64
+	Mnemonic::Xcryptofb,// Xcryptofb_16
+	Mnemonic::Xcryptofb,// Xcryptofb_32
+	Mnemonic::Xcryptofb,// Xcryptofb_64
 	Mnemonic::Ibts,// Ibts_rm16_r16
 	Mnemonic::Ibts,// Ibts_rm32_r32
 	Mnemonic::Cmpxchg,// Cmpxchg486_rm8_r8
@@ -2716,12 +2716,12 @@ pub(super) static TO_MNEMONIC: [Mnemonic; IcedConstants::NUMBER_OF_CODE_VALUES] 
 	Mnemonic::Ptest,// Ptest_xmm_xmmm128
 	Mnemonic::Vptest,// VEX_Vptest_xmm_xmmm128
 	Mnemonic::Vptest,// VEX_Vptest_ymm_ymmm256
-	Mnemonic::Vbroadcastss,// VEX_Vbroadcastss_xmm_xmmm32
-	Mnemonic::Vbroadcastss,// VEX_Vbroadcastss_ymm_xmmm32
+	Mnemonic::Vbroadcastss,// VEX_Vbroadcastss_xmm_m32
+	Mnemonic::Vbroadcastss,// VEX_Vbroadcastss_ymm_m32
 	Mnemonic::Vbroadcastss,// EVEX_Vbroadcastss_xmm_k1z_xmmm32
 	Mnemonic::Vbroadcastss,// EVEX_Vbroadcastss_ymm_k1z_xmmm32
 	Mnemonic::Vbroadcastss,// EVEX_Vbroadcastss_zmm_k1z_xmmm32
-	Mnemonic::Vbroadcastsd,// VEX_Vbroadcastsd_ymm_xmmm64
+	Mnemonic::Vbroadcastsd,// VEX_Vbroadcastsd_ymm_m64
 	Mnemonic::Vbroadcastf32x2,// EVEX_Vbroadcastf32x2_ymm_k1z_xmmm64
 	Mnemonic::Vbroadcastf32x2,// EVEX_Vbroadcastf32x2_zmm_k1z_xmmm64
 	Mnemonic::Vbroadcastsd,// EVEX_Vbroadcastsd_ymm_k1z_xmmm64
@@ -3945,14 +3945,14 @@ pub(super) static TO_MNEMONIC: [Mnemonic; IcedConstants::NUMBER_OF_CODE_VALUES] 
 	Mnemonic::Vpclmulqdq,// EVEX_Vpclmulqdq_ymm_ymm_ymmm256_imm8
 	Mnemonic::Vpclmulqdq,// EVEX_Vpclmulqdq_zmm_zmm_zmmm512_imm8
 	Mnemonic::Vperm2i128,// VEX_Vperm2i128_ymm_ymm_ymmm256_imm8
-	Mnemonic::Vpermil2ps,// VEX_Vpermil2ps_xmm_xmm_xmmm128_xmm_imm2
-	Mnemonic::Vpermil2ps,// VEX_Vpermil2ps_ymm_ymm_ymmm256_ymm_imm2
-	Mnemonic::Vpermil2ps,// VEX_Vpermil2ps_xmm_xmm_xmm_xmmm128_imm2
-	Mnemonic::Vpermil2ps,// VEX_Vpermil2ps_ymm_ymm_ymm_ymmm256_imm2
-	Mnemonic::Vpermil2pd,// VEX_Vpermil2pd_xmm_xmm_xmmm128_xmm_imm2
-	Mnemonic::Vpermil2pd,// VEX_Vpermil2pd_ymm_ymm_ymmm256_ymm_imm2
-	Mnemonic::Vpermil2pd,// VEX_Vpermil2pd_xmm_xmm_xmm_xmmm128_imm2
-	Mnemonic::Vpermil2pd,// VEX_Vpermil2pd_ymm_ymm_ymm_ymmm256_imm2
+	Mnemonic::Vpermil2ps,// VEX_Vpermil2ps_xmm_xmm_xmmm128_xmm_imm4
+	Mnemonic::Vpermil2ps,// VEX_Vpermil2ps_ymm_ymm_ymmm256_ymm_imm4
+	Mnemonic::Vpermil2ps,// VEX_Vpermil2ps_xmm_xmm_xmm_xmmm128_imm4
+	Mnemonic::Vpermil2ps,// VEX_Vpermil2ps_ymm_ymm_ymm_ymmm256_imm4
+	Mnemonic::Vpermil2pd,// VEX_Vpermil2pd_xmm_xmm_xmmm128_xmm_imm4
+	Mnemonic::Vpermil2pd,// VEX_Vpermil2pd_ymm_ymm_ymmm256_ymm_imm4
+	Mnemonic::Vpermil2pd,// VEX_Vpermil2pd_xmm_xmm_xmm_xmmm128_imm4
+	Mnemonic::Vpermil2pd,// VEX_Vpermil2pd_ymm_ymm_ymm_ymmm256_imm4
 	Mnemonic::Vblendvps,// VEX_Vblendvps_xmm_xmm_xmmm128_xmm
 	Mnemonic::Vblendvps,// VEX_Vblendvps_ymm_ymm_ymmm256_ymm
 	Mnemonic::Vblendvpd,// VEX_Vblendvpd_xmm_xmm_xmmm128_xmm
@@ -4244,11 +4244,11 @@ pub(super) static TO_MNEMONIC: [Mnemonic; IcedConstants::NUMBER_OF_CODE_VALUES] 
 	Mnemonic::Invlpgb,// Invlpgbd
 	Mnemonic::Invlpgb,// Invlpgbq
 	Mnemonic::Tlbsync,// Tlbsync
-	Mnemonic::Prefetchw,// PrefetchReserved3_m8
-	Mnemonic::Prefetch,// PrefetchReserved4_m8
-	Mnemonic::Prefetch,// PrefetchReserved5_m8
-	Mnemonic::Prefetch,// PrefetchReserved6_m8
-	Mnemonic::Prefetch,// PrefetchReserved7_m8
+	Mnemonic::Prefetchw,// Prefetchreserved3_m8
+	Mnemonic::Prefetch,// Prefetchreserved4_m8
+	Mnemonic::Prefetch,// Prefetchreserved5_m8
+	Mnemonic::Prefetch,// Prefetchreserved6_m8
+	Mnemonic::Prefetch,// Prefetchreserved7_m8
 	Mnemonic::Ud0,// Ud0
 	Mnemonic::Vmgexit,// Vmgexit
 	Mnemonic::Getsecq,// Getsecq
@@ -4307,4 +4307,37 @@ pub(super) static TO_MNEMONIC: [Mnemonic; IcedConstants::NUMBER_OF_CODE_VALUES] 
 	Mnemonic::Undoc,// Cyrix_DEDD
 	Mnemonic::Undoc,// Cyrix_DEDE
 	Mnemonic::Frinear,// Frinear
+	Mnemonic::Tdcall,// Tdcall
+	Mnemonic::Seamret,// Seamret
+	Mnemonic::Seamops,// Seamops
+	Mnemonic::Seamcall,// Seamcall
+	Mnemonic::Aesencwide128kl,// Aesencwide128kl_m384
+	Mnemonic::Aesdecwide128kl,// Aesdecwide128kl_m384
+	Mnemonic::Aesencwide256kl,// Aesencwide256kl_m512
+	Mnemonic::Aesdecwide256kl,// Aesdecwide256kl_m512
+	Mnemonic::Loadiwkey,// Loadiwkey_xmm_xmm
+	Mnemonic::Aesenc128kl,// Aesenc128kl_xmm_m384
+	Mnemonic::Aesdec128kl,// Aesdec128kl_xmm_m384
+	Mnemonic::Aesenc256kl,// Aesenc256kl_xmm_m512
+	Mnemonic::Aesdec256kl,// Aesdec256kl_xmm_m512
+	Mnemonic::Encodekey128,// Encodekey128_r32_r32
+	Mnemonic::Encodekey256,// Encodekey256_r32_r32
+	Mnemonic::Vbroadcastss,// VEX_Vbroadcastss_xmm_xmm
+	Mnemonic::Vbroadcastss,// VEX_Vbroadcastss_ymm_xmm
+	Mnemonic::Vbroadcastsd,// VEX_Vbroadcastsd_ymm_xmm
+	Mnemonic::Vmgexit,// Vmgexit_F2
+	Mnemonic::Uiret,// Uiret
+	Mnemonic::Testui,// Testui
+	Mnemonic::Clui,// Clui
+	Mnemonic::Stui,// Stui
+	Mnemonic::Senduipi,// Senduipi_r64
+	Mnemonic::Hreset,// Hreset_imm8
+	Mnemonic::Vpdpbusd,// VEX_Vpdpbusd_xmm_xmm_xmmm128
+	Mnemonic::Vpdpbusd,// VEX_Vpdpbusd_ymm_ymm_ymmm256
+	Mnemonic::Vpdpbusds,// VEX_Vpdpbusds_xmm_xmm_xmmm128
+	Mnemonic::Vpdpbusds,// VEX_Vpdpbusds_ymm_ymm_ymmm256
+	Mnemonic::Vpdpwssd,// VEX_Vpdpwssd_xmm_xmm_xmmm128
+	Mnemonic::Vpdpwssd,// VEX_Vpdpwssd_ymm_ymm_ymmm256
+	Mnemonic::Vpdpwssds,// VEX_Vpdpwssds_xmm_xmm_xmmm128
+	Mnemonic::Vpdpwssds,// VEX_Vpdpwssds_ymm_ymm_ymmm256
 ];

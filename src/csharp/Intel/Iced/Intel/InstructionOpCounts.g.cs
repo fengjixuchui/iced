@@ -554,7 +554,7 @@ namespace Iced.Intel {
 			1,// Fstenv_m28byte
 			1,// Fnstcw_m2byte
 			1,// Fstcw_m2byte
-			2,// Fld_st0_sti
+			1,// Fld_sti
 			2,// Fxch_st0_sti
 			0,// Fnop
 			1,// Fstpnce_sti
@@ -912,9 +912,9 @@ namespace Iced.Intel {
 			0,// Wbnoinvd
 			0,// Cl1invmb
 			0,// Ud2
-			2,// ReservedNop_rm16_r16_0F0D
-			2,// ReservedNop_rm32_r32_0F0D
-			2,// ReservedNop_rm64_r64_0F0D
+			2,// Reservednop_rm16_r16_0F0D
+			2,// Reservednop_rm32_r32_0F0D
+			2,// Reservednop_rm64_r64_0F0D
 			1,// Prefetch_m8
 			1,// Prefetchw_m8
 			1,// Prefetchwt1_m8
@@ -1041,30 +1041,30 @@ namespace Iced.Intel {
 			2,// Movhpd_m64_xmm
 			2,// VEX_Vmovhpd_m64_xmm
 			2,// EVEX_Vmovhpd_m64_xmm
-			2,// ReservedNop_rm16_r16_0F18
-			2,// ReservedNop_rm32_r32_0F18
-			2,// ReservedNop_rm64_r64_0F18
-			2,// ReservedNop_rm16_r16_0F19
-			2,// ReservedNop_rm32_r32_0F19
-			2,// ReservedNop_rm64_r64_0F19
-			2,// ReservedNop_rm16_r16_0F1A
-			2,// ReservedNop_rm32_r32_0F1A
-			2,// ReservedNop_rm64_r64_0F1A
-			2,// ReservedNop_rm16_r16_0F1B
-			2,// ReservedNop_rm32_r32_0F1B
-			2,// ReservedNop_rm64_r64_0F1B
-			2,// ReservedNop_rm16_r16_0F1C
-			2,// ReservedNop_rm32_r32_0F1C
-			2,// ReservedNop_rm64_r64_0F1C
-			2,// ReservedNop_rm16_r16_0F1D
-			2,// ReservedNop_rm32_r32_0F1D
-			2,// ReservedNop_rm64_r64_0F1D
-			2,// ReservedNop_rm16_r16_0F1E
-			2,// ReservedNop_rm32_r32_0F1E
-			2,// ReservedNop_rm64_r64_0F1E
-			2,// ReservedNop_rm16_r16_0F1F
-			2,// ReservedNop_rm32_r32_0F1F
-			2,// ReservedNop_rm64_r64_0F1F
+			2,// Reservednop_rm16_r16_0F18
+			2,// Reservednop_rm32_r32_0F18
+			2,// Reservednop_rm64_r64_0F18
+			2,// Reservednop_rm16_r16_0F19
+			2,// Reservednop_rm32_r32_0F19
+			2,// Reservednop_rm64_r64_0F19
+			2,// Reservednop_rm16_r16_0F1A
+			2,// Reservednop_rm32_r32_0F1A
+			2,// Reservednop_rm64_r64_0F1A
+			2,// Reservednop_rm16_r16_0F1B
+			2,// Reservednop_rm32_r32_0F1B
+			2,// Reservednop_rm64_r64_0F1B
+			2,// Reservednop_rm16_r16_0F1C
+			2,// Reservednop_rm32_r32_0F1C
+			2,// Reservednop_rm64_r64_0F1C
+			2,// Reservednop_rm16_r16_0F1D
+			2,// Reservednop_rm32_r32_0F1D
+			2,// Reservednop_rm64_r64_0F1D
+			2,// Reservednop_rm16_r16_0F1E
+			2,// Reservednop_rm32_r32_0F1E
+			2,// Reservednop_rm64_r64_0F1E
+			2,// Reservednop_rm16_r16_0F1F
+			2,// Reservednop_rm32_r32_0F1F
+			2,// Reservednop_rm64_r64_0F1F
 			1,// Prefetchnta_m8
 			1,// Prefetcht0_m8
 			1,// Prefetcht1_m8
@@ -2004,21 +2004,21 @@ namespace Iced.Intel {
 			0,// Xstore_16
 			0,// Xstore_32
 			0,// Xstore_64
-			0,// XcryptEcb_16
-			0,// XcryptEcb_32
-			0,// XcryptEcb_64
-			0,// XcryptCbc_16
-			0,// XcryptCbc_32
-			0,// XcryptCbc_64
-			0,// XcryptCtr_16
-			0,// XcryptCtr_32
-			0,// XcryptCtr_64
-			0,// XcryptCfb_16
-			0,// XcryptCfb_32
-			0,// XcryptCfb_64
-			0,// XcryptOfb_16
-			0,// XcryptOfb_32
-			0,// XcryptOfb_64
+			0,// Xcryptecb_16
+			0,// Xcryptecb_32
+			0,// Xcryptecb_64
+			0,// Xcryptcbc_16
+			0,// Xcryptcbc_32
+			0,// Xcryptcbc_64
+			0,// Xcryptctr_16
+			0,// Xcryptctr_32
+			0,// Xcryptctr_64
+			0,// Xcryptcfb_16
+			0,// Xcryptcfb_32
+			0,// Xcryptcfb_64
+			0,// Xcryptofb_16
+			0,// Xcryptofb_32
+			0,// Xcryptofb_64
 			2,// Ibts_rm16_r16
 			2,// Ibts_rm32_r32
 			2,// Cmpxchg486_rm8_r8
@@ -2720,12 +2720,12 @@ namespace Iced.Intel {
 			2,// Ptest_xmm_xmmm128
 			2,// VEX_Vptest_xmm_xmmm128
 			2,// VEX_Vptest_ymm_ymmm256
-			2,// VEX_Vbroadcastss_xmm_xmmm32
-			2,// VEX_Vbroadcastss_ymm_xmmm32
+			2,// VEX_Vbroadcastss_xmm_m32
+			2,// VEX_Vbroadcastss_ymm_m32
 			2,// EVEX_Vbroadcastss_xmm_k1z_xmmm32
 			2,// EVEX_Vbroadcastss_ymm_k1z_xmmm32
 			2,// EVEX_Vbroadcastss_zmm_k1z_xmmm32
-			2,// VEX_Vbroadcastsd_ymm_xmmm64
+			2,// VEX_Vbroadcastsd_ymm_m64
 			2,// EVEX_Vbroadcastf32x2_ymm_k1z_xmmm64
 			2,// EVEX_Vbroadcastf32x2_zmm_k1z_xmmm64
 			2,// EVEX_Vbroadcastsd_ymm_k1z_xmmm64
@@ -3949,14 +3949,14 @@ namespace Iced.Intel {
 			4,// EVEX_Vpclmulqdq_ymm_ymm_ymmm256_imm8
 			4,// EVEX_Vpclmulqdq_zmm_zmm_zmmm512_imm8
 			4,// VEX_Vperm2i128_ymm_ymm_ymmm256_imm8
-			5,// VEX_Vpermil2ps_xmm_xmm_xmmm128_xmm_imm2
-			5,// VEX_Vpermil2ps_ymm_ymm_ymmm256_ymm_imm2
-			5,// VEX_Vpermil2ps_xmm_xmm_xmm_xmmm128_imm2
-			5,// VEX_Vpermil2ps_ymm_ymm_ymm_ymmm256_imm2
-			5,// VEX_Vpermil2pd_xmm_xmm_xmmm128_xmm_imm2
-			5,// VEX_Vpermil2pd_ymm_ymm_ymmm256_ymm_imm2
-			5,// VEX_Vpermil2pd_xmm_xmm_xmm_xmmm128_imm2
-			5,// VEX_Vpermil2pd_ymm_ymm_ymm_ymmm256_imm2
+			5,// VEX_Vpermil2ps_xmm_xmm_xmmm128_xmm_imm4
+			5,// VEX_Vpermil2ps_ymm_ymm_ymmm256_ymm_imm4
+			5,// VEX_Vpermil2ps_xmm_xmm_xmm_xmmm128_imm4
+			5,// VEX_Vpermil2ps_ymm_ymm_ymm_ymmm256_imm4
+			5,// VEX_Vpermil2pd_xmm_xmm_xmmm128_xmm_imm4
+			5,// VEX_Vpermil2pd_ymm_ymm_ymmm256_ymm_imm4
+			5,// VEX_Vpermil2pd_xmm_xmm_xmm_xmmm128_imm4
+			5,// VEX_Vpermil2pd_ymm_ymm_ymm_ymmm256_imm4
 			4,// VEX_Vblendvps_xmm_xmm_xmmm128_xmm
 			4,// VEX_Vblendvps_ymm_ymm_ymmm256_ymm
 			4,// VEX_Vblendvpd_xmm_xmm_xmmm128_xmm
@@ -4248,11 +4248,11 @@ namespace Iced.Intel {
 			0,// Invlpgbd
 			0,// Invlpgbq
 			0,// Tlbsync
-			1,// PrefetchReserved3_m8
-			1,// PrefetchReserved4_m8
-			1,// PrefetchReserved5_m8
-			1,// PrefetchReserved6_m8
-			1,// PrefetchReserved7_m8
+			1,// Prefetchreserved3_m8
+			1,// Prefetchreserved4_m8
+			1,// Prefetchreserved5_m8
+			1,// Prefetchreserved6_m8
+			1,// Prefetchreserved7_m8
 			0,// Ud0
 			0,// Vmgexit
 			0,// Getsecq
@@ -4311,6 +4311,39 @@ namespace Iced.Intel {
 			0,// Cyrix_DEDD
 			0,// Cyrix_DEDE
 			0,// Frinear
+			0,// Tdcall
+			0,// Seamret
+			0,// Seamops
+			0,// Seamcall
+			1,// Aesencwide128kl_m384
+			1,// Aesdecwide128kl_m384
+			1,// Aesencwide256kl_m512
+			1,// Aesdecwide256kl_m512
+			2,// Loadiwkey_xmm_xmm
+			2,// Aesenc128kl_xmm_m384
+			2,// Aesdec128kl_xmm_m384
+			2,// Aesenc256kl_xmm_m512
+			2,// Aesdec256kl_xmm_m512
+			2,// Encodekey128_r32_r32
+			2,// Encodekey256_r32_r32
+			2,// VEX_Vbroadcastss_xmm_xmm
+			2,// VEX_Vbroadcastss_ymm_xmm
+			2,// VEX_Vbroadcastsd_ymm_xmm
+			0,// Vmgexit_F2
+			0,// Uiret
+			0,// Testui
+			0,// Clui
+			0,// Stui
+			1,// Senduipi_r64
+			1,// Hreset_imm8
+			3,// VEX_Vpdpbusd_xmm_xmm_xmmm128
+			3,// VEX_Vpdpbusd_ymm_ymm_ymmm256
+			3,// VEX_Vpdpbusds_xmm_xmm_xmmm128
+			3,// VEX_Vpdpbusds_ymm_ymm_ymmm256
+			3,// VEX_Vpdpwssd_xmm_xmm_xmmm128
+			3,// VEX_Vpdpwssd_ymm_ymm_ymmm256
+			3,// VEX_Vpdpwssds_xmm_xmm_xmmm128
+			3,// VEX_Vpdpwssds_ymm_ymm_ymmm256
 		};
 	}
 }

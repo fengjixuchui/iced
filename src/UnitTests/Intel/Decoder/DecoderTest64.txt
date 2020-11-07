@@ -2400,14 +2400,14 @@ F3 47 90, Pause, Pause, 0, enc=F390
 66 9C, Pushfw, Pushf, 0,
 66 47 9C, Pushfw, Pushf, 0, enc=669C
 
-9C, Pushfq, Pushf, 0,
-47 9C, Pushfq, Pushf, 0, enc=9C
+9C, Pushfq, Pushfq, 0,
+47 9C, Pushfq, Pushfq, 0, enc=9C
 
 66 9D, Popfw, Popf, 0,
 66 47 9D, Popfw, Popf, 0, enc=669D
 
-9D, Popfq, Popf, 0,
-47 9D, Popfq, Popf, 0, enc=9D
+9D, Popfq, Popfq, 0,
+47 9D, Popfq, Popfq, 0, enc=9D
 
 9E, Sahf, Sahf, 0,
 66 9E, Sahf, Sahf, 0, enc=9E
@@ -3384,8 +3384,8 @@ CB, Retfd, Retf, 0,
 48 CB, Retfq, Retf, 0,
 4F CB, Retfq, Retf, 0, enc=48CB
 
-CC, Int3, Int, 0,
-4F CC, Int3, Int, 0, enc=CC
+CC, Int3, Int3, 0,
+4F CC, Int3, Int3, 0, enc=CC
 
 CD 5A, Int_imm8, Int, 1, op0=i8;0x5A co=1;1;0;0;0;0
 CD A5, Int_imm8, Int, 1, op0=i8;0xA5 co=1;1;0;0;0;0
@@ -3394,11 +3394,11 @@ CD A5, Int_imm8, Int, 1, op0=i8;0xA5 co=1;1;0;0;0;0
 66 CF, Iretw, Iret, 0,
 66 47 CF, Iretw, Iret, 0, enc=66CF
 
-CF, Iretd, Iret, 0,
-47 CF, Iretd, Iret, 0, enc=CF
+CF, Iretd, Iretd, 0,
+47 CF, Iretd, Iretd, 0, enc=CF
 
-48 CF, Iretq, Iret, 0,
-4F CF, Iretq, Iret, 0, enc=48CF
+48 CF, Iretq, Iretq, 0,
+4F CF, Iretq, Iretq, 0, enc=48CF
 
 D0 00, Rol_rm8_1, Rol, 2, op0=m;ds;rax;;1;0;0;UInt8 op1=i8;1
 44 D0 00, Rol_rm8_1, Rol, 2, op0=m;ds;rax;;1;0;0;UInt8 op1=i8;1 enc=D000
@@ -3889,10 +3889,10 @@ D9 38, Fnstcw_m2byte, Fnstcw, 1, op0=m;ds;rax;;1;0;0;UInt16
 66 D9 38, Fnstcw_m2byte, Fnstcw, 1, op0=m;ds;rax;;1;0;0;UInt16 enc=D938
 66 4E D9 38, Fnstcw_m2byte, Fnstcw, 1, op0=m;ds;rax;;1;0;0;UInt16 enc=D938
 
-D9 C3, Fld_st0_sti, Fld, 2, op0=r;st0 op1=r;st3
-66 D9 C6, Fld_st0_sti, Fld, 2, op0=r;st0 op1=r;st6 enc=D9C6
-4F D9 C3, Fld_st0_sti, Fld, 2, op0=r;st0 op1=r;st3 enc=D9C3
-66 4F D9 C6, Fld_st0_sti, Fld, 2, op0=r;st0 op1=r;st6 enc=D9C6
+D9 C3, Fld_sti, Fld, 1, op0=r;st3
+66 D9 C6, Fld_sti, Fld, 1, op0=r;st6 enc=D9C6
+4F D9 C3, Fld_sti, Fld, 1, op0=r;st3 enc=D9C3
+66 4F D9 C6, Fld_sti, Fld, 1, op0=r;st6 enc=D9C6
 
 D9 CB, Fxch_st0_sti, Fxch, 2, op0=r;st0 op1=r;st3
 66 D9 CE, Fxch_st0_sti, Fxch, 2, op0=r;st0 op1=r;st6 enc=D9CE
@@ -5389,37 +5389,37 @@ F3 4F 0F09, Wbnoinvd, Wbnoinvd, 0, enc=F30F09
 0F0B, Ud2, Ud2, 0,
 4F 0F0B, Ud2, Ud2, 0, enc=0F0B
 
-66 0F0D CE, ReservedNop_rm16_r16_0F0D, ReservedNop, 2, op0=r;si op1=r;cx decopt=ForceReservedNop
-66 44 0F0D C5, ReservedNop_rm16_r16_0F0D, ReservedNop, 2, op0=r;bp op1=r;r8w decopt=ForceReservedNop
-66 41 0F0D D6, ReservedNop_rm16_r16_0F0D, ReservedNop, 2, op0=r;r14w op1=r;dx decopt=ForceReservedNop
-66 45 0F0D D0, ReservedNop_rm16_r16_0F0D, ReservedNop, 2, op0=r;r8w op1=r;r10w decopt=ForceReservedNop
-66 41 0F0D D9, ReservedNop_rm16_r16_0F0D, ReservedNop, 2, op0=r;r9w op1=r;bx decopt=ForceReservedNop
-66 44 0F0D EC, ReservedNop_rm16_r16_0F0D, ReservedNop, 2, op0=r;sp op1=r;r13w decopt=ForceReservedNop
-66 0F0D 18, ReservedNop_rm16_r16_0F0D, ReservedNop, 2, op0=m;ds;rax;;1;0;0;UInt16 op1=r;bx decopt=ForceReservedNop
-66 42 0F0D CE, ReservedNop_rm16_r16_0F0D, ReservedNop, 2, op0=r;si op1=r;cx decopt=ForceReservedNop enc=660F0DCE
+66 0F0D CE, Reservednop_rm16_r16_0F0D, Reservednop, 2, op0=r;si op1=r;cx decopt=ForceReservedNop
+66 44 0F0D C5, Reservednop_rm16_r16_0F0D, Reservednop, 2, op0=r;bp op1=r;r8w decopt=ForceReservedNop
+66 41 0F0D D6, Reservednop_rm16_r16_0F0D, Reservednop, 2, op0=r;r14w op1=r;dx decopt=ForceReservedNop
+66 45 0F0D D0, Reservednop_rm16_r16_0F0D, Reservednop, 2, op0=r;r8w op1=r;r10w decopt=ForceReservedNop
+66 41 0F0D D9, Reservednop_rm16_r16_0F0D, Reservednop, 2, op0=r;r9w op1=r;bx decopt=ForceReservedNop
+66 44 0F0D EC, Reservednop_rm16_r16_0F0D, Reservednop, 2, op0=r;sp op1=r;r13w decopt=ForceReservedNop
+66 0F0D 18, Reservednop_rm16_r16_0F0D, Reservednop, 2, op0=m;ds;rax;;1;0;0;UInt16 op1=r;bx decopt=ForceReservedNop
+66 42 0F0D CE, Reservednop_rm16_r16_0F0D, Reservednop, 2, op0=r;si op1=r;cx decopt=ForceReservedNop enc=660F0DCE
 
-0F0D CE, ReservedNop_rm32_r32_0F0D, ReservedNop, 2, op0=r;esi op1=r;ecx decopt=ForceReservedNop
-44 0F0D C5, ReservedNop_rm32_r32_0F0D, ReservedNop, 2, op0=r;ebp op1=r;r8d decopt=ForceReservedNop
-41 0F0D D6, ReservedNop_rm32_r32_0F0D, ReservedNop, 2, op0=r;r14d op1=r;edx decopt=ForceReservedNop
-45 0F0D D0, ReservedNop_rm32_r32_0F0D, ReservedNop, 2, op0=r;r8d op1=r;r10d decopt=ForceReservedNop
-41 0F0D D9, ReservedNop_rm32_r32_0F0D, ReservedNop, 2, op0=r;r9d op1=r;ebx decopt=ForceReservedNop
-44 0F0D EC, ReservedNop_rm32_r32_0F0D, ReservedNop, 2, op0=r;esp op1=r;r13d decopt=ForceReservedNop
-0F0D 18, ReservedNop_rm32_r32_0F0D, ReservedNop, 2, op0=m;ds;rax;;1;0;0;UInt32 op1=r;ebx decopt=ForceReservedNop
-0F0D 18, ReservedNop_rm32_r32_0F0D, ReservedNop, 2, op0=m;ds;rax;;1;0;0;UInt32 op1=r;ebx decopt=ForceReservedNop
-0F0D 20, ReservedNop_rm32_r32_0F0D, ReservedNop, 2, op0=m;ds;rax;;1;0;0;UInt32 op1=r;esp decopt=ForceReservedNop
-0F0D 28, ReservedNop_rm32_r32_0F0D, ReservedNop, 2, op0=m;ds;rax;;1;0;0;UInt32 op1=r;ebp decopt=ForceReservedNop
-0F0D 30, ReservedNop_rm32_r32_0F0D, ReservedNop, 2, op0=m;ds;rax;;1;0;0;UInt32 op1=r;esi decopt=ForceReservedNop
-0F0D 38, ReservedNop_rm32_r32_0F0D, ReservedNop, 2, op0=m;ds;rax;;1;0;0;UInt32 op1=r;edi decopt=ForceReservedNop
-42 0F0D CE, ReservedNop_rm32_r32_0F0D, ReservedNop, 2, op0=r;esi op1=r;ecx decopt=ForceReservedNop enc=0F0DCE
+0F0D CE, Reservednop_rm32_r32_0F0D, Reservednop, 2, op0=r;esi op1=r;ecx decopt=ForceReservedNop
+44 0F0D C5, Reservednop_rm32_r32_0F0D, Reservednop, 2, op0=r;ebp op1=r;r8d decopt=ForceReservedNop
+41 0F0D D6, Reservednop_rm32_r32_0F0D, Reservednop, 2, op0=r;r14d op1=r;edx decopt=ForceReservedNop
+45 0F0D D0, Reservednop_rm32_r32_0F0D, Reservednop, 2, op0=r;r8d op1=r;r10d decopt=ForceReservedNop
+41 0F0D D9, Reservednop_rm32_r32_0F0D, Reservednop, 2, op0=r;r9d op1=r;ebx decopt=ForceReservedNop
+44 0F0D EC, Reservednop_rm32_r32_0F0D, Reservednop, 2, op0=r;esp op1=r;r13d decopt=ForceReservedNop
+0F0D 18, Reservednop_rm32_r32_0F0D, Reservednop, 2, op0=m;ds;rax;;1;0;0;UInt32 op1=r;ebx decopt=ForceReservedNop
+0F0D 18, Reservednop_rm32_r32_0F0D, Reservednop, 2, op0=m;ds;rax;;1;0;0;UInt32 op1=r;ebx decopt=ForceReservedNop
+0F0D 20, Reservednop_rm32_r32_0F0D, Reservednop, 2, op0=m;ds;rax;;1;0;0;UInt32 op1=r;esp decopt=ForceReservedNop
+0F0D 28, Reservednop_rm32_r32_0F0D, Reservednop, 2, op0=m;ds;rax;;1;0;0;UInt32 op1=r;ebp decopt=ForceReservedNop
+0F0D 30, Reservednop_rm32_r32_0F0D, Reservednop, 2, op0=m;ds;rax;;1;0;0;UInt32 op1=r;esi decopt=ForceReservedNop
+0F0D 38, Reservednop_rm32_r32_0F0D, Reservednop, 2, op0=m;ds;rax;;1;0;0;UInt32 op1=r;edi decopt=ForceReservedNop
+42 0F0D CE, Reservednop_rm32_r32_0F0D, Reservednop, 2, op0=r;esi op1=r;ecx decopt=ForceReservedNop enc=0F0DCE
 
-48 0F0D CE, ReservedNop_rm64_r64_0F0D, ReservedNop, 2, op0=r;rsi op1=r;rcx decopt=ForceReservedNop
-4C 0F0D C5, ReservedNop_rm64_r64_0F0D, ReservedNop, 2, op0=r;rbp op1=r;r8 decopt=ForceReservedNop
-49 0F0D D6, ReservedNop_rm64_r64_0F0D, ReservedNop, 2, op0=r;r14 op1=r;rdx decopt=ForceReservedNop
-4D 0F0D D0, ReservedNop_rm64_r64_0F0D, ReservedNop, 2, op0=r;r8 op1=r;r10 decopt=ForceReservedNop
-49 0F0D D9, ReservedNop_rm64_r64_0F0D, ReservedNop, 2, op0=r;r9 op1=r;rbx decopt=ForceReservedNop
-4C 0F0D EC, ReservedNop_rm64_r64_0F0D, ReservedNop, 2, op0=r;rsp op1=r;r13 decopt=ForceReservedNop
-48 0F0D 18, ReservedNop_rm64_r64_0F0D, ReservedNop, 2, op0=m;ds;rax;;1;0;0;UInt64 op1=r;rbx decopt=ForceReservedNop
-4A 0F0D CE, ReservedNop_rm64_r64_0F0D, ReservedNop, 2, op0=r;rsi op1=r;rcx decopt=ForceReservedNop enc=480F0DCE
+48 0F0D CE, Reservednop_rm64_r64_0F0D, Reservednop, 2, op0=r;rsi op1=r;rcx decopt=ForceReservedNop
+4C 0F0D C5, Reservednop_rm64_r64_0F0D, Reservednop, 2, op0=r;rbp op1=r;r8 decopt=ForceReservedNop
+49 0F0D D6, Reservednop_rm64_r64_0F0D, Reservednop, 2, op0=r;r14 op1=r;rdx decopt=ForceReservedNop
+4D 0F0D D0, Reservednop_rm64_r64_0F0D, Reservednop, 2, op0=r;r8 op1=r;r10 decopt=ForceReservedNop
+49 0F0D D9, Reservednop_rm64_r64_0F0D, Reservednop, 2, op0=r;r9 op1=r;rbx decopt=ForceReservedNop
+4C 0F0D EC, Reservednop_rm64_r64_0F0D, Reservednop, 2, op0=r;rsp op1=r;r13 decopt=ForceReservedNop
+48 0F0D 18, Reservednop_rm64_r64_0F0D, Reservednop, 2, op0=m;ds;rax;;1;0;0;UInt64 op1=r;rbx decopt=ForceReservedNop
+4A 0F0D CE, Reservednop_rm64_r64_0F0D, Reservednop, 2, op0=r;rsi op1=r;rcx decopt=ForceReservedNop enc=480F0DCE
 
 0F0D 00, Prefetch_m8, Prefetch, 1, op0=m;ds;rax;;1;0;0;UInt8
 44 0F0D 00, Prefetch_m8, Prefetch, 1, op0=m;ds;rax;;1;0;0;UInt8 enc=0F0D00
@@ -5430,20 +5430,20 @@ F3 4F 0F09, Wbnoinvd, Wbnoinvd, 0, enc=F30F09
 0F0D 10, Prefetchwt1_m8, Prefetchwt1, 1, op0=m;ds;rax;;1;0;0;UInt8
 44 0F0D 10, Prefetchwt1_m8, Prefetchwt1, 1, op0=m;ds;rax;;1;0;0;UInt8 enc=0F0D10
 
-0F0D 18, PrefetchReserved3_m8, Prefetchw, 1, op0=m;ds;rax;;1;0;0;UInt8
-44 0F0D 18, PrefetchReserved3_m8, Prefetchw, 1, op0=m;ds;rax;;1;0;0;UInt8 enc=0F0D18
+0F0D 18, Prefetchreserved3_m8, Prefetchw, 1, op0=m;ds;rax;;1;0;0;UInt8
+44 0F0D 18, Prefetchreserved3_m8, Prefetchw, 1, op0=m;ds;rax;;1;0;0;UInt8 enc=0F0D18
 
-0F0D 20, PrefetchReserved4_m8, Prefetch, 1, op0=m;ds;rax;;1;0;0;UInt8
-44 0F0D 20, PrefetchReserved4_m8, Prefetch, 1, op0=m;ds;rax;;1;0;0;UInt8 enc=0F0D20
+0F0D 20, Prefetchreserved4_m8, Prefetch, 1, op0=m;ds;rax;;1;0;0;UInt8
+44 0F0D 20, Prefetchreserved4_m8, Prefetch, 1, op0=m;ds;rax;;1;0;0;UInt8 enc=0F0D20
 
-0F0D 28, PrefetchReserved5_m8, Prefetch, 1, op0=m;ds;rax;;1;0;0;UInt8
-44 0F0D 28, PrefetchReserved5_m8, Prefetch, 1, op0=m;ds;rax;;1;0;0;UInt8 enc=0F0D28
+0F0D 28, Prefetchreserved5_m8, Prefetch, 1, op0=m;ds;rax;;1;0;0;UInt8
+44 0F0D 28, Prefetchreserved5_m8, Prefetch, 1, op0=m;ds;rax;;1;0;0;UInt8 enc=0F0D28
 
-0F0D 30, PrefetchReserved6_m8, Prefetch, 1, op0=m;ds;rax;;1;0;0;UInt8
-44 0F0D 30, PrefetchReserved6_m8, Prefetch, 1, op0=m;ds;rax;;1;0;0;UInt8 enc=0F0D30
+0F0D 30, Prefetchreserved6_m8, Prefetch, 1, op0=m;ds;rax;;1;0;0;UInt8
+44 0F0D 30, Prefetchreserved6_m8, Prefetch, 1, op0=m;ds;rax;;1;0;0;UInt8 enc=0F0D30
 
-0F0D 38, PrefetchReserved7_m8, Prefetch, 1, op0=m;ds;rax;;1;0;0;UInt8
-44 0F0D 38, PrefetchReserved7_m8, Prefetch, 1, op0=m;ds;rax;;1;0;0;UInt8 enc=0F0D38
+0F0D 38, Prefetchreserved7_m8, Prefetch, 1, op0=m;ds;rax;;1;0;0;UInt8
+44 0F0D 38, Prefetchreserved7_m8, Prefetch, 1, op0=m;ds;rax;;1;0;0;UInt8 enc=0F0D38
 
 0F0E, Femms, Femms, 0,
 4F 0F0E, Femms, Femms, 0, enc=0F0E
@@ -6335,247 +6335,247 @@ C4E1F9 17 10, VEX_Vmovhpd_m64_xmm, Vmovhpd, 2, op0=m;ds;rax;;1;0;0;Float64 op1=r
 62 71FD08 17 50 01, EVEX_Vmovhpd_m64_xmm, Vmovhpd, 2, op0=m;ds;rax;;1;8;1;Float64 op1=r;xmm10 co=0;0;0;0;6;1
 62 E1FD08 17 50 01, EVEX_Vmovhpd_m64_xmm, Vmovhpd, 2, op0=m;ds;rax;;1;8;1;Float64 op1=r;xmm18 co=0;0;0;0;6;1
 
-66 0F18 CE, ReservedNop_rm16_r16_0F18, ReservedNop, 2, op0=r;si op1=r;cx decopt=ForceReservedNop
-66 44 0F18 C5, ReservedNop_rm16_r16_0F18, ReservedNop, 2, op0=r;bp op1=r;r8w decopt=ForceReservedNop
-66 41 0F18 D6, ReservedNop_rm16_r16_0F18, ReservedNop, 2, op0=r;r14w op1=r;dx decopt=ForceReservedNop
-66 45 0F18 D0, ReservedNop_rm16_r16_0F18, ReservedNop, 2, op0=r;r8w op1=r;r10w decopt=ForceReservedNop
-66 41 0F18 D9, ReservedNop_rm16_r16_0F18, ReservedNop, 2, op0=r;r9w op1=r;bx decopt=ForceReservedNop
-66 44 0F18 EC, ReservedNop_rm16_r16_0F18, ReservedNop, 2, op0=r;sp op1=r;r13w decopt=ForceReservedNop
-66 0F18 18, ReservedNop_rm16_r16_0F18, ReservedNop, 2, op0=m;ds;rax;;1;0;0;UInt16 op1=r;bx decopt=ForceReservedNop
-66 42 0F18 CE, ReservedNop_rm16_r16_0F18, ReservedNop, 2, op0=r;si op1=r;cx decopt=ForceReservedNop enc=660F18CE
+66 0F18 CE, Reservednop_rm16_r16_0F18, Reservednop, 2, op0=r;si op1=r;cx decopt=ForceReservedNop
+66 44 0F18 C5, Reservednop_rm16_r16_0F18, Reservednop, 2, op0=r;bp op1=r;r8w decopt=ForceReservedNop
+66 41 0F18 D6, Reservednop_rm16_r16_0F18, Reservednop, 2, op0=r;r14w op1=r;dx decopt=ForceReservedNop
+66 45 0F18 D0, Reservednop_rm16_r16_0F18, Reservednop, 2, op0=r;r8w op1=r;r10w decopt=ForceReservedNop
+66 41 0F18 D9, Reservednop_rm16_r16_0F18, Reservednop, 2, op0=r;r9w op1=r;bx decopt=ForceReservedNop
+66 44 0F18 EC, Reservednop_rm16_r16_0F18, Reservednop, 2, op0=r;sp op1=r;r13w decopt=ForceReservedNop
+66 0F18 18, Reservednop_rm16_r16_0F18, Reservednop, 2, op0=m;ds;rax;;1;0;0;UInt16 op1=r;bx decopt=ForceReservedNop
+66 42 0F18 CE, Reservednop_rm16_r16_0F18, Reservednop, 2, op0=r;si op1=r;cx decopt=ForceReservedNop enc=660F18CE
 
-0F18 CE, ReservedNop_rm32_r32_0F18, ReservedNop, 2, op0=r;esi op1=r;ecx decopt=ForceReservedNop
-44 0F18 C5, ReservedNop_rm32_r32_0F18, ReservedNop, 2, op0=r;ebp op1=r;r8d decopt=ForceReservedNop
-41 0F18 D6, ReservedNop_rm32_r32_0F18, ReservedNop, 2, op0=r;r14d op1=r;edx decopt=ForceReservedNop
-45 0F18 D0, ReservedNop_rm32_r32_0F18, ReservedNop, 2, op0=r;r8d op1=r;r10d decopt=ForceReservedNop
-41 0F18 D9, ReservedNop_rm32_r32_0F18, ReservedNop, 2, op0=r;r9d op1=r;ebx decopt=ForceReservedNop
-44 0F18 EC, ReservedNop_rm32_r32_0F18, ReservedNop, 2, op0=r;esp op1=r;r13d decopt=ForceReservedNop
-0F18 18, ReservedNop_rm32_r32_0F18, ReservedNop, 2, op0=m;ds;rax;;1;0;0;UInt32 op1=r;ebx decopt=ForceReservedNop
-42 0F18 CE, ReservedNop_rm32_r32_0F18, ReservedNop, 2, op0=r;esi op1=r;ecx decopt=ForceReservedNop enc=0F18CE
+0F18 CE, Reservednop_rm32_r32_0F18, Reservednop, 2, op0=r;esi op1=r;ecx decopt=ForceReservedNop
+44 0F18 C5, Reservednop_rm32_r32_0F18, Reservednop, 2, op0=r;ebp op1=r;r8d decopt=ForceReservedNop
+41 0F18 D6, Reservednop_rm32_r32_0F18, Reservednop, 2, op0=r;r14d op1=r;edx decopt=ForceReservedNop
+45 0F18 D0, Reservednop_rm32_r32_0F18, Reservednop, 2, op0=r;r8d op1=r;r10d decopt=ForceReservedNop
+41 0F18 D9, Reservednop_rm32_r32_0F18, Reservednop, 2, op0=r;r9d op1=r;ebx decopt=ForceReservedNop
+44 0F18 EC, Reservednop_rm32_r32_0F18, Reservednop, 2, op0=r;esp op1=r;r13d decopt=ForceReservedNop
+0F18 18, Reservednop_rm32_r32_0F18, Reservednop, 2, op0=m;ds;rax;;1;0;0;UInt32 op1=r;ebx decopt=ForceReservedNop
+42 0F18 CE, Reservednop_rm32_r32_0F18, Reservednop, 2, op0=r;esi op1=r;ecx decopt=ForceReservedNop enc=0F18CE
 
-48 0F18 CE, ReservedNop_rm64_r64_0F18, ReservedNop, 2, op0=r;rsi op1=r;rcx decopt=ForceReservedNop
-4C 0F18 C5, ReservedNop_rm64_r64_0F18, ReservedNop, 2, op0=r;rbp op1=r;r8 decopt=ForceReservedNop
-49 0F18 D6, ReservedNop_rm64_r64_0F18, ReservedNop, 2, op0=r;r14 op1=r;rdx decopt=ForceReservedNop
-4D 0F18 D0, ReservedNop_rm64_r64_0F18, ReservedNop, 2, op0=r;r8 op1=r;r10 decopt=ForceReservedNop
-49 0F18 D9, ReservedNop_rm64_r64_0F18, ReservedNop, 2, op0=r;r9 op1=r;rbx decopt=ForceReservedNop
-4C 0F18 EC, ReservedNop_rm64_r64_0F18, ReservedNop, 2, op0=r;rsp op1=r;r13 decopt=ForceReservedNop
-48 0F18 18, ReservedNop_rm64_r64_0F18, ReservedNop, 2, op0=m;ds;rax;;1;0;0;UInt64 op1=r;rbx decopt=ForceReservedNop
-4A 0F18 CE, ReservedNop_rm64_r64_0F18, ReservedNop, 2, op0=r;rsi op1=r;rcx decopt=ForceReservedNop enc=480F18CE
+48 0F18 CE, Reservednop_rm64_r64_0F18, Reservednop, 2, op0=r;rsi op1=r;rcx decopt=ForceReservedNop
+4C 0F18 C5, Reservednop_rm64_r64_0F18, Reservednop, 2, op0=r;rbp op1=r;r8 decopt=ForceReservedNop
+49 0F18 D6, Reservednop_rm64_r64_0F18, Reservednop, 2, op0=r;r14 op1=r;rdx decopt=ForceReservedNop
+4D 0F18 D0, Reservednop_rm64_r64_0F18, Reservednop, 2, op0=r;r8 op1=r;r10 decopt=ForceReservedNop
+49 0F18 D9, Reservednop_rm64_r64_0F18, Reservednop, 2, op0=r;r9 op1=r;rbx decopt=ForceReservedNop
+4C 0F18 EC, Reservednop_rm64_r64_0F18, Reservednop, 2, op0=r;rsp op1=r;r13 decopt=ForceReservedNop
+48 0F18 18, Reservednop_rm64_r64_0F18, Reservednop, 2, op0=m;ds;rax;;1;0;0;UInt64 op1=r;rbx decopt=ForceReservedNop
+4A 0F18 CE, Reservednop_rm64_r64_0F18, Reservednop, 2, op0=r;rsi op1=r;rcx decopt=ForceReservedNop enc=480F18CE
 
-66 0F19 CE, ReservedNop_rm16_r16_0F19, ReservedNop, 2, op0=r;si op1=r;cx decopt=ForceReservedNop
-66 44 0F19 C5, ReservedNop_rm16_r16_0F19, ReservedNop, 2, op0=r;bp op1=r;r8w decopt=ForceReservedNop
-66 41 0F19 D6, ReservedNop_rm16_r16_0F19, ReservedNop, 2, op0=r;r14w op1=r;dx decopt=ForceReservedNop
-66 45 0F19 D0, ReservedNop_rm16_r16_0F19, ReservedNop, 2, op0=r;r8w op1=r;r10w decopt=ForceReservedNop
-66 41 0F19 D9, ReservedNop_rm16_r16_0F19, ReservedNop, 2, op0=r;r9w op1=r;bx decopt=ForceReservedNop
-66 44 0F19 EC, ReservedNop_rm16_r16_0F19, ReservedNop, 2, op0=r;sp op1=r;r13w decopt=ForceReservedNop
-66 0F19 18, ReservedNop_rm16_r16_0F19, ReservedNop, 2, op0=m;ds;rax;;1;0;0;UInt16 op1=r;bx decopt=ForceReservedNop
-66 42 0F19 CE, ReservedNop_rm16_r16_0F19, ReservedNop, 2, op0=r;si op1=r;cx decopt=ForceReservedNop enc=660F19CE
+66 0F19 CE, Reservednop_rm16_r16_0F19, Reservednop, 2, op0=r;si op1=r;cx decopt=ForceReservedNop
+66 44 0F19 C5, Reservednop_rm16_r16_0F19, Reservednop, 2, op0=r;bp op1=r;r8w decopt=ForceReservedNop
+66 41 0F19 D6, Reservednop_rm16_r16_0F19, Reservednop, 2, op0=r;r14w op1=r;dx decopt=ForceReservedNop
+66 45 0F19 D0, Reservednop_rm16_r16_0F19, Reservednop, 2, op0=r;r8w op1=r;r10w decopt=ForceReservedNop
+66 41 0F19 D9, Reservednop_rm16_r16_0F19, Reservednop, 2, op0=r;r9w op1=r;bx decopt=ForceReservedNop
+66 44 0F19 EC, Reservednop_rm16_r16_0F19, Reservednop, 2, op0=r;sp op1=r;r13w decopt=ForceReservedNop
+66 0F19 18, Reservednop_rm16_r16_0F19, Reservednop, 2, op0=m;ds;rax;;1;0;0;UInt16 op1=r;bx decopt=ForceReservedNop
+66 42 0F19 CE, Reservednop_rm16_r16_0F19, Reservednop, 2, op0=r;si op1=r;cx decopt=ForceReservedNop enc=660F19CE
 
-0F19 CE, ReservedNop_rm32_r32_0F19, ReservedNop, 2, op0=r;esi op1=r;ecx decopt=ForceReservedNop
-44 0F19 C5, ReservedNop_rm32_r32_0F19, ReservedNop, 2, op0=r;ebp op1=r;r8d decopt=ForceReservedNop
-41 0F19 D6, ReservedNop_rm32_r32_0F19, ReservedNop, 2, op0=r;r14d op1=r;edx decopt=ForceReservedNop
-45 0F19 D0, ReservedNop_rm32_r32_0F19, ReservedNop, 2, op0=r;r8d op1=r;r10d decopt=ForceReservedNop
-41 0F19 D9, ReservedNop_rm32_r32_0F19, ReservedNop, 2, op0=r;r9d op1=r;ebx decopt=ForceReservedNop
-44 0F19 EC, ReservedNop_rm32_r32_0F19, ReservedNop, 2, op0=r;esp op1=r;r13d decopt=ForceReservedNop
-0F19 18, ReservedNop_rm32_r32_0F19, ReservedNop, 2, op0=m;ds;rax;;1;0;0;UInt32 op1=r;ebx decopt=ForceReservedNop
-42 0F19 CE, ReservedNop_rm32_r32_0F19, ReservedNop, 2, op0=r;esi op1=r;ecx decopt=ForceReservedNop enc=0F19CE
+0F19 CE, Reservednop_rm32_r32_0F19, Reservednop, 2, op0=r;esi op1=r;ecx decopt=ForceReservedNop
+44 0F19 C5, Reservednop_rm32_r32_0F19, Reservednop, 2, op0=r;ebp op1=r;r8d decopt=ForceReservedNop
+41 0F19 D6, Reservednop_rm32_r32_0F19, Reservednop, 2, op0=r;r14d op1=r;edx decopt=ForceReservedNop
+45 0F19 D0, Reservednop_rm32_r32_0F19, Reservednop, 2, op0=r;r8d op1=r;r10d decopt=ForceReservedNop
+41 0F19 D9, Reservednop_rm32_r32_0F19, Reservednop, 2, op0=r;r9d op1=r;ebx decopt=ForceReservedNop
+44 0F19 EC, Reservednop_rm32_r32_0F19, Reservednop, 2, op0=r;esp op1=r;r13d decopt=ForceReservedNop
+0F19 18, Reservednop_rm32_r32_0F19, Reservednop, 2, op0=m;ds;rax;;1;0;0;UInt32 op1=r;ebx decopt=ForceReservedNop
+42 0F19 CE, Reservednop_rm32_r32_0F19, Reservednop, 2, op0=r;esi op1=r;ecx decopt=ForceReservedNop enc=0F19CE
 
-48 0F19 CE, ReservedNop_rm64_r64_0F19, ReservedNop, 2, op0=r;rsi op1=r;rcx decopt=ForceReservedNop
-4C 0F19 C5, ReservedNop_rm64_r64_0F19, ReservedNop, 2, op0=r;rbp op1=r;r8 decopt=ForceReservedNop
-49 0F19 D6, ReservedNop_rm64_r64_0F19, ReservedNop, 2, op0=r;r14 op1=r;rdx decopt=ForceReservedNop
-4D 0F19 D0, ReservedNop_rm64_r64_0F19, ReservedNop, 2, op0=r;r8 op1=r;r10 decopt=ForceReservedNop
-49 0F19 D9, ReservedNop_rm64_r64_0F19, ReservedNop, 2, op0=r;r9 op1=r;rbx decopt=ForceReservedNop
-4C 0F19 EC, ReservedNop_rm64_r64_0F19, ReservedNop, 2, op0=r;rsp op1=r;r13 decopt=ForceReservedNop
-48 0F19 18, ReservedNop_rm64_r64_0F19, ReservedNop, 2, op0=m;ds;rax;;1;0;0;UInt64 op1=r;rbx decopt=ForceReservedNop
-4A 0F19 CE, ReservedNop_rm64_r64_0F19, ReservedNop, 2, op0=r;rsi op1=r;rcx decopt=ForceReservedNop enc=480F19CE
+48 0F19 CE, Reservednop_rm64_r64_0F19, Reservednop, 2, op0=r;rsi op1=r;rcx decopt=ForceReservedNop
+4C 0F19 C5, Reservednop_rm64_r64_0F19, Reservednop, 2, op0=r;rbp op1=r;r8 decopt=ForceReservedNop
+49 0F19 D6, Reservednop_rm64_r64_0F19, Reservednop, 2, op0=r;r14 op1=r;rdx decopt=ForceReservedNop
+4D 0F19 D0, Reservednop_rm64_r64_0F19, Reservednop, 2, op0=r;r8 op1=r;r10 decopt=ForceReservedNop
+49 0F19 D9, Reservednop_rm64_r64_0F19, Reservednop, 2, op0=r;r9 op1=r;rbx decopt=ForceReservedNop
+4C 0F19 EC, Reservednop_rm64_r64_0F19, Reservednop, 2, op0=r;rsp op1=r;r13 decopt=ForceReservedNop
+48 0F19 18, Reservednop_rm64_r64_0F19, Reservednop, 2, op0=m;ds;rax;;1;0;0;UInt64 op1=r;rbx decopt=ForceReservedNop
+4A 0F19 CE, Reservednop_rm64_r64_0F19, Reservednop, 2, op0=r;rsi op1=r;rcx decopt=ForceReservedNop enc=480F19CE
 
-66 0F1A CE, ReservedNop_rm16_r16_0F1A, ReservedNop, 2, op0=r;si op1=r;cx
-66 44 0F1A C5, ReservedNop_rm16_r16_0F1A, ReservedNop, 2, op0=r;bp op1=r;r8w
-66 41 0F1A D6, ReservedNop_rm16_r16_0F1A, ReservedNop, 2, op0=r;r14w op1=r;dx
-66 45 0F1A D0, ReservedNop_rm16_r16_0F1A, ReservedNop, 2, op0=r;r8w op1=r;r10w
-66 41 0F1A D9, ReservedNop_rm16_r16_0F1A, ReservedNop, 2, op0=r;r9w op1=r;bx
-66 44 0F1A EC, ReservedNop_rm16_r16_0F1A, ReservedNop, 2, op0=r;sp op1=r;r13w
-66 0F1A 18, ReservedNop_rm16_r16_0F1A, ReservedNop, 2, op0=m;ds;rax;;1;0;0;UInt16 op1=r;bx
-66 42 0F1A CE, ReservedNop_rm16_r16_0F1A, ReservedNop, 2, op0=r;si op1=r;cx enc=660F1ACE
+66 0F1A CE, Reservednop_rm16_r16_0F1A, Reservednop, 2, op0=r;si op1=r;cx
+66 44 0F1A C5, Reservednop_rm16_r16_0F1A, Reservednop, 2, op0=r;bp op1=r;r8w
+66 41 0F1A D6, Reservednop_rm16_r16_0F1A, Reservednop, 2, op0=r;r14w op1=r;dx
+66 45 0F1A D0, Reservednop_rm16_r16_0F1A, Reservednop, 2, op0=r;r8w op1=r;r10w
+66 41 0F1A D9, Reservednop_rm16_r16_0F1A, Reservednop, 2, op0=r;r9w op1=r;bx
+66 44 0F1A EC, Reservednop_rm16_r16_0F1A, Reservednop, 2, op0=r;sp op1=r;r13w
+66 0F1A 18, Reservednop_rm16_r16_0F1A, Reservednop, 2, op0=m;ds;rax;;1;0;0;UInt16 op1=r;bx
+66 42 0F1A CE, Reservednop_rm16_r16_0F1A, Reservednop, 2, op0=r;si op1=r;cx enc=660F1ACE
 
-0F1A CE, ReservedNop_rm32_r32_0F1A, ReservedNop, 2, op0=r;esi op1=r;ecx
-44 0F1A C5, ReservedNop_rm32_r32_0F1A, ReservedNop, 2, op0=r;ebp op1=r;r8d
-41 0F1A D6, ReservedNop_rm32_r32_0F1A, ReservedNop, 2, op0=r;r14d op1=r;edx
-45 0F1A D0, ReservedNop_rm32_r32_0F1A, ReservedNop, 2, op0=r;r8d op1=r;r10d
-41 0F1A D9, ReservedNop_rm32_r32_0F1A, ReservedNop, 2, op0=r;r9d op1=r;ebx
-44 0F1A EC, ReservedNop_rm32_r32_0F1A, ReservedNop, 2, op0=r;esp op1=r;r13d
-0F1A 18, ReservedNop_rm32_r32_0F1A, ReservedNop, 2, op0=m;ds;rax;;1;0;0;UInt32 op1=r;ebx
-42 0F1A CE, ReservedNop_rm32_r32_0F1A, ReservedNop, 2, op0=r;esi op1=r;ecx enc=0F1ACE
+0F1A CE, Reservednop_rm32_r32_0F1A, Reservednop, 2, op0=r;esi op1=r;ecx
+44 0F1A C5, Reservednop_rm32_r32_0F1A, Reservednop, 2, op0=r;ebp op1=r;r8d
+41 0F1A D6, Reservednop_rm32_r32_0F1A, Reservednop, 2, op0=r;r14d op1=r;edx
+45 0F1A D0, Reservednop_rm32_r32_0F1A, Reservednop, 2, op0=r;r8d op1=r;r10d
+41 0F1A D9, Reservednop_rm32_r32_0F1A, Reservednop, 2, op0=r;r9d op1=r;ebx
+44 0F1A EC, Reservednop_rm32_r32_0F1A, Reservednop, 2, op0=r;esp op1=r;r13d
+0F1A 18, Reservednop_rm32_r32_0F1A, Reservednop, 2, op0=m;ds;rax;;1;0;0;UInt32 op1=r;ebx
+42 0F1A CE, Reservednop_rm32_r32_0F1A, Reservednop, 2, op0=r;esi op1=r;ecx enc=0F1ACE
 
-48 0F1A CE, ReservedNop_rm64_r64_0F1A, ReservedNop, 2, op0=r;rsi op1=r;rcx
-4C 0F1A C5, ReservedNop_rm64_r64_0F1A, ReservedNop, 2, op0=r;rbp op1=r;r8
-49 0F1A D6, ReservedNop_rm64_r64_0F1A, ReservedNop, 2, op0=r;r14 op1=r;rdx
-4D 0F1A D0, ReservedNop_rm64_r64_0F1A, ReservedNop, 2, op0=r;r8 op1=r;r10
-49 0F1A D9, ReservedNop_rm64_r64_0F1A, ReservedNop, 2, op0=r;r9 op1=r;rbx
-4C 0F1A EC, ReservedNop_rm64_r64_0F1A, ReservedNop, 2, op0=r;rsp op1=r;r13
-48 0F1A 18, ReservedNop_rm64_r64_0F1A, ReservedNop, 2, op0=m;ds;rax;;1;0;0;UInt64 op1=r;rbx
-4A 0F1A CE, ReservedNop_rm64_r64_0F1A, ReservedNop, 2, op0=r;rsi op1=r;rcx enc=480F1ACE
+48 0F1A CE, Reservednop_rm64_r64_0F1A, Reservednop, 2, op0=r;rsi op1=r;rcx
+4C 0F1A C5, Reservednop_rm64_r64_0F1A, Reservednop, 2, op0=r;rbp op1=r;r8
+49 0F1A D6, Reservednop_rm64_r64_0F1A, Reservednop, 2, op0=r;r14 op1=r;rdx
+4D 0F1A D0, Reservednop_rm64_r64_0F1A, Reservednop, 2, op0=r;r8 op1=r;r10
+49 0F1A D9, Reservednop_rm64_r64_0F1A, Reservednop, 2, op0=r;r9 op1=r;rbx
+4C 0F1A EC, Reservednop_rm64_r64_0F1A, Reservednop, 2, op0=r;rsp op1=r;r13
+48 0F1A 18, Reservednop_rm64_r64_0F1A, Reservednop, 2, op0=m;ds;rax;;1;0;0;UInt64 op1=r;rbx
+4A 0F1A CE, Reservednop_rm64_r64_0F1A, Reservednop, 2, op0=r;rsi op1=r;rcx enc=480F1ACE
 
-66 0F1B CE, ReservedNop_rm16_r16_0F1B, ReservedNop, 2, op0=r;si op1=r;cx
-66 44 0F1B C5, ReservedNop_rm16_r16_0F1B, ReservedNop, 2, op0=r;bp op1=r;r8w
-66 41 0F1B D6, ReservedNop_rm16_r16_0F1B, ReservedNop, 2, op0=r;r14w op1=r;dx
-66 45 0F1B D0, ReservedNop_rm16_r16_0F1B, ReservedNop, 2, op0=r;r8w op1=r;r10w
-66 41 0F1B D9, ReservedNop_rm16_r16_0F1B, ReservedNop, 2, op0=r;r9w op1=r;bx
-66 44 0F1B EC, ReservedNop_rm16_r16_0F1B, ReservedNop, 2, op0=r;sp op1=r;r13w
-66 0F1B 18, ReservedNop_rm16_r16_0F1B, ReservedNop, 2, op0=m;ds;rax;;1;0;0;UInt16 op1=r;bx
-66 42 0F1B CE, ReservedNop_rm16_r16_0F1B, ReservedNop, 2, op0=r;si op1=r;cx enc=660F1BCE
+66 0F1B CE, Reservednop_rm16_r16_0F1B, Reservednop, 2, op0=r;si op1=r;cx
+66 44 0F1B C5, Reservednop_rm16_r16_0F1B, Reservednop, 2, op0=r;bp op1=r;r8w
+66 41 0F1B D6, Reservednop_rm16_r16_0F1B, Reservednop, 2, op0=r;r14w op1=r;dx
+66 45 0F1B D0, Reservednop_rm16_r16_0F1B, Reservednop, 2, op0=r;r8w op1=r;r10w
+66 41 0F1B D9, Reservednop_rm16_r16_0F1B, Reservednop, 2, op0=r;r9w op1=r;bx
+66 44 0F1B EC, Reservednop_rm16_r16_0F1B, Reservednop, 2, op0=r;sp op1=r;r13w
+66 0F1B 18, Reservednop_rm16_r16_0F1B, Reservednop, 2, op0=m;ds;rax;;1;0;0;UInt16 op1=r;bx
+66 42 0F1B CE, Reservednop_rm16_r16_0F1B, Reservednop, 2, op0=r;si op1=r;cx enc=660F1BCE
 
-0F1B CE, ReservedNop_rm32_r32_0F1B, ReservedNop, 2, op0=r;esi op1=r;ecx
-44 0F1B C5, ReservedNop_rm32_r32_0F1B, ReservedNop, 2, op0=r;ebp op1=r;r8d
-41 0F1B D6, ReservedNop_rm32_r32_0F1B, ReservedNop, 2, op0=r;r14d op1=r;edx
-45 0F1B D0, ReservedNop_rm32_r32_0F1B, ReservedNop, 2, op0=r;r8d op1=r;r10d
-41 0F1B D9, ReservedNop_rm32_r32_0F1B, ReservedNop, 2, op0=r;r9d op1=r;ebx
-44 0F1B EC, ReservedNop_rm32_r32_0F1B, ReservedNop, 2, op0=r;esp op1=r;r13d
-0F1B 18, ReservedNop_rm32_r32_0F1B, ReservedNop, 2, op0=m;ds;rax;;1;0;0;UInt32 op1=r;ebx
-42 0F1B CE, ReservedNop_rm32_r32_0F1B, ReservedNop, 2, op0=r;esi op1=r;ecx enc=0F1BCE
+0F1B CE, Reservednop_rm32_r32_0F1B, Reservednop, 2, op0=r;esi op1=r;ecx
+44 0F1B C5, Reservednop_rm32_r32_0F1B, Reservednop, 2, op0=r;ebp op1=r;r8d
+41 0F1B D6, Reservednop_rm32_r32_0F1B, Reservednop, 2, op0=r;r14d op1=r;edx
+45 0F1B D0, Reservednop_rm32_r32_0F1B, Reservednop, 2, op0=r;r8d op1=r;r10d
+41 0F1B D9, Reservednop_rm32_r32_0F1B, Reservednop, 2, op0=r;r9d op1=r;ebx
+44 0F1B EC, Reservednop_rm32_r32_0F1B, Reservednop, 2, op0=r;esp op1=r;r13d
+0F1B 18, Reservednop_rm32_r32_0F1B, Reservednop, 2, op0=m;ds;rax;;1;0;0;UInt32 op1=r;ebx
+42 0F1B CE, Reservednop_rm32_r32_0F1B, Reservednop, 2, op0=r;esi op1=r;ecx enc=0F1BCE
 
-48 0F1B CE, ReservedNop_rm64_r64_0F1B, ReservedNop, 2, op0=r;rsi op1=r;rcx
-4C 0F1B C5, ReservedNop_rm64_r64_0F1B, ReservedNop, 2, op0=r;rbp op1=r;r8
-49 0F1B D6, ReservedNop_rm64_r64_0F1B, ReservedNop, 2, op0=r;r14 op1=r;rdx
-4D 0F1B D0, ReservedNop_rm64_r64_0F1B, ReservedNop, 2, op0=r;r8 op1=r;r10
-49 0F1B D9, ReservedNop_rm64_r64_0F1B, ReservedNop, 2, op0=r;r9 op1=r;rbx
-4C 0F1B EC, ReservedNop_rm64_r64_0F1B, ReservedNop, 2, op0=r;rsp op1=r;r13
-48 0F1B 18, ReservedNop_rm64_r64_0F1B, ReservedNop, 2, op0=m;ds;rax;;1;0;0;UInt64 op1=r;rbx
-4A 0F1B CE, ReservedNop_rm64_r64_0F1B, ReservedNop, 2, op0=r;rsi op1=r;rcx enc=480F1BCE
+48 0F1B CE, Reservednop_rm64_r64_0F1B, Reservednop, 2, op0=r;rsi op1=r;rcx
+4C 0F1B C5, Reservednop_rm64_r64_0F1B, Reservednop, 2, op0=r;rbp op1=r;r8
+49 0F1B D6, Reservednop_rm64_r64_0F1B, Reservednop, 2, op0=r;r14 op1=r;rdx
+4D 0F1B D0, Reservednop_rm64_r64_0F1B, Reservednop, 2, op0=r;r8 op1=r;r10
+49 0F1B D9, Reservednop_rm64_r64_0F1B, Reservednop, 2, op0=r;r9 op1=r;rbx
+4C 0F1B EC, Reservednop_rm64_r64_0F1B, Reservednop, 2, op0=r;rsp op1=r;r13
+48 0F1B 18, Reservednop_rm64_r64_0F1B, Reservednop, 2, op0=m;ds;rax;;1;0;0;UInt64 op1=r;rbx
+4A 0F1B CE, Reservednop_rm64_r64_0F1B, Reservednop, 2, op0=r;rsi op1=r;rcx enc=480F1BCE
 
-66 0F1C CE, ReservedNop_rm16_r16_0F1C, ReservedNop, 2, op0=r;si op1=r;cx decopt=ForceReservedNop
-66 44 0F1C C5, ReservedNop_rm16_r16_0F1C, ReservedNop, 2, op0=r;bp op1=r;r8w decopt=ForceReservedNop
-66 41 0F1C D6, ReservedNop_rm16_r16_0F1C, ReservedNop, 2, op0=r;r14w op1=r;dx decopt=ForceReservedNop
-66 45 0F1C D0, ReservedNop_rm16_r16_0F1C, ReservedNop, 2, op0=r;r8w op1=r;r10w decopt=ForceReservedNop
-66 41 0F1C D9, ReservedNop_rm16_r16_0F1C, ReservedNop, 2, op0=r;r9w op1=r;bx decopt=ForceReservedNop
-66 44 0F1C EC, ReservedNop_rm16_r16_0F1C, ReservedNop, 2, op0=r;sp op1=r;r13w decopt=ForceReservedNop
-66 0F1C 18, ReservedNop_rm16_r16_0F1C, ReservedNop, 2, op0=m;ds;rax;;1;0;0;UInt16 op1=r;bx decopt=ForceReservedNop
-66 42 0F1C CE, ReservedNop_rm16_r16_0F1C, ReservedNop, 2, op0=r;si op1=r;cx decopt=ForceReservedNop enc=660F1CCE
-66 0F1C 04 48, ReservedNop_rm16_r16_0F1C, ReservedNop, 2, op0=m;ds;rax;rcx;2;0;0;UInt16 op1=r;ax decopt=ForceReservedNop
-66 F3 0F1C 04 48, ReservedNop_rm16_r16_0F1C, ReservedNop, 2, op0=m;ds;rax;rcx;2;0;0;UInt16 op1=r;ax decopt=ForceReservedNop rep
-66 F2 0F1C 04 48, ReservedNop_rm16_r16_0F1C, ReservedNop, 2, op0=m;ds;rax;rcx;2;0;0;UInt16 op1=r;ax decopt=ForceReservedNop repne
-66 0F1C 04 48, ReservedNop_rm16_r16_0F1C, ReservedNop, 2, op0=m;ds;rax;rcx;2;0;0;UInt16 op1=r;ax
-66 F3 0F1C 04 48, ReservedNop_rm16_r16_0F1C, ReservedNop, 2, op0=m;ds;rax;rcx;2;0;0;UInt16 op1=r;ax rep
-66 F2 0F1C 04 48, ReservedNop_rm16_r16_0F1C, ReservedNop, 2, op0=m;ds;rax;rcx;2;0;0;UInt16 op1=r;ax repne
+66 0F1C CE, Reservednop_rm16_r16_0F1C, Reservednop, 2, op0=r;si op1=r;cx decopt=ForceReservedNop
+66 44 0F1C C5, Reservednop_rm16_r16_0F1C, Reservednop, 2, op0=r;bp op1=r;r8w decopt=ForceReservedNop
+66 41 0F1C D6, Reservednop_rm16_r16_0F1C, Reservednop, 2, op0=r;r14w op1=r;dx decopt=ForceReservedNop
+66 45 0F1C D0, Reservednop_rm16_r16_0F1C, Reservednop, 2, op0=r;r8w op1=r;r10w decopt=ForceReservedNop
+66 41 0F1C D9, Reservednop_rm16_r16_0F1C, Reservednop, 2, op0=r;r9w op1=r;bx decopt=ForceReservedNop
+66 44 0F1C EC, Reservednop_rm16_r16_0F1C, Reservednop, 2, op0=r;sp op1=r;r13w decopt=ForceReservedNop
+66 0F1C 18, Reservednop_rm16_r16_0F1C, Reservednop, 2, op0=m;ds;rax;;1;0;0;UInt16 op1=r;bx decopt=ForceReservedNop
+66 42 0F1C CE, Reservednop_rm16_r16_0F1C, Reservednop, 2, op0=r;si op1=r;cx decopt=ForceReservedNop enc=660F1CCE
+66 0F1C 04 48, Reservednop_rm16_r16_0F1C, Reservednop, 2, op0=m;ds;rax;rcx;2;0;0;UInt16 op1=r;ax decopt=ForceReservedNop
+66 F3 0F1C 04 48, Reservednop_rm16_r16_0F1C, Reservednop, 2, op0=m;ds;rax;rcx;2;0;0;UInt16 op1=r;ax decopt=ForceReservedNop rep
+66 F2 0F1C 04 48, Reservednop_rm16_r16_0F1C, Reservednop, 2, op0=m;ds;rax;rcx;2;0;0;UInt16 op1=r;ax decopt=ForceReservedNop repne
+66 0F1C 04 48, Reservednop_rm16_r16_0F1C, Reservednop, 2, op0=m;ds;rax;rcx;2;0;0;UInt16 op1=r;ax
+66 F3 0F1C 04 48, Reservednop_rm16_r16_0F1C, Reservednop, 2, op0=m;ds;rax;rcx;2;0;0;UInt16 op1=r;ax rep
+66 F2 0F1C 04 48, Reservednop_rm16_r16_0F1C, Reservednop, 2, op0=m;ds;rax;rcx;2;0;0;UInt16 op1=r;ax repne
 
-0F1C CE, ReservedNop_rm32_r32_0F1C, ReservedNop, 2, op0=r;esi op1=r;ecx decopt=ForceReservedNop
-44 0F1C C5, ReservedNop_rm32_r32_0F1C, ReservedNop, 2, op0=r;ebp op1=r;r8d decopt=ForceReservedNop
-41 0F1C D6, ReservedNop_rm32_r32_0F1C, ReservedNop, 2, op0=r;r14d op1=r;edx decopt=ForceReservedNop
-45 0F1C D0, ReservedNop_rm32_r32_0F1C, ReservedNop, 2, op0=r;r8d op1=r;r10d decopt=ForceReservedNop
-41 0F1C D9, ReservedNop_rm32_r32_0F1C, ReservedNop, 2, op0=r;r9d op1=r;ebx decopt=ForceReservedNop
-44 0F1C EC, ReservedNop_rm32_r32_0F1C, ReservedNop, 2, op0=r;esp op1=r;r13d decopt=ForceReservedNop
-0F1C 18, ReservedNop_rm32_r32_0F1C, ReservedNop, 2, op0=m;ds;rax;;1;0;0;UInt32 op1=r;ebx decopt=ForceReservedNop
-42 0F1C CE, ReservedNop_rm32_r32_0F1C, ReservedNop, 2, op0=r;esi op1=r;ecx decopt=ForceReservedNop enc=0F1CCE
-F3 0F1C 04 48, ReservedNop_rm32_r32_0F1C, ReservedNop, 2, op0=m;ds;rax;rcx;2;0;0;UInt32 op1=r;eax decopt=ForceReservedNop rep
-F2 0F1C 04 48, ReservedNop_rm32_r32_0F1C, ReservedNop, 2, op0=m;ds;rax;rcx;2;0;0;UInt32 op1=r;eax decopt=ForceReservedNop repne
-F3 0F1C 04 48, ReservedNop_rm32_r32_0F1C, ReservedNop, 2, op0=m;ds;rax;rcx;2;0;0;UInt32 op1=r;eax rep
-F2 0F1C 04 48, ReservedNop_rm32_r32_0F1C, ReservedNop, 2, op0=m;ds;rax;rcx;2;0;0;UInt32 op1=r;eax repne
+0F1C CE, Reservednop_rm32_r32_0F1C, Reservednop, 2, op0=r;esi op1=r;ecx decopt=ForceReservedNop
+44 0F1C C5, Reservednop_rm32_r32_0F1C, Reservednop, 2, op0=r;ebp op1=r;r8d decopt=ForceReservedNop
+41 0F1C D6, Reservednop_rm32_r32_0F1C, Reservednop, 2, op0=r;r14d op1=r;edx decopt=ForceReservedNop
+45 0F1C D0, Reservednop_rm32_r32_0F1C, Reservednop, 2, op0=r;r8d op1=r;r10d decopt=ForceReservedNop
+41 0F1C D9, Reservednop_rm32_r32_0F1C, Reservednop, 2, op0=r;r9d op1=r;ebx decopt=ForceReservedNop
+44 0F1C EC, Reservednop_rm32_r32_0F1C, Reservednop, 2, op0=r;esp op1=r;r13d decopt=ForceReservedNop
+0F1C 18, Reservednop_rm32_r32_0F1C, Reservednop, 2, op0=m;ds;rax;;1;0;0;UInt32 op1=r;ebx decopt=ForceReservedNop
+42 0F1C CE, Reservednop_rm32_r32_0F1C, Reservednop, 2, op0=r;esi op1=r;ecx decopt=ForceReservedNop enc=0F1CCE
+F3 0F1C 04 48, Reservednop_rm32_r32_0F1C, Reservednop, 2, op0=m;ds;rax;rcx;2;0;0;UInt32 op1=r;eax decopt=ForceReservedNop rep
+F2 0F1C 04 48, Reservednop_rm32_r32_0F1C, Reservednop, 2, op0=m;ds;rax;rcx;2;0;0;UInt32 op1=r;eax decopt=ForceReservedNop repne
+F3 0F1C 04 48, Reservednop_rm32_r32_0F1C, Reservednop, 2, op0=m;ds;rax;rcx;2;0;0;UInt32 op1=r;eax rep
+F2 0F1C 04 48, Reservednop_rm32_r32_0F1C, Reservednop, 2, op0=m;ds;rax;rcx;2;0;0;UInt32 op1=r;eax repne
 
-48 0F1C CE, ReservedNop_rm64_r64_0F1C, ReservedNop, 2, op0=r;rsi op1=r;rcx decopt=ForceReservedNop
-4C 0F1C C5, ReservedNop_rm64_r64_0F1C, ReservedNop, 2, op0=r;rbp op1=r;r8 decopt=ForceReservedNop
-49 0F1C D6, ReservedNop_rm64_r64_0F1C, ReservedNop, 2, op0=r;r14 op1=r;rdx decopt=ForceReservedNop
-4D 0F1C D0, ReservedNop_rm64_r64_0F1C, ReservedNop, 2, op0=r;r8 op1=r;r10 decopt=ForceReservedNop
-49 0F1C D9, ReservedNop_rm64_r64_0F1C, ReservedNop, 2, op0=r;r9 op1=r;rbx decopt=ForceReservedNop
-4C 0F1C EC, ReservedNop_rm64_r64_0F1C, ReservedNop, 2, op0=r;rsp op1=r;r13 decopt=ForceReservedNop
-48 0F1C 18, ReservedNop_rm64_r64_0F1C, ReservedNop, 2, op0=m;ds;rax;;1;0;0;UInt64 op1=r;rbx decopt=ForceReservedNop
-4A 0F1C CE, ReservedNop_rm64_r64_0F1C, ReservedNop, 2, op0=r;rsi op1=r;rcx decopt=ForceReservedNop enc=480F1CCE
-F3 48 0F1C 04 48, ReservedNop_rm64_r64_0F1C, ReservedNop, 2, op0=m;ds;rax;rcx;2;0;0;UInt64 op1=r;rax decopt=ForceReservedNop rep
-F2 48 0F1C 04 48, ReservedNop_rm64_r64_0F1C, ReservedNop, 2, op0=m;ds;rax;rcx;2;0;0;UInt64 op1=r;rax decopt=ForceReservedNop repne
-F3 48 0F1C 04 48, ReservedNop_rm64_r64_0F1C, ReservedNop, 2, op0=m;ds;rax;rcx;2;0;0;UInt64 op1=r;rax rep
-F2 48 0F1C 04 48, ReservedNop_rm64_r64_0F1C, ReservedNop, 2, op0=m;ds;rax;rcx;2;0;0;UInt64 op1=r;rax repne
+48 0F1C CE, Reservednop_rm64_r64_0F1C, Reservednop, 2, op0=r;rsi op1=r;rcx decopt=ForceReservedNop
+4C 0F1C C5, Reservednop_rm64_r64_0F1C, Reservednop, 2, op0=r;rbp op1=r;r8 decopt=ForceReservedNop
+49 0F1C D6, Reservednop_rm64_r64_0F1C, Reservednop, 2, op0=r;r14 op1=r;rdx decopt=ForceReservedNop
+4D 0F1C D0, Reservednop_rm64_r64_0F1C, Reservednop, 2, op0=r;r8 op1=r;r10 decopt=ForceReservedNop
+49 0F1C D9, Reservednop_rm64_r64_0F1C, Reservednop, 2, op0=r;r9 op1=r;rbx decopt=ForceReservedNop
+4C 0F1C EC, Reservednop_rm64_r64_0F1C, Reservednop, 2, op0=r;rsp op1=r;r13 decopt=ForceReservedNop
+48 0F1C 18, Reservednop_rm64_r64_0F1C, Reservednop, 2, op0=m;ds;rax;;1;0;0;UInt64 op1=r;rbx decopt=ForceReservedNop
+4A 0F1C CE, Reservednop_rm64_r64_0F1C, Reservednop, 2, op0=r;rsi op1=r;rcx decopt=ForceReservedNop enc=480F1CCE
+F3 48 0F1C 04 48, Reservednop_rm64_r64_0F1C, Reservednop, 2, op0=m;ds;rax;rcx;2;0;0;UInt64 op1=r;rax decopt=ForceReservedNop rep
+F2 48 0F1C 04 48, Reservednop_rm64_r64_0F1C, Reservednop, 2, op0=m;ds;rax;rcx;2;0;0;UInt64 op1=r;rax decopt=ForceReservedNop repne
+F3 48 0F1C 04 48, Reservednop_rm64_r64_0F1C, Reservednop, 2, op0=m;ds;rax;rcx;2;0;0;UInt64 op1=r;rax rep
+F2 48 0F1C 04 48, Reservednop_rm64_r64_0F1C, Reservednop, 2, op0=m;ds;rax;rcx;2;0;0;UInt64 op1=r;rax repne
 
-66 0F1D CE, ReservedNop_rm16_r16_0F1D, ReservedNop, 2, op0=r;si op1=r;cx decopt=ForceReservedNop
-66 44 0F1D C5, ReservedNop_rm16_r16_0F1D, ReservedNop, 2, op0=r;bp op1=r;r8w decopt=ForceReservedNop
-66 41 0F1D D6, ReservedNop_rm16_r16_0F1D, ReservedNop, 2, op0=r;r14w op1=r;dx decopt=ForceReservedNop
-66 45 0F1D D0, ReservedNop_rm16_r16_0F1D, ReservedNop, 2, op0=r;r8w op1=r;r10w decopt=ForceReservedNop
-66 41 0F1D D9, ReservedNop_rm16_r16_0F1D, ReservedNop, 2, op0=r;r9w op1=r;bx decopt=ForceReservedNop
-66 44 0F1D EC, ReservedNop_rm16_r16_0F1D, ReservedNop, 2, op0=r;sp op1=r;r13w decopt=ForceReservedNop
-66 0F1D 18, ReservedNop_rm16_r16_0F1D, ReservedNop, 2, op0=m;ds;rax;;1;0;0;UInt16 op1=r;bx decopt=ForceReservedNop
-66 42 0F1D CE, ReservedNop_rm16_r16_0F1D, ReservedNop, 2, op0=r;si op1=r;cx decopt=ForceReservedNop enc=660F1DCE
+66 0F1D CE, Reservednop_rm16_r16_0F1D, Reservednop, 2, op0=r;si op1=r;cx decopt=ForceReservedNop
+66 44 0F1D C5, Reservednop_rm16_r16_0F1D, Reservednop, 2, op0=r;bp op1=r;r8w decopt=ForceReservedNop
+66 41 0F1D D6, Reservednop_rm16_r16_0F1D, Reservednop, 2, op0=r;r14w op1=r;dx decopt=ForceReservedNop
+66 45 0F1D D0, Reservednop_rm16_r16_0F1D, Reservednop, 2, op0=r;r8w op1=r;r10w decopt=ForceReservedNop
+66 41 0F1D D9, Reservednop_rm16_r16_0F1D, Reservednop, 2, op0=r;r9w op1=r;bx decopt=ForceReservedNop
+66 44 0F1D EC, Reservednop_rm16_r16_0F1D, Reservednop, 2, op0=r;sp op1=r;r13w decopt=ForceReservedNop
+66 0F1D 18, Reservednop_rm16_r16_0F1D, Reservednop, 2, op0=m;ds;rax;;1;0;0;UInt16 op1=r;bx decopt=ForceReservedNop
+66 42 0F1D CE, Reservednop_rm16_r16_0F1D, Reservednop, 2, op0=r;si op1=r;cx decopt=ForceReservedNop enc=660F1DCE
 
-0F1D CE, ReservedNop_rm32_r32_0F1D, ReservedNop, 2, op0=r;esi op1=r;ecx decopt=ForceReservedNop
-44 0F1D C5, ReservedNop_rm32_r32_0F1D, ReservedNop, 2, op0=r;ebp op1=r;r8d decopt=ForceReservedNop
-41 0F1D D6, ReservedNop_rm32_r32_0F1D, ReservedNop, 2, op0=r;r14d op1=r;edx decopt=ForceReservedNop
-45 0F1D D0, ReservedNop_rm32_r32_0F1D, ReservedNop, 2, op0=r;r8d op1=r;r10d decopt=ForceReservedNop
-41 0F1D D9, ReservedNop_rm32_r32_0F1D, ReservedNop, 2, op0=r;r9d op1=r;ebx decopt=ForceReservedNop
-44 0F1D EC, ReservedNop_rm32_r32_0F1D, ReservedNop, 2, op0=r;esp op1=r;r13d decopt=ForceReservedNop
-0F1D 18, ReservedNop_rm32_r32_0F1D, ReservedNop, 2, op0=m;ds;rax;;1;0;0;UInt32 op1=r;ebx decopt=ForceReservedNop
-42 0F1D CE, ReservedNop_rm32_r32_0F1D, ReservedNop, 2, op0=r;esi op1=r;ecx decopt=ForceReservedNop enc=0F1DCE
+0F1D CE, Reservednop_rm32_r32_0F1D, Reservednop, 2, op0=r;esi op1=r;ecx decopt=ForceReservedNop
+44 0F1D C5, Reservednop_rm32_r32_0F1D, Reservednop, 2, op0=r;ebp op1=r;r8d decopt=ForceReservedNop
+41 0F1D D6, Reservednop_rm32_r32_0F1D, Reservednop, 2, op0=r;r14d op1=r;edx decopt=ForceReservedNop
+45 0F1D D0, Reservednop_rm32_r32_0F1D, Reservednop, 2, op0=r;r8d op1=r;r10d decopt=ForceReservedNop
+41 0F1D D9, Reservednop_rm32_r32_0F1D, Reservednop, 2, op0=r;r9d op1=r;ebx decopt=ForceReservedNop
+44 0F1D EC, Reservednop_rm32_r32_0F1D, Reservednop, 2, op0=r;esp op1=r;r13d decopt=ForceReservedNop
+0F1D 18, Reservednop_rm32_r32_0F1D, Reservednop, 2, op0=m;ds;rax;;1;0;0;UInt32 op1=r;ebx decopt=ForceReservedNop
+42 0F1D CE, Reservednop_rm32_r32_0F1D, Reservednop, 2, op0=r;esi op1=r;ecx decopt=ForceReservedNop enc=0F1DCE
 
-48 0F1D CE, ReservedNop_rm64_r64_0F1D, ReservedNop, 2, op0=r;rsi op1=r;rcx decopt=ForceReservedNop
-4C 0F1D C5, ReservedNop_rm64_r64_0F1D, ReservedNop, 2, op0=r;rbp op1=r;r8 decopt=ForceReservedNop
-49 0F1D D6, ReservedNop_rm64_r64_0F1D, ReservedNop, 2, op0=r;r14 op1=r;rdx decopt=ForceReservedNop
-4D 0F1D D0, ReservedNop_rm64_r64_0F1D, ReservedNop, 2, op0=r;r8 op1=r;r10 decopt=ForceReservedNop
-49 0F1D D9, ReservedNop_rm64_r64_0F1D, ReservedNop, 2, op0=r;r9 op1=r;rbx decopt=ForceReservedNop
-4C 0F1D EC, ReservedNop_rm64_r64_0F1D, ReservedNop, 2, op0=r;rsp op1=r;r13 decopt=ForceReservedNop
-48 0F1D 18, ReservedNop_rm64_r64_0F1D, ReservedNop, 2, op0=m;ds;rax;;1;0;0;UInt64 op1=r;rbx decopt=ForceReservedNop
-4A 0F1D CE, ReservedNop_rm64_r64_0F1D, ReservedNop, 2, op0=r;rsi op1=r;rcx decopt=ForceReservedNop enc=480F1DCE
+48 0F1D CE, Reservednop_rm64_r64_0F1D, Reservednop, 2, op0=r;rsi op1=r;rcx decopt=ForceReservedNop
+4C 0F1D C5, Reservednop_rm64_r64_0F1D, Reservednop, 2, op0=r;rbp op1=r;r8 decopt=ForceReservedNop
+49 0F1D D6, Reservednop_rm64_r64_0F1D, Reservednop, 2, op0=r;r14 op1=r;rdx decopt=ForceReservedNop
+4D 0F1D D0, Reservednop_rm64_r64_0F1D, Reservednop, 2, op0=r;r8 op1=r;r10 decopt=ForceReservedNop
+49 0F1D D9, Reservednop_rm64_r64_0F1D, Reservednop, 2, op0=r;r9 op1=r;rbx decopt=ForceReservedNop
+4C 0F1D EC, Reservednop_rm64_r64_0F1D, Reservednop, 2, op0=r;rsp op1=r;r13 decopt=ForceReservedNop
+48 0F1D 18, Reservednop_rm64_r64_0F1D, Reservednop, 2, op0=m;ds;rax;;1;0;0;UInt64 op1=r;rbx decopt=ForceReservedNop
+4A 0F1D CE, Reservednop_rm64_r64_0F1D, Reservednop, 2, op0=r;rsi op1=r;rcx decopt=ForceReservedNop enc=480F1DCE
 
-66 0F1E CE, ReservedNop_rm16_r16_0F1E, ReservedNop, 2, op0=r;si op1=r;cx decopt=ForceReservedNop
-66 44 0F1E C5, ReservedNop_rm16_r16_0F1E, ReservedNop, 2, op0=r;bp op1=r;r8w decopt=ForceReservedNop
-66 41 0F1E D6, ReservedNop_rm16_r16_0F1E, ReservedNop, 2, op0=r;r14w op1=r;dx decopt=ForceReservedNop
-66 45 0F1E D0, ReservedNop_rm16_r16_0F1E, ReservedNop, 2, op0=r;r8w op1=r;r10w decopt=ForceReservedNop
-66 41 0F1E D9, ReservedNop_rm16_r16_0F1E, ReservedNop, 2, op0=r;r9w op1=r;bx decopt=ForceReservedNop
-66 44 0F1E EC, ReservedNop_rm16_r16_0F1E, ReservedNop, 2, op0=r;sp op1=r;r13w decopt=ForceReservedNop
-66 0F1E 18, ReservedNop_rm16_r16_0F1E, ReservedNop, 2, op0=m;ds;rax;;1;0;0;UInt16 op1=r;bx decopt=ForceReservedNop
-66 42 0F1E CE, ReservedNop_rm16_r16_0F1E, ReservedNop, 2, op0=r;si op1=r;cx decopt=ForceReservedNop enc=660F1ECE
-66 0F1E CA, ReservedNop_rm16_r16_0F1E, ReservedNop, 2, op0=r;dx op1=r;cx decopt=ForceReservedNop
-66 41 0F1E C9, ReservedNop_rm16_r16_0F1E, ReservedNop, 2, op0=r;r9w op1=r;cx decopt=ForceReservedNop
-66 0F1E FA, ReservedNop_rm16_r16_0F1E, ReservedNop, 2, op0=r;dx op1=r;di decopt=ForceReservedNop
-66 0F1E FB, ReservedNop_rm16_r16_0F1E, ReservedNop, 2, op0=r;bx op1=r;di decopt=ForceReservedNop
-66 41 0F1E FA, ReservedNop_rm16_r16_0F1E, ReservedNop, 2, op0=r;r10w op1=r;di decopt=ForceReservedNop
-66 41 0F1E FB, ReservedNop_rm16_r16_0F1E, ReservedNop, 2, op0=r;r11w op1=r;di decopt=ForceReservedNop
-66 0F1E CA, ReservedNop_rm16_r16_0F1E, ReservedNop, 2, op0=r;dx op1=r;cx
-66 41 0F1E C9, ReservedNop_rm16_r16_0F1E, ReservedNop, 2, op0=r;r9w op1=r;cx
-66 0F1E FA, ReservedNop_rm16_r16_0F1E, ReservedNop, 2, op0=r;dx op1=r;di
-66 0F1E FB, ReservedNop_rm16_r16_0F1E, ReservedNop, 2, op0=r;bx op1=r;di
-66 41 0F1E FA, ReservedNop_rm16_r16_0F1E, ReservedNop, 2, op0=r;r10w op1=r;di
-66 41 0F1E FB, ReservedNop_rm16_r16_0F1E, ReservedNop, 2, op0=r;r11w op1=r;di
+66 0F1E CE, Reservednop_rm16_r16_0F1E, Reservednop, 2, op0=r;si op1=r;cx decopt=ForceReservedNop
+66 44 0F1E C5, Reservednop_rm16_r16_0F1E, Reservednop, 2, op0=r;bp op1=r;r8w decopt=ForceReservedNop
+66 41 0F1E D6, Reservednop_rm16_r16_0F1E, Reservednop, 2, op0=r;r14w op1=r;dx decopt=ForceReservedNop
+66 45 0F1E D0, Reservednop_rm16_r16_0F1E, Reservednop, 2, op0=r;r8w op1=r;r10w decopt=ForceReservedNop
+66 41 0F1E D9, Reservednop_rm16_r16_0F1E, Reservednop, 2, op0=r;r9w op1=r;bx decopt=ForceReservedNop
+66 44 0F1E EC, Reservednop_rm16_r16_0F1E, Reservednop, 2, op0=r;sp op1=r;r13w decopt=ForceReservedNop
+66 0F1E 18, Reservednop_rm16_r16_0F1E, Reservednop, 2, op0=m;ds;rax;;1;0;0;UInt16 op1=r;bx decopt=ForceReservedNop
+66 42 0F1E CE, Reservednop_rm16_r16_0F1E, Reservednop, 2, op0=r;si op1=r;cx decopt=ForceReservedNop enc=660F1ECE
+66 0F1E CA, Reservednop_rm16_r16_0F1E, Reservednop, 2, op0=r;dx op1=r;cx decopt=ForceReservedNop
+66 41 0F1E C9, Reservednop_rm16_r16_0F1E, Reservednop, 2, op0=r;r9w op1=r;cx decopt=ForceReservedNop
+66 0F1E FA, Reservednop_rm16_r16_0F1E, Reservednop, 2, op0=r;dx op1=r;di decopt=ForceReservedNop
+66 0F1E FB, Reservednop_rm16_r16_0F1E, Reservednop, 2, op0=r;bx op1=r;di decopt=ForceReservedNop
+66 41 0F1E FA, Reservednop_rm16_r16_0F1E, Reservednop, 2, op0=r;r10w op1=r;di decopt=ForceReservedNop
+66 41 0F1E FB, Reservednop_rm16_r16_0F1E, Reservednop, 2, op0=r;r11w op1=r;di decopt=ForceReservedNop
+66 0F1E CA, Reservednop_rm16_r16_0F1E, Reservednop, 2, op0=r;dx op1=r;cx
+66 41 0F1E C9, Reservednop_rm16_r16_0F1E, Reservednop, 2, op0=r;r9w op1=r;cx
+66 0F1E FA, Reservednop_rm16_r16_0F1E, Reservednop, 2, op0=r;dx op1=r;di
+66 0F1E FB, Reservednop_rm16_r16_0F1E, Reservednop, 2, op0=r;bx op1=r;di
+66 41 0F1E FA, Reservednop_rm16_r16_0F1E, Reservednop, 2, op0=r;r10w op1=r;di
+66 41 0F1E FB, Reservednop_rm16_r16_0F1E, Reservednop, 2, op0=r;r11w op1=r;di
 
-0F1E CE, ReservedNop_rm32_r32_0F1E, ReservedNop, 2, op0=r;esi op1=r;ecx decopt=ForceReservedNop
-44 0F1E C5, ReservedNop_rm32_r32_0F1E, ReservedNop, 2, op0=r;ebp op1=r;r8d decopt=ForceReservedNop
-41 0F1E D6, ReservedNop_rm32_r32_0F1E, ReservedNop, 2, op0=r;r14d op1=r;edx decopt=ForceReservedNop
-45 0F1E D0, ReservedNop_rm32_r32_0F1E, ReservedNop, 2, op0=r;r8d op1=r;r10d decopt=ForceReservedNop
-41 0F1E D9, ReservedNop_rm32_r32_0F1E, ReservedNop, 2, op0=r;r9d op1=r;ebx decopt=ForceReservedNop
-44 0F1E EC, ReservedNop_rm32_r32_0F1E, ReservedNop, 2, op0=r;esp op1=r;r13d decopt=ForceReservedNop
-0F1E 18, ReservedNop_rm32_r32_0F1E, ReservedNop, 2, op0=m;ds;rax;;1;0;0;UInt32 op1=r;ebx decopt=ForceReservedNop
-42 0F1E CE, ReservedNop_rm32_r32_0F1E, ReservedNop, 2, op0=r;esi op1=r;ecx decopt=ForceReservedNop enc=0F1ECE
+0F1E CE, Reservednop_rm32_r32_0F1E, Reservednop, 2, op0=r;esi op1=r;ecx decopt=ForceReservedNop
+44 0F1E C5, Reservednop_rm32_r32_0F1E, Reservednop, 2, op0=r;ebp op1=r;r8d decopt=ForceReservedNop
+41 0F1E D6, Reservednop_rm32_r32_0F1E, Reservednop, 2, op0=r;r14d op1=r;edx decopt=ForceReservedNop
+45 0F1E D0, Reservednop_rm32_r32_0F1E, Reservednop, 2, op0=r;r8d op1=r;r10d decopt=ForceReservedNop
+41 0F1E D9, Reservednop_rm32_r32_0F1E, Reservednop, 2, op0=r;r9d op1=r;ebx decopt=ForceReservedNop
+44 0F1E EC, Reservednop_rm32_r32_0F1E, Reservednop, 2, op0=r;esp op1=r;r13d decopt=ForceReservedNop
+0F1E 18, Reservednop_rm32_r32_0F1E, Reservednop, 2, op0=m;ds;rax;;1;0;0;UInt32 op1=r;ebx decopt=ForceReservedNop
+42 0F1E CE, Reservednop_rm32_r32_0F1E, Reservednop, 2, op0=r;esi op1=r;ecx decopt=ForceReservedNop enc=0F1ECE
 
-48 0F1E CE, ReservedNop_rm64_r64_0F1E, ReservedNop, 2, op0=r;rsi op1=r;rcx decopt=ForceReservedNop
-4C 0F1E C5, ReservedNop_rm64_r64_0F1E, ReservedNop, 2, op0=r;rbp op1=r;r8 decopt=ForceReservedNop
-49 0F1E D6, ReservedNop_rm64_r64_0F1E, ReservedNop, 2, op0=r;r14 op1=r;rdx decopt=ForceReservedNop
-4D 0F1E D0, ReservedNop_rm64_r64_0F1E, ReservedNop, 2, op0=r;r8 op1=r;r10 decopt=ForceReservedNop
-49 0F1E D9, ReservedNop_rm64_r64_0F1E, ReservedNop, 2, op0=r;r9 op1=r;rbx decopt=ForceReservedNop
-4C 0F1E EC, ReservedNop_rm64_r64_0F1E, ReservedNop, 2, op0=r;rsp op1=r;r13 decopt=ForceReservedNop
-48 0F1E 18, ReservedNop_rm64_r64_0F1E, ReservedNop, 2, op0=m;ds;rax;;1;0;0;UInt64 op1=r;rbx decopt=ForceReservedNop
-4A 0F1E CE, ReservedNop_rm64_r64_0F1E, ReservedNop, 2, op0=r;rsi op1=r;rcx decopt=ForceReservedNop enc=480F1ECE
+48 0F1E CE, Reservednop_rm64_r64_0F1E, Reservednop, 2, op0=r;rsi op1=r;rcx decopt=ForceReservedNop
+4C 0F1E C5, Reservednop_rm64_r64_0F1E, Reservednop, 2, op0=r;rbp op1=r;r8 decopt=ForceReservedNop
+49 0F1E D6, Reservednop_rm64_r64_0F1E, Reservednop, 2, op0=r;r14 op1=r;rdx decopt=ForceReservedNop
+4D 0F1E D0, Reservednop_rm64_r64_0F1E, Reservednop, 2, op0=r;r8 op1=r;r10 decopt=ForceReservedNop
+49 0F1E D9, Reservednop_rm64_r64_0F1E, Reservednop, 2, op0=r;r9 op1=r;rbx decopt=ForceReservedNop
+4C 0F1E EC, Reservednop_rm64_r64_0F1E, Reservednop, 2, op0=r;rsp op1=r;r13 decopt=ForceReservedNop
+48 0F1E 18, Reservednop_rm64_r64_0F1E, Reservednop, 2, op0=m;ds;rax;;1;0;0;UInt64 op1=r;rbx decopt=ForceReservedNop
+4A 0F1E CE, Reservednop_rm64_r64_0F1E, Reservednop, 2, op0=r;rsi op1=r;rcx decopt=ForceReservedNop enc=480F1ECE
 
-66 0F1F CE, ReservedNop_rm16_r16_0F1F, ReservedNop, 2, op0=r;si op1=r;cx decopt=ForceReservedNop
-66 44 0F1F C5, ReservedNop_rm16_r16_0F1F, ReservedNop, 2, op0=r;bp op1=r;r8w decopt=ForceReservedNop
-66 41 0F1F D6, ReservedNop_rm16_r16_0F1F, ReservedNop, 2, op0=r;r14w op1=r;dx decopt=ForceReservedNop
-66 45 0F1F D0, ReservedNop_rm16_r16_0F1F, ReservedNop, 2, op0=r;r8w op1=r;r10w decopt=ForceReservedNop
-66 41 0F1F D9, ReservedNop_rm16_r16_0F1F, ReservedNop, 2, op0=r;r9w op1=r;bx decopt=ForceReservedNop
-66 44 0F1F EC, ReservedNop_rm16_r16_0F1F, ReservedNop, 2, op0=r;sp op1=r;r13w decopt=ForceReservedNop
-66 0F1F 18, ReservedNop_rm16_r16_0F1F, ReservedNop, 2, op0=m;ds;rax;;1;0;0;UInt16 op1=r;bx decopt=ForceReservedNop
-66 42 0F1F CE, ReservedNop_rm16_r16_0F1F, ReservedNop, 2, op0=r;si op1=r;cx decopt=ForceReservedNop enc=660F1FCE
+66 0F1F CE, Reservednop_rm16_r16_0F1F, Reservednop, 2, op0=r;si op1=r;cx decopt=ForceReservedNop
+66 44 0F1F C5, Reservednop_rm16_r16_0F1F, Reservednop, 2, op0=r;bp op1=r;r8w decopt=ForceReservedNop
+66 41 0F1F D6, Reservednop_rm16_r16_0F1F, Reservednop, 2, op0=r;r14w op1=r;dx decopt=ForceReservedNop
+66 45 0F1F D0, Reservednop_rm16_r16_0F1F, Reservednop, 2, op0=r;r8w op1=r;r10w decopt=ForceReservedNop
+66 41 0F1F D9, Reservednop_rm16_r16_0F1F, Reservednop, 2, op0=r;r9w op1=r;bx decopt=ForceReservedNop
+66 44 0F1F EC, Reservednop_rm16_r16_0F1F, Reservednop, 2, op0=r;sp op1=r;r13w decopt=ForceReservedNop
+66 0F1F 18, Reservednop_rm16_r16_0F1F, Reservednop, 2, op0=m;ds;rax;;1;0;0;UInt16 op1=r;bx decopt=ForceReservedNop
+66 42 0F1F CE, Reservednop_rm16_r16_0F1F, Reservednop, 2, op0=r;si op1=r;cx decopt=ForceReservedNop enc=660F1FCE
 
-0F1F CE, ReservedNop_rm32_r32_0F1F, ReservedNop, 2, op0=r;esi op1=r;ecx decopt=ForceReservedNop
-44 0F1F C5, ReservedNop_rm32_r32_0F1F, ReservedNop, 2, op0=r;ebp op1=r;r8d decopt=ForceReservedNop
-41 0F1F D6, ReservedNop_rm32_r32_0F1F, ReservedNop, 2, op0=r;r14d op1=r;edx decopt=ForceReservedNop
-45 0F1F D0, ReservedNop_rm32_r32_0F1F, ReservedNop, 2, op0=r;r8d op1=r;r10d decopt=ForceReservedNop
-41 0F1F D9, ReservedNop_rm32_r32_0F1F, ReservedNop, 2, op0=r;r9d op1=r;ebx decopt=ForceReservedNop
-44 0F1F EC, ReservedNop_rm32_r32_0F1F, ReservedNop, 2, op0=r;esp op1=r;r13d decopt=ForceReservedNop
-0F1F 18, ReservedNop_rm32_r32_0F1F, ReservedNop, 2, op0=m;ds;rax;;1;0;0;UInt32 op1=r;ebx decopt=ForceReservedNop
-42 0F1F CE, ReservedNop_rm32_r32_0F1F, ReservedNop, 2, op0=r;esi op1=r;ecx decopt=ForceReservedNop enc=0F1FCE
+0F1F CE, Reservednop_rm32_r32_0F1F, Reservednop, 2, op0=r;esi op1=r;ecx decopt=ForceReservedNop
+44 0F1F C5, Reservednop_rm32_r32_0F1F, Reservednop, 2, op0=r;ebp op1=r;r8d decopt=ForceReservedNop
+41 0F1F D6, Reservednop_rm32_r32_0F1F, Reservednop, 2, op0=r;r14d op1=r;edx decopt=ForceReservedNop
+45 0F1F D0, Reservednop_rm32_r32_0F1F, Reservednop, 2, op0=r;r8d op1=r;r10d decopt=ForceReservedNop
+41 0F1F D9, Reservednop_rm32_r32_0F1F, Reservednop, 2, op0=r;r9d op1=r;ebx decopt=ForceReservedNop
+44 0F1F EC, Reservednop_rm32_r32_0F1F, Reservednop, 2, op0=r;esp op1=r;r13d decopt=ForceReservedNop
+0F1F 18, Reservednop_rm32_r32_0F1F, Reservednop, 2, op0=m;ds;rax;;1;0;0;UInt32 op1=r;ebx decopt=ForceReservedNop
+42 0F1F CE, Reservednop_rm32_r32_0F1F, Reservednop, 2, op0=r;esi op1=r;ecx decopt=ForceReservedNop enc=0F1FCE
 
-48 0F1F CE, ReservedNop_rm64_r64_0F1F, ReservedNop, 2, op0=r;rsi op1=r;rcx decopt=ForceReservedNop
-4C 0F1F C5, ReservedNop_rm64_r64_0F1F, ReservedNop, 2, op0=r;rbp op1=r;r8 decopt=ForceReservedNop
-49 0F1F D6, ReservedNop_rm64_r64_0F1F, ReservedNop, 2, op0=r;r14 op1=r;rdx decopt=ForceReservedNop
-4D 0F1F D0, ReservedNop_rm64_r64_0F1F, ReservedNop, 2, op0=r;r8 op1=r;r10 decopt=ForceReservedNop
-49 0F1F D9, ReservedNop_rm64_r64_0F1F, ReservedNop, 2, op0=r;r9 op1=r;rbx decopt=ForceReservedNop
-4C 0F1F EC, ReservedNop_rm64_r64_0F1F, ReservedNop, 2, op0=r;rsp op1=r;r13 decopt=ForceReservedNop
-48 0F1F 18, ReservedNop_rm64_r64_0F1F, ReservedNop, 2, op0=m;ds;rax;;1;0;0;UInt64 op1=r;rbx decopt=ForceReservedNop
-4A 0F1F CE, ReservedNop_rm64_r64_0F1F, ReservedNop, 2, op0=r;rsi op1=r;rcx decopt=ForceReservedNop enc=480F1FCE
+48 0F1F CE, Reservednop_rm64_r64_0F1F, Reservednop, 2, op0=r;rsi op1=r;rcx decopt=ForceReservedNop
+4C 0F1F C5, Reservednop_rm64_r64_0F1F, Reservednop, 2, op0=r;rbp op1=r;r8 decopt=ForceReservedNop
+49 0F1F D6, Reservednop_rm64_r64_0F1F, Reservednop, 2, op0=r;r14 op1=r;rdx decopt=ForceReservedNop
+4D 0F1F D0, Reservednop_rm64_r64_0F1F, Reservednop, 2, op0=r;r8 op1=r;r10 decopt=ForceReservedNop
+49 0F1F D9, Reservednop_rm64_r64_0F1F, Reservednop, 2, op0=r;r9 op1=r;rbx decopt=ForceReservedNop
+4C 0F1F EC, Reservednop_rm64_r64_0F1F, Reservednop, 2, op0=r;rsp op1=r;r13 decopt=ForceReservedNop
+48 0F1F 18, Reservednop_rm64_r64_0F1F, Reservednop, 2, op0=m;ds;rax;;1;0;0;UInt64 op1=r;rbx decopt=ForceReservedNop
+4A 0F1F CE, Reservednop_rm64_r64_0F1F, Reservednop, 2, op0=r;rsi op1=r;rcx decopt=ForceReservedNop enc=480F1FCE
 
 0F18 00, Prefetchnta_m8, Prefetchnta, 1, op0=m;ds;rax;;1;0;0;UInt8
 44 0F18 00, Prefetchnta_m8, Prefetchnta, 1, op0=m;ds;rax;;1;0;0;UInt8 enc=0F1800
@@ -14495,65 +14495,65 @@ F3 F2 0FA7 C0, Xstore_64, Xstore, 0, repne enc=F20FA7C0
 0FA7 C0, Xstore_64, Xstore, 0,
 F3 4F 0FA7 C0, Xstore_64, Xstore, 0, rep enc=F30FA7C0
 
-F3 67 0FA7 C8, XcryptEcb_32, Xcryptecb, 0, rep enc=67F30FA7C8
-67 F3 0FA7 C8, XcryptEcb_32, Xcryptecb, 0, rep
-67 0FA7 C8, INVALID, INVALID, 0, code=XcryptEcb_32
-67 F3 4F 0FA7 C8, XcryptEcb_32, Xcryptecb, 0, rep enc=67F30FA7C8
+F3 67 0FA7 C8, Xcryptecb_32, Xcryptecb, 0, rep enc=67F30FA7C8
+67 F3 0FA7 C8, Xcryptecb_32, Xcryptecb, 0, rep
+67 0FA7 C8, INVALID, INVALID, 0, code=Xcryptecb_32
+67 F3 4F 0FA7 C8, Xcryptecb_32, Xcryptecb, 0, rep enc=67F30FA7C8
 
-F3 0FA7 C8, XcryptEcb_64, Xcryptecb, 0, rep
-F2 0FA7 C8, INVALID, INVALID, 0, code=XcryptEcb_64
-F2 F3 0FA7 C8, XcryptEcb_64, Xcryptecb, 0, rep enc=F30FA7C8
-F3 F2 0FA7 C8, INVALID, INVALID, 0, code=XcryptEcb_64
-0FA7 C8, INVALID, INVALID, 0, code=XcryptEcb_64
-F3 4F 0FA7 C8, XcryptEcb_64, Xcryptecb, 0, rep enc=F30FA7C8
+F3 0FA7 C8, Xcryptecb_64, Xcryptecb, 0, rep
+F2 0FA7 C8, INVALID, INVALID, 0, code=Xcryptecb_64
+F2 F3 0FA7 C8, Xcryptecb_64, Xcryptecb, 0, rep enc=F30FA7C8
+F3 F2 0FA7 C8, INVALID, INVALID, 0, code=Xcryptecb_64
+0FA7 C8, INVALID, INVALID, 0, code=Xcryptecb_64
+F3 4F 0FA7 C8, Xcryptecb_64, Xcryptecb, 0, rep enc=F30FA7C8
 
-F3 67 0FA7 D0, XcryptCbc_32, Xcryptcbc, 0, rep enc=67F30FA7D0
-67 F3 0FA7 D0, XcryptCbc_32, Xcryptcbc, 0, rep
-67 0FA7 D0, INVALID, INVALID, 0, code=XcryptCbc_32
-67 F3 4F 0FA7 D0, XcryptCbc_32, Xcryptcbc, 0, rep enc=67F30FA7D0
+F3 67 0FA7 D0, Xcryptcbc_32, Xcryptcbc, 0, rep enc=67F30FA7D0
+67 F3 0FA7 D0, Xcryptcbc_32, Xcryptcbc, 0, rep
+67 0FA7 D0, INVALID, INVALID, 0, code=Xcryptcbc_32
+67 F3 4F 0FA7 D0, Xcryptcbc_32, Xcryptcbc, 0, rep enc=67F30FA7D0
 
-F3 0FA7 D0, XcryptCbc_64, Xcryptcbc, 0, rep
-F2 0FA7 D0, INVALID, INVALID, 0, code=XcryptCbc_64
-F2 F3 0FA7 D0, XcryptCbc_64, Xcryptcbc, 0, rep enc=F30FA7D0
-F3 F2 0FA7 D0, INVALID, INVALID, 0, code=XcryptCbc_64
-0FA7 D0, INVALID, INVALID, 0, code=XcryptCbc_64
-F3 4F 0FA7 D0, XcryptCbc_64, Xcryptcbc, 0, rep enc=F30FA7D0
+F3 0FA7 D0, Xcryptcbc_64, Xcryptcbc, 0, rep
+F2 0FA7 D0, INVALID, INVALID, 0, code=Xcryptcbc_64
+F2 F3 0FA7 D0, Xcryptcbc_64, Xcryptcbc, 0, rep enc=F30FA7D0
+F3 F2 0FA7 D0, INVALID, INVALID, 0, code=Xcryptcbc_64
+0FA7 D0, INVALID, INVALID, 0, code=Xcryptcbc_64
+F3 4F 0FA7 D0, Xcryptcbc_64, Xcryptcbc, 0, rep enc=F30FA7D0
 
-F3 67 0FA7 D8, XcryptCtr_32, Xcryptctr, 0, rep enc=67F30FA7D8
-67 F3 0FA7 D8, XcryptCtr_32, Xcryptctr, 0, rep
-67 0FA7 D8, INVALID, INVALID, 0, code=XcryptCtr_32
-67 F3 4F 0FA7 D8, XcryptCtr_32, Xcryptctr, 0, rep enc=67F30FA7D8
+F3 67 0FA7 D8, Xcryptctr_32, Xcryptctr, 0, rep enc=67F30FA7D8
+67 F3 0FA7 D8, Xcryptctr_32, Xcryptctr, 0, rep
+67 0FA7 D8, INVALID, INVALID, 0, code=Xcryptctr_32
+67 F3 4F 0FA7 D8, Xcryptctr_32, Xcryptctr, 0, rep enc=67F30FA7D8
 
-F3 0FA7 D8, XcryptCtr_64, Xcryptctr, 0, rep
-F2 0FA7 D8, INVALID, INVALID, 0, code=XcryptCtr_64
-F2 F3 0FA7 D8, XcryptCtr_64, Xcryptctr, 0, rep enc=F30FA7D8
-F3 F2 0FA7 D8, INVALID, INVALID, 0, code=XcryptCtr_64
-0FA7 D8, INVALID, INVALID, 0, code=XcryptCtr_64
-F3 4F 0FA7 D8, XcryptCtr_64, Xcryptctr, 0, rep enc=F30FA7D8
+F3 0FA7 D8, Xcryptctr_64, Xcryptctr, 0, rep
+F2 0FA7 D8, INVALID, INVALID, 0, code=Xcryptctr_64
+F2 F3 0FA7 D8, Xcryptctr_64, Xcryptctr, 0, rep enc=F30FA7D8
+F3 F2 0FA7 D8, INVALID, INVALID, 0, code=Xcryptctr_64
+0FA7 D8, INVALID, INVALID, 0, code=Xcryptctr_64
+F3 4F 0FA7 D8, Xcryptctr_64, Xcryptctr, 0, rep enc=F30FA7D8
 
-F3 67 0FA7 E0, XcryptCfb_32, Xcryptcfb, 0, rep enc=67F30FA7E0
-67 F3 0FA7 E0, XcryptCfb_32, Xcryptcfb, 0, rep
-67 0FA7 E0, INVALID, INVALID, 0, code=XcryptCfb_32
-67 F3 4F 0FA7 E0, XcryptCfb_32, Xcryptcfb, 0, rep enc=67F30FA7E0
+F3 67 0FA7 E0, Xcryptcfb_32, Xcryptcfb, 0, rep enc=67F30FA7E0
+67 F3 0FA7 E0, Xcryptcfb_32, Xcryptcfb, 0, rep
+67 0FA7 E0, INVALID, INVALID, 0, code=Xcryptcfb_32
+67 F3 4F 0FA7 E0, Xcryptcfb_32, Xcryptcfb, 0, rep enc=67F30FA7E0
 
-F3 0FA7 E0, XcryptCfb_64, Xcryptcfb, 0, rep
-F2 0FA7 E0, INVALID, INVALID, 0, code=XcryptCfb_64
-F2 F3 0FA7 E0, XcryptCfb_64, Xcryptcfb, 0, rep enc=F30FA7E0
-F3 F2 0FA7 E0, INVALID, INVALID, 0, code=XcryptCfb_64
-0FA7 E0, INVALID, INVALID, 0, code=XcryptCfb_64
-F3 4F 0FA7 E0, XcryptCfb_64, Xcryptcfb, 0, rep enc=F30FA7E0
+F3 0FA7 E0, Xcryptcfb_64, Xcryptcfb, 0, rep
+F2 0FA7 E0, INVALID, INVALID, 0, code=Xcryptcfb_64
+F2 F3 0FA7 E0, Xcryptcfb_64, Xcryptcfb, 0, rep enc=F30FA7E0
+F3 F2 0FA7 E0, INVALID, INVALID, 0, code=Xcryptcfb_64
+0FA7 E0, INVALID, INVALID, 0, code=Xcryptcfb_64
+F3 4F 0FA7 E0, Xcryptcfb_64, Xcryptcfb, 0, rep enc=F30FA7E0
 
-F3 67 0FA7 E8, XcryptOfb_32, Xcryptofb, 0, rep enc=67F30FA7E8
-67 F3 0FA7 E8, XcryptOfb_32, Xcryptofb, 0, rep
-67 0FA7 E8, INVALID, INVALID, 0, code=XcryptOfb_32
-67 F3 4F 0FA7 E8, XcryptOfb_32, Xcryptofb, 0, rep enc=67F30FA7E8
+F3 67 0FA7 E8, Xcryptofb_32, Xcryptofb, 0, rep enc=67F30FA7E8
+67 F3 0FA7 E8, Xcryptofb_32, Xcryptofb, 0, rep
+67 0FA7 E8, INVALID, INVALID, 0, code=Xcryptofb_32
+67 F3 4F 0FA7 E8, Xcryptofb_32, Xcryptofb, 0, rep enc=67F30FA7E8
 
-F3 0FA7 E8, XcryptOfb_64, Xcryptofb, 0, rep
-F2 0FA7 E8, INVALID, INVALID, 0, code=XcryptOfb_64
-F2 F3 0FA7 E8, XcryptOfb_64, Xcryptofb, 0, rep enc=F30FA7E8
-F3 F2 0FA7 E8, INVALID, INVALID, 0, code=XcryptOfb_64
-0FA7 E8, INVALID, INVALID, 0, code=XcryptOfb_64
-F3 4F 0FA7 E8, XcryptOfb_64, Xcryptofb, 0, rep enc=F30FA7E8
+F3 0FA7 E8, Xcryptofb_64, Xcryptofb, 0, rep
+F2 0FA7 E8, INVALID, INVALID, 0, code=Xcryptofb_64
+F2 F3 0FA7 E8, Xcryptofb_64, Xcryptofb, 0, rep enc=F30FA7E8
+F3 F2 0FA7 E8, INVALID, INVALID, 0, code=Xcryptofb_64
+0FA7 E8, INVALID, INVALID, 0, code=Xcryptofb_64
+F3 4F 0FA7 E8, Xcryptofb_64, Xcryptofb, 0, rep enc=F30FA7E8
 
 66 0FA8, Pushw_GS, Push, 1, op0=r;gs
 66 47 0FA8, Pushw_GS, Push, 1, op0=r;gs enc=660FA8
@@ -20111,19 +20111,25 @@ C4C27D 17 CD, VEX_Vptest_ymm_ymmm256, Vptest, 2, op0=r;ymm1 op1=r;ymm13
 C4427D 17 CD, VEX_Vptest_ymm_ymmm256, Vptest, 2, op0=r;ymm9 op1=r;ymm13
 C4A27D 17 10, VEX_Vptest_ymm_ymmm256, Vptest, 2, op0=r;ymm2 op1=m;ds;rax;;1;0;0;UInt256 enc=C4E27D1710
 
-C4E279 18 10, VEX_Vbroadcastss_xmm_xmmm32, Vbroadcastss, 2, op0=r;xmm2 op1=m;ds;rax;;1;0;0;Float32
-C4E279 18 CD, VEX_Vbroadcastss_xmm_xmmm32, Vbroadcastss, 2, op0=r;xmm1 op1=r;xmm5
-C46279 18 CD, VEX_Vbroadcastss_xmm_xmmm32, Vbroadcastss, 2, op0=r;xmm9 op1=r;xmm5
-C4C279 18 CD, VEX_Vbroadcastss_xmm_xmmm32, Vbroadcastss, 2, op0=r;xmm1 op1=r;xmm13
-C44279 18 CD, VEX_Vbroadcastss_xmm_xmmm32, Vbroadcastss, 2, op0=r;xmm9 op1=r;xmm13
-C4A279 18 10, VEX_Vbroadcastss_xmm_xmmm32, Vbroadcastss, 2, op0=r;xmm2 op1=m;ds;rax;;1;0;0;Float32 enc=C4E2791810
+C4E279 18 10, VEX_Vbroadcastss_xmm_m32, Vbroadcastss, 2, op0=r;xmm2 op1=m;ds;rax;;1;0;0;Float32
+C46279 18 10, VEX_Vbroadcastss_xmm_m32, Vbroadcastss, 2, op0=r;xmm10 op1=m;ds;rax;;1;0;0;Float32
+C4A279 18 10, VEX_Vbroadcastss_xmm_m32, Vbroadcastss, 2, op0=r;xmm2 op1=m;ds;rax;;1;0;0;Float32 enc=C4E2791810
 
-C4E27D 18 10, VEX_Vbroadcastss_ymm_xmmm32, Vbroadcastss, 2, op0=r;ymm2 op1=m;ds;rax;;1;0;0;Float32
-C4E27D 18 CD, VEX_Vbroadcastss_ymm_xmmm32, Vbroadcastss, 2, op0=r;ymm1 op1=r;xmm5
-C4627D 18 CD, VEX_Vbroadcastss_ymm_xmmm32, Vbroadcastss, 2, op0=r;ymm9 op1=r;xmm5
-C4C27D 18 CD, VEX_Vbroadcastss_ymm_xmmm32, Vbroadcastss, 2, op0=r;ymm1 op1=r;xmm13
-C4427D 18 CD, VEX_Vbroadcastss_ymm_xmmm32, Vbroadcastss, 2, op0=r;ymm9 op1=r;xmm13
-C4A27D 18 10, VEX_Vbroadcastss_ymm_xmmm32, Vbroadcastss, 2, op0=r;ymm2 op1=m;ds;rax;;1;0;0;Float32 enc=C4E27D1810
+C4E279 18 CD, VEX_Vbroadcastss_xmm_xmm, Vbroadcastss, 2, op0=r;xmm1 op1=r;xmm5
+C4A279 18 CD, VEX_Vbroadcastss_xmm_xmm, Vbroadcastss, 2, op0=r;xmm1 op1=r;xmm5 enc=C4E27918CD
+C46279 18 CD, VEX_Vbroadcastss_xmm_xmm, Vbroadcastss, 2, op0=r;xmm9 op1=r;xmm5
+C4C279 18 CD, VEX_Vbroadcastss_xmm_xmm, Vbroadcastss, 2, op0=r;xmm1 op1=r;xmm13
+C44279 18 CD, VEX_Vbroadcastss_xmm_xmm, Vbroadcastss, 2, op0=r;xmm9 op1=r;xmm13
+
+C4E27D 18 10, VEX_Vbroadcastss_ymm_m32, Vbroadcastss, 2, op0=r;ymm2 op1=m;ds;rax;;1;0;0;Float32
+C4627D 18 10, VEX_Vbroadcastss_ymm_m32, Vbroadcastss, 2, op0=r;ymm10 op1=m;ds;rax;;1;0;0;Float32
+C4A27D 18 10, VEX_Vbroadcastss_ymm_m32, Vbroadcastss, 2, op0=r;ymm2 op1=m;ds;rax;;1;0;0;Float32 enc=C4E27D1810
+
+C4E27D 18 CD, VEX_Vbroadcastss_ymm_xmm, Vbroadcastss, 2, op0=r;ymm1 op1=r;xmm5
+C4A27D 18 CD, VEX_Vbroadcastss_ymm_xmm, Vbroadcastss, 2, op0=r;ymm1 op1=r;xmm5 enc=C4E27D18CD
+C4627D 18 CD, VEX_Vbroadcastss_ymm_xmm, Vbroadcastss, 2, op0=r;ymm9 op1=r;xmm5
+C4C27D 18 CD, VEX_Vbroadcastss_ymm_xmm, Vbroadcastss, 2, op0=r;ymm1 op1=r;xmm13
+C4427D 18 CD, VEX_Vbroadcastss_ymm_xmm, Vbroadcastss, 2, op0=r;ymm9 op1=r;xmm13
 
 62 F27D08 18 50 01, EVEX_Vbroadcastss_xmm_k1z_xmmm32, Vbroadcastss, 2, op0=r;xmm2 op1=m;ds;rax;;1;4;1;Float32 co=0;0;0;0;6;1
 62 F27D8B 18 50 01, EVEX_Vbroadcastss_xmm_k1z_xmmm32, Vbroadcastss, 2, op0=r;xmm2 op1=m;ds;rax;;1;4;1;Float32 k3 zmsk co=0;0;0;0;6;1
@@ -20149,12 +20155,15 @@ C4A27D 18 10, VEX_Vbroadcastss_ymm_xmmm32, Vbroadcastss, 2, op0=r;ymm2 op1=m;ds;
 62 C27DCB 18 D3, EVEX_Vbroadcastss_zmm_k1z_xmmm32, Vbroadcastss, 2, op0=r;zmm18 op1=r;xmm11 k3 zmsk
 62 E27D48 18 50 01, EVEX_Vbroadcastss_zmm_k1z_xmmm32, Vbroadcastss, 2, op0=r;zmm18 op1=m;ds;rax;;1;4;1;Float32 co=0;0;0;0;6;1
 
-C4E27D 19 10, VEX_Vbroadcastsd_ymm_xmmm64, Vbroadcastsd, 2, op0=r;ymm2 op1=m;ds;rax;;1;0;0;Float64
-C4E27D 19 CD, VEX_Vbroadcastsd_ymm_xmmm64, Vbroadcastsd, 2, op0=r;ymm1 op1=r;xmm5
-C4627D 19 CD, VEX_Vbroadcastsd_ymm_xmmm64, Vbroadcastsd, 2, op0=r;ymm9 op1=r;xmm5
-C4C27D 19 CD, VEX_Vbroadcastsd_ymm_xmmm64, Vbroadcastsd, 2, op0=r;ymm1 op1=r;xmm13
-C4427D 19 CD, VEX_Vbroadcastsd_ymm_xmmm64, Vbroadcastsd, 2, op0=r;ymm9 op1=r;xmm13
-C4A27D 19 10, VEX_Vbroadcastsd_ymm_xmmm64, Vbroadcastsd, 2, op0=r;ymm2 op1=m;ds;rax;;1;0;0;Float64 enc=C4E27D1910
+C4E27D 19 10, VEX_Vbroadcastsd_ymm_m64, Vbroadcastsd, 2, op0=r;ymm2 op1=m;ds;rax;;1;0;0;Float64
+C4627D 19 10, VEX_Vbroadcastsd_ymm_m64, Vbroadcastsd, 2, op0=r;ymm10 op1=m;ds;rax;;1;0;0;Float64
+C4A27D 19 10, VEX_Vbroadcastsd_ymm_m64, Vbroadcastsd, 2, op0=r;ymm2 op1=m;ds;rax;;1;0;0;Float64 enc=C4E27D1910
+
+C4E27D 19 CD, VEX_Vbroadcastsd_ymm_xmm, Vbroadcastsd, 2, op0=r;ymm1 op1=r;xmm5
+C4A27D 19 CD, VEX_Vbroadcastsd_ymm_xmm, Vbroadcastsd, 2, op0=r;ymm1 op1=r;xmm5 enc=C4E27D19CD
+C4627D 19 CD, VEX_Vbroadcastsd_ymm_xmm, Vbroadcastsd, 2, op0=r;ymm9 op1=r;xmm5
+C4C27D 19 CD, VEX_Vbroadcastsd_ymm_xmm, Vbroadcastsd, 2, op0=r;ymm1 op1=r;xmm13
+C4427D 19 CD, VEX_Vbroadcastsd_ymm_xmm, Vbroadcastsd, 2, op0=r;ymm9 op1=r;xmm13
 
 62 F27D28 19 50 01, EVEX_Vbroadcastf32x2_ymm_k1z_xmmm64, Vbroadcastf32x2, 2, op0=r;ymm2 op1=m;ds;rax;;1;8;1;Packed64_Float32 co=0;0;0;0;6;1
 62 F27DAB 19 50 01, EVEX_Vbroadcastf32x2_ymm_k1z_xmmm64, Vbroadcastf32x2, 2, op0=r;ymm2 op1=m;ds;rax;;1;8;1;Packed64_Float32 k3 zmsk co=0;0;0;0;6;1
@@ -30133,61 +30142,61 @@ C4E30D 46 D3 A5, VEX_Vperm2i128_ymm_ymm_ymmm256_imm8, Vperm2i128, 4, op0=r;ymm2 
 C4C34D 46 D3 A5, VEX_Vperm2i128_ymm_ymm_ymmm256_imm8, Vperm2i128, 4, op0=r;ymm2 op1=r;ymm6 op2=r;ymm11 op3=i8;0xA5 co=5;1;0;0;0;0
 C4A34D 46 10 A5, VEX_Vperm2i128_ymm_ymm_ymmm256_imm8, Vperm2i128, 4, op0=r;ymm2 op1=r;ymm6 op2=m;ds;rax;;1;0;0;Packed256_UInt128 op3=i8;0xA5 co=5;1;0;0;0;0 enc=C4E34D4610A5
 
-C4E349 48 10 41, VEX_Vpermil2ps_xmm_xmm_xmmm128_xmm_imm2, Vpermil2ps, 5, op0=r;xmm2 op1=r;xmm6 op2=m;ds;rax;;1;0;0;Packed128_Float32 op3=r;xmm4 op4=i8;1 co=5;1;0;0;0;0
-C4E349 48 D3 40, VEX_Vpermil2ps_xmm_xmm_xmmm128_xmm_imm2, Vpermil2ps, 5, op0=r;xmm2 op1=r;xmm6 op2=r;xmm3 op3=r;xmm4 op4=i8;0 co=5;1;0;0;0;0
-C46349 48 D3 C1, VEX_Vpermil2ps_xmm_xmm_xmmm128_xmm_imm2, Vpermil2ps, 5, op0=r;xmm10 op1=r;xmm6 op2=r;xmm3 op3=r;xmm12 op4=i8;1 co=5;1;0;0;0;0
-C4E309 48 D3 E2, VEX_Vpermil2ps_xmm_xmm_xmmm128_xmm_imm2, Vpermil2ps, 5, op0=r;xmm2 op1=r;xmm14 op2=r;xmm3 op3=r;xmm14 op4=i8;2 co=5;1;0;0;0;0
-C4C349 48 D3 43, VEX_Vpermil2ps_xmm_xmm_xmmm128_xmm_imm2, Vpermil2ps, 5, op0=r;xmm2 op1=r;xmm6 op2=r;xmm11 op3=r;xmm4 op4=i8;3 co=5;1;0;0;0;0
-C4A349 48 10 41, VEX_Vpermil2ps_xmm_xmm_xmmm128_xmm_imm2, Vpermil2ps, 5, op0=r;xmm2 op1=r;xmm6 op2=m;ds;rax;;1;0;0;Packed128_Float32 op3=r;xmm4 op4=i8;1 co=5;1;0;0;0;0 enc=C4E349481041
+C4E349 48 10 41, VEX_Vpermil2ps_xmm_xmm_xmmm128_xmm_imm4, Vpermil2ps, 5, op0=r;xmm2 op1=r;xmm6 op2=m;ds;rax;;1;0;0;Packed128_Float32 op3=r;xmm4 op4=i8;1 co=5;1;0;0;0;0
+C4E349 48 D3 40, VEX_Vpermil2ps_xmm_xmm_xmmm128_xmm_imm4, Vpermil2ps, 5, op0=r;xmm2 op1=r;xmm6 op2=r;xmm3 op3=r;xmm4 op4=i8;0 co=5;1;0;0;0;0
+C46349 48 D3 C4, VEX_Vpermil2ps_xmm_xmm_xmmm128_xmm_imm4, Vpermil2ps, 5, op0=r;xmm10 op1=r;xmm6 op2=r;xmm3 op3=r;xmm12 op4=i8;4 co=5;1;0;0;0;0
+C4E309 48 D3 E2, VEX_Vpermil2ps_xmm_xmm_xmmm128_xmm_imm4, Vpermil2ps, 5, op0=r;xmm2 op1=r;xmm14 op2=r;xmm3 op3=r;xmm14 op4=i8;2 co=5;1;0;0;0;0
+C4C349 48 D3 43, VEX_Vpermil2ps_xmm_xmm_xmmm128_xmm_imm4, Vpermil2ps, 5, op0=r;xmm2 op1=r;xmm6 op2=r;xmm11 op3=r;xmm4 op4=i8;3 co=5;1;0;0;0;0
+C4A349 48 10 41, VEX_Vpermil2ps_xmm_xmm_xmmm128_xmm_imm4, Vpermil2ps, 5, op0=r;xmm2 op1=r;xmm6 op2=m;ds;rax;;1;0;0;Packed128_Float32 op3=r;xmm4 op4=i8;1 co=5;1;0;0;0;0 enc=C4E349481041
 
-C4E34D 48 10 52, VEX_Vpermil2ps_ymm_ymm_ymmm256_ymm_imm2, Vpermil2ps, 5, op0=r;ymm2 op1=r;ymm6 op2=m;ds;rax;;1;0;0;Packed256_Float32 op3=r;ymm5 op4=i8;2 co=5;1;0;0;0;0
-C4E34D 48 D3 50, VEX_Vpermil2ps_ymm_ymm_ymmm256_ymm_imm2, Vpermil2ps, 5, op0=r;ymm2 op1=r;ymm6 op2=r;ymm3 op3=r;ymm5 op4=i8;0 co=5;1;0;0;0;0
-C4634D 48 D3 D1, VEX_Vpermil2ps_ymm_ymm_ymmm256_ymm_imm2, Vpermil2ps, 5, op0=r;ymm10 op1=r;ymm6 op2=r;ymm3 op3=r;ymm13 op4=i8;1 co=5;1;0;0;0;0
-C4E30D 48 D3 82, VEX_Vpermil2ps_ymm_ymm_ymmm256_ymm_imm2, Vpermil2ps, 5, op0=r;ymm2 op1=r;ymm14 op2=r;ymm3 op3=r;ymm8 op4=i8;2 co=5;1;0;0;0;0
-C4C34D 48 D3 53, VEX_Vpermil2ps_ymm_ymm_ymmm256_ymm_imm2, Vpermil2ps, 5, op0=r;ymm2 op1=r;ymm6 op2=r;ymm11 op3=r;ymm5 op4=i8;3 co=5;1;0;0;0;0
-C4A34D 48 10 52, VEX_Vpermil2ps_ymm_ymm_ymmm256_ymm_imm2, Vpermil2ps, 5, op0=r;ymm2 op1=r;ymm6 op2=m;ds;rax;;1;0;0;Packed256_Float32 op3=r;ymm5 op4=i8;2 co=5;1;0;0;0;0 enc=C4E34D481052
+C4E34D 48 10 52, VEX_Vpermil2ps_ymm_ymm_ymmm256_ymm_imm4, Vpermil2ps, 5, op0=r;ymm2 op1=r;ymm6 op2=m;ds;rax;;1;0;0;Packed256_Float32 op3=r;ymm5 op4=i8;2 co=5;1;0;0;0;0
+C4E34D 48 D3 50, VEX_Vpermil2ps_ymm_ymm_ymmm256_ymm_imm4, Vpermil2ps, 5, op0=r;ymm2 op1=r;ymm6 op2=r;ymm3 op3=r;ymm5 op4=i8;0 co=5;1;0;0;0;0
+C4634D 48 D3 D5, VEX_Vpermil2ps_ymm_ymm_ymmm256_ymm_imm4, Vpermil2ps, 5, op0=r;ymm10 op1=r;ymm6 op2=r;ymm3 op3=r;ymm13 op4=i8;5 co=5;1;0;0;0;0
+C4E30D 48 D3 82, VEX_Vpermil2ps_ymm_ymm_ymmm256_ymm_imm4, Vpermil2ps, 5, op0=r;ymm2 op1=r;ymm14 op2=r;ymm3 op3=r;ymm8 op4=i8;2 co=5;1;0;0;0;0
+C4C34D 48 D3 53, VEX_Vpermil2ps_ymm_ymm_ymmm256_ymm_imm4, Vpermil2ps, 5, op0=r;ymm2 op1=r;ymm6 op2=r;ymm11 op3=r;ymm5 op4=i8;3 co=5;1;0;0;0;0
+C4A34D 48 10 52, VEX_Vpermil2ps_ymm_ymm_ymmm256_ymm_imm4, Vpermil2ps, 5, op0=r;ymm2 op1=r;ymm6 op2=m;ds;rax;;1;0;0;Packed256_Float32 op3=r;ymm5 op4=i8;2 co=5;1;0;0;0;0 enc=C4E34D481052
 
-C4E3C9 48 10 41, VEX_Vpermil2ps_xmm_xmm_xmm_xmmm128_imm2, Vpermil2ps, 5, op0=r;xmm2 op1=r;xmm6 op2=r;xmm4 op3=m;ds;rax;;1;0;0;Packed128_Float32 op4=i8;1 co=5;1;0;0;0;0
-C4E3C9 48 D3 40, VEX_Vpermil2ps_xmm_xmm_xmm_xmmm128_imm2, Vpermil2ps, 5, op0=r;xmm2 op1=r;xmm6 op2=r;xmm4 op3=r;xmm3 op4=i8;0 co=5;1;0;0;0;0
-C463C9 48 D3 C1, VEX_Vpermil2ps_xmm_xmm_xmm_xmmm128_imm2, Vpermil2ps, 5, op0=r;xmm10 op1=r;xmm6 op2=r;xmm12 op3=r;xmm3 op4=i8;1 co=5;1;0;0;0;0
-C4E389 48 D3 E2, VEX_Vpermil2ps_xmm_xmm_xmm_xmmm128_imm2, Vpermil2ps, 5, op0=r;xmm2 op1=r;xmm14 op2=r;xmm14 op3=r;xmm3 op4=i8;2 co=5;1;0;0;0;0
-C4C3C9 48 D3 43, VEX_Vpermil2ps_xmm_xmm_xmm_xmmm128_imm2, Vpermil2ps, 5, op0=r;xmm2 op1=r;xmm6 op2=r;xmm4 op3=r;xmm11 op4=i8;3 co=5;1;0;0;0;0
-C4A3C9 48 10 41, VEX_Vpermil2ps_xmm_xmm_xmm_xmmm128_imm2, Vpermil2ps, 5, op0=r;xmm2 op1=r;xmm6 op2=r;xmm4 op3=m;ds;rax;;1;0;0;Packed128_Float32 op4=i8;1 co=5;1;0;0;0;0 enc=C4E3C9481041
+C4E3C9 48 10 41, VEX_Vpermil2ps_xmm_xmm_xmm_xmmm128_imm4, Vpermil2ps, 5, op0=r;xmm2 op1=r;xmm6 op2=r;xmm4 op3=m;ds;rax;;1;0;0;Packed128_Float32 op4=i8;1 co=5;1;0;0;0;0
+C4E3C9 48 D3 40, VEX_Vpermil2ps_xmm_xmm_xmm_xmmm128_imm4, Vpermil2ps, 5, op0=r;xmm2 op1=r;xmm6 op2=r;xmm4 op3=r;xmm3 op4=i8;0 co=5;1;0;0;0;0
+C463C9 48 D3 C6, VEX_Vpermil2ps_xmm_xmm_xmm_xmmm128_imm4, Vpermil2ps, 5, op0=r;xmm10 op1=r;xmm6 op2=r;xmm12 op3=r;xmm3 op4=i8;6 co=5;1;0;0;0;0
+C4E389 48 D3 E2, VEX_Vpermil2ps_xmm_xmm_xmm_xmmm128_imm4, Vpermil2ps, 5, op0=r;xmm2 op1=r;xmm14 op2=r;xmm14 op3=r;xmm3 op4=i8;2 co=5;1;0;0;0;0
+C4C3C9 48 D3 43, VEX_Vpermil2ps_xmm_xmm_xmm_xmmm128_imm4, Vpermil2ps, 5, op0=r;xmm2 op1=r;xmm6 op2=r;xmm4 op3=r;xmm11 op4=i8;3 co=5;1;0;0;0;0
+C4A3C9 48 10 41, VEX_Vpermil2ps_xmm_xmm_xmm_xmmm128_imm4, Vpermil2ps, 5, op0=r;xmm2 op1=r;xmm6 op2=r;xmm4 op3=m;ds;rax;;1;0;0;Packed128_Float32 op4=i8;1 co=5;1;0;0;0;0 enc=C4E3C9481041
 
-C4E3CD 48 10 52, VEX_Vpermil2ps_ymm_ymm_ymm_ymmm256_imm2, Vpermil2ps, 5, op0=r;ymm2 op1=r;ymm6 op2=r;ymm5 op3=m;ds;rax;;1;0;0;Packed256_Float32 op4=i8;2 co=5;1;0;0;0;0
-C4E3CD 48 D3 50, VEX_Vpermil2ps_ymm_ymm_ymm_ymmm256_imm2, Vpermil2ps, 5, op0=r;ymm2 op1=r;ymm6 op2=r;ymm5 op3=r;ymm3 op4=i8;0 co=5;1;0;0;0;0
-C463CD 48 D3 D1, VEX_Vpermil2ps_ymm_ymm_ymm_ymmm256_imm2, Vpermil2ps, 5, op0=r;ymm10 op1=r;ymm6 op2=r;ymm13 op3=r;ymm3 op4=i8;1 co=5;1;0;0;0;0
-C4E38D 48 D3 82, VEX_Vpermil2ps_ymm_ymm_ymm_ymmm256_imm2, Vpermil2ps, 5, op0=r;ymm2 op1=r;ymm14 op2=r;ymm8 op3=r;ymm3 op4=i8;2 co=5;1;0;0;0;0
-C4C3CD 48 D3 53, VEX_Vpermil2ps_ymm_ymm_ymm_ymmm256_imm2, Vpermil2ps, 5, op0=r;ymm2 op1=r;ymm6 op2=r;ymm5 op3=r;ymm11 op4=i8;3 co=5;1;0;0;0;0
-C4A3CD 48 10 52, VEX_Vpermil2ps_ymm_ymm_ymm_ymmm256_imm2, Vpermil2ps, 5, op0=r;ymm2 op1=r;ymm6 op2=r;ymm5 op3=m;ds;rax;;1;0;0;Packed256_Float32 op4=i8;2 co=5;1;0;0;0;0 enc=C4E3CD481052
+C4E3CD 48 10 52, VEX_Vpermil2ps_ymm_ymm_ymm_ymmm256_imm4, Vpermil2ps, 5, op0=r;ymm2 op1=r;ymm6 op2=r;ymm5 op3=m;ds;rax;;1;0;0;Packed256_Float32 op4=i8;2 co=5;1;0;0;0;0
+C4E3CD 48 D3 50, VEX_Vpermil2ps_ymm_ymm_ymm_ymmm256_imm4, Vpermil2ps, 5, op0=r;ymm2 op1=r;ymm6 op2=r;ymm5 op3=r;ymm3 op4=i8;0 co=5;1;0;0;0;0
+C463CD 48 D3 D7, VEX_Vpermil2ps_ymm_ymm_ymm_ymmm256_imm4, Vpermil2ps, 5, op0=r;ymm10 op1=r;ymm6 op2=r;ymm13 op3=r;ymm3 op4=i8;7 co=5;1;0;0;0;0
+C4E38D 48 D3 82, VEX_Vpermil2ps_ymm_ymm_ymm_ymmm256_imm4, Vpermil2ps, 5, op0=r;ymm2 op1=r;ymm14 op2=r;ymm8 op3=r;ymm3 op4=i8;2 co=5;1;0;0;0;0
+C4C3CD 48 D3 53, VEX_Vpermil2ps_ymm_ymm_ymm_ymmm256_imm4, Vpermil2ps, 5, op0=r;ymm2 op1=r;ymm6 op2=r;ymm5 op3=r;ymm11 op4=i8;3 co=5;1;0;0;0;0
+C4A3CD 48 10 52, VEX_Vpermil2ps_ymm_ymm_ymm_ymmm256_imm4, Vpermil2ps, 5, op0=r;ymm2 op1=r;ymm6 op2=r;ymm5 op3=m;ds;rax;;1;0;0;Packed256_Float32 op4=i8;2 co=5;1;0;0;0;0 enc=C4E3CD481052
 
-C4E349 49 10 41, VEX_Vpermil2pd_xmm_xmm_xmmm128_xmm_imm2, Vpermil2pd, 5, op0=r;xmm2 op1=r;xmm6 op2=m;ds;rax;;1;0;0;Packed128_Float64 op3=r;xmm4 op4=i8;1 co=5;1;0;0;0;0
-C4E349 49 D3 40, VEX_Vpermil2pd_xmm_xmm_xmmm128_xmm_imm2, Vpermil2pd, 5, op0=r;xmm2 op1=r;xmm6 op2=r;xmm3 op3=r;xmm4 op4=i8;0 co=5;1;0;0;0;0
-C46349 49 D3 C1, VEX_Vpermil2pd_xmm_xmm_xmmm128_xmm_imm2, Vpermil2pd, 5, op0=r;xmm10 op1=r;xmm6 op2=r;xmm3 op3=r;xmm12 op4=i8;1 co=5;1;0;0;0;0
-C4E309 49 D3 E2, VEX_Vpermil2pd_xmm_xmm_xmmm128_xmm_imm2, Vpermil2pd, 5, op0=r;xmm2 op1=r;xmm14 op2=r;xmm3 op3=r;xmm14 op4=i8;2 co=5;1;0;0;0;0
-C4C349 49 D3 43, VEX_Vpermil2pd_xmm_xmm_xmmm128_xmm_imm2, Vpermil2pd, 5, op0=r;xmm2 op1=r;xmm6 op2=r;xmm11 op3=r;xmm4 op4=i8;3 co=5;1;0;0;0;0
-C4A349 49 10 41, VEX_Vpermil2pd_xmm_xmm_xmmm128_xmm_imm2, Vpermil2pd, 5, op0=r;xmm2 op1=r;xmm6 op2=m;ds;rax;;1;0;0;Packed128_Float64 op3=r;xmm4 op4=i8;1 co=5;1;0;0;0;0 enc=C4E349491041
+C4E349 49 10 41, VEX_Vpermil2pd_xmm_xmm_xmmm128_xmm_imm4, Vpermil2pd, 5, op0=r;xmm2 op1=r;xmm6 op2=m;ds;rax;;1;0;0;Packed128_Float64 op3=r;xmm4 op4=i8;1 co=5;1;0;0;0;0
+C4E349 49 D3 40, VEX_Vpermil2pd_xmm_xmm_xmmm128_xmm_imm4, Vpermil2pd, 5, op0=r;xmm2 op1=r;xmm6 op2=r;xmm3 op3=r;xmm4 op4=i8;0 co=5;1;0;0;0;0
+C46349 49 D3 C8, VEX_Vpermil2pd_xmm_xmm_xmmm128_xmm_imm4, Vpermil2pd, 5, op0=r;xmm10 op1=r;xmm6 op2=r;xmm3 op3=r;xmm12 op4=i8;8 co=5;1;0;0;0;0
+C4E309 49 D3 E2, VEX_Vpermil2pd_xmm_xmm_xmmm128_xmm_imm4, Vpermil2pd, 5, op0=r;xmm2 op1=r;xmm14 op2=r;xmm3 op3=r;xmm14 op4=i8;2 co=5;1;0;0;0;0
+C4C349 49 D3 43, VEX_Vpermil2pd_xmm_xmm_xmmm128_xmm_imm4, Vpermil2pd, 5, op0=r;xmm2 op1=r;xmm6 op2=r;xmm11 op3=r;xmm4 op4=i8;3 co=5;1;0;0;0;0
+C4A349 49 10 41, VEX_Vpermil2pd_xmm_xmm_xmmm128_xmm_imm4, Vpermil2pd, 5, op0=r;xmm2 op1=r;xmm6 op2=m;ds;rax;;1;0;0;Packed128_Float64 op3=r;xmm4 op4=i8;1 co=5;1;0;0;0;0 enc=C4E349491041
 
-C4E34D 49 10 52, VEX_Vpermil2pd_ymm_ymm_ymmm256_ymm_imm2, Vpermil2pd, 5, op0=r;ymm2 op1=r;ymm6 op2=m;ds;rax;;1;0;0;Packed256_Float64 op3=r;ymm5 op4=i8;2 co=5;1;0;0;0;0
-C4E34D 49 D3 50, VEX_Vpermil2pd_ymm_ymm_ymmm256_ymm_imm2, Vpermil2pd, 5, op0=r;ymm2 op1=r;ymm6 op2=r;ymm3 op3=r;ymm5 op4=i8;0 co=5;1;0;0;0;0
-C4634D 49 D3 D1, VEX_Vpermil2pd_ymm_ymm_ymmm256_ymm_imm2, Vpermil2pd, 5, op0=r;ymm10 op1=r;ymm6 op2=r;ymm3 op3=r;ymm13 op4=i8;1 co=5;1;0;0;0;0
-C4E30D 49 D3 82, VEX_Vpermil2pd_ymm_ymm_ymmm256_ymm_imm2, Vpermil2pd, 5, op0=r;ymm2 op1=r;ymm14 op2=r;ymm3 op3=r;ymm8 op4=i8;2 co=5;1;0;0;0;0
-C4C34D 49 D3 53, VEX_Vpermil2pd_ymm_ymm_ymmm256_ymm_imm2, Vpermil2pd, 5, op0=r;ymm2 op1=r;ymm6 op2=r;ymm11 op3=r;ymm5 op4=i8;3 co=5;1;0;0;0;0
-C4A34D 49 10 52, VEX_Vpermil2pd_ymm_ymm_ymmm256_ymm_imm2, Vpermil2pd, 5, op0=r;ymm2 op1=r;ymm6 op2=m;ds;rax;;1;0;0;Packed256_Float64 op3=r;ymm5 op4=i8;2 co=5;1;0;0;0;0 enc=C4E34D491052
+C4E34D 49 10 52, VEX_Vpermil2pd_ymm_ymm_ymmm256_ymm_imm4, Vpermil2pd, 5, op0=r;ymm2 op1=r;ymm6 op2=m;ds;rax;;1;0;0;Packed256_Float64 op3=r;ymm5 op4=i8;2 co=5;1;0;0;0;0
+C4E34D 49 D3 50, VEX_Vpermil2pd_ymm_ymm_ymmm256_ymm_imm4, Vpermil2pd, 5, op0=r;ymm2 op1=r;ymm6 op2=r;ymm3 op3=r;ymm5 op4=i8;0 co=5;1;0;0;0;0
+C4634D 49 D3 D9, VEX_Vpermil2pd_ymm_ymm_ymmm256_ymm_imm4, Vpermil2pd, 5, op0=r;ymm10 op1=r;ymm6 op2=r;ymm3 op3=r;ymm13 op4=i8;9 co=5;1;0;0;0;0
+C4E30D 49 D3 82, VEX_Vpermil2pd_ymm_ymm_ymmm256_ymm_imm4, Vpermil2pd, 5, op0=r;ymm2 op1=r;ymm14 op2=r;ymm3 op3=r;ymm8 op4=i8;2 co=5;1;0;0;0;0
+C4C34D 49 D3 53, VEX_Vpermil2pd_ymm_ymm_ymmm256_ymm_imm4, Vpermil2pd, 5, op0=r;ymm2 op1=r;ymm6 op2=r;ymm11 op3=r;ymm5 op4=i8;3 co=5;1;0;0;0;0
+C4A34D 49 10 52, VEX_Vpermil2pd_ymm_ymm_ymmm256_ymm_imm4, Vpermil2pd, 5, op0=r;ymm2 op1=r;ymm6 op2=m;ds;rax;;1;0;0;Packed256_Float64 op3=r;ymm5 op4=i8;2 co=5;1;0;0;0;0 enc=C4E34D491052
 
-C4E3C9 49 10 41, VEX_Vpermil2pd_xmm_xmm_xmm_xmmm128_imm2, Vpermil2pd, 5, op0=r;xmm2 op1=r;xmm6 op2=r;xmm4 op3=m;ds;rax;;1;0;0;Packed128_Float64 op4=i8;1 co=5;1;0;0;0;0
-C4E3C9 49 D3 40, VEX_Vpermil2pd_xmm_xmm_xmm_xmmm128_imm2, Vpermil2pd, 5, op0=r;xmm2 op1=r;xmm6 op2=r;xmm4 op3=r;xmm3 op4=i8;0 co=5;1;0;0;0;0
-C463C9 49 D3 C1, VEX_Vpermil2pd_xmm_xmm_xmm_xmmm128_imm2, Vpermil2pd, 5, op0=r;xmm10 op1=r;xmm6 op2=r;xmm12 op3=r;xmm3 op4=i8;1 co=5;1;0;0;0;0
-C4E389 49 D3 E2, VEX_Vpermil2pd_xmm_xmm_xmm_xmmm128_imm2, Vpermil2pd, 5, op0=r;xmm2 op1=r;xmm14 op2=r;xmm14 op3=r;xmm3 op4=i8;2 co=5;1;0;0;0;0
-C4C3C9 49 D3 43, VEX_Vpermil2pd_xmm_xmm_xmm_xmmm128_imm2, Vpermil2pd, 5, op0=r;xmm2 op1=r;xmm6 op2=r;xmm4 op3=r;xmm11 op4=i8;3 co=5;1;0;0;0;0
-C4A3C9 49 10 41, VEX_Vpermil2pd_xmm_xmm_xmm_xmmm128_imm2, Vpermil2pd, 5, op0=r;xmm2 op1=r;xmm6 op2=r;xmm4 op3=m;ds;rax;;1;0;0;Packed128_Float64 op4=i8;1 co=5;1;0;0;0;0 enc=C4E3C9491041
+C4E3C9 49 10 41, VEX_Vpermil2pd_xmm_xmm_xmm_xmmm128_imm4, Vpermil2pd, 5, op0=r;xmm2 op1=r;xmm6 op2=r;xmm4 op3=m;ds;rax;;1;0;0;Packed128_Float64 op4=i8;1 co=5;1;0;0;0;0
+C4E3C9 49 D3 40, VEX_Vpermil2pd_xmm_xmm_xmm_xmmm128_imm4, Vpermil2pd, 5, op0=r;xmm2 op1=r;xmm6 op2=r;xmm4 op3=r;xmm3 op4=i8;0 co=5;1;0;0;0;0
+C463C9 49 D3 CA, VEX_Vpermil2pd_xmm_xmm_xmm_xmmm128_imm4, Vpermil2pd, 5, op0=r;xmm10 op1=r;xmm6 op2=r;xmm12 op3=r;xmm3 op4=i8;0xA co=5;1;0;0;0;0
+C4E389 49 D3 EB, VEX_Vpermil2pd_xmm_xmm_xmm_xmmm128_imm4, Vpermil2pd, 5, op0=r;xmm2 op1=r;xmm14 op2=r;xmm14 op3=r;xmm3 op4=i8;0xB co=5;1;0;0;0;0
+C4C3C9 49 D3 4C, VEX_Vpermil2pd_xmm_xmm_xmm_xmmm128_imm4, Vpermil2pd, 5, op0=r;xmm2 op1=r;xmm6 op2=r;xmm4 op3=r;xmm11 op4=i8;0xC co=5;1;0;0;0;0
+C4A3C9 49 10 41, VEX_Vpermil2pd_xmm_xmm_xmm_xmmm128_imm4, Vpermil2pd, 5, op0=r;xmm2 op1=r;xmm6 op2=r;xmm4 op3=m;ds;rax;;1;0;0;Packed128_Float64 op4=i8;1 co=5;1;0;0;0;0 enc=C4E3C9491041
 
-C4E3CD 49 10 52, VEX_Vpermil2pd_ymm_ymm_ymm_ymmm256_imm2, Vpermil2pd, 5, op0=r;ymm2 op1=r;ymm6 op2=r;ymm5 op3=m;ds;rax;;1;0;0;Packed256_Float64 op4=i8;2 co=5;1;0;0;0;0
-C4E3CD 49 D3 50, VEX_Vpermil2pd_ymm_ymm_ymm_ymmm256_imm2, Vpermil2pd, 5, op0=r;ymm2 op1=r;ymm6 op2=r;ymm5 op3=r;ymm3 op4=i8;0 co=5;1;0;0;0;0
-C463CD 49 D3 D1, VEX_Vpermil2pd_ymm_ymm_ymm_ymmm256_imm2, Vpermil2pd, 5, op0=r;ymm10 op1=r;ymm6 op2=r;ymm13 op3=r;ymm3 op4=i8;1 co=5;1;0;0;0;0
-C4E38D 49 D3 82, VEX_Vpermil2pd_ymm_ymm_ymm_ymmm256_imm2, Vpermil2pd, 5, op0=r;ymm2 op1=r;ymm14 op2=r;ymm8 op3=r;ymm3 op4=i8;2 co=5;1;0;0;0;0
-C4C3CD 49 D3 53, VEX_Vpermil2pd_ymm_ymm_ymm_ymmm256_imm2, Vpermil2pd, 5, op0=r;ymm2 op1=r;ymm6 op2=r;ymm5 op3=r;ymm11 op4=i8;3 co=5;1;0;0;0;0
-C4A3CD 49 10 52, VEX_Vpermil2pd_ymm_ymm_ymm_ymmm256_imm2, Vpermil2pd, 5, op0=r;ymm2 op1=r;ymm6 op2=r;ymm5 op3=m;ds;rax;;1;0;0;Packed256_Float64 op4=i8;2 co=5;1;0;0;0;0 enc=C4E3CD491052
+C4E3CD 49 10 52, VEX_Vpermil2pd_ymm_ymm_ymm_ymmm256_imm4, Vpermil2pd, 5, op0=r;ymm2 op1=r;ymm6 op2=r;ymm5 op3=m;ds;rax;;1;0;0;Packed256_Float64 op4=i8;2 co=5;1;0;0;0;0
+C4E3CD 49 D3 50, VEX_Vpermil2pd_ymm_ymm_ymm_ymmm256_imm4, Vpermil2pd, 5, op0=r;ymm2 op1=r;ymm6 op2=r;ymm5 op3=r;ymm3 op4=i8;0 co=5;1;0;0;0;0
+C463CD 49 D3 DD, VEX_Vpermil2pd_ymm_ymm_ymm_ymmm256_imm4, Vpermil2pd, 5, op0=r;ymm10 op1=r;ymm6 op2=r;ymm13 op3=r;ymm3 op4=i8;0xD co=5;1;0;0;0;0
+C4E38D 49 D3 8E, VEX_Vpermil2pd_ymm_ymm_ymm_ymmm256_imm4, Vpermil2pd, 5, op0=r;ymm2 op1=r;ymm14 op2=r;ymm8 op3=r;ymm3 op4=i8;0xE co=5;1;0;0;0;0
+C4C3CD 49 D3 5F, VEX_Vpermil2pd_ymm_ymm_ymm_ymmm256_imm4, Vpermil2pd, 5, op0=r;ymm2 op1=r;ymm6 op2=r;ymm5 op3=r;ymm11 op4=i8;0xF co=5;1;0;0;0;0
+C4A3CD 49 10 52, VEX_Vpermil2pd_ymm_ymm_ymm_ymmm256_imm4, Vpermil2pd, 5, op0=r;ymm2 op1=r;ymm6 op2=r;ymm5 op3=m;ds;rax;;1;0;0;Packed256_Float64 op4=i8;2 co=5;1;0;0;0;0 enc=C4E3CD491052
 
 C4E349 4A 10 40, VEX_Vblendvps_xmm_xmm_xmmm128_xmm, Vblendvps, 4, op0=r;xmm2 op1=r;xmm6 op2=m;ds;rax;;1;0;0;Packed128_Float32 op3=r;xmm4
 C4E349 4A D3 40, VEX_Vblendvps_xmm_xmm_xmmm128_xmm, Vblendvps, 4, op0=r;xmm2 op1=r;xmm6 op2=r;xmm3 op3=r;xmm4
@@ -32260,9 +32269,10 @@ F2 4F 0F 01 E9, Xresldtrk, Xresldtrk, 0, enc=F20F01E9
 4F 0FFF, Ud0, Ud0, 0, decopt=AMD enc=0FFF
 
 F3 0F01 D9, Vmgexit, Vmgexit, 0,
-F2 0F01 D9, Vmgexit, Vmgexit, 0, enc=F30F01D9
 F3 4F 0F01 D9, Vmgexit, Vmgexit, 0, enc=F30F01D9
-F2 4F 0F01 D9, Vmgexit, Vmgexit, 0, enc=F30F01D9
+
+F2 0F01 D9, Vmgexit_F2, Vmgexit, 0,
+F2 4F 0F01 D9, Vmgexit_F2, Vmgexit, 0, enc=F20F01D9
 
 C4E278 49 00, VEX_Ldtilecfg_m512, Ldtilecfg, 1, op0=m;ds;rax;;1;0;0;Tilecfg
 C46278 49 00, VEX_Ldtilecfg_m512, Ldtilecfg, 1, op0=m;ds;rax;;1;0;0;Tilecfg enc=C4E2784900
@@ -32383,3 +32393,137 @@ C4E263 5E D3, VEX_Tdpbssd_tmm_tmm_tmm, Tdpbssd, 3, op0=r;tmm2 op1=r;tmm3 op2=r;t
 C4E263 5E D3, INVALID, INVALID, 0, code=VEX_Tdpbssd_tmm_tmm_tmm
 C4E26B 5E D2, VEX_Tdpbssd_tmm_tmm_tmm, Tdpbssd, 3, op0=r;tmm2 op1=r;tmm2 op2=r;tmm2 decopt=NoInvalidCheck
 C4E26B 5E D2, INVALID, INVALID, 0, code=VEX_Tdpbssd_tmm_tmm_tmm
+
+66 0F01 CC, Tdcall, Tdcall, 0,
+66 4F 0F01 CC, Tdcall, Tdcall, 0, enc=660F01CC
+
+66 0F01 CD, Seamret, Seamret, 0,
+66 4F 0F01 CD, Seamret, Seamret, 0, enc=660F01CD
+
+66 0F01 CE, Seamops, Seamops, 0,
+66 4F 0F01 CE, Seamops, Seamops, 0, enc=660F01CE
+
+66 0F01 CF, Seamcall, Seamcall, 0,
+66 4F 0F01 CF, Seamcall, Seamcall, 0, enc=660F01CF
+
+F3 0F38 D8 00, Aesencwide128kl_m384, Aesencwide128kl, 1, op0=m;ds;rax;;1;0;0;KLHandleAes128
+F3 4E 0F38 D8 00, Aesencwide128kl_m384, Aesencwide128kl, 1, op0=m;ds;rax;;1;0;0;KLHandleAes128 enc=F30F38D800
+
+F3 0F38 D8 08, Aesdecwide128kl_m384, Aesdecwide128kl, 1, op0=m;ds;rax;;1;0;0;KLHandleAes128
+F3 4E 0F38 D8 08, Aesdecwide128kl_m384, Aesdecwide128kl, 1, op0=m;ds;rax;;1;0;0;KLHandleAes128 enc=F30F38D808
+
+F3 0F38 D8 10, Aesencwide256kl_m512, Aesencwide256kl, 1, op0=m;ds;rax;;1;0;0;KLHandleAes256
+F3 4E 0F38 D8 10, Aesencwide256kl_m512, Aesencwide256kl, 1, op0=m;ds;rax;;1;0;0;KLHandleAes256 enc=F30F38D810
+
+F3 0F38 D8 18, Aesdecwide256kl_m512, Aesdecwide256kl, 1, op0=m;ds;rax;;1;0;0;KLHandleAes256
+F3 4E 0F38 D8 18, Aesdecwide256kl_m512, Aesdecwide256kl, 1, op0=m;ds;rax;;1;0;0;KLHandleAes256 enc=F30F38D818
+
+F3 0F38 DC D3, Loadiwkey_xmm_xmm, Loadiwkey, 2, op0=r;xmm2 op1=r;xmm3
+F3 44 0F38 DC D3, Loadiwkey_xmm_xmm, Loadiwkey, 2, op0=r;xmm10 op1=r;xmm3
+F3 41 0F38 DC D3, Loadiwkey_xmm_xmm, Loadiwkey, 2, op0=r;xmm2 op1=r;xmm11
+F3 4A 0F38 DC D3, Loadiwkey_xmm_xmm, Loadiwkey, 2, op0=r;xmm2 op1=r;xmm3 enc=F30F38DCD3
+
+F3 0F38 DC 10, Aesenc128kl_xmm_m384, Aesenc128kl, 2, op0=r;xmm2 op1=m;ds;rax;;1;0;0;KLHandleAes128
+F3 44 0F38 DC 10, Aesenc128kl_xmm_m384, Aesenc128kl, 2, op0=r;xmm10 op1=m;ds;rax;;1;0;0;KLHandleAes128
+F3 4A 0F38 DC 10, Aesenc128kl_xmm_m384, Aesenc128kl, 2, op0=r;xmm2 op1=m;ds;rax;;1;0;0;KLHandleAes128 enc=F30F38DC10
+
+F3 0F38 DD 10, Aesdec128kl_xmm_m384, Aesdec128kl, 2, op0=r;xmm2 op1=m;ds;rax;;1;0;0;KLHandleAes128
+F3 44 0F38 DD 10, Aesdec128kl_xmm_m384, Aesdec128kl, 2, op0=r;xmm10 op1=m;ds;rax;;1;0;0;KLHandleAes128
+F3 4A 0F38 DD 10, Aesdec128kl_xmm_m384, Aesdec128kl, 2, op0=r;xmm2 op1=m;ds;rax;;1;0;0;KLHandleAes128 enc=F30F38DD10
+
+F3 0F38 DE 10, Aesenc256kl_xmm_m512, Aesenc256kl, 2, op0=r;xmm2 op1=m;ds;rax;;1;0;0;KLHandleAes256
+F3 44 0F38 DE 10, Aesenc256kl_xmm_m512, Aesenc256kl, 2, op0=r;xmm10 op1=m;ds;rax;;1;0;0;KLHandleAes256
+F3 4A 0F38 DE 10, Aesenc256kl_xmm_m512, Aesenc256kl, 2, op0=r;xmm2 op1=m;ds;rax;;1;0;0;KLHandleAes256 enc=F30F38DE10
+
+F3 0F38 DF 10, Aesdec256kl_xmm_m512, Aesdec256kl, 2, op0=r;xmm2 op1=m;ds;rax;;1;0;0;KLHandleAes256
+F3 44 0F38 DF 10, Aesdec256kl_xmm_m512, Aesdec256kl, 2, op0=r;xmm10 op1=m;ds;rax;;1;0;0;KLHandleAes256
+F3 4A 0F38 DF 10, Aesdec256kl_xmm_m512, Aesdec256kl, 2, op0=r;xmm2 op1=m;ds;rax;;1;0;0;KLHandleAes256 enc=F30F38DF10
+
+F3 0F38 FA D3, Encodekey128_r32_r32, Encodekey128, 2, op0=r;edx op1=r;ebx
+F3 44 0F38 FA D3, Encodekey128_r32_r32, Encodekey128, 2, op0=r;r10d op1=r;ebx
+F3 41 0F38 FA D3, Encodekey128_r32_r32, Encodekey128, 2, op0=r;edx op1=r;r11d
+66 F3 0F38 FA D3, Encodekey128_r32_r32, Encodekey128, 2, op0=r;edx op1=r;ebx enc=F30F38FAD3
+F3 4A 0F38 FA D3, Encodekey128_r32_r32, Encodekey128, 2, op0=r;edx op1=r;ebx enc=F30F38FAD3
+
+F3 0F38 FB D3, Encodekey256_r32_r32, Encodekey256, 2, op0=r;edx op1=r;ebx
+F3 44 0F38 FB D3, Encodekey256_r32_r32, Encodekey256, 2, op0=r;r10d op1=r;ebx
+F3 41 0F38 FB D3, Encodekey256_r32_r32, Encodekey256, 2, op0=r;edx op1=r;r11d
+66 F3 0F38 FB D3, Encodekey256_r32_r32, Encodekey256, 2, op0=r;edx op1=r;ebx enc=F30F38FBD3
+F3 4A 0F38 FB D3, Encodekey256_r32_r32, Encodekey256, 2, op0=r;edx op1=r;ebx enc=F30F38FBD3
+
+F3 0F01 EC, Uiret, Uiret, 0,
+F3 4F 0F01 EC, Uiret, Uiret, 0, enc=F30F01EC
+
+F3 0F01 ED, Testui, Testui, 0,
+F3 4F 0F01 ED, Testui, Testui, 0, enc=F30F01ED
+
+F3 0F01 EE, Clui, Clui, 0,
+F3 4F 0F01 EE, Clui, Clui, 0, enc=F30F01EE
+
+F3 0F01 EF, Stui, Stui, 0,
+F3 4F 0F01 EF, Stui, Stui, 0, enc=F30F01EF
+
+F3 0FC7 F1, Senduipi_r64, Senduipi, 1, op0=r;rcx
+F3 41 0FC7 F1, Senduipi_r64, Senduipi, 1, op0=r;r9
+F3 4F 0FC7 F1, Senduipi_r64, Senduipi, 1, op0=r;r9 enc=F3410FC7F1
+66 F3 0FC7 F1, Senduipi_r64, Senduipi, 1, op0=r;rcx enc=F30FC7F1
+
+F3 0F3A F0C0 A5, Hreset_imm8, Hreset, 1, op0=i8;0xA5 co=5;1;0;0;0;0
+F3 0F3A F0C0 5A, Hreset_imm8, Hreset, 1, op0=i8;0x5A co=5;1;0;0;0;0
+F3 4F 0F3A F0C0 A5, Hreset_imm8, Hreset, 1, op0=i8;0xA5 co=6;1;0;0;0;0 enc=F30F3AF0C0A5
+
+C4E249 50 10, VEX_Vpdpbusd_xmm_xmm_xmmm128, Vpdpbusd, 3, op0=r;xmm2 op1=r;xmm6 op2=m;ds;rax;;1;0;0;Packed128_Int8
+C4E249 50 D3, VEX_Vpdpbusd_xmm_xmm_xmmm128, Vpdpbusd, 3, op0=r;xmm2 op1=r;xmm6 op2=r;xmm3
+C46249 50 D3, VEX_Vpdpbusd_xmm_xmm_xmmm128, Vpdpbusd, 3, op0=r;xmm10 op1=r;xmm6 op2=r;xmm3
+C4E209 50 D3, VEX_Vpdpbusd_xmm_xmm_xmmm128, Vpdpbusd, 3, op0=r;xmm2 op1=r;xmm14 op2=r;xmm3
+C4C249 50 D3, VEX_Vpdpbusd_xmm_xmm_xmmm128, Vpdpbusd, 3, op0=r;xmm2 op1=r;xmm6 op2=r;xmm11
+C4A249 50 10, VEX_Vpdpbusd_xmm_xmm_xmmm128, Vpdpbusd, 3, op0=r;xmm2 op1=r;xmm6 op2=m;ds;rax;;1;0;0;Packed128_Int8 enc=C4E2495010
+
+C4E24D 50 10, VEX_Vpdpbusd_ymm_ymm_ymmm256, Vpdpbusd, 3, op0=r;ymm2 op1=r;ymm6 op2=m;ds;rax;;1;0;0;Packed256_Int8
+C4E24D 50 D3, VEX_Vpdpbusd_ymm_ymm_ymmm256, Vpdpbusd, 3, op0=r;ymm2 op1=r;ymm6 op2=r;ymm3
+C4624D 50 D3, VEX_Vpdpbusd_ymm_ymm_ymmm256, Vpdpbusd, 3, op0=r;ymm10 op1=r;ymm6 op2=r;ymm3
+C4E20D 50 D3, VEX_Vpdpbusd_ymm_ymm_ymmm256, Vpdpbusd, 3, op0=r;ymm2 op1=r;ymm14 op2=r;ymm3
+C4C24D 50 D3, VEX_Vpdpbusd_ymm_ymm_ymmm256, Vpdpbusd, 3, op0=r;ymm2 op1=r;ymm6 op2=r;ymm11
+C4A24D 50 10, VEX_Vpdpbusd_ymm_ymm_ymmm256, Vpdpbusd, 3, op0=r;ymm2 op1=r;ymm6 op2=m;ds;rax;;1;0;0;Packed256_Int8 enc=C4E24D5010
+
+C4E249 51 10, VEX_Vpdpbusds_xmm_xmm_xmmm128, Vpdpbusds, 3, op0=r;xmm2 op1=r;xmm6 op2=m;ds;rax;;1;0;0;Packed128_Int8
+C4E249 51 D3, VEX_Vpdpbusds_xmm_xmm_xmmm128, Vpdpbusds, 3, op0=r;xmm2 op1=r;xmm6 op2=r;xmm3
+C46249 51 D3, VEX_Vpdpbusds_xmm_xmm_xmmm128, Vpdpbusds, 3, op0=r;xmm10 op1=r;xmm6 op2=r;xmm3
+C4E209 51 D3, VEX_Vpdpbusds_xmm_xmm_xmmm128, Vpdpbusds, 3, op0=r;xmm2 op1=r;xmm14 op2=r;xmm3
+C4C249 51 D3, VEX_Vpdpbusds_xmm_xmm_xmmm128, Vpdpbusds, 3, op0=r;xmm2 op1=r;xmm6 op2=r;xmm11
+C4A249 51 10, VEX_Vpdpbusds_xmm_xmm_xmmm128, Vpdpbusds, 3, op0=r;xmm2 op1=r;xmm6 op2=m;ds;rax;;1;0;0;Packed128_Int8 enc=C4E2495110
+
+C4E24D 51 10, VEX_Vpdpbusds_ymm_ymm_ymmm256, Vpdpbusds, 3, op0=r;ymm2 op1=r;ymm6 op2=m;ds;rax;;1;0;0;Packed256_Int8
+C4E24D 51 D3, VEX_Vpdpbusds_ymm_ymm_ymmm256, Vpdpbusds, 3, op0=r;ymm2 op1=r;ymm6 op2=r;ymm3
+C4624D 51 D3, VEX_Vpdpbusds_ymm_ymm_ymmm256, Vpdpbusds, 3, op0=r;ymm10 op1=r;ymm6 op2=r;ymm3
+C4E20D 51 D3, VEX_Vpdpbusds_ymm_ymm_ymmm256, Vpdpbusds, 3, op0=r;ymm2 op1=r;ymm14 op2=r;ymm3
+C4C24D 51 D3, VEX_Vpdpbusds_ymm_ymm_ymmm256, Vpdpbusds, 3, op0=r;ymm2 op1=r;ymm6 op2=r;ymm11
+C4A24D 51 10, VEX_Vpdpbusds_ymm_ymm_ymmm256, Vpdpbusds, 3, op0=r;ymm2 op1=r;ymm6 op2=m;ds;rax;;1;0;0;Packed256_Int8 enc=C4E24D5110
+
+C4E249 52 10, VEX_Vpdpwssd_xmm_xmm_xmmm128, Vpdpwssd, 3, op0=r;xmm2 op1=r;xmm6 op2=m;ds;rax;;1;0;0;Packed128_Int16
+C4E249 52 D3, VEX_Vpdpwssd_xmm_xmm_xmmm128, Vpdpwssd, 3, op0=r;xmm2 op1=r;xmm6 op2=r;xmm3
+C46249 52 D3, VEX_Vpdpwssd_xmm_xmm_xmmm128, Vpdpwssd, 3, op0=r;xmm10 op1=r;xmm6 op2=r;xmm3
+C4E209 52 D3, VEX_Vpdpwssd_xmm_xmm_xmmm128, Vpdpwssd, 3, op0=r;xmm2 op1=r;xmm14 op2=r;xmm3
+C4C249 52 D3, VEX_Vpdpwssd_xmm_xmm_xmmm128, Vpdpwssd, 3, op0=r;xmm2 op1=r;xmm6 op2=r;xmm11
+C4A249 52 10, VEX_Vpdpwssd_xmm_xmm_xmmm128, Vpdpwssd, 3, op0=r;xmm2 op1=r;xmm6 op2=m;ds;rax;;1;0;0;Packed128_Int16 enc=C4E2495210
+
+C4E24D 52 10, VEX_Vpdpwssd_ymm_ymm_ymmm256, Vpdpwssd, 3, op0=r;ymm2 op1=r;ymm6 op2=m;ds;rax;;1;0;0;Packed256_Int16
+C4E24D 52 D3, VEX_Vpdpwssd_ymm_ymm_ymmm256, Vpdpwssd, 3, op0=r;ymm2 op1=r;ymm6 op2=r;ymm3
+C4624D 52 D3, VEX_Vpdpwssd_ymm_ymm_ymmm256, Vpdpwssd, 3, op0=r;ymm10 op1=r;ymm6 op2=r;ymm3
+C4E20D 52 D3, VEX_Vpdpwssd_ymm_ymm_ymmm256, Vpdpwssd, 3, op0=r;ymm2 op1=r;ymm14 op2=r;ymm3
+C4C24D 52 D3, VEX_Vpdpwssd_ymm_ymm_ymmm256, Vpdpwssd, 3, op0=r;ymm2 op1=r;ymm6 op2=r;ymm11
+C4A24D 52 10, VEX_Vpdpwssd_ymm_ymm_ymmm256, Vpdpwssd, 3, op0=r;ymm2 op1=r;ymm6 op2=m;ds;rax;;1;0;0;Packed256_Int16 enc=C4E24D5210
+
+C4E249 53 10, VEX_Vpdpwssds_xmm_xmm_xmmm128, Vpdpwssds, 3, op0=r;xmm2 op1=r;xmm6 op2=m;ds;rax;;1;0;0;Packed128_Int16
+C4E249 53 D3, VEX_Vpdpwssds_xmm_xmm_xmmm128, Vpdpwssds, 3, op0=r;xmm2 op1=r;xmm6 op2=r;xmm3
+C46249 53 D3, VEX_Vpdpwssds_xmm_xmm_xmmm128, Vpdpwssds, 3, op0=r;xmm10 op1=r;xmm6 op2=r;xmm3
+C4E209 53 D3, VEX_Vpdpwssds_xmm_xmm_xmmm128, Vpdpwssds, 3, op0=r;xmm2 op1=r;xmm14 op2=r;xmm3
+C4C249 53 D3, VEX_Vpdpwssds_xmm_xmm_xmmm128, Vpdpwssds, 3, op0=r;xmm2 op1=r;xmm6 op2=r;xmm11
+C4A249 53 10, VEX_Vpdpwssds_xmm_xmm_xmmm128, Vpdpwssds, 3, op0=r;xmm2 op1=r;xmm6 op2=m;ds;rax;;1;0;0;Packed128_Int16 enc=C4E2495310
+
+C4E24D 53 10, VEX_Vpdpwssds_ymm_ymm_ymmm256, Vpdpwssds, 3, op0=r;ymm2 op1=r;ymm6 op2=m;ds;rax;;1;0;0;Packed256_Int16
+C4E24D 53 D3, VEX_Vpdpwssds_ymm_ymm_ymmm256, Vpdpwssds, 3, op0=r;ymm2 op1=r;ymm6 op2=r;ymm3
+C4624D 53 D3, VEX_Vpdpwssds_ymm_ymm_ymmm256, Vpdpwssds, 3, op0=r;ymm10 op1=r;ymm6 op2=r;ymm3
+C4E20D 53 D3, VEX_Vpdpwssds_ymm_ymm_ymmm256, Vpdpwssds, 3, op0=r;ymm2 op1=r;ymm14 op2=r;ymm3
+C4C24D 53 D3, VEX_Vpdpwssds_ymm_ymm_ymmm256, Vpdpwssds, 3, op0=r;ymm2 op1=r;ymm6 op2=r;ymm11
+C4A24D 53 10, VEX_Vpdpwssds_ymm_ymm_ymmm256, Vpdpwssds, 3, op0=r;ymm2 op1=r;ymm6 op2=m;ds;rax;;1;0;0;Packed256_Int16 enc=C4E24D5310

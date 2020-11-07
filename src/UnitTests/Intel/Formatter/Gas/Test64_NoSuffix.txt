@@ -7475,21 +7475,21 @@ insertq $0xfd,$0xa5,%xmm1,%xmm2
 extrq %xmm1,%xmm2
 insertq %xmm1,%xmm2
 vpermil2ps $0,%xmm4,%xmm3,%xmm6,%xmm2
-vpermil2ps $1,%xmm4,(%rax),%xmm6,%xmm2
-vpermil2ps $0,%ymm5,%ymm3,%ymm6,%ymm2
-vpermil2ps $2,%ymm5,(%rax),%ymm6,%ymm2
-vpermil2ps $0,%xmm3,%xmm4,%xmm6,%xmm2
-vpermil2ps $1,(%rax),%xmm4,%xmm6,%xmm2
-vpermil2ps $0,%ymm3,%ymm5,%ymm6,%ymm2
-vpermil2ps $2,(%rax),%ymm5,%ymm6,%ymm2
+vpermil2ps $4,%xmm4,(%rax),%xmm6,%xmm2
+vpermil2ps $1,%ymm5,%ymm3,%ymm6,%ymm2
+vpermil2ps $5,%ymm5,(%rax),%ymm6,%ymm2
+vpermil2ps $2,%xmm3,%xmm4,%xmm6,%xmm2
+vpermil2ps $6,(%rax),%xmm4,%xmm6,%xmm2
+vpermil2ps $3,%ymm3,%ymm5,%ymm6,%ymm2
+vpermil2ps $7,(%rax),%ymm5,%ymm6,%ymm2
 vpermil2pd $0,%xmm4,%xmm3,%xmm6,%xmm2
-vpermil2pd $1,%xmm4,(%rax),%xmm6,%xmm2
-vpermil2pd $0,%ymm5,%ymm3,%ymm6,%ymm2
-vpermil2pd $2,%ymm5,(%rax),%ymm6,%ymm2
-vpermil2pd $0,%xmm3,%xmm4,%xmm6,%xmm2
-vpermil2pd $1,(%rax),%xmm4,%xmm6,%xmm2
-vpermil2pd $0,%ymm3,%ymm5,%ymm6,%ymm2
-vpermil2pd $2,(%rax),%ymm5,%ymm6,%ymm2
+vpermil2pd $8,%xmm4,(%rax),%xmm6,%xmm2
+vpermil2pd $1,%ymm5,%ymm3,%ymm6,%ymm2
+vpermil2pd $9,%ymm5,(%rax),%ymm6,%ymm2
+vpermil2pd $2,%xmm3,%xmm4,%xmm6,%xmm2
+vpermil2pd $0xa,(%rax),%xmm4,%xmm6,%xmm2
+vpermil2pd $3,%ymm3,%ymm5,%ymm6,%ymm2
+vpermil2pd $0xf,(%rax),%ymm5,%ymm6,%ymm2
 vfmaddsubps %xmm4,%xmm3,%xmm6,%xmm2
 vfmaddsubps %xmm4,(%rax),%xmm6,%xmm2
 vfmaddsubps %ymm5,%ymm3,%ymm6,%ymm2
@@ -8349,6 +8349,7 @@ prefetch (%rax)
 prefetch (%rax)
 ud0
 vmgexit
+vmgexit
 ldtilecfg (%rax)
 tilerelease
 sttilecfg (%rax)
@@ -8367,3 +8368,41 @@ tdpbssd %tmm4,%tmm3,%tmm2
 tdpbf16ps %tmm2,%tmm1,%tmm0
 tdpbf16ps %tmm5,%tmm4,%tmm3
 tdpbf16ps %tmm0,%tmm7,%tmm6
+vunpcklps 4(%rax){1to4},%xmm6,%xmm2{z}
+tdcall
+seamret
+seamops
+seamcall
+aesencwide128kl (%rax)
+aesdecwide128kl (%rax)
+aesencwide256kl (%rax)
+aesdecwide256kl (%rax)
+loadiwkey %xmm3,%xmm2
+aesenc128kl (%rax),%xmm2
+aesdec128kl (%rax),%xmm2
+aesenc256kl (%rax),%xmm2
+aesdec256kl (%rax),%xmm2
+encodekey128 %ebx,%edx
+encodekey256 %ebx,%edx
+uiret
+testui
+clui
+stui
+senduipi %rcx
+hreset $0xa5
+vpdpbusd (%rax),%xmm6,%xmm2
+vpdpbusd %xmm3,%xmm6,%xmm2
+vpdpbusd (%rax),%ymm6,%ymm2
+vpdpbusd %ymm3,%ymm6,%ymm2
+vpdpbusds (%rax),%xmm6,%xmm2
+vpdpbusds %xmm3,%xmm6,%xmm2
+vpdpbusds (%rax),%ymm6,%ymm2
+vpdpbusds %ymm3,%ymm6,%ymm2
+vpdpwssd (%rax),%xmm6,%xmm2
+vpdpwssd %xmm3,%xmm6,%xmm2
+vpdpwssd (%rax),%ymm6,%ymm2
+vpdpwssd %ymm3,%ymm6,%ymm2
+vpdpwssds (%rax),%xmm6,%xmm2
+vpdpwssds %xmm3,%xmm6,%xmm2
+vpdpwssds (%rax),%ymm6,%ymm2
+vpdpwssds %ymm3,%ymm6,%ymm2

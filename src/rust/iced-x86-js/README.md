@@ -6,7 +6,7 @@ iced-x86 is a high performance and correct x86 (16/32/64-bit) disassembler for J
 - ✔️Correct: All instructions are tested and iced has been tested against other disassemblers/assemblers (xed, gas, objdump, masm, dumpbin, nasm, ndisasm) and fuzzed
 - ✔️The formatter supports masm, nasm, gas (AT&T), Intel (XED) and there are many options to customize the output
 - ✔️The encoder can be used to re-encode decoded instructions at any address
-- ✔️API to get instruction info, eg. read/written registers, memory and rflags bits; CPUID feature flag, flow control info, etc
+- ✔️API to get instruction info, eg. read/written registers, memory and rflags bits; CPUID feature flag, control flow info, etc
 - ✔️Rust + WebAssembly + JavaScript
 - ✔️License: MIT
 
@@ -89,20 +89,6 @@ Here's a list of all features you can enable when building the wasm file
 `"decoder fast_fmt"` is all you need to disassemble code (or replace `fast_fmt` with eg. `nasm` or `gas`).
 
 `"decoder fast_fmt instr_api instr_info"` if you want to analyze the code and disassemble it. Add `encoder` and optionally `block_encoder` if you want to re-encode the decoded instructions.
-
-If you use `no_vex`, `no_evex`, `no_xop` or `no_d3now`, you should run the generator again (before building iced) to generate even smaller output.
-
-[.NET Core](https://dotnet.microsoft.com/download) is required. Help:
-
-```sh
-dotnet run -p src/csharp/Intel/Generator/Generator.csproj -- --help
-```
-
-No VEX, EVEX, XOP, 3DNow!:
-
-```sh
-dotnet run -p src/csharp/Intel/Generator/Generator.csproj -- --no-vex --no-evex --no-xop --no-3dnow
-```
 
 ## How-tos
 
@@ -429,7 +415,7 @@ while (decoder.canDecode) {
     const instr = decoder.decode();
     origInstructions.push(instr);
     totalBytes += instr.length;
-    if (instr.code === Code.INVALID)
+    if (instr.isInvalid)
         throw new Error("Found garbage");
     if (totalBytes >= requiredBytes)
         break;
@@ -529,7 +515,7 @@ const {
 /*
 This code produces the following output:
 00007FFAC46ACDA4 mov [rsp+10h],rbx
-    OpCode: REX.W 89 /r
+    OpCode: o64 89 /r
     Instruction: MOV r/m64, r64
     Encoding: Legacy
     Mnemonic: Mov
@@ -546,7 +532,7 @@ This code produces the following output:
     Used reg: RBX:Read
     Used mem: [SS:RSP+0x10;UInt64;Write]
 00007FFAC46ACDA9 mov [rsp+18h],rsi
-    OpCode: REX.W 89 /r
+    OpCode: o64 89 /r
     Instruction: MOV r/m64, r64
     Encoding: Legacy
     Mnemonic: Mov
@@ -563,7 +549,7 @@ This code produces the following output:
     Used reg: RSI:Read
     Used mem: [SS:RSP+0x18;UInt64;Write]
 00007FFAC46ACDAE push rbp
-    OpCode: 50+ro
+    OpCode: o64 50+ro
     Instruction: PUSH r64
     Encoding: Legacy
     Mnemonic: Push
@@ -577,7 +563,7 @@ This code produces the following output:
     Used reg: RSP:ReadWrite
     Used mem: [SS:RSP+0xFFFFFFFFFFFFFFF8;UInt64;Write]
 00007FFAC46ACDAF push rdi
-    OpCode: 50+ro
+    OpCode: o64 50+ro
     Instruction: PUSH r64
     Encoding: Legacy
     Mnemonic: Push
@@ -591,7 +577,7 @@ This code produces the following output:
     Used reg: RSP:ReadWrite
     Used mem: [SS:RSP+0xFFFFFFFFFFFFFFF8;UInt64;Write]
 00007FFAC46ACDB0 push r14
-    OpCode: 50+ro
+    OpCode: o64 50+ro
     Instruction: PUSH r64
     Encoding: Legacy
     Mnemonic: Push
@@ -605,7 +591,7 @@ This code produces the following output:
     Used reg: RSP:ReadWrite
     Used mem: [SS:RSP+0xFFFFFFFFFFFFFFF8;UInt64;Write]
 00007FFAC46ACDB2 lea rbp,[rsp-100h]
-    OpCode: REX.W 8D /r
+    OpCode: o64 8D /r
     Instruction: LEA r64, m
     Encoding: Legacy
     Mnemonic: Lea
@@ -620,7 +606,7 @@ This code produces the following output:
     Used reg: RBP:Write
     Used reg: RSP:Read
 00007FFAC46ACDBA sub rsp,200h
-    OpCode: REX.W 81 /5 id
+    OpCode: o64 81 /5 id
     Instruction: SUB r/m64, imm32
     Encoding: Legacy
     Mnemonic: Sub
@@ -636,7 +622,7 @@ This code produces the following output:
     Op1: imm32sex64
     Used reg: RSP:ReadWrite
 00007FFAC46ACDC1 mov rax,[7FFAC47524E0h]
-    OpCode: REX.W 8B /r
+    OpCode: o64 8B /r
     Instruction: MOV r64, r/m64
     Encoding: Legacy
     Mnemonic: Mov
@@ -652,7 +638,7 @@ This code produces the following output:
     Used reg: RAX:Write
     Used mem: [DS:0x7FFAC47524E0;UInt64;Read]
 00007FFAC46ACDC8 xor rax,rsp
-    OpCode: REX.W 33 /r
+    OpCode: o64 33 /r
     Instruction: XOR r64, r/m64
     Encoding: Legacy
     Mnemonic: Xor
@@ -670,7 +656,7 @@ This code produces the following output:
     Used reg: RAX:ReadWrite
     Used reg: RSP:Read
 00007FFAC46ACDCB mov [rbp+0F0h],rax
-    OpCode: REX.W 89 /r
+    OpCode: o64 89 /r
     Instruction: MOV r/m64, r64
     Encoding: Legacy
     Mnemonic: Mov
@@ -687,7 +673,7 @@ This code produces the following output:
     Used reg: RAX:Read
     Used mem: [SS:RBP+0xF0;UInt64;Write]
 00007FFAC46ACDD2 mov r8,[7FFAC474F208h]
-    OpCode: REX.W 8B /r
+    OpCode: o64 8B /r
     Instruction: MOV r64, r/m64
     Encoding: Legacy
     Mnemonic: Mov
@@ -703,7 +689,7 @@ This code produces the following output:
     Used reg: R8:Write
     Used mem: [DS:0x7FFAC474F208;UInt64;Read]
 00007FFAC46ACDD9 lea rax,[7FFAC46F4A58h]
-    OpCode: REX.W 8D /r
+    OpCode: o64 8D /r
     Instruction: LEA r64, m
     Encoding: Legacy
     Mnemonic: Lea
@@ -781,6 +767,13 @@ while (decoder.canDecode) {
     console.log("    Code: %s", codeToString(instr.code));
     console.log("    CpuidFeature: %s", cpuidFeaturesToString(instr.cpuidFeatures()));
     console.log("    FlowControl: %s", flowControlToString(instr.flowControl));
+    if (instr.fpuWritesTop) {
+        if (instr.fpuTopIncrement == 0)
+            console.log("    FPU TOP: the instruction overwrites TOP");
+        else
+            console.log("    FPU TOP inc: " + instr.fpuTopIncrement);
+        console.log("    FPU TOP cond write: " + (instr.fpuCondWritesTop ? "true" : "false"));
+    }
     if (offsets.hasDisplacement)
         console.log("    Displacement offset = %d, size = %d", offsets.displacementOffset, offsets.displacementSize);
     if (offsets.hasImmediate)
@@ -855,6 +848,11 @@ function rflagsBitsToString(value) {
     if ((value & RflagsBits.DF) !== 0) { sb = append(sb, "DF"); }
     if ((value & RflagsBits.IF) !== 0) { sb = append(sb, "IF"); }
     if ((value & RflagsBits.AC) !== 0) { sb = append(sb, "AC"); }
+    if ((value & RflagsBits.C0) !== 0) { sb = append(sb, "C0"); }
+    if ((value & RflagsBits.C1) !== 0) { sb = append(sb, "C1"); }
+    if ((value & RflagsBits.C2) !== 0) { sb = append(sb, "C2"); }
+    if ((value & RflagsBits.C3) !== 0) { sb = append(sb, "C3"); }
+    if ((value & RflagsBits.UIF) !== 0) { sb = append(sb, "UIF"); }
     if (sb.length === 0)
         return "<empty>";
     return sb;

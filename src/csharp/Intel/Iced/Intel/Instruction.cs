@@ -241,6 +241,17 @@ namespace Iced.Intel {
 		}
 
 		/// <summary>
+		/// Checks if it's an invalid instruction (<see cref="Code"/> == <see cref="Code.INVALID"/>)
+		/// </summary>
+		public readonly bool IsInvalid {
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get {
+				Static.Assert((int)Code.INVALID == 0 ? 0 : -1);
+				return (codeFlags & (uint)CodeFlags.CodeMask) == 0;
+			}
+		}
+
+		/// <summary>
 		/// Instruction code, see also <see cref="Mnemonic"/>
 		/// </summary>
 		public Code Code {
@@ -1101,6 +1112,11 @@ namespace Iced.Intel {
 			get => (codeFlags & ((uint)CodeFlags.OpMaskMask << (int)CodeFlags.OpMaskShift)) != 0;
 		}
 
+		internal readonly bool HasOpMask_or_ZeroingMasking {
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => (codeFlags & (((uint)CodeFlags.OpMaskMask << (int)CodeFlags.OpMaskShift) | (uint)CodeFlags.ZeroingMasking)) != 0;
+		}
+
 		/// <summary>
 		/// <see langword="true"/> if zeroing-masking, <see langword="false"/> if merging-masking.
 		/// Only used by most EVEX encoded instructions that use opmask registers.
@@ -1643,7 +1659,7 @@ namespace Iced.Intel {
 			new GasFormatter().Format(this, output);
 			return output.ToString();
 #elif FAST_FMT
-			var output = new System.Text.StringBuilder();
+			var output = new FastStringOutput();
 			new FastFormatter().Format(this, output);
 			return output.ToString();
 #else

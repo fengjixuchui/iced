@@ -320,10 +320,10 @@ namespace Iced.Intel.IntelFormatterInternal {
 		}
 	}
 
-	sealed class SimpleInstrInfo_YA : InstrInfo {
+	sealed class SimpleInstrInfo_StringIg1 : InstrInfo {
 		readonly FormatterString mnemonic;
 
-		public SimpleInstrInfo_YA(string mnemonic) => this.mnemonic = new FormatterString(mnemonic);
+		public SimpleInstrInfo_StringIg1(string mnemonic) => this.mnemonic = new FormatterString(mnemonic);
 
 		public override void GetOpInfo(FormatterOptions options, in Instruction instruction, out InstrOpInfo info) {
 			info = default;
@@ -333,24 +333,10 @@ namespace Iced.Intel.IntelFormatterInternal {
 		}
 	}
 
-	sealed class SimpleInstrInfo_AX : InstrInfo {
+	sealed class SimpleInstrInfo_StringIg0 : InstrInfo {
 		readonly FormatterString mnemonic;
 
-		public SimpleInstrInfo_AX(string mnemonic) => this.mnemonic = new FormatterString(mnemonic);
-
-		public override void GetOpInfo(FormatterOptions options, in Instruction instruction, out InstrOpInfo info) {
-			info = default;
-			info.Mnemonic = mnemonic;
-			info.OpCount = 1;
-			info.Op0Kind = (InstrOpKind)instruction.Op1Kind;
-			info.Op0Index = info.Op1Index;
-		}
-	}
-
-	sealed class SimpleInstrInfo_AY : InstrInfo {
-		readonly FormatterString mnemonic;
-
-		public SimpleInstrInfo_AY(string mnemonic) => this.mnemonic = new FormatterString(mnemonic);
+		public SimpleInstrInfo_StringIg0(string mnemonic) => this.mnemonic = new FormatterString(mnemonic);
 
 		public override void GetOpInfo(FormatterOptions options, in Instruction instruction, out InstrOpInfo info) {
 			info = default;
@@ -443,12 +429,9 @@ namespace Iced.Intel.IntelFormatterInternal {
 
 	sealed class SimpleInstrInfo_maskmovq : InstrInfo {
 		readonly FormatterString mnemonic;
-		readonly InstrOpInfoFlags flags;
 
-		public SimpleInstrInfo_maskmovq(string mnemonic, InstrOpInfoFlags flags) {
+		public SimpleInstrInfo_maskmovq(string mnemonic) =>
 			this.mnemonic = new FormatterString(mnemonic);
-			this.flags = flags | InstrOpInfoFlags.IgnoreSegmentPrefix;
-		}
 
 		public override void GetOpInfo(FormatterOptions options, in Instruction instruction, out InstrOpInfo info) {
 			Debug.Assert(instruction.OpCount == 3);
@@ -461,7 +444,7 @@ namespace Iced.Intel.IntelFormatterInternal {
 				CodeSize.Code64 => OpKind.MemorySegRDI,
 				_ => throw new InvalidOperationException(),
 			};
-			var flags = this.flags;
+			var flags = InstrOpInfoFlags.IgnoreSegmentPrefix;
 			if (opKind != shortFormOpKind) {
 				if (opKind == OpKind.MemorySegDI)
 					flags |= InstrOpInfoFlags.AddrSize16;
@@ -689,36 +672,15 @@ namespace Iced.Intel.IntelFormatterInternal {
 		}
 	}
 
-	sealed class SimpleInstrInfo_k1 : InstrInfo {
+	sealed class SimpleInstrInfo_opmask_op : InstrInfo {
 		readonly FormatterString mnemonic;
 
-		public SimpleInstrInfo_k1(string mnemonic) =>
+		public SimpleInstrInfo_opmask_op(string mnemonic) =>
 			this.mnemonic = new FormatterString(mnemonic);
 
 		public override void GetOpInfo(FormatterOptions options, in Instruction instruction, out InstrOpInfo info) {
+			Debug.Assert(instruction.OpCount <= 2);
 			info = new InstrOpInfo(mnemonic, instruction, InstrOpInfoFlags.None);
-			Debug.Assert(instruction.OpCount == 1);
-			var kreg = instruction.OpMask;
-			if (kreg != Register.None) {
-				info.OpCount++;
-				info.Op1Kind = InstrOpKind.Register;
-				Static.Assert(InstrOpInfo.TEST_RegisterBits == 8 ? 0 : -1);
-				info.Op1Register = (byte)kreg;
-				info.Op1Index = OpAccess_Read;
-				info.Flags |= InstrOpInfoFlags.IgnoreOpMask;
-			}
-		}
-	}
-
-	sealed class SimpleInstrInfo_k2 : InstrInfo {
-		readonly FormatterString mnemonic;
-
-		public SimpleInstrInfo_k2(string mnemonic) =>
-			this.mnemonic = new FormatterString(mnemonic);
-
-		public override void GetOpInfo(FormatterOptions options, in Instruction instruction, out InstrOpInfo info) {
-			info = new InstrOpInfo(mnemonic, instruction, InstrOpInfoFlags.None);
-			Debug.Assert(instruction.OpCount == 2);
 			var kreg = instruction.OpMask;
 			if (kreg != Register.None) {
 				info.OpCount++;
@@ -738,8 +700,6 @@ namespace Iced.Intel.IntelFormatterInternal {
 		readonly FormatterString mnemonic;
 		readonly InstrOpInfoFlags flags;
 
-		public SimpleInstrInfo_bnd(string mnemonic) : this(mnemonic, InstrOpInfoFlags.None) { }
-
 		public SimpleInstrInfo_bnd(string mnemonic, InstrOpInfoFlags flags) {
 			this.mnemonic = new FormatterString(mnemonic);
 			this.flags = flags;
@@ -753,15 +713,18 @@ namespace Iced.Intel.IntelFormatterInternal {
 		}
 	}
 
-	sealed class SimpleInstrInfo_fpu_ST_STi : InstrInfo {
+	sealed class SimpleInstrInfo_ST_STi : InstrInfo {
 		readonly FormatterString mnemonic;
+		readonly bool pseudoOp;
 
-		public SimpleInstrInfo_fpu_ST_STi(string mnemonic) =>
+		public SimpleInstrInfo_ST_STi(string mnemonic, bool pseudoOp) {
 			this.mnemonic = new FormatterString(mnemonic);
+			this.pseudoOp = pseudoOp;
+		}
 
 		public override void GetOpInfo(FormatterOptions options, in Instruction instruction, out InstrOpInfo info) {
 			const InstrOpInfoFlags flags = 0;
-			if (options.UsePseudoOps && (instruction.Op0Register == Register.ST1 || instruction.Op1Register == Register.ST1)) {
+			if (pseudoOp && options.UsePseudoOps && (instruction.Op0Register == Register.ST1 || instruction.Op1Register == Register.ST1)) {
 				info = default;
 				info.Mnemonic = mnemonic;
 			}
@@ -774,15 +737,18 @@ namespace Iced.Intel.IntelFormatterInternal {
 		}
 	}
 
-	sealed class SimpleInstrInfo_fpu_STi_ST : InstrInfo {
+	sealed class SimpleInstrInfo_STi_ST : InstrInfo {
 		readonly FormatterString mnemonic;
+		readonly bool pseudoOp;
 
-		public SimpleInstrInfo_fpu_STi_ST(string mnemonic) =>
+		public SimpleInstrInfo_STi_ST(string mnemonic, bool pseudoOp) {
 			this.mnemonic = new FormatterString(mnemonic);
+			this.pseudoOp = pseudoOp;
+		}
 
 		public override void GetOpInfo(FormatterOptions options, in Instruction instruction, out InstrOpInfo info) {
 			const InstrOpInfoFlags flags = 0;
-			if (options.UsePseudoOps && (instruction.Op0Register == Register.ST1 || instruction.Op1Register == Register.ST1)) {
+			if (pseudoOp && options.UsePseudoOps && (instruction.Op0Register == Register.ST1 || instruction.Op1Register == Register.ST1)) {
 				info = default;
 				info.Mnemonic = mnemonic;
 			}
@@ -792,34 +758,6 @@ namespace Iced.Intel.IntelFormatterInternal {
 				Static.Assert(InstrOpInfo.TEST_RegisterBits == 8 ? 0 : -1);
 				info.Op1Register = (byte)Registers.Register_ST;
 			}
-		}
-	}
-
-	sealed class SimpleInstrInfo_ST_STi : InstrInfo {
-		readonly FormatterString mnemonic;
-
-		public SimpleInstrInfo_ST_STi(string mnemonic) =>
-			this.mnemonic = new FormatterString(mnemonic);
-
-		public override void GetOpInfo(FormatterOptions options, in Instruction instruction, out InstrOpInfo info) {
-			info = new InstrOpInfo(mnemonic, instruction, InstrOpInfoFlags.None);
-			Debug.Assert(info.Op0Register == (int)Register.ST0);
-			Static.Assert(InstrOpInfo.TEST_RegisterBits == 8 ? 0 : -1);
-			info.Op0Register = (byte)Registers.Register_ST;
-		}
-	}
-
-	sealed class SimpleInstrInfo_STi_ST : InstrInfo {
-		readonly FormatterString mnemonic;
-
-		public SimpleInstrInfo_STi_ST(string mnemonic) =>
-			this.mnemonic = new FormatterString(mnemonic);
-
-		public override void GetOpInfo(FormatterOptions options, in Instruction instruction, out InstrOpInfo info) {
-			info = new InstrOpInfo(mnemonic, instruction, InstrOpInfoFlags.None);
-			Debug.Assert(info.Op1Register == (int)Register.ST0);
-			Static.Assert(InstrOpInfo.TEST_RegisterBits == 8 ? 0 : -1);
-			info.Op1Register = (byte)Registers.Register_ST;
 		}
 	}
 
@@ -923,6 +861,10 @@ namespace Iced.Intel.IntelFormatterInternal {
 			if (Register.EAX <= (Register)info.Op1Register && (Register)info.Op1Register <= Register.R15) {
 				Static.Assert(InstrOpInfo.TEST_RegisterBits == 8 ? 0 : -1);
 				info.Op1Register = (byte)((((Register)info.Op1Register - Register.EAX) & 0xF) + Register.AX);
+			}
+			if (Register.EAX <= (Register)info.Op2Register && (Register)info.Op2Register <= Register.R15) {
+				Static.Assert(InstrOpInfo.TEST_RegisterBits == 8 ? 0 : -1);
+				info.Op2Register = (byte)((((Register)info.Op2Register - Register.EAX) & 0xF) + Register.AX);
 			}
 		}
 	}
@@ -1050,17 +992,15 @@ namespace Iced.Intel.IntelFormatterInternal {
 	sealed class SimpleInstrInfo_bcst : InstrInfo {
 		readonly FormatterString mnemonic;
 		readonly InstrOpInfoFlags flagsNoBroadcast;
-		readonly InstrOpInfoFlags flagsBroadcast;
 
-		public SimpleInstrInfo_bcst(string mnemonic, InstrOpInfoFlags flagsNoBroadcast, InstrOpInfoFlags flagsBroadcast) {
+		public SimpleInstrInfo_bcst(string mnemonic, InstrOpInfoFlags flagsNoBroadcast) {
 			this.mnemonic = new FormatterString(mnemonic);
 			this.flagsNoBroadcast = flagsNoBroadcast;
-			this.flagsBroadcast = flagsBroadcast;
 		}
 
 		public override void GetOpInfo(FormatterOptions options, in Instruction instruction, out InstrOpInfo info) {
 			var memInfo = MemorySizes.AllMemorySizes[(int)instruction.MemorySize];
-			var flags = !memInfo.bcstTo.IsDefault ? flagsBroadcast : flagsNoBroadcast;
+			var flags = memInfo.bcstTo.Length != 0 ? InstrOpInfoFlags.None : flagsNoBroadcast;
 			info = new InstrOpInfo(mnemonic, instruction, flags);
 		}
 	}

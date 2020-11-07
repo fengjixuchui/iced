@@ -23,6 +23,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #if ENCODER && OPCODE_INFO
 using System;
+using System.Diagnostics;
 using System.Text;
 
 namespace Iced.Intel.EncoderInternal {
@@ -43,11 +44,13 @@ namespace Iced.Intel.EncoderInternal {
 		readonly OpCodeInfo opCode;
 		readonly StringBuilder sb;
 		readonly LKind lkind;
+		readonly bool hasModrmInfo;
 
-		public OpCodeFormatter(OpCodeInfo opCode, StringBuilder sb, LKind lkind) {
+		public OpCodeFormatter(OpCodeInfo opCode, StringBuilder sb, LKind lkind, bool hasModrmInfo) {
 			this.opCode = opCode;
 			this.sb = sb;
 			this.lkind = lkind;
+			this.hasModrmInfo = hasModrmInfo;
 		}
 
 		public string Format() {
@@ -93,17 +96,16 @@ namespace Iced.Intel.EncoderInternal {
 
 		void AppendHexByte(byte value) => sb.Append(value.ToString("X2"));
 
-		void AppendOpCode(uint value, bool sep) {
-			if (value <= byte.MaxValue)
+		void AppendOpCode(uint value, int valueLen, bool sep) {
+			if (valueLen == 1)
 				AppendHexByte((byte)value);
-			else if (value <= ushort.MaxValue) {
+			else {
+				Debug.Assert(valueLen == 2);
 				AppendHexByte((byte)(value >> 8));
 				if (sep)
 					sb.Append(' ');
 				AppendHexByte((byte)value);
 			}
-			else
-				throw new InvalidOperationException();
 		}
 
 		void AppendTable(bool sep) {
@@ -112,15 +114,15 @@ namespace Iced.Intel.EncoderInternal {
 				break;
 
 			case OpCodeTableKind.T0F:
-				AppendOpCode(0x0F, sep);
+				AppendOpCode(0x0F, 1, sep);
 				break;
 
 			case OpCodeTableKind.T0F38:
-				AppendOpCode(0x0F38, sep);
+				AppendOpCode(0x0F38, 2, sep);
 				break;
 
 			case OpCodeTableKind.T0F3A:
-				AppendOpCode(0x0F3A, sep);
+				AppendOpCode(0x0F3A, 2, sep);
 				break;
 
 			case OpCodeTableKind.XOP8:
@@ -260,36 +262,31 @@ namespace Iced.Intel.EncoderInternal {
 			isRegOnly = true;
 			rrr = opCode.GroupIndex;
 			bbb = opCode.RmGroupIndex;
-			bool hasModrmInfo = bbb >= 0;
-			switch (opCode.Code) {
-#if !NO_VEX
-			case Code.VEX_Ldtilecfg_m512:
-			case Code.VEX_Sttilecfg_m512:
-				hasModrmInfo = true;
-				break;
-#endif
-			default:
-				break;
-			}
+			if (!hasModrmInfo)
+				return false;
+
 			int opCount = opCode.OpCount;
 			for (int i = 0; i < opCount; i++) {
 				switch (opCode.GetOpKind(i)) {
+				case OpCodeOperandKind.mem_offs:
 				case OpCodeOperandKind.mem:
+				case OpCodeOperandKind.mem_mpx:
+				case OpCodeOperandKind.mem_mib:
 					isRegOnly = false;
 					break;
+				case OpCodeOperandKind.mem_vsib32x:
+				case OpCodeOperandKind.mem_vsib64x:
+				case OpCodeOperandKind.mem_vsib32y:
+				case OpCodeOperandKind.mem_vsib64y:
+				case OpCodeOperandKind.mem_vsib32z:
+				case OpCodeOperandKind.mem_vsib64z:
 				case OpCodeOperandKind.sibmem:
-					hasModrmInfo = true;
 					isRegOnly = false;
 					bbb = 4;
 					break;
-				case OpCodeOperandKind.tmm_reg:
-				case OpCodeOperandKind.tmm_rm:
-				case OpCodeOperandKind.tmm_vvvv:
-					hasModrmInfo = true;
-					break;
 				}
 			}
-			return hasModrmInfo;
+			return true;
 		}
 
 		void AppendBits(string name, int bits, int numBits) {
@@ -413,6 +410,10 @@ namespace Iced.Intel.EncoderInternal {
 				sb.Append("a32 ");
 				break;
 
+			case 64:
+				sb.Append("a64 ");
+				break;
+
 			default:
 				throw new InvalidOperationException();
 			}
@@ -430,7 +431,7 @@ namespace Iced.Intel.EncoderInternal {
 				break;
 
 			case 64:
-				// REX.W must be immediately before the opcode and is handled below
+				// o64 (REX.W) must be immediately before the opcode and is handled below
 				break;
 
 			default:
@@ -459,15 +460,13 @@ namespace Iced.Intel.EncoderInternal {
 				throw new InvalidOperationException();
 			}
 
-			if (opCode.OperandSize == 64) {
-				// There's no '+' because Intel isn't consistent, some opcodes use it others don't
-				sb.Append("REX.W ");
-			}
+			if (opCode.OperandSize == 64)
+				sb.Append("o64 ");
 
 			AppendTable(true);
 			if (opCode.Table != OpCodeTableKind.Normal)
 				sb.Append(' ');
-			AppendOpCode(opCode.OpCode, true);
+			AppendOpCode(opCode.OpCode, opCode.OpCodeLength, true);
 			switch (GetOpCodeBitsOperand()) {
 			case OpCodeOperandKind.r8_opcode:
 				sb.Append("+rb");
@@ -503,10 +502,10 @@ namespace Iced.Intel.EncoderInternal {
 		string Format_3DNow() {
 			sb.Length = 0;
 
-			AppendOpCode(0x0F0F, true);
+			AppendOpCode(0x0F0F, 2, true);
 			sb.Append(" /r");
 			sb.Append(' ');
-			AppendOpCode(opCode.OpCode, true);
+			AppendOpCode(opCode.OpCode, opCode.OpCodeLength, true);
 
 			return sb.ToString();
 		}
@@ -567,7 +566,7 @@ namespace Iced.Intel.EncoderInternal {
 				sb.Append(opCode.W);
 			}
 			sb.Append(' ');
-			AppendOpCode(opCode.OpCode, true);
+			AppendOpCode(opCode.OpCode, opCode.OpCodeLength, true);
 			AppendRest();
 
 			return sb.ToString();

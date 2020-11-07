@@ -202,12 +202,30 @@ pub(super) struct OpIb {
 }
 impl Op for OpIb {
 	fn encode(&self, encoder: &mut Encoder, instruction: &Instruction, operand: u32) {
-		let op_imm_kind = instruction.op_kind(operand);
-		if !encoder.verify_op_kind(operand, self.op_kind, op_imm_kind) {
-			return;
+		match encoder.imm_size {
+			ImmSize::Size1 => {
+				if !encoder.verify_op_kind(operand, OpKind::Immediate8_2nd, instruction.op_kind(operand)) {
+					return;
+				}
+				encoder.imm_size = ImmSize::Size1_1;
+				encoder.immediate_hi = instruction.immediate8_2nd() as u32;
+			}
+			ImmSize::Size2 => {
+				if !encoder.verify_op_kind(operand, OpKind::Immediate8_2nd, instruction.op_kind(operand)) {
+					return;
+				}
+				encoder.imm_size = ImmSize::Size2_1;
+				encoder.immediate_hi = instruction.immediate8_2nd() as u32;
+			}
+			_ => {
+				let op_imm_kind = instruction.op_kind(operand);
+				if !encoder.verify_op_kind(operand, self.op_kind, op_imm_kind) {
+					return;
+				}
+				encoder.imm_size = ImmSize::Size1;
+				encoder.immediate = instruction.immediate8() as u32;
+			}
 		}
-		encoder.imm_size = ImmSize::Size1;
-		encoder.immediate = instruction.immediate8() as u32;
 	}
 
 	fn immediate_op_kind(&self) -> Option<OpKind> {
@@ -269,51 +287,17 @@ impl Op for OpIq {
 }
 
 #[allow(non_camel_case_types)]
-pub(super) struct OpIb21;
-impl Op for OpIb21 {
-	fn encode(&self, encoder: &mut Encoder, instruction: &Instruction, operand: u32) {
-		if !encoder.verify_op_kind(operand, OpKind::Immediate8_2nd, instruction.op_kind(operand)) {
-			return;
-		}
-		debug_assert_eq!(ImmSize::Size2, encoder.imm_size);
-		encoder.imm_size = ImmSize::Size2_1;
-		encoder.immediate_hi = instruction.immediate8_2nd() as u32;
-	}
-
-	fn immediate_op_kind(&self) -> Option<OpKind> {
-		Some(OpKind::Immediate8_2nd)
-	}
-}
-
-#[allow(non_camel_case_types)]
-pub(super) struct OpIb11;
-impl Op for OpIb11 {
-	fn encode(&self, encoder: &mut Encoder, instruction: &Instruction, operand: u32) {
-		if !encoder.verify_op_kind(operand, OpKind::Immediate8_2nd, instruction.op_kind(operand)) {
-			return;
-		}
-		debug_assert_eq!(ImmSize::Size1, encoder.imm_size);
-		encoder.imm_size = ImmSize::Size1_1;
-		encoder.immediate_hi = instruction.immediate8_2nd() as u32;
-	}
-
-	fn immediate_op_kind(&self) -> Option<OpKind> {
-		Some(OpKind::Immediate8_2nd)
-	}
-}
-
-#[allow(non_camel_case_types)]
-pub(super) struct OpI2;
-impl Op for OpI2 {
+pub(super) struct OpI4;
+impl Op for OpI4 {
 	fn encode(&self, encoder: &mut Encoder, instruction: &Instruction, operand: u32) {
 		let op_imm_kind = instruction.op_kind(operand);
 		if !encoder.verify_op_kind(operand, OpKind::Immediate8, op_imm_kind) {
 			return;
 		}
 		debug_assert_eq!(ImmSize::SizeIbReg, encoder.imm_size);
-		debug_assert_eq!(0, (encoder.immediate & 3));
-		if instruction.immediate8() > 3 {
-			encoder.set_error_message(format!("Operand {}: Immediate value must be 0-3, but value is 0x{:02X}", operand, instruction.immediate8()));
+		debug_assert_eq!(0, encoder.immediate & 0xF);
+		if instruction.immediate8() > 0xF {
+			encoder.set_error_message(format!("Operand {}: Immediate value must be 0-15, but value is 0x{:02X}", operand, instruction.immediate8()));
 			return;
 		}
 		encoder.imm_size = ImmSize::Size1;
@@ -537,12 +521,12 @@ impl Op for OpHx {
 
 #[cfg(any(not(feature = "no_vex"), not(feature = "no_evex")))]
 #[allow(non_camel_case_types)]
-pub(super) struct OpVMx {
+pub(super) struct OpVsib {
 	pub(super) vsib_index_reg_lo: Register,
 	pub(super) vsib_index_reg_hi: Register,
 }
 #[cfg(any(not(feature = "no_vex"), not(feature = "no_evex")))]
-impl Op for OpVMx {
+impl Op for OpVsib {
 	fn encode(&self, encoder: &mut Encoder, instruction: &Instruction, operand: u32) {
 		encoder.encoder_flags |= EncoderFlags::MUST_USE_SIB;
 		encoder.add_reg_or_mem_full(
@@ -560,12 +544,12 @@ impl Op for OpVMx {
 
 #[cfg(any(not(feature = "no_vex"), not(feature = "no_xop")))]
 #[allow(non_camel_case_types)]
-pub(super) struct OpIs4x {
+pub(super) struct OpIsX {
 	pub(super) reg_lo: Register,
 	pub(super) reg_hi: Register,
 }
 #[cfg(any(not(feature = "no_vex"), not(feature = "no_xop")))]
-impl Op for OpIs4x {
+impl Op for OpIsX {
 	fn encode(&self, encoder: &mut Encoder, instruction: &Instruction, operand: u32) {
 		if !encoder.verify_op_kind(operand, OpKind::Register, instruction.op_kind(operand)) {
 			return;

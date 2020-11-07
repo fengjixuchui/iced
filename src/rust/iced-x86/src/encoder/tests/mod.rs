@@ -784,6 +784,7 @@ fn test_op_code_info(tc: &OpCodeInfoTestCase) {
 		assert_eq!(tc.instruction_string, display);
 	}
 	assert_eq!(tc.instruction_string, info.to_string());
+	assert_eq!(tc.mnemonic, info.mnemonic());
 	assert_eq!(tc.encoding, info.encoding());
 	assert_eq!(tc.is_instruction, info.is_instruction());
 	assert_eq!(tc.mode16, info.mode16());
@@ -801,12 +802,15 @@ fn test_op_code_info(tc: &OpCodeInfoTestCase) {
 	assert_eq!(tc.is_wig, info.is_wig());
 	assert_eq!(tc.is_wig32, info.is_wig32());
 	assert_eq!(tc.tuple_type, info.tuple_type());
+	assert_eq!(tc.memory_size, info.memory_size());
+	assert_eq!(tc.broadcast_memory_size, info.broadcast_memory_size());
+	assert_eq!(tc.decoder_option, info.decoder_option());
 	assert_eq!(tc.can_broadcast, info.can_broadcast());
 	assert_eq!(tc.can_use_rounding_control, info.can_use_rounding_control());
 	assert_eq!(tc.can_suppress_all_exceptions, info.can_suppress_all_exceptions());
 	assert_eq!(tc.can_use_op_mask_register, info.can_use_op_mask_register());
-	assert_eq!(tc.require_non_zero_op_mask_register, info.require_non_zero_op_mask_register());
-	if tc.require_non_zero_op_mask_register {
+	assert_eq!(tc.require_op_mask_register, info.require_op_mask_register());
+	if tc.require_op_mask_register {
 		assert!(info.can_use_op_mask_register());
 		assert!(!info.can_use_zeroing_masking());
 	}
@@ -819,9 +823,70 @@ fn test_op_code_info(tc: &OpCodeInfoTestCase) {
 	assert_eq!(tc.can_use_bnd_prefix, info.can_use_bnd_prefix());
 	assert_eq!(tc.can_use_hint_taken_prefix, info.can_use_hint_taken_prefix());
 	assert_eq!(tc.can_use_notrack_prefix, info.can_use_notrack_prefix());
+	assert_eq!(tc.ignores_rounding_control, info.ignores_rounding_control());
+	assert_eq!(tc.amd_lock_reg_bit, info.amd_lock_reg_bit());
+	assert_eq!(tc.default_op_size64, info.default_op_size64());
+	assert_eq!(tc.force_op_size64, info.force_op_size64());
+	assert_eq!(tc.intel_force_op_size64, info.intel_force_op_size64());
+	assert_eq!(tc.cpl0 && !tc.cpl1 && !tc.cpl2 && !tc.cpl3, info.must_be_cpl0());
+	assert_eq!(tc.cpl0, info.cpl0());
+	assert_eq!(tc.cpl1, info.cpl1());
+	assert_eq!(tc.cpl2, info.cpl2());
+	assert_eq!(tc.cpl3, info.cpl3());
+	assert_eq!(tc.is_input_output, info.is_input_output());
+	assert_eq!(tc.is_nop, info.is_nop());
+	assert_eq!(tc.is_reserved_nop, info.is_reserved_nop());
+	assert_eq!(tc.is_serializing_intel, info.is_serializing_intel());
+	assert_eq!(tc.is_serializing_amd, info.is_serializing_amd());
+	assert_eq!(tc.may_require_cpl0, info.may_require_cpl0());
+	assert_eq!(tc.is_cet_tracked, info.is_cet_tracked());
+	assert_eq!(tc.is_non_temporal, info.is_non_temporal());
+	assert_eq!(tc.is_fpu_no_wait, info.is_fpu_no_wait());
+	assert_eq!(tc.ignores_mod_bits, info.ignores_mod_bits());
+	assert_eq!(tc.no66, info.no66());
+	assert_eq!(tc.nfx, info.nfx());
+	assert_eq!(tc.requires_unique_reg_nums, info.requires_unique_reg_nums());
+	assert_eq!(tc.is_privileged, info.is_privileged());
+	assert_eq!(tc.is_save_restore, info.is_save_restore());
+	assert_eq!(tc.is_stack_instruction, info.is_stack_instruction());
+	assert_eq!(tc.ignores_segment, info.ignores_segment());
+	assert_eq!(tc.is_op_mask_read_write, info.is_op_mask_read_write());
+	assert_eq!(tc.real_mode, info.real_mode());
+	assert_eq!(tc.protected_mode, info.protected_mode());
+	assert_eq!(tc.virtual8086_mode, info.virtual8086_mode());
+	assert_eq!(tc.compatibility_mode, info.compatibility_mode());
+	assert_eq!(tc.long_mode, info.long_mode());
+	assert_eq!(tc.use_outside_smm, info.use_outside_smm());
+	assert_eq!(tc.use_in_smm, info.use_in_smm());
+	assert_eq!(tc.use_outside_enclave_sgx, info.use_outside_enclave_sgx());
+	assert_eq!(tc.use_in_enclave_sgx1, info.use_in_enclave_sgx1());
+	assert_eq!(tc.use_in_enclave_sgx2, info.use_in_enclave_sgx2());
+	assert_eq!(tc.use_outside_vmx_op, info.use_outside_vmx_op());
+	assert_eq!(tc.use_in_vmx_root_op, info.use_in_vmx_root_op());
+	assert_eq!(tc.use_in_vmx_non_root_op, info.use_in_vmx_non_root_op());
+	assert_eq!(tc.use_outside_seam, info.use_outside_seam());
+	assert_eq!(tc.use_in_seam, info.use_in_seam());
+	assert_eq!(tc.tdx_non_root_gen_ud, info.tdx_non_root_gen_ud());
+	assert_eq!(tc.tdx_non_root_gen_ve, info.tdx_non_root_gen_ve());
+	assert_eq!(tc.tdx_non_root_may_gen_ex, info.tdx_non_root_may_gen_ex());
+	assert_eq!(tc.intel_vm_exit, info.intel_vm_exit());
+	assert_eq!(tc.intel_may_vm_exit, info.intel_may_vm_exit());
+	assert_eq!(tc.intel_smm_vm_exit, info.intel_smm_vm_exit());
+	assert_eq!(tc.amd_vm_exit, info.amd_vm_exit());
+	assert_eq!(tc.amd_may_vm_exit, info.amd_may_vm_exit());
+	assert_eq!(tc.tsx_abort, info.tsx_abort());
+	assert_eq!(tc.tsx_impl_abort, info.tsx_impl_abort());
+	assert_eq!(tc.tsx_may_abort, info.tsx_may_abort());
+	assert_eq!(tc.intel_decoder16, info.intel_decoder16());
+	assert_eq!(tc.intel_decoder32, info.intel_decoder32());
+	assert_eq!(tc.intel_decoder64, info.intel_decoder64());
+	assert_eq!(tc.amd_decoder16, info.amd_decoder16());
+	assert_eq!(tc.amd_decoder32, info.amd_decoder32());
+	assert_eq!(tc.amd_decoder64, info.amd_decoder64());
 	assert_eq!(tc.table, info.table());
 	assert_eq!(tc.mandatory_prefix, info.mandatory_prefix());
 	assert_eq!(tc.op_code, info.op_code());
+	assert_eq!(tc.op_code_len, info.op_code_len());
 	assert_eq!(tc.is_group, info.is_group());
 	assert_eq!(tc.group_index, info.group_index());
 	assert_eq!(tc.is_rm_group, info.is_rm_group());
@@ -837,6 +902,11 @@ fn test_op_code_info(tc: &OpCodeInfoTestCase) {
 	assert_eq!(tc.op2_kind, info.op_kind(2));
 	assert_eq!(tc.op3_kind, info.op_kind(3));
 	assert_eq!(tc.op4_kind, info.op_kind(4));
+	let op_kinds = info.op_kinds();
+	assert_eq!(tc.op_count as usize, op_kinds.len());
+	for (i, &op_kind) in op_kinds.iter().enumerate() {
+		assert_eq!(info.op_kind(i as u32), op_kind);
+	}
 	const_assert_eq!(5, IcedConstants::MAX_OP_COUNT);
 	for i in tc.op_count..IcedConstants::MAX_OP_COUNT as u32 {
 		assert_eq!(OpCodeOperandKind::None, info.op_kind(i));

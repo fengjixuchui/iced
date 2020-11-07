@@ -28,12 +28,12 @@ namespace Generator.Formatters.Rust {
 	sealed class RustFormatterTableSerializer : FormatterTableSerializer {
 		readonly string filename;
 
-		public RustFormatterTableSerializer(string filename, object[][] infos, EnumType ctorKindEnum)
-			: base(infos, RustIdentifierConverter.Create(), ctorKindEnum["Previous"]) {
+		public RustFormatterTableSerializer(string filename, FmtInstructionDef[] defs, EnumType ctorKindEnum)
+			: base(defs, RustIdentifierConverter.Create(), ctorKindEnum["Previous"]) {
 			this.filename = filename;
 		}
 
-		public override string GetFilename(GeneratorContext generatorContext) => filename;
+		public override string GetFilename(GenTypes genTypes) => filename;
 
 		public override void Serialize(GenTypes genTypes, FileWriter writer, StringsTable stringsTable) {
 			writer.WriteFileHeader();

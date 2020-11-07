@@ -186,7 +186,7 @@ namespace Iced.Intel.DecoderInternal {
 		RegIb,
 		RegIb3,
 		RegIz2,
-		ReservedNop,
+		Reservednop,
 		RIb,
 		RIbIb,
 		Rv,
@@ -232,6 +232,8 @@ namespace Iced.Intel.DecoderInternal {
 		Options1632_2,
 		M_Sw,
 		Sw_M,
+		Rq,
+		Gd_Rd,
 	}
 }
 #endif

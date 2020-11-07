@@ -260,6 +260,17 @@ impl Instruction {
 			| (((new_value as u32) & OpKindFlags::CODE_SIZE_MASK) << OpKindFlags::CODE_SIZE_SHIFT);
 	}
 
+	/// Checks if it's an invalid instruction ([`code()`] == [`Code::INVALID`])
+	///
+	/// [`code()`]: #method.code
+	/// [`Code::INVALID`]: enum.Code.html#variant.INVALID
+	#[cfg_attr(has_must_use, must_use)]
+	#[inline]
+	pub fn is_invalid(&self) -> bool {
+		const_assert_eq!(0, Code::INVALID as u32);
+		(self.code_flags & CodeFlags::CODE_MASK) == 0
+	}
+
 	/// Gets the instruction code, see also [`mnemonic()`]
 	///
 	/// [`mnemonic()`]: #method.mnemonic
@@ -2338,7 +2349,7 @@ impl Instruction {
 	///
 	/// # Call-back function args
 	///
-	/// * Arg 1: `register`: Register (GPR8, GPR16, GPR32, GPR64, XMM, YMM, ZMM, seg). If it's a segment register, the call-back function should return the segment's base value, not the segment register value.
+	/// * Arg 1: `register`: Register (GPR8, GPR16, GPR32, GPR64, XMM, YMM, ZMM, seg). If it's a segment register, the call-back function should return the segment's base address, not the segment's register value.
 	/// * Arg 2: `element_index`: Only used if it's a vsib memory operand. This is the element index of the vector index register.
 	/// * Arg 3: `element_size`: Only used if it's a vsib memory operand. Size in bytes of elements in vector index register (4 or 8).
 	///
@@ -2522,7 +2533,8 @@ impl Instruction {
 						offset = offset.wrapping_add(v1)
 					}
 				}
-				if index_reg != Register::None {
+				let code = self.code();
+				if index_reg != Register::None && !code.ignores_index() && !code.is_tile_stride_index() {
 					if let Some(is_vsib64) = self.vsib() {
 						if is_vsib64 {
 							let v1 = match get_register_value(index_reg, element_index, 8) {
@@ -2535,10 +2547,10 @@ impl Instruction {
 								Some(v) => v,
 								None => return None,
 							};
-							offset = offset.wrapping_add((v1 as u32 as u64) << super::instruction_internal::internal_get_memory_index_scale(self));
+							offset = offset.wrapping_add((v1 as i32 as u64) << super::instruction_internal::internal_get_memory_index_scale(self));
 						}
 					} else {
-						let v1 = match get_register_value(index_reg, element_index, 0) {
+						let v1 = match get_register_value(index_reg, 0, 0) {
 							Some(v) => v,
 							None => return None,
 						};
@@ -2546,9 +2558,13 @@ impl Instruction {
 					}
 				}
 				offset &= offset_mask;
-				match get_register_value(self.memory_segment(), 0, 0) {
-					Some(v) => v.wrapping_add(offset),
-					None => return None,
+				if !code.ignores_segment() {
+					match get_register_value(self.memory_segment(), 0, 0) {
+						Some(v) => v.wrapping_add(offset),
+						None => return None,
+					}
+				} else {
+					offset
 				}
 			}
 		})
@@ -2570,7 +2586,7 @@ impl Instruction {
 	///
 	/// # Call-back function args
 	///
-	/// * Arg 1: `register`: Register (GPR8, GPR16, GPR32, GPR64, XMM, YMM, ZMM, seg). If it's a segment register, the call-back function should return the segment's base value, not the segment register value.
+	/// * Arg 1: `register`: Register (GPR8, GPR16, GPR32, GPR64, XMM, YMM, ZMM, seg). If it's a segment register, the call-back function should return the segment's base address, not the segment's register value.
 	/// * Arg 2: `element_index`: Only used if it's a vsib memory operand. This is the element index of the vector index register.
 	/// * Arg 3: `element_size`: Only used if it's a vsib memory operand. Size in bytes of elements in vector index register (4 or 8).
 	///
@@ -2605,6 +2621,53 @@ impl Instruction {
 	}
 }
 
+/// Contains the FPU `TOP` increment, whether it's conditional and whether the instruction writes to `TOP`
+#[cfg(feature = "instr_info")]
+#[derive(Debug, Default, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct FpuStackIncrementInfo {
+	increment: i32,
+	conditional: bool,
+	writes_top: bool,
+}
+
+#[cfg(feature = "instr_info")]
+impl FpuStackIncrementInfo {
+	/// Constructor
+	#[cfg_attr(has_must_use, must_use)]
+	#[inline]
+	pub fn new(increment: i32, conditional: bool, writes_top: bool) -> Self {
+		Self { increment, conditional, writes_top }
+	}
+
+	/// Used if [`writes_top()`] is `true`:
+	///
+	/// Value added to `TOP`.
+	///
+	/// This is negative if it pushes one or more values and positive if it pops one or more values
+	/// and `0` if it writes to `TOP` (eg. `FLDENV`, etc) without pushing/popping anything.
+	///
+	/// [`writes_top()`]: #method.writes_top
+	#[cfg_attr(has_must_use, must_use)]
+	#[inline]
+	pub fn increment(&self) -> i32 {
+		self.increment
+	}
+
+	/// `true` if it's a conditional push/pop (eg. `FPTAN` or `FSINCOS`)
+	#[cfg_attr(has_must_use, must_use)]
+	#[inline]
+	pub fn conditional(&self) -> bool {
+		self.conditional
+	}
+
+	/// `true` if `TOP` is written (it's a conditional/unconditional push/pop, `FNSAVE`, `FLDENV`, etc)
+	#[cfg_attr(has_must_use, must_use)]
+	#[inline]
+	pub fn writes_top(&self) -> bool {
+		self.writes_top
+	}
+}
+
 #[cfg(feature = "instr_info")]
 impl Instruction {
 	/// Gets the number of bytes added to `SP`/`ESP`/`RSP` or 0 if it's not an instruction that pushes or pops data. This method assumes
@@ -2626,7 +2689,40 @@ impl Instruction {
 	#[cfg_attr(has_must_use, must_use)]
 	#[cfg_attr(feature = "cargo-clippy", allow(clippy::missing_inline_in_public_items))]
 	pub fn stack_pointer_increment(&self) -> i32 {
+		#[cfg_attr(feature = "cargo-fmt", rustfmt::skip)]
+		#[cfg_attr(feature = "cargo-clippy", allow(clippy::match_single_binding))]
 		match self.code() {
+			// GENERATOR-BEGIN: StackPointerIncrementTable
+			// ⚠️This was generated by GENERATOR!🦹‍♂️
+			Code::Pushad => -32,
+			Code::Pushaw
+			| Code::Call_m1664 => -16,
+			Code::Push_r64
+			| Code::Pushq_imm32
+			| Code::Pushq_imm8
+			| Code::Call_ptr1632
+			| Code::Pushfq
+			| Code::Call_rel32_64
+			| Code::Call_rm64
+			| Code::Call_m1632
+			| Code::Push_rm64
+			| Code::Pushq_FS
+			| Code::Pushq_GS => -8,
+			Code::Pushd_ES
+			| Code::Pushd_CS
+			| Code::Pushd_SS
+			| Code::Pushd_DS
+			| Code::Push_r32
+			| Code::Pushd_imm32
+			| Code::Pushd_imm8
+			| Code::Call_ptr1616
+			| Code::Pushfd
+			| Code::Call_rel32_32
+			| Code::Call_rm32
+			| Code::Call_m1616
+			| Code::Push_rm32
+			| Code::Pushd_FS
+			| Code::Pushd_GS => -4,
 			Code::Pushw_ES
 			| Code::Pushw_CS
 			| Code::Pushw_SS
@@ -2635,23 +2731,11 @@ impl Instruction {
 			| Code::Push_imm16
 			| Code::Pushw_imm8
 			| Code::Pushfw
+			| Code::Call_rel16
+			| Code::Call_rm16
 			| Code::Push_rm16
 			| Code::Pushw_FS
 			| Code::Pushw_GS => -2,
-			Code::Pushd_ES
-			| Code::Pushd_CS
-			| Code::Pushd_SS
-			| Code::Pushd_DS
-			| Code::Push_r32
-			| Code::Pushd_imm32
-			| Code::Pushd_imm8
-			| Code::Pushfd
-			| Code::Push_rm32
-			| Code::Pushd_FS
-			| Code::Pushd_GS => -4,
-			Code::Push_r64 | Code::Pushq_imm32 | Code::Pushq_imm8 | Code::Pushfq | Code::Push_rm64 | Code::Pushq_FS | Code::Pushq_GS => -8,
-			Code::Pushaw => -2 * 8,
-			Code::Pushad => -4 * 8,
 			Code::Popw_ES
 			| Code::Popw_CS
 			| Code::Popw_SS
@@ -2659,54 +2743,152 @@ impl Instruction {
 			| Code::Pop_r16
 			| Code::Pop_rm16
 			| Code::Popfw
+			| Code::Retnw
 			| Code::Popw_FS
 			| Code::Popw_GS => 2,
-			Code::Popd_ES | Code::Popd_SS | Code::Popd_DS | Code::Pop_r32 | Code::Pop_rm32 | Code::Popfd | Code::Popd_FS | Code::Popd_GS => 4,
-			Code::Pop_r64 | Code::Pop_rm64 | Code::Popfq | Code::Popq_FS | Code::Popq_GS => 8,
-			Code::Popaw => 2 * 8,
-			Code::Popad => 4 * 8,
-			Code::Call_ptr1616 | Code::Call_m1616 => -(2 + 2),
-			Code::Call_ptr1632 | Code::Call_m1632 => -(4 + 4),
-			Code::Call_m1664 => -(8 + 8),
-			Code::Call_rel16 | Code::Call_rm16 => -2,
-			Code::Call_rel32_32 | Code::Call_rm32 => -4,
-			Code::Call_rel32_64 | Code::Call_rm64 => -8,
-			Code::Retnw_imm16 => 2 + self.immediate16() as i32,
-			Code::Retnd_imm16 => 4 + self.immediate16() as i32,
-			Code::Retnq_imm16 => 8 + self.immediate16() as i32,
-			Code::Retnw => 2,
-			Code::Retnd => 4,
-			Code::Retnq => 8,
-			Code::Retfw_imm16 => 2 + 2 + self.immediate16() as i32,
-			Code::Retfd_imm16 => 4 + 4 + self.immediate16() as i32,
-			Code::Retfq_imm16 => 8 + 8 + self.immediate16() as i32,
-			Code::Retfw => 2 + 2,
-			Code::Retfd => 4 + 4,
-			Code::Retfq => 8 + 8,
-			Code::Iretw => {
-				if self.code_size() == CodeSize::Code64 {
-					2 * 5
-				} else {
-					2 * 3
-				}
-			}
-			Code::Iretd => {
-				if self.code_size() == CodeSize::Code64 {
-					4 * 5
-				} else {
-					4 * 3
-				}
-			}
-			Code::Iretq => 8 * 5,
+			Code::Popd_ES
+			| Code::Popd_SS
+			| Code::Popd_DS
+			| Code::Pop_r32
+			| Code::Pop_rm32
+			| Code::Popfd
+			| Code::Retnd
+			| Code::Retfw
+			| Code::Popd_FS
+			| Code::Popd_GS => 4,
+			Code::Pop_r64
+			| Code::Pop_rm64
+			| Code::Popfq
+			| Code::Retnq
+			| Code::Retfd
+			| Code::Popq_FS
+			| Code::Popq_GS => 8,
+			Code::Popaw
+			| Code::Retfq => 16,
+			Code::Uiret => 24,
+			Code::Popad => 32,
+			Code::Iretq => 40,
 			Code::Enterw_imm16_imm8 => -(2 + (self.immediate8_2nd() as i32 & 0x1F) * 2 + self.immediate16() as i32),
 			Code::Enterd_imm16_imm8 => -(4 + (self.immediate8_2nd() as i32 & 0x1F) * 4 + self.immediate16() as i32),
 			Code::Enterq_imm16_imm8 => -(8 + (self.immediate8_2nd() as i32 & 0x1F) * 8 + self.immediate16() as i32),
-			Code::Leavew | Code::Leaved | Code::Leaveq => 0,
+			Code::Iretw => if self.code_size() == CodeSize::Code64 { 2 * 5 } else { 2 * 3 },
+			Code::Iretd => if self.code_size() == CodeSize::Code64 { 4 * 5 } else { 4 * 3 },
+			Code::Retnw_imm16 => 2 + self.immediate16() as i32,
+			Code::Retnd_imm16
+			| Code::Retfw_imm16 => 4 + self.immediate16() as i32,
+			Code::Retnq_imm16
+			| Code::Retfd_imm16 => 8 + self.immediate16() as i32,
+			Code::Retfq_imm16 => 16 + self.immediate16() as i32,
+			// GENERATOR-END: StackPointerIncrementTable
 			_ => 0,
 		}
 	}
 
-	/// Instruction encoding, eg. legacy, VEX, EVEX, ...
+	/// Gets the FPU status word's `TOP` increment and whether it's a conditional or unconditional push/pop
+	/// and whether `TOP` is written.
+	///
+	/// # Examples
+	///
+	/// ```
+	/// use iced_x86::*;
+	///
+	/// // ficomp dword ptr [rax]
+	/// let bytes = b"\xDA\x18";
+	/// let mut decoder = Decoder::new(64, bytes, DecoderOptions::NONE);
+	/// let instr = decoder.decode();
+	///
+	/// let info = instr.fpu_stack_increment_info();
+	/// // It pops the stack once
+	/// assert_eq!(1, info.increment());
+	/// assert!(!info.conditional());
+	/// assert!(info.writes_top());
+	/// ```
+	#[cfg_attr(has_must_use, must_use)]
+	#[cfg_attr(feature = "cargo-clippy", allow(clippy::missing_inline_in_public_items))]
+	pub fn fpu_stack_increment_info(&self) -> FpuStackIncrementInfo {
+		#[cfg_attr(feature = "cargo-fmt", rustfmt::skip)]
+		#[cfg_attr(feature = "cargo-clippy", allow(clippy::match_single_binding))]
+		match self.code() {
+			// GENERATOR-BEGIN: FpuStackIncrementInfoTable
+			// ⚠️This was generated by GENERATOR!🦹‍♂️
+			Code::Fld_m32fp
+			| Code::Fld_sti
+			| Code::Fld1
+			| Code::Fldl2t
+			| Code::Fldl2e
+			| Code::Fldpi
+			| Code::Fldlg2
+			| Code::Fldln2
+			| Code::Fldz
+			| Code::Fxtract
+			| Code::Fdecstp
+			| Code::Fild_m32int
+			| Code::Fld_m80fp
+			| Code::Fld_m64fp
+			| Code::Fild_m16int
+			| Code::Fbld_m80bcd
+			| Code::Fild_m64int
+			=> FpuStackIncrementInfo { increment: -1, conditional: false, writes_top: true },
+			Code::Fptan
+			| Code::Fsincos
+			=> FpuStackIncrementInfo { increment: -1, conditional: true, writes_top: true },
+			Code::Fldenv_m14byte
+			| Code::Fldenv_m28byte
+			| Code::Fninit
+			| Code::Finit
+			| Code::Frstor_m94byte
+			| Code::Frstor_m108byte
+			| Code::Fnsave_m94byte
+			| Code::Fsave_m94byte
+			| Code::Fnsave_m108byte
+			| Code::Fsave_m108byte
+			=> FpuStackIncrementInfo { increment: 0, conditional: false, writes_top: true },
+			Code::Fcomp_m32fp
+			| Code::Fcomp_st0_sti
+			| Code::Fstp_m32fp
+			| Code::Fstpnce_sti
+			| Code::Fyl2x
+			| Code::Fpatan
+			| Code::Fincstp
+			| Code::Fyl2xp1
+			| Code::Ficomp_m32int
+			| Code::Fisttp_m32int
+			| Code::Fistp_m32int
+			| Code::Fstp_m80fp
+			| Code::Fcomp_m64fp
+			| Code::Fcomp_st0_sti_DCD8
+			| Code::Fisttp_m64int
+			| Code::Fstp_m64fp
+			| Code::Fstp_sti
+			| Code::Fucomp_st0_sti
+			| Code::Ficomp_m16int
+			| Code::Faddp_sti_st0
+			| Code::Fmulp_sti_st0
+			| Code::Fcomp_st0_sti_DED0
+			| Code::Fsubrp_sti_st0
+			| Code::Fsubp_sti_st0
+			| Code::Fdivrp_sti_st0
+			| Code::Fdivp_sti_st0
+			| Code::Fisttp_m16int
+			| Code::Fistp_m16int
+			| Code::Fbstp_m80bcd
+			| Code::Fistp_m64int
+			| Code::Ffreep_sti
+			| Code::Fstp_sti_DFD0
+			| Code::Fstp_sti_DFD8
+			| Code::Fucomip_st0_sti
+			| Code::Fcomip_st0_sti
+			| Code::Ftstp
+			=> FpuStackIncrementInfo { increment: 1, conditional: false, writes_top: true },
+			Code::Fucompp
+			| Code::Fcompp
+			=> FpuStackIncrementInfo { increment: 2, conditional: false, writes_top: true },
+			// GENERATOR-END: FpuStackIncrementInfoTable
+			_ => FpuStackIncrementInfo::default(),
+		}
+	}
+
+	/// Instruction encoding, eg. Legacy, 3DNow!, VEX, EVEX, XOP
 	///
 	/// # Examples
 	///
@@ -2755,15 +2937,11 @@ impl Instruction {
 	#[cfg_attr(feature = "cargo-clippy", allow(clippy::missing_inline_in_public_items))]
 	pub fn cpuid_features(&self) -> &'static [CpuidFeature] {
 		let flags2 = unsafe { *super::info::info_table::TABLE.get_unchecked((self.code() as usize) * 2 + 1) };
-		let index = if (flags2 & InfoFlags2::AVX2_CHECK) != 0 && self.op1_kind() == OpKind::Register {
-			CpuidFeatureInternal::AVX2 as usize
-		} else {
-			((flags2 >> InfoFlags2::CPUID_FEATURE_INTERNAL_SHIFT) & InfoFlags2::CPUID_FEATURE_INTERNAL_MASK) as usize
-		};
+		let index = ((flags2 >> InfoFlags2::CPUID_FEATURE_INTERNAL_SHIFT) & InfoFlags2::CPUID_FEATURE_INTERNAL_MASK) as usize;
 		unsafe { *super::info::cpuid_table::CPUID.get_unchecked(index) }
 	}
 
-	/// Flow control info
+	/// Control flow info
 	///
 	/// # Examples
 	///
@@ -2794,14 +2972,7 @@ impl Instruction {
 		self.code().flow_control()
 	}
 
-	/// `true` if the instruction isn't available in real mode or virtual 8086 mode
-	#[cfg_attr(has_must_use, must_use)]
-	#[inline]
-	pub fn is_protected_mode(&self) -> bool {
-		self.code().is_protected_mode()
-	}
-
-	/// `true` if this is a privileged instruction
+	/// `true` if it's a privileged instruction (all CPL=0 instructions (except `VMCALL`) and IOPL instructions `IN`, `INS`, `OUT`, `OUTS`, `CLI`, `STI`)
 	#[cfg_attr(has_must_use, must_use)]
 	#[inline]
 	pub fn is_privileged(&self) -> bool {
@@ -2848,17 +3019,17 @@ impl Instruction {
 	#[cfg_attr(has_must_use, must_use)]
 	fn rflags_info(&self) -> usize {
 		let flags1 = unsafe { *super::info::info_table::TABLE.get_unchecked((self.code() as usize) * 2) };
-		let code_info = (flags1 >> InfoFlags1::CODE_INFO_SHIFT) & InfoFlags1::CODE_INFO_MASK;
-		const_assert!(CodeInfo::Shift_Ib_MASK1FMOD9 as u32 + 1 == CodeInfo::Shift_Ib_MASK1FMOD11 as u32);
-		const_assert!(CodeInfo::Shift_Ib_MASK1FMOD9 as u32 + 2 == CodeInfo::Shift_Ib_MASK1F as u32);
-		const_assert!(CodeInfo::Shift_Ib_MASK1FMOD9 as u32 + 3 == CodeInfo::Shift_Ib_MASK3F as u32);
-		const_assert!(CodeInfo::Shift_Ib_MASK1FMOD9 as u32 + 4 == CodeInfo::Clear_rflags as u32);
+		let implied_access = (flags1 >> InfoFlags1::IMPLIED_ACCESS_SHIFT) & InfoFlags1::IMPLIED_ACCESS_MASK;
+		const_assert!(ImpliedAccess::Shift_Ib_MASK1FMOD9 as u32 + 1 == ImpliedAccess::Shift_Ib_MASK1FMOD11 as u32);
+		const_assert!(ImpliedAccess::Shift_Ib_MASK1FMOD9 as u32 + 2 == ImpliedAccess::Shift_Ib_MASK1F as u32);
+		const_assert!(ImpliedAccess::Shift_Ib_MASK1FMOD9 as u32 + 3 == ImpliedAccess::Shift_Ib_MASK3F as u32);
+		const_assert!(ImpliedAccess::Shift_Ib_MASK1FMOD9 as u32 + 4 == ImpliedAccess::Clear_rflags as u32);
 		let result = ((flags1 >> InfoFlags1::RFLAGS_INFO_SHIFT) & InfoFlags1::RFLAGS_INFO_MASK) as usize;
-		let e = code_info.wrapping_sub(CodeInfo::Shift_Ib_MASK1FMOD9 as u32);
+		let e = implied_access.wrapping_sub(ImpliedAccess::Shift_Ib_MASK1FMOD9 as u32);
 		match e {
 			0 | 1 => {
-				const_assert_eq!(0, CodeInfo::Shift_Ib_MASK1FMOD9 as u32 - CodeInfo::Shift_Ib_MASK1FMOD9 as u32);
-				const_assert_eq!(1, CodeInfo::Shift_Ib_MASK1FMOD11 as u32 - CodeInfo::Shift_Ib_MASK1FMOD9 as u32);
+				const_assert_eq!(0, ImpliedAccess::Shift_Ib_MASK1FMOD9 as u32 - ImpliedAccess::Shift_Ib_MASK1FMOD9 as u32);
+				const_assert_eq!(1, ImpliedAccess::Shift_Ib_MASK1FMOD11 as u32 - ImpliedAccess::Shift_Ib_MASK1FMOD9 as u32);
 				let m = if e == 0 { 9 } else { 17 };
 				match (self.immediate8() & 0x1F) % m {
 					0 => return RflagsInfo::None as usize,
@@ -2867,8 +3038,8 @@ impl Instruction {
 				}
 			}
 			2 | 3 => {
-				const_assert_eq!(2, CodeInfo::Shift_Ib_MASK1F as u32 - CodeInfo::Shift_Ib_MASK1FMOD9 as u32);
-				const_assert_eq!(3, CodeInfo::Shift_Ib_MASK3F as u32 - CodeInfo::Shift_Ib_MASK1FMOD9 as u32);
+				const_assert_eq!(2, ImpliedAccess::Shift_Ib_MASK1F as u32 - ImpliedAccess::Shift_Ib_MASK1FMOD9 as u32);
+				const_assert_eq!(3, ImpliedAccess::Shift_Ib_MASK3F as u32 - ImpliedAccess::Shift_Ib_MASK1FMOD9 as u32);
 				let mask = if e == 2 { 0x1F } else { 0x3F };
 				match self.immediate8() & mask {
 					0 => return RflagsInfo::None as usize,
@@ -2886,7 +3057,7 @@ impl Instruction {
 				}
 			}
 			4 => {
-				const_assert_eq!(4, CodeInfo::Clear_rflags as u32 - CodeInfo::Shift_Ib_MASK1FMOD9 as u32);
+				const_assert_eq!(4, ImpliedAccess::Clear_rflags as u32 - ImpliedAccess::Shift_Ib_MASK1FMOD9 as u32);
 				if self.op0_register() == self.op1_register() && self.op0_kind() == OpKind::Register && self.op1_kind() == OpKind::Register {
 					if self.code().mnemonic() == Mnemonic::Xor {
 						return RflagsInfo::C_cos_S_pz_U_a as usize;

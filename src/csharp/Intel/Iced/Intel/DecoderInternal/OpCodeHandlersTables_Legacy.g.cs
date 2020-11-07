@@ -145,8 +145,8 @@ namespace Iced.Intel.DecoderInternal {
 				// 0 = 0x00
 				0x05,// Dup
 					0x08,// 8
-					0xAE,// ST_STi
-						0x8A, 0x04,// Fld_st0_sti
+					0xAF,// STi
+						0x8A, 0x04,// Fld_sti
 
 				// 8 = 0x08
 				0x05,// Dup
@@ -1608,15 +1608,41 @@ namespace Iced.Intel.DecoderInternal {
 					0x03,// Invalid_NoModRM
 
 				// 12 = 0x0C
-				0x05,// Dup
-					0x03,// 3
-					0x06,// Null
+				0x14,// MandatoryPrefix_NoModRM
+					0x03,// Invalid_NoModRM
+					0xA4,// Simple
+						0xB7, 0x21,// Tdcall
+					0x03,// Invalid_NoModRM
+					0x03,// Invalid_NoModRM
+
+				// 13 = 0x0D
+				0x14,// MandatoryPrefix_NoModRM
+					0x03,// Invalid_NoModRM
+					0x00,// Bitness
+						0x03,// Invalid_NoModRM
+						0xA4,// Simple
+							0xB8, 0x21,// Seamret
+					0x03,// Invalid_NoModRM
+					0x03,// Invalid_NoModRM
+
+				// 14 = 0x0E
+				0x14,// MandatoryPrefix_NoModRM
+					0x03,// Invalid_NoModRM
+					0x00,// Bitness
+						0x03,// Invalid_NoModRM
+						0xA4,// Simple
+							0xB9, 0x21,// Seamops
+					0x03,// Invalid_NoModRM
+					0x03,// Invalid_NoModRM
 
 				// 15 = 0x0F
 				0x14,// MandatoryPrefix_NoModRM
 					0xA4,// Simple
 						0xB8, 0x06,// Encls
-					0x03,// Invalid_NoModRM
+					0x00,// Bitness
+						0x03,// Invalid_NoModRM
+						0xA4,// Simple
+							0xBA, 0x21,// Seamcall
 					0x03,// Invalid_NoModRM
 					0x03,// Invalid_NoModRM
 
@@ -1686,7 +1712,7 @@ namespace Iced.Intel.DecoderInternal {
 					0xA4,// Simple
 						0xFE, 0x20,// Vmgexit
 					0xA4,// Simple
-						0xFE, 0x20,// Vmgexit
+						0xC9, 0x21,// Vmgexit_F2
 
 				// 26 = 0x1A
 				0xAB,// Simple5
@@ -1744,16 +1770,37 @@ namespace Iced.Intel.DecoderInternal {
 					0x02,// Invalid
 
 				// 43 = 0x2B
-				0x05,// Dup
-					0x03,// 3
-					0x06,// Null
+				0x06,// Null
+
+				// 44 = 0x2C
+				0x14,// MandatoryPrefix_NoModRM
+					0x03,// Invalid_NoModRM
+					0x03,// Invalid_NoModRM
+					0x00,// Bitness
+						0x03,// Invalid_NoModRM
+						0xA4,// Simple
+							0xCA, 0x21,// Uiret
+					0x03,// Invalid_NoModRM
+
+				// 45 = 0x2D
+				0x14,// MandatoryPrefix_NoModRM
+					0x03,// Invalid_NoModRM
+					0x03,// Invalid_NoModRM
+					0x00,// Bitness
+						0x03,// Invalid_NoModRM
+						0xA4,// Simple
+							0xCB, 0x21,// Testui
+					0x03,// Invalid_NoModRM
 
 				// 46 = 0x2E
 				0x14,// MandatoryPrefix_NoModRM
 					0xA4,// Simple
 						0xD1, 0x06,// Rdpkru
 					0x03,// Invalid_NoModRM
-					0x03,// Invalid_NoModRM
+					0x00,// Bitness
+						0x03,// Invalid_NoModRM
+						0xA4,// Simple
+							0xCC, 0x21,// Clui
 					0x03,// Invalid_NoModRM
 
 				// 47 = 0x2F
@@ -1761,7 +1808,10 @@ namespace Iced.Intel.DecoderInternal {
 					0xA4,// Simple
 						0xD2, 0x06,// Wrpkru
 					0x03,// Invalid_NoModRM
-					0x03,// Invalid_NoModRM
+					0x00,// Bitness
+						0x03,// Invalid_NoModRM
+						0xA4,// Simple
+							0xCD, 0x21,// Stui
 					0x03,// Invalid_NoModRM
 
 				// 48 = 0x30
@@ -1994,7 +2044,7 @@ namespace Iced.Intel.DecoderInternal {
 					0x03,// Invalid_NoModRM
 					0x03,// Invalid_NoModRM
 					0xAB,// Simple5
-						0xB4, 0x0F,// XcryptEcb_16
+						0xB4, 0x0F,// Xcryptecb_16
 					0x03,// Invalid_NoModRM
 					0x00,// 0x0
 
@@ -2008,7 +2058,7 @@ namespace Iced.Intel.DecoderInternal {
 					0x03,// Invalid_NoModRM
 					0x03,// Invalid_NoModRM
 					0xAB,// Simple5
-						0xB7, 0x0F,// XcryptCbc_16
+						0xB7, 0x0F,// Xcryptcbc_16
 					0x03,// Invalid_NoModRM
 					0x00,// 0x0
 
@@ -2022,7 +2072,7 @@ namespace Iced.Intel.DecoderInternal {
 					0x03,// Invalid_NoModRM
 					0x03,// Invalid_NoModRM
 					0xAB,// Simple5
-						0xBA, 0x0F,// XcryptCtr_16
+						0xBA, 0x0F,// Xcryptctr_16
 					0x03,// Invalid_NoModRM
 					0x00,// 0x0
 
@@ -2036,7 +2086,7 @@ namespace Iced.Intel.DecoderInternal {
 					0x03,// Invalid_NoModRM
 					0x03,// Invalid_NoModRM
 					0xAB,// Simple5
-						0xBD, 0x0F,// XcryptCfb_16
+						0xBD, 0x0F,// Xcryptcfb_16
 					0x03,// Invalid_NoModRM
 					0x00,// 0x0
 
@@ -2050,7 +2100,7 @@ namespace Iced.Intel.DecoderInternal {
 					0x03,// Invalid_NoModRM
 					0x03,// Invalid_NoModRM
 					0xAB,// Simple5
-						0xC0, 0x0F,// XcryptOfb_16
+						0xC0, 0x0F,// Xcryptofb_16
 					0x03,// Invalid_NoModRM
 					0x00,// 0x0
 
@@ -2138,7 +2188,10 @@ namespace Iced.Intel.DecoderInternal {
 						0x97, 0x11,// Rdrand_r16
 					0x6E,// M_1
 						0x95, 0x11,// Vmclear_m64
-					0x02,// Invalid
+					0x01,// Bitness_DontReadModRM
+						0x02,// Invalid
+						0xCC,// Rq
+							0xCE, 0x21,// Senduipi_r64
 					0x6E,// M_1
 						0x96, 0x11,// Vmxon_m64
 					0x02,// Invalid
@@ -2718,47 +2771,47 @@ namespace Iced.Intel.DecoderInternal {
 				// reservedNop_0F0D
 				0x00,// HandlerReference
 				0x37,// Ev_Gv_3a
-					0xF0, 0x06,// ReservedNop_rm16_r16_0F0D
+					0xF0, 0x06,// Reservednop_rm16_r16_0F0D
 
 				// reservedNop_0F18
 				0x00,// HandlerReference
 				0x37,// Ev_Gv_3a
-					0xF1, 0x07,// ReservedNop_rm16_r16_0F18
+					0xF1, 0x07,// Reservednop_rm16_r16_0F18
 
 				// reservedNop_0F19
 				0x00,// HandlerReference
 				0x37,// Ev_Gv_3a
-					0xF4, 0x07,// ReservedNop_rm16_r16_0F19
+					0xF4, 0x07,// Reservednop_rm16_r16_0F19
 
 				// reservedNop_0F1A
 				0x00,// HandlerReference
 				0x37,// Ev_Gv_3a
-					0xF7, 0x07,// ReservedNop_rm16_r16_0F1A
+					0xF7, 0x07,// Reservednop_rm16_r16_0F1A
 
 				// reservedNop_0F1B
 				0x00,// HandlerReference
 				0x37,// Ev_Gv_3a
-					0xFA, 0x07,// ReservedNop_rm16_r16_0F1B
+					0xFA, 0x07,// Reservednop_rm16_r16_0F1B
 
 				// reservedNop_0F1C
 				0x00,// HandlerReference
 				0x37,// Ev_Gv_3a
-					0xFD, 0x07,// ReservedNop_rm16_r16_0F1C
+					0xFD, 0x07,// Reservednop_rm16_r16_0F1C
 
 				// reservedNop_0F1D
 				0x00,// HandlerReference
 				0x37,// Ev_Gv_3a
-					0x80, 0x08,// ReservedNop_rm16_r16_0F1D
+					0x80, 0x08,// Reservednop_rm16_r16_0F1D
 
 				// reservedNop_0F1E
 				0x00,// HandlerReference
 				0x37,// Ev_Gv_3a
-					0x83, 0x08,// ReservedNop_rm16_r16_0F1E
+					0x83, 0x08,// Reservednop_rm16_r16_0F1E
 
 				// reservedNop_0F1F
 				0x00,// HandlerReference
 				0x37,// Ev_Gv_3a
-					0x86, 0x08,// ReservedNop_rm16_r16_0F1F
+					0x86, 0x08,// Reservednop_rm16_r16_0F1F
 
 				// handlers_Grp_0F0D_mem
 				0x01,// ArrayReference
@@ -2777,23 +2830,23 @@ namespace Iced.Intel.DecoderInternal {
 
 				// 3 = 0x03
 				0x6E,// M_1
-					0xF8, 0x20,// PrefetchReserved3_m8
+					0xF8, 0x20,// Prefetchreserved3_m8
 
 				// 4 = 0x04
 				0x6E,// M_1
-					0xF9, 0x20,// PrefetchReserved4_m8
+					0xF9, 0x20,// Prefetchreserved4_m8
 
 				// 5 = 0x05
 				0x6E,// M_1
-					0xFA, 0x20,// PrefetchReserved5_m8
+					0xFA, 0x20,// Prefetchreserved5_m8
 
 				// 6 = 0x06
 				0x6E,// M_1
-					0xFB, 0x20,// PrefetchReserved6_m8
+					0xFB, 0x20,// Prefetchreserved6_m8
 
 				// 7 = 0x07
 				0x6E,// M_1
-					0xFC, 0x20,// PrefetchReserved7_m8
+					0xFC, 0x20,// Prefetchreserved7_m8
 
 				// grp0F0D
 				0x00,// HandlerReference
@@ -2831,7 +2884,7 @@ namespace Iced.Intel.DecoderInternal {
 
 				// grp0F18
 				0x00,// HandlerReference
-				0x9E,// ReservedNop
+				0x9E,// Reservednop
 					0x07,// HandlerReference
 						0x38,// 0x38 = reservedNop_0F18
 					0x09,// RM
@@ -2864,7 +2917,7 @@ namespace Iced.Intel.DecoderInternal {
 
 				// grp0F1C
 				0x00,// HandlerReference
-				0x9E,// ReservedNop
+				0x9E,// Reservednop
 					0x07,// HandlerReference
 						0x3C,// 0x3C = reservedNop_0F1C
 					0x09,// RM
@@ -2947,7 +3000,7 @@ namespace Iced.Intel.DecoderInternal {
 
 				// grp0F1E
 				0x00,// HandlerReference
-				0x9E,// ReservedNop
+				0x9E,// Reservednop
 					0x07,// HandlerReference
 						0x3E,// 0x3E = reservedNop_0F1E
 					0x09,// RM
@@ -2974,7 +3027,7 @@ namespace Iced.Intel.DecoderInternal {
 
 				// grp0F1F
 				0x00,// HandlerReference
-				0x9E,// ReservedNop
+				0x9E,// Reservednop
 					0x07,// HandlerReference
 						0x3F,// 0x3F = reservedNop_0F1F
 					0x0E,// Group
@@ -2993,6 +3046,62 @@ namespace Iced.Intel.DecoderInternal {
 				0x05,// Dup
 					0x07,// 7
 					0x02,// Invalid
+
+				// handlers_Grp_F30F38D8
+				0x01,// ArrayReference
+				0x08,// 0x8
+				// 0 = 0x00
+				0x09,// RM
+					0x02,// Invalid
+					0x6E,// M_1
+						0xBB, 0x21,// Aesencwide128kl_m384
+
+				// 1 = 0x01
+				0x09,// RM
+					0x02,// Invalid
+					0x6E,// M_1
+						0xBC, 0x21,// Aesdecwide128kl_m384
+
+				// 2 = 0x02
+				0x09,// RM
+					0x02,// Invalid
+					0x6E,// M_1
+						0xBD, 0x21,// Aesencwide256kl_m512
+
+				// 3 = 0x03
+				0x09,// RM
+					0x02,// Invalid
+					0x6E,// M_1
+						0xBE, 0x21,// Aesdecwide256kl_m512
+
+				// 4 = 0x04
+				0x05,// Dup
+					0x04,// 4
+					0x02,// Invalid
+
+				// handlers_Grp_0F3AF0_lo
+				0x01,// ArrayReference
+				0x08,// 0x8
+				// 0 = 0x00
+				0x05,// Dup
+					0x08,// 8
+					0x02,// Invalid
+
+				// handlers_Grp_0F3AF0_hi
+				0x01,// ArrayReference
+				0x40,// 0x40
+				// 0 = 0x00
+				0x14,// MandatoryPrefix_NoModRM
+					0x03,// Invalid_NoModRM
+					0x03,// Invalid_NoModRM
+					0x64,// Ib
+						0xCF, 0x21,// Hreset_imm8
+					0x03,// Invalid_NoModRM
+
+				// 1 = 0x01
+				0x05,// Dup
+					0x3F,// 63
+					0x06,// Null
 
 				// ThreeByteHandlers_0F38XX
 				0x01,// ArrayReference
@@ -3572,8 +3681,20 @@ namespace Iced.Intel.DecoderInternal {
 
 				// 208 = 0xD0
 				0x05,// Dup
-					0x0B,// 11
+					0x08,// 8
 					0x02,// Invalid
+
+				// 216 = 0xD8
+				0x11,// MandatoryPrefix
+					0x02,// Invalid
+					0x02,// Invalid
+					0x0E,// Group
+						0x08,// ArrayReference
+							0x4D,// 0x4D = handlers_Grp_F30F38D8
+					0x02,// Invalid
+
+				// 217 = 0xD9
+				0x04,// Invalid2
 
 				// 219 = 0xDB
 				0x11,// MandatoryPrefix
@@ -3590,7 +3711,10 @@ namespace Iced.Intel.DecoderInternal {
 					0xB7,// VW_2
 						0x4D,// XMM0
 						0xB4, 0x1C,// Aesenc_xmm_xmmm128
-					0x02,// Invalid
+					0xB8,// VW_3
+						0x4D,// XMM0
+						0xBF, 0x21,// Loadiwkey_xmm_xmm
+						0xC0, 0x21,// Aesenc128kl_xmm_m384
 					0x02,// Invalid
 
 				// 221 = 0xDD
@@ -3599,7 +3723,11 @@ namespace Iced.Intel.DecoderInternal {
 					0xB7,// VW_2
 						0x4D,// XMM0
 						0xBA, 0x1C,// Aesenclast_xmm_xmmm128
-					0x02,// Invalid
+					0x09,// RM
+						0x02,// Invalid
+						0xB7,// VW_2
+							0x4D,// XMM0
+							0xC1, 0x21,// Aesdec128kl_xmm_m384
 					0x02,// Invalid
 
 				// 222 = 0xDE
@@ -3608,7 +3736,11 @@ namespace Iced.Intel.DecoderInternal {
 					0xB7,// VW_2
 						0x4D,// XMM0
 						0xC0, 0x1C,// Aesdec_xmm_xmmm128
-					0x02,// Invalid
+					0x09,// RM
+						0x02,// Invalid
+						0xB7,// VW_2
+							0x4D,// XMM0
+							0xC2, 0x21,// Aesenc256kl_xmm_m512
 					0x02,// Invalid
 
 				// 223 = 0xDF
@@ -3617,7 +3749,11 @@ namespace Iced.Intel.DecoderInternal {
 					0xB7,// VW_2
 						0x4D,// XMM0
 						0xC6, 0x1C,// Aesdeclast_xmm_xmmm128
-					0x02,// Invalid
+					0x09,// RM
+						0x02,// Invalid
+						0xB7,// VW_2
+							0x4D,// XMM0
+							0xC3, 0x21,// Aesdec256kl_xmm_m512
 					0x02,// Invalid
 
 				// 224 = 0xE0
@@ -3698,8 +3834,28 @@ namespace Iced.Intel.DecoderInternal {
 					0x02,// Invalid
 
 				// 250 = 0xFA
+				0x11,// MandatoryPrefix
+					0x02,// Invalid
+					0x02,// Invalid
+					0x09,// RM
+						0xCD,// Gd_Rd
+							0xC4, 0x21,// Encodekey128_r32_r32
+						0x02,// Invalid
+					0x02,// Invalid
+
+				// 251 = 0xFB
+				0x11,// MandatoryPrefix
+					0x02,// Invalid
+					0x02,// Invalid
+					0x09,// RM
+						0xCD,// Gd_Rd
+							0xC5, 0x21,// Encodekey256_r32_r32
+						0x02,// Invalid
+					0x02,// Invalid
+
+				// 252 = 0xFC
 				0x05,// Dup
-					0x06,// 6
+					0x04,// 4
 					0x02,// Invalid
 
 				// ThreeByteHandlers_0F3AXX
@@ -3992,7 +4148,19 @@ namespace Iced.Intel.DecoderInternal {
 
 				// 224 = 0xE0
 				0x05,// Dup
-					0x20,// 32
+					0x10,// 16
+					0x02,// Invalid
+
+				// 240 = 0xF0
+				0x0F,// Group8x64
+					0x08,// ArrayReference
+						0x4E,// 0x4E = handlers_Grp_0F3AF0_lo
+					0x08,// ArrayReference
+						0x4F,// 0x4F = handlers_Grp_0F3AF0_hi
+
+				// 241 = 0xF1
+				0x05,// Dup
+					0x0F,// 15
 					0x02,// Invalid
 
 				// TwoByteHandlers_0FXX
@@ -4081,7 +4249,7 @@ namespace Iced.Intel.DecoderInternal {
 				0x02,// Invalid
 
 				// 13 = 0x0D
-				0x9E,// ReservedNop
+				0x9E,// Reservednop
 					0x07,// HandlerReference
 						0x37,// 0x37 = reservedNop_0F0D
 					0x07,// HandlerReference
@@ -4276,7 +4444,7 @@ namespace Iced.Intel.DecoderInternal {
 					0x39,// 0x39 = reservedNop_0F19
 
 				// 26 = 0x1A
-				0x9E,// ReservedNop
+				0x9E,// Reservednop
 					0x07,// HandlerReference
 						0x3A,// 0x3A = reservedNop_0F1A
 					0x0C,// Options_DontReadModRM
@@ -4299,7 +4467,7 @@ namespace Iced.Intel.DecoderInternal {
 						0x80, 0x80, 0x20,// MPX
 
 				// 27 = 0x1B
-				0x9E,// ReservedNop
+				0x9E,// Reservednop
 					0x07,// HandlerReference
 						0x3B,// 0x3B = reservedNop_0F1B
 					0x0C,// Options_DontReadModRM
@@ -4540,7 +4708,7 @@ namespace Iced.Intel.DecoderInternal {
 				0xC8,// Options1632_1
 					0x0D,// AnotherTable
 						0x08,// ArrayReference
-							0x4D,// 0x4D = ThreeByteHandlers_0F38XX
+							0x50,// 0x50 = ThreeByteHandlers_0F38XX
 					0xA4,// Simple
 						0x90, 0x21,// Smint
 					0x80, 0x80, 0x40,// Cyrix
@@ -4556,7 +4724,7 @@ namespace Iced.Intel.DecoderInternal {
 				0xC9,// Options1632_2
 					0x0D,// AnotherTable
 						0x08,// ArrayReference
-							0x4E,// 0x4E = ThreeByteHandlers_0F3AXX
+							0x51,// 0x51 = ThreeByteHandlers_0F3AXX
 					0xA4,// Simple
 						0x92, 0x21,// Rdm
 					0x80, 0x80, 0x80, 0x02,// Cyrix_DMI
@@ -6284,7 +6452,7 @@ namespace Iced.Intel.DecoderInternal {
 				// 15 = 0x0F
 				0x0D,// AnotherTable
 					0x08,// ArrayReference
-						0x4F,// 0x4F = TwoByteHandlers_0FXX
+						0x52,// 0x52 = TwoByteHandlers_0FXX
 
 				// 16 = 0x10
 				0x2C,// Eb_Gb_2
@@ -7449,8 +7617,8 @@ namespace Iced.Intel.DecoderInternal {
 					0x08,// ArrayReference
 						0x1E,// 0x1E = handlers_Grp_FF
 			};
-		const int MaxIdNames = 81;
-		const uint OneByteHandlersIndex = 80;
+		const int MaxIdNames = 84;
+		const uint OneByteHandlersIndex = 83;
 	}
 }
 #endif

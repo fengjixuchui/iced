@@ -34,7 +34,6 @@ test("Instruction info factory", () => {
 	const instr = decoder.decode();
 
 	const info1 = infoFactory.info(instr);
-	expect(info1.isProtectedMode).toBe(false);
 	expect(info1.isPrivileged).toBe(false);
 	expect(info1.isStackInstruction).toBe(false);
 	expect(info1.isSaveRestoreInstruction).toBe(false);
@@ -57,6 +56,9 @@ test("Instruction info factory", () => {
 	expect(info1.rflagsSet).toBe(RflagsBits.None);
 	expect(info1.rflagsUndefined).toBe(RflagsBits.None);
 	expect(info1.rflagsModified).toBe(RflagsBits.OF | RflagsBits.SF | RflagsBits.ZF | RflagsBits.AF | RflagsBits.CF | RflagsBits.PF);
+	expect(instr.fpuTopIncrement).toBe(0);
+	expect(instr.fpuCondWritesTop).toBe(false);
+	expect(instr.fpuWritesTop).toBe(false);
 
 	const regs1 = info1.usedRegisters();
 	expect(regs1.length).toBe(3);

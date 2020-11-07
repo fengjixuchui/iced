@@ -22,13 +22,12 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 using System;
-using System.IO;
 using Generator.Constants;
 using Generator.IO;
 using Generator.Tables;
 
 namespace Generator.Decoder.Rust {
-	[Generator(TargetLanguage.Rust, GeneratorNames.Code_Mnemonic)]
+	[Generator(TargetLanguage.Rust)]
 	sealed class RustMnemonicsTableGenerator {
 		readonly IdentifierConverter idConverter;
 		readonly GeneratorContext generatorContext;
@@ -43,7 +42,7 @@ namespace Generator.Decoder.Rust {
 			var icedConstants = genTypes.GetConstantsType(TypeIds.IcedConstants);
 			var defs = genTypes.GetObject<InstructionDefs>(TypeIds.InstructionDefs).Defs;
 			var mnemonicName = genTypes[TypeIds.Mnemonic].Name(idConverter);
-			using (var writer = new FileWriter(TargetLanguage.Rust, FileUtils.OpenWrite(Path.Combine(generatorContext.RustDir, "mnemonics.rs")))) {
+			using (var writer = new FileWriter(TargetLanguage.Rust, FileUtils.OpenWrite(generatorContext.Types.Dirs.GetRustFilename("mnemonics.rs")))) {
 				writer.WriteFileHeader();
 
 				writer.WriteLine($"use super::iced_constants::{icedConstants.Name(idConverter)};");
@@ -55,7 +54,7 @@ namespace Generator.Decoder.Rust {
 					foreach (var def in defs) {
 						if (def.Mnemonic.Value > ushort.MaxValue)
 							throw new InvalidOperationException();
-						writer.WriteLine($"{mnemonicName}::{def.Mnemonic.Name(idConverter)},// {def.OpCodeInfo.Code.Name(idConverter)}");
+						writer.WriteLine($"{mnemonicName}::{def.Mnemonic.Name(idConverter)},// {def.Code.Name(idConverter)}");
 					}
 				}
 				writer.WriteLine("];");

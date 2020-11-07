@@ -83,8 +83,8 @@ namespace IcedFuzzer {
 						Console.WriteLine($"Bitness: {options.OpCodeInfoOptions.Bitness}");
 					var info = Gen(options, infos);
 					if (!options.Quiet) {
-						Console.WriteLine($"valid  : {info.totValid} instrs: {info.totBytesValid} bytes or {(double)info.totBytesValid / 1024:0.##} kB or {(double)info.totBytesValid / 1024 / 1024:0.##} MB");
-						Console.WriteLine($"invalid: {info.totInvalid} instrs: {info.totBytesInvalid} bytes or {(double)info.totBytesInvalid / 1024:0.##} kB or {(double)info.totBytesInvalid / 1024 / 1024:0.##} MB");
+						Console.WriteLine($"valid  : {info.totValid} instrs: {(double)info.totBytesValid / 1024 / 1024:0.##} MB");
+						Console.WriteLine($"invalid: {info.totInvalid} instrs: {(double)info.totBytesInvalid / 1024 / 1024:0.##} MB");
 					}
 				}
 				return 0;
@@ -120,10 +120,6 @@ namespace IcedFuzzer {
 				genFlags |= InstrGenFlags.NoEVEX;
 			if (!options.OpCodeInfoOptions.Include3DNow)
 				genFlags |= InstrGenFlags.No3DNow;
-			if (options.OpCodeInfoOptions.Filter.WasRemoved(CpuidFeature.AVX))
-				genFlags |= InstrGenFlags.NoAVX;
-			if (options.OpCodeInfoOptions.Filter.WasRemoved(CpuidFeature.AVX2))
-				genFlags |= InstrGenFlags.NoAVX2;
 			var encodingTables = InstrGen.Create(options.OpCodeInfoOptions.Bitness, infos, genFlags);
 
 			var instructions = encodingTables.GetOpCodeGroups().SelectMany(a => a.opCodes).SelectMany(a => a.Instructions).Where(instr => {
@@ -229,7 +225,7 @@ namespace IcedFuzzer {
 		}
 
 		static void PrintHelp() {
-			var filename = Path.GetFileName(Process.GetCurrentProcess().MainModule.FileName);
+			var filename = Path.GetFileName(Process.GetCurrentProcess().MainModule?.FileName ?? "???");
 			var sep = seps[0];
 			Console.WriteLine($"{filename} <-16|-32|-64> [other options]");
 			Console.WriteLine();
@@ -459,6 +455,8 @@ namespace IcedFuzzer {
 				if (options.ValidFilename is null && options.InvalidFilename is null)
 					throw new CommandLineParserException("At least one of -oil, -ovl, -ovlc and -ov must be used");
 			}
+			if (options.InvalidFilename is null)
+				options.IncludeInvalidInstructions = false;
 			return options;
 		}
 
