@@ -1,7 +1,7 @@
 iced-x86
 [![Latest version](https://img.shields.io/crates/v/iced-x86.svg)](https://crates.io/crates/iced-x86)
 [![Documentation](https://docs.rs/iced-x86/badge.svg)](https://docs.rs/iced-x86)
-[![Minimum rustc version](https://img.shields.io/badge/rustc-1.20.0+-yellow.svg)](#minimum-supported-rustc-version)
+[![Minimum rustc version](https://img.shields.io/badge/rustc-1.41.0+-yellow.svg)](#minimum-supported-rustc-version)
 ![License](https://img.shields.io/crates/l/iced-x86.svg)
 
 iced-x86 is a high performance and correct x86 (16/32/64-bit) instruction decoder, disassembler and assembler written in Rust.
@@ -13,11 +13,11 @@ It can be used for static analysis of x86/x64 binaries, to rewrite code (eg. rem
 - ✔️100% Rust code
 - ✔️The formatter supports masm, nasm, gas (AT&T), Intel (XED) and there are many options to customize the output
 - ✔️The decoder is 4x+ faster than other similar libraries and doesn't allocate any memory
-- ✔️Small decoded instructions, only 32 bytes
+- ✔️Small decoded instructions, only 40 bytes
 - ✔️The encoder can be used to re-encode decoded instructions at any address
 - ✔️API to get instruction info, eg. read/written registers, memory and rflags bits; CPUID feature flag, control flow info, etc
 - ✔️Supports `#![no_std]` and `WebAssembly`
-- ✔️Supports `rustc` `1.20.0` or later
+- ✔️Supports `rustc` `1.41.0` or later
 - ✔️Few dependencies (`static_assertions` and `lazy_static`)
 - ✔️License: MIT
 
@@ -27,14 +27,14 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-iced-x86 = "1.9.1"
+iced-x86 = "1.10.3"
 ```
 
 Or to customize which features to use:
 
 ```toml
 [dependencies.iced-x86]
-version = "1.9.1"
+version = "1.10.3"
 default-features = false
 # See below for all features
 features = ["std", "decoder", "masm"]
@@ -62,7 +62,7 @@ You can enable/disable these in your `Cargo.toml` file.
 - `fast_fmt`: (✔️Enabled by default) Enables `FastFormatter` (masm syntax) which is ~1.9x faster than the other formatters (the time includes decoding + formatting). Use it if formatting speed is more important than being able to re-assemble formatted instructions or if targeting wasm (this formatter uses less code).
 - `db`: Enables creating `db`, `dw`, `dd`, `dq` instructions. It's not enabled by default because it's possible to store up to 16 bytes in the instruction and then use another method to read an enum value.
 - `std`: (✔️Enabled by default) Enables the `std` crate. `std` or `no_std` must be defined, but not both.
-- `no_std`: Enables `#![no_std]`. `std` or `no_std` must be defined, but not both. This feature uses the `alloc` crate (`rustc` `1.36.0+`) and the `hashbrown` crate.
+- `no_std`: Enables `#![no_std]`. `std` or `no_std` must be defined, but not both. This feature uses the `alloc` crate and the `hashbrown` crate.
 - `exhaustive_enums`: Enables exhaustive enums, i.e., no enum has the `#[non_exhaustive]` attribute
 - `no_vex`: Disables all `VEX` instructions. See below for more info.
 - `no_evex`: Disables all `EVEX` instructions. See below for more info.
@@ -71,8 +71,8 @@ You can enable/disable these in your `Cargo.toml` file.
 
 If you use `no_vex`, `no_evex`, `no_xop` or `no_d3now`, you should run the generator again (before building iced) to generate even smaller output.
 
-[`BlockEncoder`]: https://docs.rs/iced-x86/1.9.1/iced_x86/struct.BlockEncoder.html
-[`OpCodeInfo`]: https://docs.rs/iced-x86/1.9.1/iced_x86/struct.OpCodeInfo.html
+[`BlockEncoder`]: https://docs.rs/iced-x86/1.10.3/iced_x86/struct.BlockEncoder.html
+[`OpCodeInfo`]: https://docs.rs/iced-x86/1.10.3/iced_x86/struct.OpCodeInfo.html
 
 ## How-tos
 
@@ -90,13 +90,13 @@ If you use `no_vex`, `no_evex`, `no_xop` or `no_d3now`, you should run the gener
 This example uses a [`Decoder`] and one of the [`Formatter`]s to decode and format the code,
 eg. [`GasFormatter`], [`IntelFormatter`], [`MasmFormatter`], [`NasmFormatter`], [`FastFormatter`].
 
-[`Decoder`]: https://docs.rs/iced-x86/1.9.1/iced_x86/struct.Decoder.html
-[`Formatter`]: https://docs.rs/iced-x86/1.9.1/iced_x86/trait.Formatter.html
-[`GasFormatter`]: https://docs.rs/iced-x86/1.9.1/iced_x86/struct.GasFormatter.html
-[`IntelFormatter`]: https://docs.rs/iced-x86/1.9.1/iced_x86/struct.IntelFormatter.html
-[`MasmFormatter`]: https://docs.rs/iced-x86/1.9.1/iced_x86/struct.MasmFormatter.html
-[`NasmFormatter`]: https://docs.rs/iced-x86/1.9.1/iced_x86/struct.NasmFormatter.html
-[`FastFormatter`]: https://docs.rs/iced-x86/1.9.1/iced_x86/struct.FastFormatter.html
+[`Decoder`]: https://docs.rs/iced-x86/1.10.3/iced_x86/struct.Decoder.html
+[`Formatter`]: https://docs.rs/iced-x86/1.10.3/iced_x86/trait.Formatter.html
+[`GasFormatter`]: https://docs.rs/iced-x86/1.10.3/iced_x86/struct.GasFormatter.html
+[`IntelFormatter`]: https://docs.rs/iced-x86/1.10.3/iced_x86/struct.IntelFormatter.html
+[`MasmFormatter`]: https://docs.rs/iced-x86/1.10.3/iced_x86/struct.MasmFormatter.html
+[`NasmFormatter`]: https://docs.rs/iced-x86/1.10.3/iced_x86/struct.NasmFormatter.html
+[`FastFormatter`]: https://docs.rs/iced-x86/1.10.3/iced_x86/struct.FastFormatter.html
 
 ```rust
 use iced_x86::{Decoder, DecoderOptions, Formatter, Instruction, NasmFormatter};
@@ -119,8 +119,7 @@ This method produces the following output:
 */
 pub(crate) fn how_to_disassemble() {
     let bytes = EXAMPLE_CODE;
-    let mut decoder = Decoder::new(EXAMPLE_CODE_BITNESS, bytes, DecoderOptions::NONE);
-    decoder.set_ip(EXAMPLE_CODE_RIP);
+    let mut decoder = Decoder::with_ip(EXAMPLE_CODE_BITNESS, bytes, EXAMPLE_CODE_RIP, DecoderOptions::NONE);
 
     // Formatters: Masm*, Nasm*, Gas* (AT&T) and Intel* (XED).
     // There's also `FastFormatter` which is ~1.9x faster. Use it if formatting speed is more
@@ -144,7 +143,7 @@ pub(crate) fn how_to_disassemble() {
     // but can_decode()/decode_out() is a little faster:
     while decoder.can_decode() {
         // There's also a decode() method that returns an instruction but that also
-        // means it copies an instruction (32 bytes):
+        // means it copies an instruction (40 bytes):
         //     instruction = decoder.decode();
         decoder.decode_out(&mut instruction);
 
@@ -183,8 +182,8 @@ static EXAMPLE_CODE: &[u8] = &[
 
 This example uses a [`BlockEncoder`] to encode created [`Instruction`]s. This example needs the `db` feature because it creates `db` "instructions".
 
-[`BlockEncoder`]: https://docs.rs/iced-x86/1.9.1/iced_x86/struct.BlockEncoder.html
-[`Instruction`]: https://docs.rs/iced-x86/1.9.1/iced_x86/struct.Instruction.html
+[`BlockEncoder`]: https://docs.rs/iced-x86/1.10.3/iced_x86/struct.BlockEncoder.html
+[`Instruction`]: https://docs.rs/iced-x86/1.10.3/iced_x86/struct.Instruction.html
 
 ```rust
 use iced_x86::{
@@ -215,7 +214,8 @@ pub(crate) fn how_to_encode_instructions() {
     instructions.push(Instruction::with_reg(Code::Push_r64, Register::RBP));
     instructions.push(Instruction::with_reg(Code::Push_r64, Register::RDI));
     instructions.push(Instruction::with_reg(Code::Push_r64, Register::RSI));
-    instructions.push(Instruction::with_reg_u32(Code::Sub_rm64_imm32, Register::RSP, 0x50));
+    instructions
+        .push(Instruction::try_with_reg_u32(Code::Sub_rm64_imm32, Register::RSP, 0x50).unwrap());
     instructions.push(Instruction::with(Code::VEX_Vzeroupper));
     instructions.push(Instruction::with_reg_mem(
         Code::Lea_r64_m,
@@ -228,12 +228,15 @@ pub(crate) fn how_to_encode_instructions() {
         Register::RDI,
         MemoryOperand::with_base_displ(Register::RBP, -0x38),
     ));
-    instructions.push(Instruction::with_reg_i32(Code::Mov_r32_imm32, Register::ECX, 0x0A));
+    instructions
+        .push(Instruction::try_with_reg_i32(Code::Mov_r32_imm32, Register::ECX, 0x0A).unwrap());
     instructions.push(Instruction::with_reg_reg(Code::Xor_r32_rm32, Register::EAX, Register::EAX));
-    instructions.push(Instruction::with_rep_stosd(bitness));
-    instructions.push(Instruction::with_reg_u64(Code::Cmp_rm64_imm32, Register::RSI, 0x1234_5678));
+    instructions.push(Instruction::try_with_rep_stosd(bitness).unwrap());
+    instructions.push(
+        Instruction::try_with_reg_u64(Code::Cmp_rm64_imm32, Register::RSI, 0x1234_5678).unwrap(),
+    );
     // Create a branch instruction that references label1
-    instructions.push(Instruction::with_branch(Code::Jne_rel32_64, label1));
+    instructions.push(Instruction::try_with_branch(Code::Jne_rel32_64, label1).unwrap());
     instructions.push(Instruction::with(Code::Nopd));
     // Add the instruction that is the target of the branch
     instructions.push(add_label(
@@ -246,12 +249,12 @@ pub(crate) fn how_to_encode_instructions() {
     instructions.push(Instruction::with_reg_mem(
         Code::Lea_r64_m,
         Register::R14,
-        MemoryOperand::with_base_displ(Register::RIP, data1 as i32),
+        MemoryOperand::with_base_displ(Register::RIP, data1 as i64),
     ));
     instructions.push(Instruction::with(Code::Nopd));
     let raw_data: &[u8] = &[0x12, 0x34, 0x56, 0x78];
-    // Creating db/dw/dd/dq instructions requires the `db` feature or it will panic!()
-    instructions.push(add_label(data1, Instruction::with_declare_byte(raw_data)));
+    // Creating db/dw/dd/dq instructions requires the `db` feature or it will fail
+    instructions.push(add_label(data1, Instruction::try_with_declare_byte(raw_data).unwrap()));
 
     // Use BlockEncoder to encode a block of instructions. This block can contain any
     // number of branches and any number of instructions. It does support encoding more
@@ -273,8 +276,7 @@ pub(crate) fn how_to_encode_instructions() {
     let mut output = String::new();
     let bytes_code = &bytes[0..bytes.len() - raw_data.len()];
     let bytes_data = &bytes[bytes.len() - raw_data.len()..];
-    let mut decoder = Decoder::new(bitness, bytes_code, DecoderOptions::NONE);
-    decoder.set_ip(target_rip);
+    let mut decoder = Decoder::with_ip(bitness, bytes_code, target_rip, DecoderOptions::NONE);
     let mut formatter = GasFormatter::new();
     formatter.options_mut().set_first_operand_char_index(8);
     for instruction in &mut decoder {
@@ -283,7 +285,7 @@ pub(crate) fn how_to_encode_instructions() {
         println!("{:016X} {}", instruction.ip(), output);
     }
     // Creating db/dw/dd/dq instructions requires the `db` feature or it will panic!()
-    let db = Instruction::with_declare_byte(bytes_data);
+    let db = Instruction::try_with_declare_byte(bytes_data).unwrap();
     output.clear();
     formatter.format(&db, &mut output);
     println!("{:016X} {}", decoder.ip(), output);
@@ -315,8 +317,8 @@ Output:
 
 Creates a custom [`SymbolResolver`] that is called by a [`Formatter`].
 
-[`SymbolResolver`]: https://docs.rs/iced-x86/1.9.1/iced_x86/trait.SymbolResolver.html
-[`Formatter`]: https://docs.rs/iced-x86/1.9.1/iced_x86/trait.Formatter.html
+[`SymbolResolver`]: https://docs.rs/iced-x86/1.10.3/iced_x86/trait.SymbolResolver.html
+[`Formatter`]: https://docs.rs/iced-x86/1.10.3/iced_x86/trait.Formatter.html
 
 ```rust
 use iced_x86::{
@@ -372,8 +374,8 @@ Creates a custom [`FormatterOutput`] that is called by a [`Formatter`].
 
 This example will fail to compile unless you install the `colored` crate, see below.
 
-[`FormatterOutput`]: https://docs.rs/iced-x86/1.9.1/iced_x86/trait.FormatterOutput.html
-[`Formatter`]: https://docs.rs/iced-x86/1.9.1/iced_x86/trait.Formatter.html
+[`FormatterOutput`]: https://docs.rs/iced-x86/1.10.3/iced_x86/trait.FormatterOutput.html
+[`Formatter`]: https://docs.rs/iced-x86/1.10.3/iced_x86/trait.Formatter.html
 
 ```rust compile_fail
 // This example uses crate colored = "2.0.0"
@@ -403,8 +405,7 @@ impl FormatterOutput for MyFormatterOutput {
 
 pub(crate) fn how_to_colorize_text() {
     let bytes = EXAMPLE_CODE;
-    let mut decoder = Decoder::new(EXAMPLE_CODE_BITNESS, bytes, DecoderOptions::NONE);
-    decoder.set_ip(EXAMPLE_CODE_RIP);
+    let mut decoder = Decoder::with_ip(EXAMPLE_CODE_BITNESS, bytes, EXAMPLE_CODE_RIP, DecoderOptions::NONE);
 
     let mut formatter = IntelFormatter::new();
     formatter.options_mut().set_first_operand_char_index(8);
@@ -506,8 +507,7 @@ pub(crate) fn how_to_move_code() {
     println!("Original code:");
     disassemble(&example_code, EXAMPLE_CODE_RIP);
 
-    let mut decoder = Decoder::new(EXAMPLE_CODE_BITNESS, &example_code, DecoderOptions::NONE);
-    decoder.set_ip(EXAMPLE_CODE_RIP);
+    let mut decoder = Decoder::with_ip(EXAMPLE_CODE_BITNESS, &example_code, EXAMPLE_CODE_RIP, DecoderOptions::NONE);
 
     // In 64-bit mode, we need 12 bytes to jump to any address:
     //      mov rax,imm64   // 10
@@ -564,7 +564,8 @@ pub(crate) fn how_to_move_code() {
         }
     };
     if add {
-        orig_instructions.push(Instruction::with_branch(Code::Jmp_rel32_64, jmp_back_addr));
+        orig_instructions
+            .push(Instruction::try_with_branch(Code::Jmp_rel32_64, jmp_back_addr).unwrap());
     }
 
     // Relocate the code to some new location. It can fix short/near branches and
@@ -613,8 +614,7 @@ pub(crate) fn how_to_move_code() {
 fn disassemble(data: &[u8], ip: u64) {
     let mut formatter = NasmFormatter::new();
     let mut output = String::new();
-    let mut decoder = Decoder::new(EXAMPLE_CODE_BITNESS, data, DecoderOptions::NONE);
-    decoder.set_ip(ip);
+    let mut decoder = Decoder::with_ip(EXAMPLE_CODE_BITNESS, data, ip, DecoderOptions::NONE);
     for instruction in &mut decoder {
         output.clear();
         formatter.format(&instruction, &mut output);
@@ -638,8 +638,8 @@ static EXAMPLE_CODE: &[u8] = &[
 Shows how to get used registers/memory and other info. It uses [`Instruction`] methods
 and an [`InstructionInfoFactory`] to get this info.
 
-[`Instruction`]: https://docs.rs/iced-x86/1.9.1/iced_x86/struct.Instruction.html
-[`InstructionInfoFactory`]: https://docs.rs/iced-x86/1.9.1/iced_x86/struct.InstructionInfoFactory.html
+[`Instruction`]: https://docs.rs/iced-x86/1.10.3/iced_x86/struct.Instruction.html
+[`InstructionInfoFactory`]: https://docs.rs/iced-x86/1.10.3/iced_x86/struct.InstructionInfoFactory.html
 
 ```rust
 use iced_x86::{
@@ -855,8 +855,7 @@ This method produces the following output:
     Used reg: RDI:Write
 */
 pub(crate) fn how_to_get_instruction_info() {
-    let mut decoder = Decoder::new(EXAMPLE_CODE_BITNESS, EXAMPLE_CODE, DecoderOptions::NONE);
-    decoder.set_ip(EXAMPLE_CODE_RIP);
+    let mut decoder = Decoder::with_ip(EXAMPLE_CODE_BITNESS, EXAMPLE_CODE, EXAMPLE_CODE_RIP, DecoderOptions::NONE);
 
     // Use a factory to create the instruction info if you need register and
     // memory usage. If it's something else, eg. encoding, flags, etc, there
@@ -894,13 +893,6 @@ pub(crate) fn how_to_get_instruction_info() {
                 .join(" and ")
         );
         println!("    FlowControl: {:?}", instr.flow_control());
-        if offsets.has_displacement() {
-            println!(
-                "    Displacement offset = {}, size = {}",
-                offsets.displacement_offset(),
-                offsets.displacement_size()
-            );
-        }
         if fpu_info.writes_top() {
             if fpu_info.increment() == 0 {
                 println!("    FPU TOP: the instruction overwrites TOP");
@@ -910,6 +902,13 @@ pub(crate) fn how_to_get_instruction_info() {
             println!(
                 "    FPU TOP cond write: {}",
                 if fpu_info.conditional() { "true" } else { "false" }
+            );
+        }
+        if offsets.has_displacement() {
+            println!(
+                "    Displacement offset = {}, size = {}",
+                offsets.displacement_offset(),
+                offsets.displacement_size()
             );
         }
         if offsets.has_immediate() {
@@ -950,21 +949,17 @@ pub(crate) fn how_to_get_instruction_info() {
         if instr.rflags_modified() != RflagsBits::NONE {
             println!("    RFLAGS Modified: {}", flags(instr.rflags_modified()));
         }
-        for i in 0..instr.op_count() {
-            let op_kind = instr.op_kind(i);
-            if op_kind == OpKind::Memory || op_kind == OpKind::Memory64 {
-                let size = instr.memory_size().size();
-                if size != 0 {
-                    println!("    Memory size: {}", size);
-                }
-                break;
+        if instr.op_kinds().any(|op_kind| op_kind == OpKind::Memory) {
+            let size = instr.memory_size().size();
+            if size != 0 {
+                println!("    Memory size: {}", size);
             }
         }
         for i in 0..instr.op_count() {
-            println!("    Op{}Access: {:?}", i, info.op_access(i));
+            println!("    Op{}Access: {:?}", i, info.try_op_access(i).unwrap());
         }
         for i in 0..op_code.op_count() {
-            println!("    Op{}: {:?}", i, op_code.op_kind(i));
+            println!("    Op{}: {:?}", i, op_code.try_op_kind(i).unwrap());
         }
         for reg_info in info.used_registers() {
             println!("    Used reg: {:?}", reg_info);
@@ -1041,17 +1036,16 @@ pub(crate) fn how_to_get_virtual_address() {
     let mut decoder = Decoder::new(64, bytes, DecoderOptions::NONE);
     let instr = decoder.decode();
 
-    // There's also try_virtual_address() which returns an Option<u64>
-    let va = instr.virtual_address(0, 0, |register, _element_index, _element_size| {
+    let va = instr.try_virtual_address(0, 0, |register, _element_index, _element_size| {
         match register {
             // The base address of ES, CS, SS and DS is always 0 in 64-bit mode
-            Register::ES | Register::CS | Register::SS | Register::DS => 0,
-            Register::RDI => 0x0000_0000_1000_0000,
-            Register::R12 => 0x0000_0004_0000_0000,
-            _ => unimplemented!(),
+            Register::ES | Register::CS | Register::SS | Register::DS => Some(0),
+            Register::RDI => Some(0x0000_0000_1000_0000),
+            Register::R12 => Some(0x0000_0004_0000_0000),
+            _ => None,
         }
     });
-    assert_eq!(0x0000_001F_B55A_1234, va);
+    assert_eq!(va, Some(0x0000_001F_B55A_1234));
 }
 ```
 
@@ -1106,8 +1100,7 @@ pub(crate) fn how_to_disassemble_old_instrs() {
         | DecoderOptions::CYRIX
         | DecoderOptions::CYRIX_DMI
         | DecoderOptions::ALTINST;
-    let mut decoder = Decoder::new(32, bytes, DECODER_OPTIONS);
-    decoder.set_ip(0x731E0A03);
+    let mut decoder = Decoder::with_ip(32, bytes, 0x731E_0A03, DECODER_OPTIONS);
 
     let mut formatter = NasmFormatter::new();
     formatter.options_mut().set_space_after_operand_separator(true);
@@ -1127,16 +1120,7 @@ pub(crate) fn how_to_disassemble_old_instrs() {
 
 ## Minimum supported `rustc` version
 
-iced-x86 supports `rustc` `1.20.0` or later.
+iced-x86 supports `rustc` `1.41.0` or later.
 This is checked in CI builds where the minimum supported version and the latest stable version are used to build the source code and run tests.
-
-If you use an older version of `rustc`, you may need to update the versions of some iced-x86 dependencies because `cargo` prefers to use the latest version which may not support your `rustc`.
-Eg. iced-x86 needs `lazy_static` `1.1.1` (or later), but `cargo` wants to use the latest version which is currently `1.4.0` and it doesn't support the minimum supported `rustc` version.
-Here's how you can force a compatible version of any iced-x86 dependency without updating iced-x86's `Cargo.toml`:
-
-```sh
-cargo generate-lockfile
-cargo update --package lazy_static --precise 1.1.1
-```
 
 Bumping the minimum supported version of `rustc` is considered a minor breaking change. The minor version of iced-x86 will be incremented.

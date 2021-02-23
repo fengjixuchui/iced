@@ -1,25 +1,5 @@
-/*
-Copyright (C) 2018-2019 de4dot@gmail.com
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2018-present iced project and contributors
 
 using System;
 using System.Collections.Generic;
@@ -55,7 +35,7 @@ namespace IcedFuzzer {
 				var infos = GetOpCodeInfos(options);
 				if (options.PrintInstructions) {
 					Array.Sort(infos, (a, b) => {
-						int c = StringComparer.OrdinalIgnoreCase.Compare(a.Code.Mnemonic().ToString(), b.Code.Mnemonic().ToString());
+						int c = StringComparer.OrdinalIgnoreCase.Compare(a.Mnemonic.ToString(), b.Mnemonic.ToString());
 						if (c != 0)
 							return c;
 						return a.Code.CompareTo(b.Code);
@@ -123,7 +103,7 @@ namespace IcedFuzzer {
 			var encodingTables = InstrGen.Create(options.OpCodeInfoOptions.Bitness, infos, genFlags);
 
 			var instructions = encodingTables.GetOpCodeGroups().SelectMany(a => a.opCodes).SelectMany(a => a.Instructions).Where(instr => {
-				if (!options.Filter.ShouldInclude(instr.Code, instr.IsModrmMemory))
+				if (!options.Filter.ShouldInclude(instr.Code))
 					return false;
 				if (instr.Code == Code.INVALID)
 					return options.IncludeInvalidInstructions;
@@ -136,9 +116,9 @@ namespace IcedFuzzer {
 			BinaryWriter? invalidWriter = null;
 			var data2 = new byte[2];
 			try {
-				if (options.ValidFilename is object)
+				if (options.ValidFilename is not null)
 					CreateFile(ref validStream, ref validWriter, options.ValidFilename);
-				if (options.InvalidFilename is object)
+				if (options.InvalidFilename is not null)
 					CreateFile(ref invalidStream, ref invalidWriter, options.InvalidFilename);
 
 				var fuzzerOptions = FuzzerOptions.NoPAUSE | FuzzerOptions.NoWBNOINVD |
@@ -191,7 +171,7 @@ namespace IcedFuzzer {
 						writeLength = options.IncludeValidByteLength;
 						writeCodeValue = options.IncludeValidCodeValue;
 					}
-					if (writer is object) {
+					if (writer is not null) {
 						if (writeCodeValue) {
 							uint code = (uint)info.Instruction.Code;
 							if (code > ushort.MaxValue)
@@ -218,7 +198,7 @@ namespace IcedFuzzer {
 		}
 
 		static void CreateFile(ref FileStream? stream, ref BinaryWriter? writer, string filename) {
-			if (stream is object || writer is object)
+			if (stream is not null || writer is not null)
 				throw new InvalidOperationException();
 			stream = File.Open(filename, FileMode.Create, FileAccess.Write, FileShare.Read | FileShare.Delete);
 			writer = new BinaryWriter(stream);
@@ -365,6 +345,7 @@ namespace IcedFuzzer {
 					options.OpCodeInfoOptions.Filter.ExcludeCpuid.Add(CpuidFeature.PADLOCK_PHE);
 					options.OpCodeInfoOptions.Filter.ExcludeCpuid.Add(CpuidFeature.PADLOCK_PMM);
 					options.OpCodeInfoOptions.Filter.ExcludeCpuid.Add(CpuidFeature.PADLOCK_RNG);
+					options.OpCodeInfoOptions.Filter.ExcludeCpuid.Add(CpuidFeature.PADLOCK_GMI);
 					break;
 
 				case "--no-unused-tables":
@@ -422,7 +403,7 @@ namespace IcedFuzzer {
 				case "-oil":
 					if (next is null)
 						throw new CommandLineParserException("Missing filename");
-					if (options.ValidFilename is object)
+					if (options.ValidFilename is not null)
 						throw new CommandLineParserException("Can't use -oil twice");
 					options.InvalidFilename = next;
 					i++;
@@ -463,7 +444,7 @@ namespace IcedFuzzer {
 		static void AddValidFilename(Options options, string? filename, bool includeByteLength) {
 			if (filename is null)
 				throw new CommandLineParserException("Missing filename");
-			if (options.ValidFilename is object)
+			if (options.ValidFilename is not null)
 				throw new CommandLineParserException("Can't use -ov, -ovl or -ovlc twice");
 			options.ValidFilename = filename;
 			options.IncludeValidByteLength = includeByteLength;

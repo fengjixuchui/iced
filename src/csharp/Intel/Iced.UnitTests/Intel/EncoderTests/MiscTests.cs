@@ -1,25 +1,5 @@
-/*
-Copyright (C) 2018-2019 de4dot@gmail.com
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2018-present iced project and contributors
 
 #if ENCODER
 using System;
@@ -114,7 +94,7 @@ namespace Iced.UnitTests.Intel.EncoderTests {
 #endif
 
 				// If it fails, add more tests above (16-bit, 32-bit, and 64-bit test cases)
-				Static.Assert(IcedConstants.NumberOfEncodingKinds == 5 ? 0 : -1);
+				Static.Assert(IcedConstants.EncodingKindEnumCount == 5 ? 0 : -1);
 			}
 		}
 
@@ -141,6 +121,18 @@ namespace Iced.UnitTests.Intel.EncoderTests {
 			Assert.Equal(actual.Length, (int)len);
 			Assert.Equal(expected, actual);
 		}
+		
+		[Fact]
+		void Encode_EBP_EDX_with_no_displ() {
+			var writer = new CodeWriterImpl();
+			var encoder = Encoder.Create(32, writer);
+			var instruction = Instruction.Create(Code.Mov_r32_rm32, Register.EAX, new MemoryOperand(Register.EBP, Register.EDX));
+			uint len = encoder.Encode(instruction, 0);
+			var expected = new byte[] { 0x8B, 0x44, 0x15, 0x00 };
+			var actual = writer.ToArray();
+			Assert.Equal(actual.Length, (int)len);
+			Assert.Equal(expected, actual);
+		}
 
 		[Fact]
 		void Encode_R13D_with_no_displ() {
@@ -149,6 +141,18 @@ namespace Iced.UnitTests.Intel.EncoderTests {
 			var instruction = Instruction.Create(Code.Mov_r32_rm32, Register.EAX, new MemoryOperand(Register.R13D));
 			uint len = encoder.Encode(instruction, 0);
 			var expected = new byte[] { 0x67, 0x41, 0x8B, 0x45, 0x00 };
+			var actual = writer.ToArray();
+			Assert.Equal(actual.Length, (int)len);
+			Assert.Equal(expected, actual);
+		}
+
+		[Fact]
+		void Encode_R13D_EDX_with_no_displ() {
+			var writer = new CodeWriterImpl();
+			var encoder = Encoder.Create(64, writer);
+			var instruction = Instruction.Create(Code.Mov_r32_rm32, Register.EAX, new MemoryOperand(Register.R13D, Register.EDX));
+			uint len = encoder.Encode(instruction, 0);
+			var expected = new byte[] { 0x67, 0x41, 0x8B, 0x44, 0x15, 0x00 };
 			var actual = writer.ToArray();
 			Assert.Equal(actual.Length, (int)len);
 			Assert.Equal(expected, actual);
@@ -167,12 +171,36 @@ namespace Iced.UnitTests.Intel.EncoderTests {
 		}
 
 		[Fact]
+		void Encode_RBP_RDX_with_no_displ() {
+			var writer = new CodeWriterImpl();
+			var encoder = Encoder.Create(64, writer);
+			var instruction = Instruction.Create(Code.Mov_r64_rm64, Register.RAX, new MemoryOperand(Register.RBP, Register.RDX));
+			uint len = encoder.Encode(instruction, 0);
+			var expected = new byte[] { 0x48, 0x8B, 0x44, 0x15, 0x00 };
+			var actual = writer.ToArray();
+			Assert.Equal(actual.Length, (int)len);
+			Assert.Equal(expected, actual);
+		}
+
+		[Fact]
 		void Encode_R13_with_no_displ() {
 			var writer = new CodeWriterImpl();
 			var encoder = Encoder.Create(64, writer);
 			var instruction = Instruction.Create(Code.Mov_r64_rm64, Register.RAX, new MemoryOperand(Register.R13));
 			uint len = encoder.Encode(instruction, 0);
 			var expected = new byte[] { 0x49, 0x8B, 0x45, 0x00 };
+			var actual = writer.ToArray();
+			Assert.Equal(actual.Length, (int)len);
+			Assert.Equal(expected, actual);
+		}
+
+		[Fact]
+		void Encode_R13_RDX_with_no_displ() {
+			var writer = new CodeWriterImpl();
+			var encoder = Encoder.Create(64, writer);
+			var instruction = Instruction.Create(Code.Mov_r64_rm64, Register.RAX, new MemoryOperand(Register.R13, Register.RDX));
+			uint len = encoder.Encode(instruction, 0);
+			var expected = new byte[] { 0x49, 0x8B, 0x44, 0x15, 0x00 };
 			var actual = writer.ToArray();
 			Assert.Equal(actual.Length, (int)len);
 			Assert.Equal(expected, actual);
@@ -388,7 +416,7 @@ namespace Iced.UnitTests.Intel.EncoderTests {
 		void ToOpCode_throws_if_input_is_invalid() {
 			Assert.Throws<ArgumentOutOfRangeException>(() => ((Code)int.MinValue).ToOpCode());
 			Assert.Throws<ArgumentOutOfRangeException>(() => ((Code)(-1)).ToOpCode());
-			Assert.Throws<ArgumentOutOfRangeException>(() => ((Code)IcedConstants.NumberOfCodeValues).ToOpCode());
+			Assert.Throws<ArgumentOutOfRangeException>(() => ((Code)IcedConstants.CodeEnumCount).ToOpCode());
 			Assert.Throws<ArgumentOutOfRangeException>(() => ((Code)int.MaxValue).ToOpCode());
 		}
 #endif
@@ -396,11 +424,11 @@ namespace Iced.UnitTests.Intel.EncoderTests {
 		[Fact]
 		void Verify_MemoryOperand_ctors() {
 			{
-				var op = new MemoryOperand(Register.RCX, Register.RSI, 4, 0x12345678, 8, true, Register.FS);
+				var op = new MemoryOperand(Register.RCX, Register.RSI, 4, -0x1234_5678_9ABC_DEF1, 8, true, Register.FS);
 				Assert.Equal(Register.RCX, op.Base);
 				Assert.Equal(Register.RSI, op.Index);
 				Assert.Equal(4, op.Scale);
-				Assert.Equal(0x12345678, op.Displacement);
+				Assert.Equal(-0x1234_5678_9ABC_DEF1, op.Displacement);
 				Assert.Equal(8, op.DisplSize);
 				Assert.True(op.IsBroadcast);
 				Assert.Equal(Register.FS, op.SegmentPrefix);
@@ -416,41 +444,41 @@ namespace Iced.UnitTests.Intel.EncoderTests {
 				Assert.Equal(Register.FS, op.SegmentPrefix);
 			}
 			{
-				var op = new MemoryOperand(Register.RCX, 0x12345678, 8, true, Register.FS);
+				var op = new MemoryOperand(Register.RCX, -0x1234_5678_9ABC_DEF1, 8, true, Register.FS);
 				Assert.Equal(Register.RCX, op.Base);
 				Assert.Equal(Register.None, op.Index);
 				Assert.Equal(1, op.Scale);
-				Assert.Equal(0x12345678, op.Displacement);
+				Assert.Equal(-0x1234_5678_9ABC_DEF1, op.Displacement);
 				Assert.Equal(8, op.DisplSize);
 				Assert.True(op.IsBroadcast);
 				Assert.Equal(Register.FS, op.SegmentPrefix);
 			}
 			{
-				var op = new MemoryOperand(Register.RSI, 4, 0x12345678, 8, true, Register.FS);
+				var op = new MemoryOperand(Register.RSI, 4, -0x1234_5678_9ABC_DEF1, 8, true, Register.FS);
 				Assert.Equal(Register.None, op.Base);
 				Assert.Equal(Register.RSI, op.Index);
 				Assert.Equal(4, op.Scale);
-				Assert.Equal(0x12345678, op.Displacement);
+				Assert.Equal(-0x1234_5678_9ABC_DEF1, op.Displacement);
 				Assert.Equal(8, op.DisplSize);
 				Assert.True(op.IsBroadcast);
 				Assert.Equal(Register.FS, op.SegmentPrefix);
 			}
 			{
-				var op = new MemoryOperand(Register.RCX, 0x12345678, true, Register.FS);
+				var op = new MemoryOperand(Register.RCX, -0x1234_5678_9ABC_DEF1, true, Register.FS);
 				Assert.Equal(Register.RCX, op.Base);
 				Assert.Equal(Register.None, op.Index);
 				Assert.Equal(1, op.Scale);
-				Assert.Equal(0x12345678, op.Displacement);
+				Assert.Equal(-0x1234_5678_9ABC_DEF1, op.Displacement);
 				Assert.Equal(1, op.DisplSize);
 				Assert.True(op.IsBroadcast);
 				Assert.Equal(Register.FS, op.SegmentPrefix);
 			}
 			{
-				var op = new MemoryOperand(Register.RCX, Register.RSI, 4, 0x12345678, 8);
+				var op = new MemoryOperand(Register.RCX, Register.RSI, 4, -0x1234_5678_9ABC_DEF1, 8);
 				Assert.Equal(Register.RCX, op.Base);
 				Assert.Equal(Register.RSI, op.Index);
 				Assert.Equal(4, op.Scale);
-				Assert.Equal(0x12345678, op.Displacement);
+				Assert.Equal(-0x1234_5678_9ABC_DEF1, op.Displacement);
 				Assert.Equal(8, op.DisplSize);
 				Assert.False(op.IsBroadcast);
 				Assert.Equal(Register.None, op.SegmentPrefix);
@@ -476,31 +504,31 @@ namespace Iced.UnitTests.Intel.EncoderTests {
 				Assert.Equal(Register.None, op.SegmentPrefix);
 			}
 			{
-				var op = new MemoryOperand(Register.RCX, 0x12345678, 8);
+				var op = new MemoryOperand(Register.RCX, -0x1234_5678_9ABC_DEF1, 8);
 				Assert.Equal(Register.RCX, op.Base);
 				Assert.Equal(Register.None, op.Index);
 				Assert.Equal(1, op.Scale);
-				Assert.Equal(0x12345678, op.Displacement);
+				Assert.Equal(-0x1234_5678_9ABC_DEF1, op.Displacement);
 				Assert.Equal(8, op.DisplSize);
 				Assert.False(op.IsBroadcast);
 				Assert.Equal(Register.None, op.SegmentPrefix);
 			}
 			{
-				var op = new MemoryOperand(Register.RSI, 4, 0x12345678, 8);
+				var op = new MemoryOperand(Register.RSI, 4, -0x1234_5678_9ABC_DEF1, 8);
 				Assert.Equal(Register.None, op.Base);
 				Assert.Equal(Register.RSI, op.Index);
 				Assert.Equal(4, op.Scale);
-				Assert.Equal(0x12345678, op.Displacement);
+				Assert.Equal(-0x1234_5678_9ABC_DEF1, op.Displacement);
 				Assert.Equal(8, op.DisplSize);
 				Assert.False(op.IsBroadcast);
 				Assert.Equal(Register.None, op.SegmentPrefix);
 			}
 			{
-				var op = new MemoryOperand(Register.RCX, 0x12345678);
+				var op = new MemoryOperand(Register.RCX, -0x1234_5678_9ABC_DEF1);
 				Assert.Equal(Register.RCX, op.Base);
 				Assert.Equal(Register.None, op.Index);
 				Assert.Equal(1, op.Scale);
-				Assert.Equal(0x12345678, op.Displacement);
+				Assert.Equal(-0x1234_5678_9ABC_DEF1, op.Displacement);
 				Assert.Equal(1, op.DisplSize);
 				Assert.False(op.IsBroadcast);
 				Assert.Equal(Register.None, op.SegmentPrefix);

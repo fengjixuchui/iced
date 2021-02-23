@@ -1,41 +1,15 @@
-/*
-Copyright (C) 2018-2019 de4dot@gmail.com
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
-
-#![allow(unused_results)]
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2018-present iced project and contributors
 
 use super::super::super::test_utils::from_str_conv::*;
+use super::super::super::test_utils::get_default_ip;
 use super::super::super::*;
 use super::decoder_test_case::*;
 use super::enums::DecoderTestOptions;
-#[cfg(not(feature = "std"))]
 use alloc::string::String;
-#[cfg(not(feature = "std"))]
 use alloc::vec::Vec;
 use core::iter::IntoIterator;
 use core::u32;
-#[cfg(not(feature = "std"))]
-use hashbrown::HashMap;
-#[cfg(feature = "std")]
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::prelude::*;
@@ -78,72 +52,72 @@ pub(super) struct IntoIter {
 lazy_static! {
 	pub(super) static ref TO_DECODER_TEST_PARSER_CONSTANTS: HashMap<&'static str, u32> = {
 		let mut h = HashMap::with_capacity(66);
-		h.insert("err", DecoderTestParserConstants::DECODER_ERROR);
-		h.insert("bcst", DecoderTestParserConstants::BROADCAST);
-		h.insert("xacquire", DecoderTestParserConstants::XACQUIRE);
-		h.insert("xrelease", DecoderTestParserConstants::XRELEASE);
-		h.insert("rep", DecoderTestParserConstants::REP);
-		h.insert("repe", DecoderTestParserConstants::REPE);
-		h.insert("repne", DecoderTestParserConstants::REPNE);
-		h.insert("lock", DecoderTestParserConstants::LOCK);
-		h.insert("zmsk", DecoderTestParserConstants::ZEROING_MASKING);
-		h.insert("sae", DecoderTestParserConstants::SUPPRESS_ALL_EXCEPTIONS);
-		h.insert("vsib32", DecoderTestParserConstants::VSIB32);
-		h.insert("vsib64", DecoderTestParserConstants::VSIB64);
-		h.insert("rc-rn", DecoderTestParserConstants::ROUND_TO_NEAREST);
-		h.insert("rc-rd", DecoderTestParserConstants::ROUND_DOWN);
-		h.insert("rc-ru", DecoderTestParserConstants::ROUND_UP);
-		h.insert("rc-rz", DecoderTestParserConstants::ROUND_TOWARD_ZERO);
-		h.insert("op0", DecoderTestParserConstants::OP0_KIND);
-		h.insert("op1", DecoderTestParserConstants::OP1_KIND);
-		h.insert("op2", DecoderTestParserConstants::OP2_KIND);
-		h.insert("op3", DecoderTestParserConstants::OP3_KIND);
-		h.insert("op4", DecoderTestParserConstants::OP4_KIND);
-		h.insert("enc", DecoderTestParserConstants::ENCODED_HEX_BYTES);
-		h.insert("code", DecoderTestParserConstants::CODE);
-		h.insert("decopt", DecoderTestParserConstants::DECODER_OPTIONS);
-		h.insert("es:", DecoderTestParserConstants::SEGMENT_PREFIX_ES);
-		h.insert("cs:", DecoderTestParserConstants::SEGMENT_PREFIX_CS);
-		h.insert("ss:", DecoderTestParserConstants::SEGMENT_PREFIX_SS);
-		h.insert("ds:", DecoderTestParserConstants::SEGMENT_PREFIX_DS);
-		h.insert("fs:", DecoderTestParserConstants::SEGMENT_PREFIX_FS);
-		h.insert("gs:", DecoderTestParserConstants::SEGMENT_PREFIX_GS);
-		h.insert("k1", DecoderTestParserConstants::OP_MASK_K1);
-		h.insert("k2", DecoderTestParserConstants::OP_MASK_K2);
-		h.insert("k3", DecoderTestParserConstants::OP_MASK_K3);
-		h.insert("k4", DecoderTestParserConstants::OP_MASK_K4);
-		h.insert("k5", DecoderTestParserConstants::OP_MASK_K5);
-		h.insert("k6", DecoderTestParserConstants::OP_MASK_K6);
-		h.insert("k7", DecoderTestParserConstants::OP_MASK_K7);
-		h.insert("co", DecoderTestParserConstants::CONSTANT_OFFSETS);
-		h.insert("r", DecoderTestParserConstants::OP_KIND_REGISTER);
-		h.insert("nb16", DecoderTestParserConstants::OP_KIND_NEAR_BRANCH16);
-		h.insert("nb32", DecoderTestParserConstants::OP_KIND_NEAR_BRANCH32);
-		h.insert("nb64", DecoderTestParserConstants::OP_KIND_NEAR_BRANCH64);
-		h.insert("fb16", DecoderTestParserConstants::OP_KIND_FAR_BRANCH16);
-		h.insert("fb32", DecoderTestParserConstants::OP_KIND_FAR_BRANCH32);
-		h.insert("i8", DecoderTestParserConstants::OP_KIND_IMMEDIATE8);
-		h.insert("i16", DecoderTestParserConstants::OP_KIND_IMMEDIATE16);
-		h.insert("i32", DecoderTestParserConstants::OP_KIND_IMMEDIATE32);
-		h.insert("i64", DecoderTestParserConstants::OP_KIND_IMMEDIATE64);
-		h.insert("i8to16", DecoderTestParserConstants::OP_KIND_IMMEDIATE8TO16);
-		h.insert("i8to32", DecoderTestParserConstants::OP_KIND_IMMEDIATE8TO32);
-		h.insert("i8to64", DecoderTestParserConstants::OP_KIND_IMMEDIATE8TO64);
-		h.insert("i32to64", DecoderTestParserConstants::OP_KIND_IMMEDIATE32TO64);
-		h.insert("i8_2nd", DecoderTestParserConstants::OP_KIND_IMMEDIATE8_2ND);
-		h.insert("segsi", DecoderTestParserConstants::OP_KIND_MEMORY_SEG_SI);
-		h.insert("segesi", DecoderTestParserConstants::OP_KIND_MEMORY_SEG_ESI);
-		h.insert("segrsi", DecoderTestParserConstants::OP_KIND_MEMORY_SEG_RSI);
-		h.insert("segdi", DecoderTestParserConstants::OP_KIND_MEMORY_SEG_DI);
-		h.insert("segedi", DecoderTestParserConstants::OP_KIND_MEMORY_SEG_EDI);
-		h.insert("segrdi", DecoderTestParserConstants::OP_KIND_MEMORY_SEG_RDI);
-		h.insert("esdi", DecoderTestParserConstants::OP_KIND_MEMORY_ES_DI);
-		h.insert("esedi", DecoderTestParserConstants::OP_KIND_MEMORY_ES_EDI);
-		h.insert("esrdi", DecoderTestParserConstants::OP_KIND_MEMORY_ES_RDI);
-		h.insert("m64", DecoderTestParserConstants::OP_KIND_MEMORY64);
-		h.insert("m", DecoderTestParserConstants::OP_KIND_MEMORY);
-		h.insert("noencode", DecoderTestParserConstants::DECODER_TEST_OPTIONS_NO_ENCODE);
-		h.insert("no_opt_disable_test", DecoderTestParserConstants::DECODER_TEST_OPTIONS_NO_OPT_DISABLE_TEST);
+		let _ = h.insert("err", DecoderTestParserConstants::DECODER_ERROR);
+		let _ = h.insert("bcst", DecoderTestParserConstants::BROADCAST);
+		let _ = h.insert("xacquire", DecoderTestParserConstants::XACQUIRE);
+		let _ = h.insert("xrelease", DecoderTestParserConstants::XRELEASE);
+		let _ = h.insert("rep", DecoderTestParserConstants::REP);
+		let _ = h.insert("repe", DecoderTestParserConstants::REPE);
+		let _ = h.insert("repne", DecoderTestParserConstants::REPNE);
+		let _ = h.insert("lock", DecoderTestParserConstants::LOCK);
+		let _ = h.insert("zmsk", DecoderTestParserConstants::ZEROING_MASKING);
+		let _ = h.insert("sae", DecoderTestParserConstants::SUPPRESS_ALL_EXCEPTIONS);
+		let _ = h.insert("vsib32", DecoderTestParserConstants::VSIB32);
+		let _ = h.insert("vsib64", DecoderTestParserConstants::VSIB64);
+		let _ = h.insert("rc-rn", DecoderTestParserConstants::ROUND_TO_NEAREST);
+		let _ = h.insert("rc-rd", DecoderTestParserConstants::ROUND_DOWN);
+		let _ = h.insert("rc-ru", DecoderTestParserConstants::ROUND_UP);
+		let _ = h.insert("rc-rz", DecoderTestParserConstants::ROUND_TOWARD_ZERO);
+		let _ = h.insert("op0", DecoderTestParserConstants::OP0_KIND);
+		let _ = h.insert("op1", DecoderTestParserConstants::OP1_KIND);
+		let _ = h.insert("op2", DecoderTestParserConstants::OP2_KIND);
+		let _ = h.insert("op3", DecoderTestParserConstants::OP3_KIND);
+		let _ = h.insert("op4", DecoderTestParserConstants::OP4_KIND);
+		let _ = h.insert("enc", DecoderTestParserConstants::ENCODED_HEX_BYTES);
+		let _ = h.insert("code", DecoderTestParserConstants::CODE);
+		let _ = h.insert("decopt", DecoderTestParserConstants::DECODER_OPTIONS);
+		let _ = h.insert("es:", DecoderTestParserConstants::SEGMENT_PREFIX_ES);
+		let _ = h.insert("cs:", DecoderTestParserConstants::SEGMENT_PREFIX_CS);
+		let _ = h.insert("ss:", DecoderTestParserConstants::SEGMENT_PREFIX_SS);
+		let _ = h.insert("ds:", DecoderTestParserConstants::SEGMENT_PREFIX_DS);
+		let _ = h.insert("fs:", DecoderTestParserConstants::SEGMENT_PREFIX_FS);
+		let _ = h.insert("gs:", DecoderTestParserConstants::SEGMENT_PREFIX_GS);
+		let _ = h.insert("k1", DecoderTestParserConstants::OP_MASK_K1);
+		let _ = h.insert("k2", DecoderTestParserConstants::OP_MASK_K2);
+		let _ = h.insert("k3", DecoderTestParserConstants::OP_MASK_K3);
+		let _ = h.insert("k4", DecoderTestParserConstants::OP_MASK_K4);
+		let _ = h.insert("k5", DecoderTestParserConstants::OP_MASK_K5);
+		let _ = h.insert("k6", DecoderTestParserConstants::OP_MASK_K6);
+		let _ = h.insert("k7", DecoderTestParserConstants::OP_MASK_K7);
+		let _ = h.insert("co", DecoderTestParserConstants::CONSTANT_OFFSETS);
+		let _ = h.insert("r", DecoderTestParserConstants::OP_KIND_REGISTER);
+		let _ = h.insert("nb16", DecoderTestParserConstants::OP_KIND_NEAR_BRANCH16);
+		let _ = h.insert("nb32", DecoderTestParserConstants::OP_KIND_NEAR_BRANCH32);
+		let _ = h.insert("nb64", DecoderTestParserConstants::OP_KIND_NEAR_BRANCH64);
+		let _ = h.insert("fb16", DecoderTestParserConstants::OP_KIND_FAR_BRANCH16);
+		let _ = h.insert("fb32", DecoderTestParserConstants::OP_KIND_FAR_BRANCH32);
+		let _ = h.insert("i8", DecoderTestParserConstants::OP_KIND_IMMEDIATE8);
+		let _ = h.insert("i16", DecoderTestParserConstants::OP_KIND_IMMEDIATE16);
+		let _ = h.insert("i32", DecoderTestParserConstants::OP_KIND_IMMEDIATE32);
+		let _ = h.insert("i64", DecoderTestParserConstants::OP_KIND_IMMEDIATE64);
+		let _ = h.insert("i8to16", DecoderTestParserConstants::OP_KIND_IMMEDIATE8TO16);
+		let _ = h.insert("i8to32", DecoderTestParserConstants::OP_KIND_IMMEDIATE8TO32);
+		let _ = h.insert("i8to64", DecoderTestParserConstants::OP_KIND_IMMEDIATE8TO64);
+		let _ = h.insert("i32to64", DecoderTestParserConstants::OP_KIND_IMMEDIATE32TO64);
+		let _ = h.insert("i8_2nd", DecoderTestParserConstants::OP_KIND_IMMEDIATE8_2ND);
+		let _ = h.insert("segsi", DecoderTestParserConstants::OP_KIND_MEMORY_SEG_SI);
+		let _ = h.insert("segesi", DecoderTestParserConstants::OP_KIND_MEMORY_SEG_ESI);
+		let _ = h.insert("segrsi", DecoderTestParserConstants::OP_KIND_MEMORY_SEG_RSI);
+		let _ = h.insert("segdi", DecoderTestParserConstants::OP_KIND_MEMORY_SEG_DI);
+		let _ = h.insert("segedi", DecoderTestParserConstants::OP_KIND_MEMORY_SEG_EDI);
+		let _ = h.insert("segrdi", DecoderTestParserConstants::OP_KIND_MEMORY_SEG_RDI);
+		let _ = h.insert("esdi", DecoderTestParserConstants::OP_KIND_MEMORY_ES_DI);
+		let _ = h.insert("esedi", DecoderTestParserConstants::OP_KIND_MEMORY_ES_EDI);
+		let _ = h.insert("esrdi", DecoderTestParserConstants::OP_KIND_MEMORY_ES_RDI);
+		let _ = h.insert("m", DecoderTestParserConstants::OP_KIND_MEMORY);
+		let _ = h.insert("noencode", DecoderTestParserConstants::DECODER_TEST_OPTIONS_NO_ENCODE);
+		let _ = h.insert("no_opt_disable_test", DecoderTestParserConstants::DECODER_TEST_OPTIONS_NO_OPT_DISABLE_TEST);
+		let _ = h.insert("ip", DecoderTestParserConstants::IP);
 		h
 	};
 }
@@ -213,10 +187,10 @@ impl DecoderTestParserConstants {
 	pub(crate) const OP_KIND_MEMORY_ES_DI: u32 = 59;
 	pub(crate) const OP_KIND_MEMORY_ES_EDI: u32 = 60;
 	pub(crate) const OP_KIND_MEMORY_ES_RDI: u32 = 61;
-	pub(crate) const OP_KIND_MEMORY64: u32 = 62;
-	pub(crate) const OP_KIND_MEMORY: u32 = 63;
-	pub(crate) const DECODER_TEST_OPTIONS_NO_ENCODE: u32 = 64;
-	pub(crate) const DECODER_TEST_OPTIONS_NO_OPT_DISABLE_TEST: u32 = 65;
+	pub(crate) const OP_KIND_MEMORY: u32 = 62;
+	pub(crate) const DECODER_TEST_OPTIONS_NO_ENCODE: u32 = 63;
+	pub(crate) const DECODER_TEST_OPTIONS_NO_OPT_DISABLE_TEST: u32 = 64;
+	pub(crate) const IP: u32 = 65;
 }
 // GENERATOR-END: DecoderTestText
 
@@ -225,30 +199,25 @@ impl Iterator for IntoIter {
 
 	fn next(&mut self) -> Option<Self::Item> {
 		loop {
-			match self.lines.next() {
-				None => return None,
-				Some(info) => {
-					let result = match info {
-						Ok(line) => {
-							self.line_number += 1;
-							if line.is_empty() || line.starts_with('#') {
-								continue;
-							}
-							self.read_next_test_case(line, self.line_number)
-						}
-						Err(err) => Err(err.to_string()),
-					};
-					match result {
-						Ok(tc) => {
-							if let Some(tc) = tc {
-								return Some(tc);
-							} else {
-								continue;
-							}
-						}
-						Err(err) => panic!("Error parsing decoder test case file '{}', line {}: {}", self.filename, self.line_number, err),
+			let result = match self.lines.next()? {
+				Ok(line) => {
+					self.line_number += 1;
+					if line.is_empty() || line.starts_with('#') {
+						continue;
+					}
+					self.read_next_test_case(line, self.line_number)
+				}
+				Err(err) => Err(err.to_string()),
+			};
+			match result {
+				Ok(tc) => {
+					if let Some(tc) = tc {
+						return Some(tc);
+					} else {
+						continue;
 					}
 				}
+				Err(err) => panic!("Error parsing decoder test case file '{}', line {}: {}", self.filename, self.line_number, err),
 			}
 		}
 	}
@@ -265,6 +234,7 @@ impl IntoIter {
 		tc.line_number = line_number;
 		tc.test_options = DecoderTestOptions::NONE;
 		tc.bitness = self.bitness;
+		tc.ip = get_default_ip(self.bitness);
 		tc.hex_bytes = parts[0].trim().to_string();
 		let _ = to_vec_u8(&tc.hex_bytes)?;
 		tc.encoded_hex_bytes = tc.hex_bytes.clone();
@@ -286,7 +256,7 @@ impl IntoIter {
 			let value = if kv_parts.len() == 1 {
 				""
 			} else {
-				assert_eq!(2, kv_parts.len());
+				assert_eq!(kv_parts.len(), 2);
 				key = kv_parts[0];
 				kv_parts[1]
 			};
@@ -360,6 +330,13 @@ impl IntoIter {
 					found_code = true;
 				}
 
+				DecoderTestParserConstants::IP => {
+					if value.is_empty() {
+						return Err(format!("Invalid encoded IP: '{}'", value));
+					}
+					tc.ip = to_u64(value)?;
+				}
+
 				DecoderTestParserConstants::DECODER_OPTIONS => tc.decoder_options |= IntoIter::parse_decoder_options(value)?,
 				DecoderTestParserConstants::SEGMENT_PREFIX_ES => tc.segment_prefix = Register::ES,
 				DecoderTestParserConstants::SEGMENT_PREFIX_CS => tc.segment_prefix = Register::CS,
@@ -401,22 +378,22 @@ impl IntoIter {
 		Ok(decoder_options)
 	}
 
-	fn read_op_kind(tc: &mut DecoderTestCase, operand: u32, value: &str) -> Result<(), String> {
+	fn read_op_kind(tc: &mut DecoderTestCase, operand: usize, value: &str) -> Result<(), String> {
 		let parts: Vec<_> = value.split(';').collect();
 		match *(*TO_DECODER_TEST_PARSER_CONSTANTS).get(parts[0]).unwrap_or(&u32::MAX) {
 			DecoderTestParserConstants::OP_KIND_REGISTER => {
 				if parts.len() != 2 {
 					return Err(format!("Operand {}: expected 2 values, actual = {}", operand, parts.len()));
 				}
-				tc.set_op_register(operand, to_register(parts[1])?);
-				tc.set_op_kind(operand, OpKind::Register);
+				tc.op_registers[operand] = to_register(parts[1])?;
+				tc.op_kinds[operand] = OpKind::Register;
 			}
 
 			DecoderTestParserConstants::OP_KIND_NEAR_BRANCH16 => {
 				if parts.len() != 2 {
 					return Err(format!("Operand {}: expected 2 values, actual = {}", operand, parts.len()));
 				}
-				tc.set_op_kind(operand, OpKind::NearBranch16);
+				tc.op_kinds[operand] = OpKind::NearBranch16;
 				tc.near_branch = to_u16(parts[1])? as u64;
 			}
 
@@ -424,7 +401,7 @@ impl IntoIter {
 				if parts.len() != 2 {
 					return Err(format!("Operand {}: expected 2 values, actual = {}", operand, parts.len()));
 				}
-				tc.set_op_kind(operand, OpKind::NearBranch32);
+				tc.op_kinds[operand] = OpKind::NearBranch32;
 				tc.near_branch = to_u32(parts[1])? as u64;
 			}
 
@@ -432,7 +409,7 @@ impl IntoIter {
 				if parts.len() != 2 {
 					return Err(format!("Operand {}: expected 2 values, actual = {}", operand, parts.len()));
 				}
-				tc.set_op_kind(operand, OpKind::NearBranch64);
+				tc.op_kinds[operand] = OpKind::NearBranch64;
 				tc.near_branch = to_u64(parts[1])?;
 			}
 
@@ -440,7 +417,7 @@ impl IntoIter {
 				if parts.len() != 3 {
 					return Err(format!("Operand {}: expected 3 values, actual = {}", operand, parts.len()));
 				}
-				tc.set_op_kind(operand, OpKind::FarBranch16);
+				tc.op_kinds[operand] = OpKind::FarBranch16;
 				tc.far_branch_selector = to_u16(parts[1])?;
 				tc.far_branch = to_u16(parts[2])? as u32;
 			}
@@ -449,7 +426,7 @@ impl IntoIter {
 				if parts.len() != 3 {
 					return Err(format!("Operand {}: expected 3 values, actual = {}", operand, parts.len()));
 				}
-				tc.set_op_kind(operand, OpKind::FarBranch32);
+				tc.op_kinds[operand] = OpKind::FarBranch32;
 				tc.far_branch_selector = to_u16(parts[1])?;
 				tc.far_branch = to_u32(parts[2])?;
 			}
@@ -458,7 +435,7 @@ impl IntoIter {
 				if parts.len() != 2 {
 					return Err(format!("Operand {}: expected 2 values, actual = {}", operand, parts.len()));
 				}
-				tc.set_op_kind(operand, OpKind::Immediate8);
+				tc.op_kinds[operand] = OpKind::Immediate8;
 				tc.immediate = to_u8(parts[1])? as u64;
 			}
 
@@ -466,7 +443,7 @@ impl IntoIter {
 				if parts.len() != 2 {
 					return Err(format!("Operand {}: expected 2 values, actual = {}", operand, parts.len()));
 				}
-				tc.set_op_kind(operand, OpKind::Immediate16);
+				tc.op_kinds[operand] = OpKind::Immediate16;
 				tc.immediate = to_u16(parts[1])? as u64;
 			}
 
@@ -474,7 +451,7 @@ impl IntoIter {
 				if parts.len() != 2 {
 					return Err(format!("Operand {}: expected 2 values, actual = {}", operand, parts.len()));
 				}
-				tc.set_op_kind(operand, OpKind::Immediate32);
+				tc.op_kinds[operand] = OpKind::Immediate32;
 				tc.immediate = to_u32(parts[1])? as u64;
 			}
 
@@ -482,7 +459,7 @@ impl IntoIter {
 				if parts.len() != 2 {
 					return Err(format!("Operand {}: expected 2 values, actual = {}", operand, parts.len()));
 				}
-				tc.set_op_kind(operand, OpKind::Immediate64);
+				tc.op_kinds[operand] = OpKind::Immediate64;
 				tc.immediate = to_u64(parts[1])?;
 			}
 
@@ -490,7 +467,7 @@ impl IntoIter {
 				if parts.len() != 2 {
 					return Err(format!("Operand {}: expected 2 values, actual = {}", operand, parts.len()));
 				}
-				tc.set_op_kind(operand, OpKind::Immediate8to16);
+				tc.op_kinds[operand] = OpKind::Immediate8to16;
 				tc.immediate = to_u16(parts[1])? as u64;
 			}
 
@@ -498,7 +475,7 @@ impl IntoIter {
 				if parts.len() != 2 {
 					return Err(format!("Operand {}: expected 2 values, actual = {}", operand, parts.len()));
 				}
-				tc.set_op_kind(operand, OpKind::Immediate8to32);
+				tc.op_kinds[operand] = OpKind::Immediate8to32;
 				tc.immediate = to_u32(parts[1])? as u64;
 			}
 
@@ -506,7 +483,7 @@ impl IntoIter {
 				if parts.len() != 2 {
 					return Err(format!("Operand {}: expected 2 values, actual = {}", operand, parts.len()));
 				}
-				tc.set_op_kind(operand, OpKind::Immediate8to64);
+				tc.op_kinds[operand] = OpKind::Immediate8to64;
 				tc.immediate = to_u64(parts[1])?;
 			}
 
@@ -514,7 +491,7 @@ impl IntoIter {
 				if parts.len() != 2 {
 					return Err(format!("Operand {}: expected 2 values, actual = {}", operand, parts.len()));
 				}
-				tc.set_op_kind(operand, OpKind::Immediate32to64);
+				tc.op_kinds[operand] = OpKind::Immediate32to64;
 				tc.immediate = to_u64(parts[1])?;
 			}
 
@@ -522,7 +499,7 @@ impl IntoIter {
 				if parts.len() != 2 {
 					return Err(format!("Operand {}: expected 2 values, actual = {}", operand, parts.len()));
 				}
-				tc.set_op_kind(operand, OpKind::Immediate8_2nd);
+				tc.op_kinds[operand] = OpKind::Immediate8_2nd;
 				tc.immediate_2nd = to_u8(parts[1])?;
 			}
 
@@ -530,7 +507,7 @@ impl IntoIter {
 				if parts.len() != 3 {
 					return Err(format!("Operand {}: expected 3 values, actual = {}", operand, parts.len()));
 				}
-				tc.set_op_kind(operand, OpKind::MemorySegSI);
+				tc.op_kinds[operand] = OpKind::MemorySegSI;
 				tc.memory_segment = to_register(parts[1])?;
 				tc.memory_size = to_memory_size(parts[2])?;
 			}
@@ -539,7 +516,7 @@ impl IntoIter {
 				if parts.len() != 3 {
 					return Err(format!("Operand {}: expected 3 values, actual = {}", operand, parts.len()));
 				}
-				tc.set_op_kind(operand, OpKind::MemorySegESI);
+				tc.op_kinds[operand] = OpKind::MemorySegESI;
 				tc.memory_segment = to_register(parts[1])?;
 				tc.memory_size = to_memory_size(parts[2])?;
 			}
@@ -548,7 +525,7 @@ impl IntoIter {
 				if parts.len() != 3 {
 					return Err(format!("Operand {}: expected 3 values, actual = {}", operand, parts.len()));
 				}
-				tc.set_op_kind(operand, OpKind::MemorySegRSI);
+				tc.op_kinds[operand] = OpKind::MemorySegRSI;
 				tc.memory_segment = to_register(parts[1])?;
 				tc.memory_size = to_memory_size(parts[2])?;
 			}
@@ -557,7 +534,7 @@ impl IntoIter {
 				if parts.len() != 3 {
 					return Err(format!("Operand {}: expected 3 values, actual = {}", operand, parts.len()));
 				}
-				tc.set_op_kind(operand, OpKind::MemorySegDI);
+				tc.op_kinds[operand] = OpKind::MemorySegDI;
 				tc.memory_segment = to_register(parts[1])?;
 				tc.memory_size = to_memory_size(parts[2])?;
 			}
@@ -566,7 +543,7 @@ impl IntoIter {
 				if parts.len() != 3 {
 					return Err(format!("Operand {}: expected 3 values, actual = {}", operand, parts.len()));
 				}
-				tc.set_op_kind(operand, OpKind::MemorySegEDI);
+				tc.op_kinds[operand] = OpKind::MemorySegEDI;
 				tc.memory_segment = to_register(parts[1])?;
 				tc.memory_size = to_memory_size(parts[2])?;
 			}
@@ -575,7 +552,7 @@ impl IntoIter {
 				if parts.len() != 3 {
 					return Err(format!("Operand {}: expected 3 values, actual = {}", operand, parts.len()));
 				}
-				tc.set_op_kind(operand, OpKind::MemorySegRDI);
+				tc.op_kinds[operand] = OpKind::MemorySegRDI;
 				tc.memory_segment = to_register(parts[1])?;
 				tc.memory_size = to_memory_size(parts[2])?;
 			}
@@ -584,7 +561,7 @@ impl IntoIter {
 				if parts.len() != 2 {
 					return Err(format!("Operand {}: expected 2 values, actual = {}", operand, parts.len()));
 				}
-				tc.set_op_kind(operand, OpKind::MemoryESDI);
+				tc.op_kinds[operand] = OpKind::MemoryESDI;
 				tc.memory_size = to_memory_size(parts[1])?;
 			}
 
@@ -592,7 +569,7 @@ impl IntoIter {
 				if parts.len() != 2 {
 					return Err(format!("Operand {}: expected 2 values, actual = {}", operand, parts.len()));
 				}
-				tc.set_op_kind(operand, OpKind::MemoryESEDI);
+				tc.op_kinds[operand] = OpKind::MemoryESEDI;
 				tc.memory_size = to_memory_size(parts[1])?;
 			}
 
@@ -600,30 +577,20 @@ impl IntoIter {
 				if parts.len() != 2 {
 					return Err(format!("Operand {}: expected 2 values, actual = {}", operand, parts.len()));
 				}
-				tc.set_op_kind(operand, OpKind::MemoryESRDI);
+				tc.op_kinds[operand] = OpKind::MemoryESRDI;
 				tc.memory_size = to_memory_size(parts[1])?;
-			}
-
-			DecoderTestParserConstants::OP_KIND_MEMORY64 => {
-				if parts.len() != 4 {
-					return Err(format!("Operand {}: expected 4 values, actual = {}", operand, parts.len()));
-				}
-				tc.set_op_kind(operand, OpKind::Memory64);
-				tc.memory_segment = to_register(parts[1])?;
-				tc.memory_address64 = to_u64(parts[2])?;
-				tc.memory_size = to_memory_size(parts[3])?;
 			}
 
 			DecoderTestParserConstants::OP_KIND_MEMORY => {
 				if parts.len() != 8 {
 					return Err(format!("Operand {}: expected 8 values, actual = {}", operand, parts.len()));
 				}
-				tc.set_op_kind(operand, OpKind::Memory);
+				tc.op_kinds[operand] = OpKind::Memory;
 				tc.memory_segment = to_register(parts[1])?;
 				tc.memory_base = to_register(parts[2])?;
 				tc.memory_index = to_register(parts[3])?;
 				tc.memory_index_scale = to_u32(parts[4])?;
-				tc.memory_displacement = to_u32(parts[5])?;
+				tc.memory_displacement = to_u64(parts[5])?;
 				tc.memory_displ_size = to_u32(parts[6])?;
 				tc.memory_size = to_memory_size(parts[7])?;
 			}

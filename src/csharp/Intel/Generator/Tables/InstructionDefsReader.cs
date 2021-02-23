@@ -1,25 +1,5 @@
-/*
-Copyright (C) 2018-2019 de4dot@gmail.com
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2018-present iced project and contributors
 
 using System;
 using System.Collections.Generic;
@@ -41,7 +21,7 @@ namespace Generator.Tables {
 		readonly StringBuilder sb;
 		readonly GenTypes genTypes;
 		readonly RegisterDef[] regDefs;
-		readonly MemorySizeInfoTable memSizeTbl;
+		readonly MemorySizeDefs memSizeTbl;
 		readonly EnumValue tupleTypeN1;
 		readonly string filename;
 		readonly string[] lines;
@@ -145,7 +125,7 @@ namespace Generator.Tables {
 			sb = new StringBuilder();
 			this.genTypes = genTypes;
 			regDefs = genTypes.GetObject<RegisterDefs>(TypeIds.RegisterDefs).Defs;
-			memSizeTbl = genTypes.GetObject<MemorySizeInfoTable>(TypeIds.MemorySizeInfoTable);
+			memSizeTbl = genTypes.GetObject<MemorySizeDefs>(TypeIds.MemorySizeDefs);
 			this.filename = filename;
 			lines = File.ReadAllLines(filename);
 			errors = new List<string>();
@@ -297,7 +277,7 @@ namespace Generator.Tables {
 				return false;
 			}
 
-			line = line.Substring(DefBeginPrefix.Length).Trim();
+			line = line[DefBeginPrefix.Length..].Trim();
 			if (!TryParseDefLine(line, out var opCodeStr, out var instrStr, out var cpuid,
 				out var tupleType, out var error)) {
 				Error(lineIndex, error);
@@ -382,7 +362,7 @@ namespace Generator.Tables {
 
 				switch (lineKey) {
 				case "mnemonic":
-					if (state.MnemonicStr is object) {
+					if (state.MnemonicStr is not null) {
 						Error(lineIndex, $"Duplicate {lineKey}");
 						return false;
 					}
@@ -390,7 +370,7 @@ namespace Generator.Tables {
 					break;
 
 				case "code-mnemonic":
-					if (state.CodeMnemonic is object) {
+					if (state.CodeMnemonic is not null) {
 						Error(lineIndex, $"Duplicate {lineKey}");
 						return false;
 					}
@@ -426,7 +406,7 @@ namespace Generator.Tables {
 					break;
 
 				case "code-suffix":
-					if (state.CodeSuffix is object) {
+					if (state.CodeSuffix is not null) {
 						Error(lineIndex, $"Duplicate {lineKey}");
 						return false;
 					}
@@ -434,7 +414,7 @@ namespace Generator.Tables {
 					break;
 
 				case "code-memory-size":
-					if (state.CodeMemorySize is object) {
+					if (state.CodeMemorySize is not null) {
 						Error(lineIndex, $"Duplicate {lineKey}");
 						return false;
 					}
@@ -442,7 +422,7 @@ namespace Generator.Tables {
 					break;
 
 				case "code-memory-size-suffix":
-					if (state.CodeMemorySizeSuffix is object) {
+					if (state.CodeMemorySizeSuffix is not null) {
 						Error(lineIndex, $"Duplicate {lineKey}");
 						return false;
 					}
@@ -450,7 +430,7 @@ namespace Generator.Tables {
 					break;
 
 				case "implied":
-					if (state.ImpliedAccesses is object) {
+					if (state.ImpliedAccesses is not null) {
 						Error(lineIndex, $"Duplicate {lineKey}");
 						return false;
 					}
@@ -610,7 +590,7 @@ namespace Generator.Tables {
 
 						case "privileged":
 						case "no-privileged":
-							if (privileged is object) {
+							if (privileged is not null) {
 								error = "Duplicate privileged/no-privileged value";
 								return false;
 							}
@@ -751,7 +731,7 @@ namespace Generator.Tables {
 							break;
 
 						case "cflow":
-							if (state.Cflow is object) {
+							if (state.Cflow is not null) {
 								Error(lineIndex, $"Duplicate {newKey}");
 								return false;
 							}
@@ -772,7 +752,7 @@ namespace Generator.Tables {
 							break;
 
 						case "dec-opt":
-							if (state.DecoderOption is object) {
+							if (state.DecoderOption is not null) {
 								Error(lineIndex, $"Duplicate {newKey}");
 								return false;
 							}
@@ -783,7 +763,7 @@ namespace Generator.Tables {
 							break;
 
 						case "pseudo":
-							if (state.PseudoOpsKind is object) {
+							if (state.PseudoOpsKind is not null) {
 								Error(lineIndex, $"Duplicate {newKey}");
 								return false;
 							}
@@ -1022,8 +1002,8 @@ namespace Generator.Tables {
 								Error(lineIndex, $"Unknown op kind `{opKindStr}`");
 								return false;
 							}
-							var opKindValue = opKindStr.Substring(index + 1).Trim();
-							opKindStr = opKindStr.Substring(0, index).Trim();
+							var opKindValue = opKindStr[(index + 1)..].Trim();
+							opKindStr = opKindStr[0..index].Trim();
 							switch (opKindStr) {
 							case "r":
 								if ((parsedOpFlags & ParsedInstructionOperandFlags.ImpliedRegister) == 0) {
@@ -1116,7 +1096,7 @@ namespace Generator.Tables {
 							Error(lineIndex, error);
 							return false;
 						}
-						if (state.MemorySize_Broadcast is object && state.OpCode.Encoding != EncodingKind.EVEX) {
+						if (state.MemorySize_Broadcast is not null && state.OpCode.Encoding != EncodingKind.EVEX) {
 							Error(lineIndex, "Only EVEX instructions support conditional broadcasting (EVEX.b bit)");
 							return false;
 						}
@@ -1159,7 +1139,7 @@ namespace Generator.Tables {
 			foreach (var (key, value, fmtLineIndex) in fmtKeyValues) {
 				switch (key) {
 				case "fast":
-					if (state.FastInfo is object) {
+					if (state.FastInfo is not null) {
 						Error(fmtLineIndex, $"Duplicate {key}");
 						return false;
 					}
@@ -1170,7 +1150,7 @@ namespace Generator.Tables {
 					break;
 
 				case "gas":
-					if (state.Gas is object) {
+					if (state.Gas is not null) {
 						Error(fmtLineIndex, $"Duplicate {key}");
 						return false;
 					}
@@ -1181,7 +1161,7 @@ namespace Generator.Tables {
 					break;
 
 				case "intel":
-					if (state.Intel is object) {
+					if (state.Intel is not null) {
 						Error(fmtLineIndex, $"Duplicate {key}");
 						return false;
 					}
@@ -1192,7 +1172,7 @@ namespace Generator.Tables {
 					break;
 
 				case "masm":
-					if (state.Masm is object) {
+					if (state.Masm is not null) {
 						Error(fmtLineIndex, $"Duplicate {key}");
 						return false;
 					}
@@ -1203,7 +1183,7 @@ namespace Generator.Tables {
 					break;
 
 				case "nasm":
-					if (state.Nasm is object) {
+					if (state.Nasm is not null) {
 						Error(fmtLineIndex, $"Duplicate {key}");
 						return false;
 					}
@@ -1310,7 +1290,7 @@ namespace Generator.Tables {
 			}
 
 			static string UppercaseFirstLetter(string s) =>
-				s.Substring(0, 1).ToUpperInvariant() + s.Substring(1).ToLowerInvariant();
+				s[0..1].ToUpperInvariant() + s[1..].ToLowerInvariant();
 
 			state.MnemonicStr ??= parsedInstr.Mnemonic.ToLowerInvariant();
 			if (state.MnemonicStr.ToLowerInvariant() == state.MnemonicStr)
@@ -1409,7 +1389,7 @@ namespace Generator.Tables {
 			}
 
 			var fmtMnemonic = state.MnemonicStr.ToLowerInvariant();
-			var pseudoOp = state.PseudoOpsKind is null ? (PseudoOpsKind?)null : (PseudoOpsKind)state.PseudoOpsKind.Value;
+			PseudoOpsKind? pseudoOp = state.PseudoOpsKind is null ? null : (PseudoOpsKind)state.PseudoOpsKind.Value;
 			if (!TryCreateFastDef(state.Code, fmtMnemonic, pseudoOp, state.FastInfo ?? new FastState(), out var fastDef, out error)) {
 				Error(state.LineIndex, "(fast) " + error);
 				return false;
@@ -1560,7 +1540,7 @@ namespace Generator.Tables {
 			return true;
 		}
 
-		bool TryGetLoopCcMnemonics(InstructionDefState def, out int ccIndex, [NotNullWhen(true)] out string? extraLoopMnemonic) {
+		static bool TryGetLoopCcMnemonics(InstructionDefState def, out int ccIndex, [NotNullWhen(true)] out string? extraLoopMnemonic) {
 			if (def.BranchKind == BranchKind.Loop && def.ConditionCode == ConditionCode.e) {
 				ccIndex = 4;
 				extraLoopMnemonic = "loopz";
@@ -1606,20 +1586,6 @@ namespace Generator.Tables {
 			}
 
 			enumValue = value;
-			error = null;
-			return true;
-		}
-
-		static bool TryGetMoffsIndex(InstructionDefState def, out int addrIndex, [NotNullWhen(false)] out string? error) {
-			if (def.OpKinds.Length > 0 && def.OpKinds[0].OperandEncoding == OperandEncoding.MemOffset)
-				addrIndex = 0;
-			else if (def.OpKinds.Length > 1 && def.OpKinds[1].OperandEncoding == OperandEncoding.MemOffset)
-				addrIndex = 1;
-			else {
-				addrIndex = -1;
-				error = "1st or 2nd operand must be `mem_offs`";
-				return false;
-			}
 			error = null;
 			return true;
 		}
@@ -1681,7 +1647,7 @@ namespace Generator.Tables {
 						error = $"Missing {key} value";
 						return false;
 					}
-					if (result.Mnemonic is object) {
+					if (result.Mnemonic is not null) {
 						error = $"Duplicate {key} value";
 						return false;
 					}
@@ -1719,7 +1685,7 @@ namespace Generator.Tables {
 
 		bool TryCreateFastDef(EnumValue code, string defaultMnemonic, PseudoOpsKind? pseudoOp, FastState state, [NotNullWhen(true)] out FastFmtInstructionDef? fastDef, [NotNullWhen(false)] out string? error) {
 			var mnemonic = state.Mnemonic ?? defaultMnemonic;
-			if (pseudoOp is object)
+			if (pseudoOp is not null)
 				state.Flags.Add(fastFmtFlags[pseudoOp.GetValueOrDefault().ToString()]);
 			fastDef = new FastFmtInstructionDef(code, mnemonic, new OrEnumValue(fastFmtFlags, state.Flags.ToArray()));
 			error = null;
@@ -1738,7 +1704,7 @@ namespace Generator.Tables {
 						error = $"Missing {key} value";
 						return false;
 					}
-					if (result.Mnemonic is object) {
+					if (result.Mnemonic is not null) {
 						error = $"Duplicate {key} value";
 						return false;
 					}
@@ -1785,7 +1751,7 @@ namespace Generator.Tables {
 						error = $"Missing {key} value";
 						return false;
 					}
-					if (result.Suffix is object) {
+					if (result.Suffix is not null) {
 						error = $"Duplicate {key} value";
 						return false;
 					}
@@ -1863,10 +1829,7 @@ namespace Generator.Tables {
 
 				case "movabs":
 					result.CtorKind = gasCtorKind[nameof(Enums.Formatter.Gas.CtorKind.movabs)];
-					if (!TryGetMoffsIndex(def, out var addrIndex, out error))
-						return false;
 					result.Args.Add(result.GetUsedSuffix());
-					result.Args.Add(addrIndex);
 					result.Args.Add("movabs");
 					break;
 
@@ -2027,7 +1990,7 @@ namespace Generator.Tables {
 				if (state.Args.Count > 0)
 					throw new InvalidOperationException();
 
-				if (def.PseudoOpsKind is object) {
+				if (def.PseudoOpsKind is not null) {
 					state.Args.Add(def.PseudoOpsKind);
 					if (pseudoOp == PseudoOpsKind.pclmulqdq || pseudoOp == PseudoOpsKind.vpclmulqdq)
 						ctorKind = gasCtorKind[nameof(Enums.Formatter.Gas.CtorKind.pclmulqdq)];
@@ -2081,7 +2044,7 @@ namespace Generator.Tables {
 						ctorKind = gasCtorKind[nameof(Enums.Formatter.Gas.CtorKind.Normal_2c)];
 						state.Args.Add(state.GetUsedSuffix());
 					}
-					else if (state.Suffix is object) {
+					else if (state.Suffix is not null) {
 						state.Args.Add(state.GetUsedSuffix());
 						if (state.Flags.Count > 0) {
 							ctorKind = gasCtorKind[nameof(Enums.Formatter.Gas.CtorKind.Normal_3)];
@@ -2123,7 +2086,7 @@ namespace Generator.Tables {
 						error = $"Missing {key} value";
 						return false;
 					}
-					if (result.Mnemonic is object) {
+					if (result.Mnemonic is not null) {
 						error = $"Duplicate {key} value";
 						return false;
 					}
@@ -2245,9 +2208,6 @@ namespace Generator.Tables {
 
 				case "movabs":
 					result.CtorKind = intelCtorKind[nameof(Enums.Formatter.Intel.CtorKind.movabs)];
-					if (!TryGetMoffsIndex(def, out var addrIndex, out error))
-						return false;
-					result.Args.Add(addrIndex);
 					break;
 
 				case "nop":
@@ -2393,7 +2353,7 @@ namespace Generator.Tables {
 				if (state.Args.Count > 0)
 					throw new InvalidOperationException();
 
-				if (def.PseudoOpsKind is object) {
+				if (def.PseudoOpsKind is not null) {
 					state.Args.Add(def.PseudoOpsKind);
 					if (pseudoOp == PseudoOpsKind.pclmulqdq || pseudoOp == PseudoOpsKind.vpclmulqdq)
 						ctorKind = intelCtorKind[nameof(Enums.Formatter.Intel.CtorKind.pclmulqdq)];
@@ -2474,7 +2434,7 @@ namespace Generator.Tables {
 						error = $"Missing {key} value";
 						return false;
 					}
-					if (result.Mnemonic is object) {
+					if (result.Mnemonic is not null) {
 						error = $"Duplicate {key} value";
 						return false;
 					}
@@ -2844,7 +2804,7 @@ namespace Generator.Tables {
 				if (state.Args.Count > 0)
 					throw new InvalidOperationException();
 
-				if (def.PseudoOpsKind is object) {
+				if (def.PseudoOpsKind is not null) {
 					state.Args.Add(def.PseudoOpsKind);
 					if (pseudoOp == PseudoOpsKind.pclmulqdq || pseudoOp == PseudoOpsKind.vpclmulqdq)
 						ctorKind = masmCtorKind[nameof(Enums.Formatter.Masm.CtorKind.pclmulqdq)];
@@ -2897,7 +2857,7 @@ namespace Generator.Tables {
 						error = $"Missing {key} value";
 						return false;
 					}
-					if (result.Mnemonic is object) {
+					if (result.Mnemonic is not null) {
 						error = $"Duplicate {key} value";
 						return false;
 					}
@@ -3027,9 +2987,6 @@ namespace Generator.Tables {
 
 				case "movabs":
 					result.CtorKind = nasmCtorKind[nameof(Enums.Formatter.Nasm.CtorKind.movabs)];
-					if (!TryGetMoffsIndex(def, out var addrIndex, out error))
-						return false;
-					result.Args.Add(addrIndex);
 					break;
 
 				case "nop":
@@ -3263,7 +3220,7 @@ namespace Generator.Tables {
 				if (state.Args.Count > 0)
 					throw new InvalidOperationException();
 
-				if (def.PseudoOpsKind is object) {
+				if (def.PseudoOpsKind is not null) {
 					state.Args.Add(def.PseudoOpsKind);
 					if (pseudoOp == PseudoOpsKind.pclmulqdq || pseudoOp == PseudoOpsKind.vpclmulqdq)
 						ctorKind = nasmCtorKind[nameof(Enums.Formatter.Nasm.CtorKind.pclmulqdq)];
@@ -3381,8 +3338,8 @@ namespace Generator.Tables {
 			}
 			else {
 				errMsg = null;
-				key = line.Substring(0, index).Trim();
-				value = line.Substring(index + 1).Trim();
+				key = line[0..index].Trim();
+				value = line[(index + 1)..].Trim();
 				return true;
 			}
 		}

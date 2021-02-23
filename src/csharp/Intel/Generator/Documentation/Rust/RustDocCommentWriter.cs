@@ -1,32 +1,9 @@
-/*
-Copyright (C) 2018-2019 de4dot@gmail.com
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2018-present iced project and contributors
 
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Generator.Enums;
-using Generator.Enums.Encoder;
-using Generator.Enums.InstructionInfo;
 using Generator.IO;
 
 namespace Generator.Documentation.Rust {
@@ -73,7 +50,7 @@ namespace Generator.Documentation.Rust {
 		}
 
 		string GetStringAndReset() {
-			while (sb.Length > 0 && char.IsWhiteSpace(sb[sb.Length - 1]))
+			while (sb.Length > 0 && char.IsWhiteSpace(sb[^1]))
 				sb.Length--;
 			var s = sb.ToString();
 			sb.Clear();
@@ -152,18 +129,18 @@ namespace Generator.Documentation.Rust {
 						throw new InvalidOperationException();
 					break;
 				case TokenKind.Code:
-					sb.Append("`");
+					sb.Append('`');
 					sb.Append(info.value);
-					sb.Append("`");
+					sb.Append('`');
 					if (!string.IsNullOrEmpty(info.value2))
 						throw new InvalidOperationException();
 					break;
 				case TokenKind.PrimitiveType:
 					if (!toTypeInfo.TryGetValue(info.value, out var typeInfo))
 						throw new InvalidOperationException($"Unknown type '{info.value}, comment: {documentation}");
-					sb.Append("`");
+					sb.Append('`');
 					sb.Append(idConverter.Type(typeInfo.type));
-					sb.Append("`");
+					sb.Append('`');
 					if (!string.IsNullOrEmpty(info.value2))
 						throw new InvalidOperationException();
 					break;
@@ -221,39 +198,6 @@ namespace Generator.Documentation.Rust {
 					throw new InvalidOperationException();
 				}
 			}
-		}
-
-		static string GetTypeKind(string name) {
-			switch (name) {
-			case nameof(Code):
-			case nameof(CpuidFeature):
-			case nameof(OpKind):
-			case nameof(Register):
-			case nameof(RepPrefixKind):
-				return "enum";
-			case "BlockEncoder":
-			case "ConstantOffsets":
-			case "Instruction":
-			case "RelocInfo":
-			case "SymbolResult":
-				return "struct";
-			default:
-				throw new InvalidOperationException();
-			}
-		}
-
-		static string GetMethodNameOnly(string name) {
-			int index = name.IndexOf('(', StringComparison.Ordinal);
-			if (index < 0)
-				return name;
-			return name.Substring(0, index);
-		}
-
-		string TranslateMethodName(string name) {
-			const string GetPattern = "Get";
-			if (name.StartsWith(GetPattern, StringComparison.Ordinal))
-				return name.Substring(GetPattern.Length);
-			return name;
 		}
 	}
 }

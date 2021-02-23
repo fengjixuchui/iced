@@ -1,25 +1,5 @@
-/*
-Copyright (C) 2018-2019 de4dot@gmail.com
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2018-present iced project and contributors
 
 #if ENCODER && BLOCK_ENCODER && CODE_ASSEMBLER
 using System;
@@ -121,6 +101,12 @@ namespace Iced.UnitTests.Intel.AssemblerTests {
 			case Code.Xcryptofb_16:
 			case Code.Xcryptofb_32:
 			case Code.Xcryptofb_64:
+			case Code.Ccs_hash_16:
+			case Code.Ccs_hash_32:
+			case Code.Ccs_hash_64:
+			case Code.Ccs_encrypt_16:
+			case Code.Ccs_encrypt_32:
+			case Code.Ccs_encrypt_64:
 				// They're mandatory prefix instructions but the REP prefix isn't cleared since it's shown in disassembly
 				decodedInst.HasRepPrefix = false;
 				break;
@@ -199,52 +185,28 @@ namespace Iced.UnitTests.Intel.AssemblerTests {
 			}
 		}
 
-		protected Label CreateAndEmitLabel(Assembler c) {
+		protected static Label CreateAndEmitLabel(Assembler c) {
 			var label = c.CreateLabel();
 			c.Label(ref label);
 			return label;
 		}
 
-		protected Instruction CreateMemory64(Code code, AssemblerMemoryOperand dst, AssemblerRegister8 src) =>
-			Instruction.CreateMemory64(code, (ulong)dst.Displacement, src, dst.Prefix);
-
-		protected Instruction CreateMemory64(Code code, AssemblerMemoryOperand dst, AssemblerRegister16 src) =>
-			Instruction.CreateMemory64(code, (ulong)dst.Displacement, src, dst.Prefix);
-
-		protected Instruction CreateMemory64(Code code, AssemblerMemoryOperand dst, AssemblerRegister32 src) =>
-			Instruction.CreateMemory64(code, (ulong)dst.Displacement, src, dst.Prefix);
-
-		protected Instruction CreateMemory64(Code code, AssemblerMemoryOperand dst, AssemblerRegister64 src) =>
-			Instruction.CreateMemory64(code, (ulong)dst.Displacement, src, dst.Prefix);
-
-		protected Instruction CreateMemory64(Code code, AssemblerRegister8 dst, AssemblerMemoryOperand src) =>
-			Instruction.CreateMemory64(code, dst, (ulong)src.Displacement, src.Prefix);
-
-		protected Instruction CreateMemory64(Code code, AssemblerRegister16 dst, AssemblerMemoryOperand src) =>
-			Instruction.CreateMemory64(code, dst, (ulong)src.Displacement, src.Prefix);
-
-		protected Instruction CreateMemory64(Code code, AssemblerRegister32 dst, AssemblerMemoryOperand src) =>
-			Instruction.CreateMemory64(code, dst, (ulong)src.Displacement, src.Prefix);
-
-		protected Instruction CreateMemory64(Code code, AssemblerRegister64 dst, AssemblerMemoryOperand src) =>
-			Instruction.CreateMemory64(code, dst, (ulong)src.Displacement, src.Prefix);
-
-		protected Instruction AssignLabel(Instruction instruction, ulong value) {
+		protected static Instruction AssignLabel(Instruction instruction, ulong value) {
 			instruction.IP = value;
 			return instruction;
 		}
 
-		protected Instruction ApplyK1(Instruction instruction) {
+		protected static Instruction ApplyK1(Instruction instruction) {
 			instruction.OpMask = Register.K1;
 			return instruction;
 		}
 
-		protected Instruction ApplyK(Instruction instruction, Register k) {
+		protected static Instruction ApplyK(Instruction instruction, Register k) {
 			instruction.OpMask = k;
 			return instruction;
 		}
 
-		protected void AssertInvalid(Action action) {
+		protected static void AssertInvalid(Action action) {
 			var exception = Assert.Throws<InvalidOperationException>(action);
 			Assert.Contains("Unable to calculate an OpCode", exception.Message);
 		}

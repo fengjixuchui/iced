@@ -1,25 +1,5 @@
-/*
-Copyright (C) 2018-2019 de4dot@gmail.com
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2018-present iced project and contributors
 
 using System;
 using Generator.Enums;
@@ -84,7 +64,7 @@ namespace Generator.Tables {
 		public override bool Equals(object? obj) => Equals(obj as ImplAccCondition);
 
 		public bool Equals(ImplAccCondition? other) =>
-			other is object && Kind == other.Kind && Equals(TrueStatements, other.TrueStatements) && Equals(FalseStatements, other.FalseStatements);
+			other is not null && Kind == other.Kind && Equals(TrueStatements, other.TrueStatements) && Equals(FalseStatements, other.FalseStatements);
 
 		static bool Equals(List<ImplAccStatement> a, List<ImplAccStatement> b) {
 			if (a.Count != b.Count)
@@ -153,7 +133,7 @@ namespace Generator.Tables {
 				throw new InvalidOperationException();
 			}
 			else {
-				if (Register is object || other.Register is object)
+				if (Register is not null || other.Register is not null)
 					throw new InvalidOperationException();
 				return 0;
 			}
@@ -194,7 +174,7 @@ namespace Generator.Tables {
 				throw new InvalidOperationException();
 			}
 			else {
-				if (MemorySize is object && other.MemorySize is object)
+				if (MemorySize is not null && other.MemorySize is not null)
 					throw new InvalidOperationException();
 				return 0;
 			}
@@ -493,7 +473,7 @@ namespace Generator.Tables {
 
 			const int MaxNameLength = 100;
 			if (name.Length > MaxNameLength)
-				name = name.Substring(0, MaxNameLength) + "_etc";
+				name = name[0..MaxNameLength] + "_etc";
 
 			for (int i = 0; ; i++) {
 				var newName = i == 0 ? name : name + "_" + i.ToString();
@@ -638,8 +618,8 @@ namespace Generator.Tables {
 					var emmi = (EmmiImplAccStatement)stmt;
 					sb.Append("emmi");
 					switch (emmi.Access) {
-					case EmmiAccess.Read: sb.Append("R"); break;
-					case EmmiAccess.Write: sb.Append("W"); break;
+					case EmmiAccess.Read: sb.Append('R'); break;
+					case EmmiAccess.Write: sb.Append('W'); break;
 					case EmmiAccess.ReadWrite: sb.Append("RW"); break;
 					default: throw new InvalidOperationException();
 					}

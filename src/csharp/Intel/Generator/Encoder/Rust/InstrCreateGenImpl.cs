@@ -1,25 +1,5 @@
-/*
-Copyright (C) 2018-2019 de4dot@gmail.com
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2018-present iced project and contributors
 
 using System;
 using System.Text;
@@ -62,16 +42,16 @@ namespace Generator.Encoder.Rust {
 			sb = new StringBuilder();
 		}
 
-		public void WriteDocs(FileWriter writer, CreateMethod method, string panicTitle, Action? writePanics) {
+		public void WriteDocs(FileWriter writer, CreateMethod method, string sectionTitle, Action? writeSection) {
 			const string typeName = "Instruction";
 			docWriter.BeginWrite(writer);
 			foreach (var doc in method.Docs)
 				docWriter.WriteDocLine(writer, doc, typeName);
 			docWriter.WriteLine(writer, string.Empty);
-			if (!(writePanics is null)) {
-				docWriter.WriteLine(writer, $"# {panicTitle}");
+			if (writeSection is not null) {
+				docWriter.WriteLine(writer, $"# {sectionTitle}");
 				docWriter.WriteLine(writer, string.Empty);
-				writePanics();
+				writeSection();
 				docWriter.WriteLine(writer, string.Empty);
 			}
 			docWriter.WriteLine(writer, "# Arguments");
@@ -206,7 +186,7 @@ namespace Generator.Encoder.Rust {
 
 		public string GetCreateName(CreateMethod method, GenCreateNameArgs genNames) => GetCreateName(sb, method, genNames);
 
-		static string GetCreateName(StringBuilder sb, CreateMethod method, GenCreateNameArgs genNames) {
+		public static string GetCreateName(StringBuilder sb, CreateMethod method, GenCreateNameArgs genNames) {
 			if (method.Args.Count == 0 || method.Args[0].Type != MethodArgType.Code)
 				throw new InvalidOperationException();
 
@@ -262,21 +242,23 @@ namespace Generator.Encoder.Rust {
 			return sb.ToString();
 		}
 
-		public static bool HasImmediateArg_8_16_32(CreateMethod method) {
+		static bool HasImmediateArg_8_16_32_64(CreateMethod method) {
 			foreach (var arg in method.Args) {
 				switch (arg.Type) {
 				case MethodArgType.UInt8:
 				case MethodArgType.UInt16:
 				case MethodArgType.Int32:
 				case MethodArgType.UInt32:
-					return true;
-
 				case MethodArgType.Int64:
 				case MethodArgType.UInt64:
-					break;
+					return true;
 				}
 			}
 			return false;
 		}
+
+		// Assumes it's a generic with_*() method (not a specialized method such as with_movsb() etc)
+		public static bool HasTryMethod(CreateMethod method) =>
+			HasImmediateArg_8_16_32_64(method);
 	}
 }

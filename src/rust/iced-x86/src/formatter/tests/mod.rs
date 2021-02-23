@@ -1,25 +1,5 @@
-/*
-Copyright (C) 2018-2019 de4dot@gmail.com
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2018-present iced project and contributors
 
 pub(crate) mod enums;
 mod instr_infos;
@@ -52,15 +32,9 @@ use super::super::{Code, Decoder, Instruction};
 use super::FastFormatter;
 #[cfg(any(feature = "gas", feature = "intel", feature = "masm", feature = "nasm"))]
 use super::Formatter;
-#[cfg(not(feature = "std"))]
 use alloc::boxed::Box;
-#[cfg(not(feature = "std"))]
 use alloc::string::String;
-#[cfg(not(feature = "std"))]
 use alloc::vec::Vec;
-#[cfg(not(feature = "std"))]
-use hashbrown::HashSet;
-#[cfg(feature = "std")]
 use std::collections::HashSet;
 use std::fs::File;
 use std::io::prelude::*;
@@ -78,7 +52,7 @@ fn get_lines_ignore_comments(filename: &Path) -> Vec<String> {
 }
 
 #[cfg(any(feature = "gas", feature = "intel", feature = "masm", feature = "nasm"))]
-pub(super) fn formatter_test(bitness: u32, dir: &str, filename: &str, is_misc: bool, fmt_factory: fn() -> Box<Formatter>) {
+pub(super) fn formatter_test(bitness: u32, dir: &str, filename: &str, is_misc: bool, fmt_factory: fn() -> Box<dyn Formatter>) {
 	let &(ref infos, ref ignored) = get_infos(bitness, is_misc);
 	let lines = filter_removed_code_tests(get_formatted_lines(bitness, dir, filename), ignored);
 	if infos.len() != lines.len() {
@@ -103,7 +77,7 @@ pub(super) fn formatter_test_fast(bitness: u32, dir: &str, filename: &str, is_mi
 
 #[cfg(any(feature = "gas", feature = "intel", feature = "masm", feature = "nasm"))]
 #[cfg(feature = "encoder")]
-pub(super) fn formatter_test_nondec(bitness: u32, dir: &str, filename: &str, fmt_factory: fn() -> Box<Formatter>) {
+pub(super) fn formatter_test_nondec(bitness: u32, dir: &str, filename: &str, fmt_factory: fn() -> Box<dyn Formatter>) {
 	let instrs = non_decoded_tests::get_infos(bitness);
 	let lines = get_formatted_lines(bitness, dir, filename);
 	if instrs.len() != instrs.len() {
@@ -128,18 +102,18 @@ pub(super) fn formatter_test_nondec_fast(bitness: u32, dir: &str, filename: &str
 }
 
 #[cfg(any(feature = "gas", feature = "intel", feature = "masm", feature = "nasm"))]
-fn format_test_info(info: &InstructionInfo, formatted_string: &str, formatter: Box<Formatter>) {
-	format_test(info.bitness, &info.hex_bytes, info.code, info.options, formatted_string, formatter);
+fn format_test_info(info: &InstructionInfo, formatted_string: &str, formatter: Box<dyn Formatter>) {
+	format_test(info.bitness, &info.hex_bytes, info.ip, info.code, info.options, formatted_string, formatter);
 }
 
 #[cfg(feature = "fast_fmt")]
 fn format_test_info_fast(info: &InstructionInfo, formatted_string: &str, formatter: Box<FastFormatter>) {
-	format_test_fast(info.bitness, &info.hex_bytes, info.code, info.options, formatted_string, formatter);
+	format_test_fast(info.bitness, &info.hex_bytes, info.ip, info.code, info.options, formatted_string, formatter);
 }
 
 #[cfg(any(feature = "gas", feature = "intel", feature = "masm", feature = "nasm"))]
 #[cfg(feature = "encoder")]
-fn format_test_instruction(instruction: &Instruction, formatted_string: &str, formatter: Box<Formatter>) {
+fn format_test_instruction(instruction: &Instruction, formatted_string: &str, formatter: Box<dyn Formatter>) {
 	format_test_instruction_core(instruction, formatted_string, formatter);
 }
 
@@ -150,46 +124,46 @@ fn format_test_instruction_fast(instruction: &Instruction, formatted_string: &st
 }
 
 #[cfg(any(feature = "gas", feature = "intel", feature = "masm", feature = "nasm"))]
-fn format_test(bitness: u32, hex_bytes: &str, code: Code, options: u32, formatted_string: &str, formatter: Box<Formatter>) {
+fn format_test(bitness: u32, hex_bytes: &str, ip: u64, code: Code, options: u32, formatted_string: &str, formatter: Box<dyn Formatter>) {
 	let bytes = to_vec_u8(hex_bytes).unwrap();
-	let mut decoder = create_decoder(bitness, &bytes, options).0;
+	let mut decoder = create_decoder(bitness, &bytes, ip, options).0;
 	let mut ip = decoder.ip();
 	let instr = decoder.decode();
-	assert_eq!(code, instr.code());
-	assert_eq!(ip as u16, instr.ip16());
-	assert_eq!(ip as u32, instr.ip32());
-	assert_eq!(ip, instr.ip());
+	assert_eq!(instr.code(), code);
+	assert_eq!(instr.ip16(), ip as u16);
+	assert_eq!(instr.ip32(), ip as u32);
+	assert_eq!(instr.ip(), ip);
 	ip += instr.len() as u64;
-	assert_eq!(ip, decoder.ip());
-	assert_eq!(ip as u16, instr.next_ip16());
-	assert_eq!(ip as u32, instr.next_ip32());
-	assert_eq!(ip, instr.next_ip());
+	assert_eq!(decoder.ip(), ip);
+	assert_eq!(instr.next_ip16(), ip as u16);
+	assert_eq!(instr.next_ip32(), ip as u32);
+	assert_eq!(instr.next_ip(), ip);
 	format_test_instruction_core(&instr, formatted_string, formatter);
 }
 
 #[cfg(feature = "fast_fmt")]
-fn format_test_fast(bitness: u32, hex_bytes: &str, code: Code, options: u32, formatted_string: &str, formatter: Box<FastFormatter>) {
+fn format_test_fast(bitness: u32, hex_bytes: &str, ip: u64, code: Code, options: u32, formatted_string: &str, formatter: Box<FastFormatter>) {
 	let bytes = to_vec_u8(hex_bytes).unwrap();
-	let mut decoder = create_decoder(bitness, &bytes, options).0;
+	let mut decoder = create_decoder(bitness, &bytes, ip, options).0;
 	let mut ip = decoder.ip();
 	let instr = decoder.decode();
-	assert_eq!(code, instr.code());
-	assert_eq!(ip as u16, instr.ip16());
-	assert_eq!(ip as u32, instr.ip32());
-	assert_eq!(ip, instr.ip());
+	assert_eq!(instr.code(), code);
+	assert_eq!(instr.ip16(), ip as u16);
+	assert_eq!(instr.ip32(), ip as u32);
+	assert_eq!(instr.ip(), ip);
 	ip += instr.len() as u64;
-	assert_eq!(ip, decoder.ip());
-	assert_eq!(ip as u16, instr.next_ip16());
-	assert_eq!(ip as u32, instr.next_ip32());
-	assert_eq!(ip, instr.next_ip());
+	assert_eq!(decoder.ip(), ip);
+	assert_eq!(instr.next_ip16(), ip as u16);
+	assert_eq!(instr.next_ip32(), ip as u32);
+	assert_eq!(instr.next_ip(), ip);
 	format_test_instruction_fast_core(&instr, formatted_string, formatter);
 }
 
 #[cfg(any(feature = "gas", feature = "intel", feature = "masm", feature = "nasm"))]
-fn format_test_instruction_core(instruction: &Instruction, formatted_string: &str, mut formatter: Box<Formatter>) {
+fn format_test_instruction_core(instruction: &Instruction, formatted_string: &str, mut formatter: Box<dyn Formatter>) {
 	let mut actual_formatted_string = String::new();
 	formatter.format(instruction, &mut actual_formatted_string);
-	assert_eq!(formatted_string, actual_formatted_string);
+	assert_eq!(actual_formatted_string, formatted_string);
 
 	let mut mnemonic = String::new();
 	formatter.format_mnemonic(instruction, &mut mnemonic);
@@ -197,7 +171,7 @@ fn format_test_instruction_core(instruction: &Instruction, formatted_string: &st
 	let mut operands: Vec<String> = Vec::with_capacity(op_count as usize);
 	for i in 0..op_count {
 		let mut output = String::new();
-		formatter.format_operand(instruction, &mut output, i);
+		assert!(formatter.format_operand(instruction, &mut output, i).is_ok());
 		operands.push(output);
 	}
 	let mut output = String::new();
@@ -211,67 +185,67 @@ fn format_test_instruction_core(instruction: &Instruction, formatted_string: &st
 			output.push_str(operand);
 		}
 	}
-	assert_eq!(formatted_string, output);
+	assert_eq!(output, formatted_string);
 
 	let mut all_operands = String::new();
 	formatter.format_all_operands(instruction, &mut all_operands);
 	let actual_formatted_string = if all_operands.is_empty() { mnemonic } else { format!("{} {}", mnemonic, all_operands) };
-	assert_eq!(formatted_string, actual_formatted_string);
+	assert_eq!(actual_formatted_string, formatted_string);
 }
 
 #[cfg(feature = "fast_fmt")]
 fn format_test_instruction_fast_core(instruction: &Instruction, formatted_string: &str, mut formatter: Box<FastFormatter>) {
 	let mut actual_formatted_string = String::new();
 	formatter.as_mut().format(instruction, &mut actual_formatted_string);
-	assert_eq!(formatted_string, actual_formatted_string);
+	assert_eq!(actual_formatted_string, formatted_string);
 }
 
 #[cfg(any(feature = "gas", feature = "intel", feature = "masm", feature = "nasm"))]
 fn simple_format_test<F: Fn(&mut Decoder)>(
-	bitness: u32, hex_bytes: &str, code: Code, decoder_options: u32, formatted_string: &str, formatter: &mut Formatter, init_decoder: F,
+	bitness: u32, hex_bytes: &str, ip: u64, code: Code, decoder_options: u32, formatted_string: &str, formatter: &mut dyn Formatter, init_decoder: F,
 ) {
 	let bytes = to_vec_u8(hex_bytes).unwrap();
-	let mut decoder = create_decoder(bitness, &bytes, decoder_options).0;
+	let mut decoder = create_decoder(bitness, &bytes, ip, decoder_options).0;
 	(init_decoder)(&mut decoder);
 	let mut next_rip = decoder.ip();
 	let instruction = decoder.decode();
-	assert_eq!(code, instruction.code());
-	assert_eq!(next_rip as u16, instruction.ip16());
-	assert_eq!(next_rip as u32, instruction.ip32());
-	assert_eq!(next_rip, instruction.ip());
+	assert_eq!(instruction.code(), code);
+	assert_eq!(instruction.ip16(), next_rip as u16);
+	assert_eq!(instruction.ip32(), next_rip as u32);
+	assert_eq!(instruction.ip(), next_rip);
 	next_rip = next_rip.wrapping_add(instruction.len() as u64);
-	assert_eq!(next_rip, decoder.ip());
-	assert_eq!(next_rip as u16, instruction.next_ip16());
-	assert_eq!(next_rip as u32, instruction.next_ip32());
-	assert_eq!(next_rip, instruction.next_ip());
+	assert_eq!(decoder.ip(), next_rip);
+	assert_eq!(instruction.next_ip16(), next_rip as u16);
+	assert_eq!(instruction.next_ip32(), next_rip as u32);
+	assert_eq!(instruction.next_ip(), next_rip);
 
 	let mut output = String::new();
 	formatter.format(&instruction, &mut output);
-	assert_eq!(formatted_string, output);
+	assert_eq!(output, formatted_string);
 }
 
 #[cfg(feature = "fast_fmt")]
 fn simple_format_test_fast<F: Fn(&mut Decoder)>(
-	bitness: u32, hex_bytes: &str, code: Code, decoder_options: u32, formatted_string: &str, formatter: &mut FastFormatter, init_decoder: F,
+	bitness: u32, hex_bytes: &str, ip: u64, code: Code, decoder_options: u32, formatted_string: &str, formatter: &mut FastFormatter, init_decoder: F,
 ) {
 	let bytes = to_vec_u8(hex_bytes).unwrap();
-	let mut decoder = create_decoder(bitness, &bytes, decoder_options).0;
+	let mut decoder = create_decoder(bitness, &bytes, ip, decoder_options).0;
 	(init_decoder)(&mut decoder);
 	let mut next_rip = decoder.ip();
 	let instruction = decoder.decode();
-	assert_eq!(code, instruction.code());
-	assert_eq!(next_rip as u16, instruction.ip16());
-	assert_eq!(next_rip as u32, instruction.ip32());
-	assert_eq!(next_rip, instruction.ip());
+	assert_eq!(instruction.code(), code);
+	assert_eq!(instruction.ip16(), next_rip as u16);
+	assert_eq!(instruction.ip32(), next_rip as u32);
+	assert_eq!(instruction.ip(), next_rip);
 	next_rip = next_rip.wrapping_add(instruction.len() as u64);
-	assert_eq!(next_rip, decoder.ip());
-	assert_eq!(next_rip as u16, instruction.next_ip16());
-	assert_eq!(next_rip as u32, instruction.next_ip32());
-	assert_eq!(next_rip, instruction.next_ip());
+	assert_eq!(decoder.ip(), next_rip);
+	assert_eq!(instruction.next_ip16(), next_rip as u16);
+	assert_eq!(instruction.next_ip32(), next_rip as u32);
+	assert_eq!(instruction.next_ip(), next_rip);
 
 	let mut output = String::new();
 	formatter.format(&instruction, &mut output);
-	assert_eq!(formatted_string, output);
+	assert_eq!(output, formatted_string);
 }
 
 fn filter_removed_code_tests(strings: Vec<String>, ignored: &HashSet<u32>) -> Vec<String> {

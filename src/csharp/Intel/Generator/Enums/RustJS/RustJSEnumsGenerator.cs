@@ -1,27 +1,6 @@
-/*
-Copyright (C) 2018-2019 de4dot@gmail.com
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2018-present iced project and contributors
 
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
-
-using System;
 using System.Collections.Generic;
 using Generator.Documentation;
 using Generator.Documentation.Rust;
@@ -41,13 +20,7 @@ namespace Generator.Enums.RustJS {
 			public readonly string Filename;
 			public readonly string[] Attributes;
 
-			public PartialEnumFileInfo(string id, string filename, string? attribute = null) {
-				Id = id;
-				Filename = filename;
-				Attributes = attribute is null ? Array.Empty<string>() : new string[] { attribute };
-			}
-
-			public PartialEnumFileInfo(string id, string filename, string[] attributes) {
+			public PartialEnumFileInfo(string id, string filename, params string[] attributes) {
 				Id = id;
 				Filename = filename;
 				Attributes = attributes;
@@ -97,11 +70,12 @@ namespace Generator.Enums.RustJS {
 			toPartialFileInfo.Add(TypeIds.RflagsBits, new PartialEnumFileInfo("Enum", dirs.GetRustJSFilename("rflags_bits.rs"), RustConstants.AttributeCopyClone));
 			toPartialFileInfo.Add(TypeIds.RoundingControl, new PartialEnumFileInfo("Enum", dirs.GetRustJSFilename("rounding_control.rs"), RustConstants.AttributeCopyClone));
 			toPartialFileInfo.Add(TypeIds.TupleType, new PartialEnumFileInfo("Enum", dirs.GetRustJSFilename("tuple_type.rs"), new[] { RustConstants.AttributeCopyClone, RustConstants.AttributeAllowNonCamelCaseTypes }));
+			toPartialFileInfo.Add(TypeIds.FormatterSyntax, new PartialEnumFileInfo("FormatterSyntax", dirs.GetRustJSFilename("formatter.rs")));
 		}
 
 		public override void Generate(EnumType enumType) {
 			if (toPartialFileInfo.TryGetValue(enumType.TypeId, out var partialInfo)) {
-				if (!(partialInfo is null))
+				if (partialInfo is not null)
 					new FileUpdater(TargetLanguage.RustJS, partialInfo.Id, partialInfo.Filename).Generate(writer => WriteEnum(writer, partialInfo, enumType));
 			}
 		}
@@ -127,8 +101,8 @@ namespace Generator.Enums.RustJS {
 			using (writer.Indent()) {
 				uint expectedValue = 0;
 				foreach (var value in enumType.Values) {
-					// Identical enum values aren't allowed so just remove it
-					if (value.DeprecatedInfo.IsDeprecated)
+					// Identical enum values aren't allowed so just remove them
+					if (value.DeprecatedInfo.IsDeprecatedAndRenamed)
 						continue;
 					if (writeComments)
 						docWriter.WriteSummary(writer, value.Documentation, enumType.RawName);

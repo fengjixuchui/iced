@@ -1,25 +1,5 @@
-/*
-Copyright (C) 2018-2019 de4dot@gmail.com
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2018-present iced project and contributors
 
 #if ENCODER && OPCODE_INFO
 using System;
@@ -38,7 +18,7 @@ namespace Iced.Intel.EncoderInternal {
 		int k_index;
 		int vec_index;
 		int tmm_index;
-		int opCount;
+		readonly int opCount;
 		// true: k2 {k1}, false: k1 {k2}
 		readonly bool opMaskIsK1;
 		readonly bool noVecIndex;
@@ -258,7 +238,7 @@ namespace Iced.Intel.EncoderInternal {
 		MemorySize GetMemorySize(bool isBroadcast) {
 			int index = (int)opCode.Code;
 			if (isBroadcast)
-				index += IcedConstants.NumberOfCodeValues;
+				index += IcedConstants.CodeEnumCount;
 			return (MemorySize)InstructionMemorySizes.Sizes[index];
 		}
 
@@ -279,7 +259,7 @@ namespace Iced.Intel.EncoderInternal {
 
 			sb.Length = 0;
 
-			Write(opCode.Code.Mnemonic().ToString(), upper: true);
+			Write(opCode.Mnemonic.ToString(), upper: true);
 			if (startOpIndex < opCount) {
 				sb.Append(' ');
 				int saeErIndex = opCount - 1;
@@ -572,7 +552,7 @@ namespace Iced.Intel.EncoderInternal {
 						break;
 
 					case OpCodeOperandKind.imm8_const_1:
-						sb.Append("1");
+						_ = sb.Append('1');
 						break;
 
 					case OpCodeOperandKind.imm16:
@@ -794,19 +774,11 @@ namespace Iced.Intel.EncoderInternal {
 			}
 		}
 
-		bool IsSgdtOrSidt() {
-			switch (opCode.Code) {
-			case Code.Sgdt_m1632_16:
-			case Code.Sgdt_m1632:
-			case Code.Sgdt_m1664:
-			case Code.Sidt_m1632_16:
-			case Code.Sidt_m1632:
-			case Code.Sidt_m1664:
-				return true;
-			default:
-				return false;
-			}
-		}
+		bool IsSgdtOrSidt() =>
+			opCode.Code switch {
+				Code.Sgdt_m1632_16 or Code.Sgdt_m1632 or Code.Sgdt_m1664 or Code.Sidt_m1632_16 or Code.Sidt_m1632 or Code.Sidt_m1664 => true,
+				_ => false,
+			};
 
 		void WriteRegister(string register) => Write(register, upper: true);
 		void WriteRegOp(string register) => Write(register, upper: false);

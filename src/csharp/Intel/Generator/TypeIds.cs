@@ -1,25 +1,5 @@
-/*
-Copyright (C) 2018-2019 de4dot@gmail.com
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2018-present iced project and contributors
 
 namespace Generator {
 	static class TypeIds {
@@ -33,7 +13,7 @@ namespace Generator {
 		public static readonly TypeId MasmCtorInfos = new TypeId(nameof(MasmCtorInfos));
 		public static readonly TypeId NasmCtorInfos = new TypeId(nameof(NasmCtorInfos));
 		public static readonly TypeId FastFmtTblInfos = new TypeId(nameof(FastFmtTblInfos));
-		public static readonly TypeId MemorySizeInfoTable = new TypeId(nameof(MemorySizeInfoTable));
+		public static readonly TypeId MemorySizeDefs = new TypeId(nameof(MemorySizeDefs));
 		public static readonly TypeId RegisterDefs = new TypeId(nameof(RegisterDefs));
 		public static readonly TypeId DecoderTables = new TypeId(nameof(DecoderTables));
 		public static readonly TypeId TupleTypeTable = new TypeId(nameof(TupleTypeTable));
@@ -42,6 +22,7 @@ namespace Generator {
 		public static readonly TypeId IcedConstants = new TypeId(nameof(IcedConstants));
 		public static readonly TypeId DecoderTestParserConstants = new TypeId(nameof(DecoderTestParserConstants));
 		public static readonly TypeId DecoderConstants = new TypeId(nameof(DecoderConstants));
+		public static readonly TypeId ExportedPythonTypes = new TypeId(nameof(ExportedPythonTypes));
 
 		public static readonly TypeId Code = new TypeId(nameof(Code));
 		public static readonly TypeId CodeSize = new TypeId(nameof(CodeSize));
@@ -159,6 +140,7 @@ namespace Generator {
 		public static readonly TypeId FormatterFlowControl = new TypeId(nameof(FormatterFlowControl));
 		public static readonly TypeId OptionsProps = new TypeId(nameof(OptionsProps));
 		public static readonly TypeId MasmSymbolTestFlags = new TypeId(nameof(MasmSymbolTestFlags));
+		public static readonly TypeId FormatterSyntax = new TypeId(nameof(FormatterSyntax));
 		public static readonly TypeId CC_b = new TypeId(nameof(CC_b));
 		public static readonly TypeId CC_ae = new TypeId(nameof(CC_ae));
 		public static readonly TypeId CC_e = new TypeId(nameof(CC_e));

@@ -1,25 +1,5 @@
-/*
-Copyright (C) 2018-2019 de4dot@gmail.com
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2018-present iced project and contributors
 
 #if ENCODER && BLOCK_ENCODER && CODE_ASSEMBLER
 using System;
@@ -52,7 +32,7 @@ namespace Iced.Intel {
 			case 64:
 				break;
 			default:
-				throw new ArgumentOutOfRangeException("Only 16, 32 or 64 bitness are supported", nameof(bitness));
+				throw new ArgumentOutOfRangeException(nameof(bitness));
 			}
 			Bitness = bitness;
 			_instructions = new InstructionList();
@@ -169,9 +149,8 @@ namespace Iced.Intel {
 		/// Add an instruction directly to the flow of instructions.
 		/// </summary>
 		/// <param name="instruction"></param>
-		public void AddInstruction(Instruction instruction) {
+		public void AddInstruction(Instruction instruction) =>
 			AddInstruction(ref instruction);
-		}
 
 		/// <summary>
 		/// Add an instruction directly to the flow of instructions.
@@ -395,14 +374,12 @@ namespace Iced.Intel {
 #endif
 
 		/// <summary>call selector:offset instruction.</summary>
-		public void call(ushort selector, uint offset) {
+		public void call(ushort selector, uint offset) =>
 			AddInstruction(Instruction.CreateBranch(Bitness >= 32 ? Code.Call_ptr1632 : Code.Call_ptr1616, selector, offset));
-		}
 
 		/// <summary>jmp selector:offset instruction.</summary>
-		public void jmp(ushort selector, uint offset) {
+		public void jmp(ushort selector, uint offset) =>
 			AddInstruction(Instruction.CreateBranch(Bitness >= 32 ? Code.Jmp_ptr1632 : Code.Jmp_ptr1616, selector, offset));
-		}
 
 		/// <summary>xlatb instruction.</summary>
 		public void xlatb() {

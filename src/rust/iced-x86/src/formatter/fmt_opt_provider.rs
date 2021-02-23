@@ -1,25 +1,5 @@
-/*
-Copyright (C) 2018-2019 de4dot@gmail.com
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2018-present iced project and contributors
 
 use super::super::*;
 use core::mem;
@@ -59,23 +39,22 @@ pub struct FormatterOperandOptions {
 	flags: u32, // FormatterOperandOptionsFlags
 }
 
-#[cfg_attr(feature = "cargo-clippy", allow(clippy::trivially_copy_pass_by_ref))]
 impl FormatterOperandOptions {
 	#[cfg(any(feature = "intel", feature = "masm", feature = "nasm"))]
-	#[cfg_attr(has_must_use, must_use)]
+	#[must_use]
 	#[inline]
 	pub(super) fn new(flags: u32) -> Self {
 		Self { flags }
 	}
 
-	#[cfg_attr(has_must_use, must_use)]
+	#[must_use]
 	#[inline]
 	pub(super) fn with_memory_size_options(options: MemorySizeOptions) -> Self {
 		Self { flags: (options as u32) << FormatterOperandOptionsFlags::MEMORY_SIZE_SHIFT }
 	}
 
 	/// Show branch size (eg. `SHORT`, `NEAR PTR`)
-	#[cfg_attr(has_must_use, must_use)]
+	#[must_use]
 	#[inline]
 	pub fn branch_size(&self) -> bool {
 		(self.flags & FormatterOperandOptionsFlags::NO_BRANCH_SIZE) == 0
@@ -96,7 +75,7 @@ impl FormatterOperandOptions {
 	}
 
 	/// If `true`, show `RIP` relative addresses as `[rip+12345678h]`, else show the linear address eg. `[1029384756AFBECDh]`
-	#[cfg_attr(has_must_use, must_use)]
+	#[must_use]
 	#[inline]
 	pub fn rip_relative_addresses(&self) -> bool {
 		(self.flags & FormatterOperandOptionsFlags::RIP_RELATIVE_ADDRESSES) != 0
@@ -117,7 +96,7 @@ impl FormatterOperandOptions {
 	}
 
 	/// Memory size options
-	#[cfg_attr(has_must_use, must_use)]
+	#[must_use]
 	#[inline]
 	pub fn memory_size_options(&self) -> MemorySizeOptions {
 		unsafe { mem::transmute((self.flags >> FormatterOperandOptionsFlags::MEMORY_SIZE_SHIFT) as u8) }

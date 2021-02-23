@@ -1,25 +1,5 @@
-/*
-Copyright (C) 2018-2019 de4dot@gmail.com
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2018-present iced project and contributors
 
 #if FAST_FMT
 using System;
@@ -133,10 +113,8 @@ namespace Iced.Intel {
 					output.AppendNotNull("xrelease ");
 				if (instruction.HasLockPrefix)
 					output.AppendNotNull("lock ");
-
 				if (hasNoTrackPrefix)
 					output.AppendNotNull("notrack ");
-
 				if (instruction.HasRepePrefix && (ShowUselessPrefixes || FormatterUtils.ShowRepOrRepePrefix(code, ShowUselessPrefixes))) {
 					if (FormatterUtils.IsRepeOrRepneInstruction(code))
 						output.AppendNotNull("repe ");
@@ -223,7 +201,7 @@ namespace Iced.Intel {
 							immSize = 2;
 							imm64 = instruction.NearBranch16;
 						}
-						if (!((symbolResolver = this.symbolResolver) is null) && symbolResolver.TryGetSymbol(instruction, operand, operand, imm64, immSize, out symbol))
+						if ((symbolResolver = this.symbolResolver) is not null && symbolResolver.TryGetSymbol(instruction, operand, operand, imm64, immSize, out symbol))
 							WriteSymbol(output, imm64, symbol);
 						else
 							FormatNumber(output, imm64);
@@ -239,7 +217,7 @@ namespace Iced.Intel {
 							immSize = 2;
 							imm64 = instruction.FarBranch16;
 						}
-						if (!((symbolResolver = this.symbolResolver) is null) && symbolResolver.TryGetSymbol(instruction, operand, operand, (uint)imm64, immSize, out symbol)) {
+						if ((symbolResolver = this.symbolResolver) is not null && symbolResolver.TryGetSymbol(instruction, operand, operand, (uint)imm64, immSize, out symbol)) {
 							Debug.Assert(operand + 1 == 1);
 							if (!symbolResolver.TryGetSymbol(instruction, operand + 1, operand, instruction.FarBranchSelector, 2, out var selectorSymbol))
 								FormatNumber(output, instruction.FarBranchSelector);
@@ -268,7 +246,7 @@ namespace Iced.Intel {
 							Debug.Assert(opKind == OpKind.Immediate8_2nd);
 							imm8 = instruction.Immediate8_2nd;
 						}
-						if (!((symbolResolver = this.symbolResolver) is null) && symbolResolver.TryGetSymbol(instruction, operand, operand, imm8, 1, out symbol)) {
+						if ((symbolResolver = this.symbolResolver) is not null && symbolResolver.TryGetSymbol(instruction, operand, operand, imm8, 1, out symbol)) {
 							if ((symbol.Flags & SymbolFlags.Relative) == 0)
 								output.AppendNotNull("offset ");
 							WriteSymbol(output, imm8, symbol);
@@ -287,7 +265,7 @@ namespace Iced.Intel {
 							Debug.Assert(opKind == OpKind.Immediate8to16);
 							imm16 = (ushort)instruction.Immediate8to16;
 						}
-						if (!((symbolResolver = this.symbolResolver) is null) && symbolResolver.TryGetSymbol(instruction, operand, operand, imm16, 2, out symbol)) {
+						if ((symbolResolver = this.symbolResolver) is not null && symbolResolver.TryGetSymbol(instruction, operand, operand, imm16, 2, out symbol)) {
 							if ((symbol.Flags & SymbolFlags.Relative) == 0)
 								output.AppendNotNull("offset ");
 							WriteSymbol(output, imm16, symbol);
@@ -306,7 +284,7 @@ namespace Iced.Intel {
 							Debug.Assert(opKind == OpKind.Immediate8to32);
 							imm32 = (uint)instruction.Immediate8to32;
 						}
-						if (!((symbolResolver = this.symbolResolver) is null) && symbolResolver.TryGetSymbol(instruction, operand, operand, imm32, 4, out symbol)) {
+						if ((symbolResolver = this.symbolResolver) is not null && symbolResolver.TryGetSymbol(instruction, operand, operand, imm32, 4, out symbol)) {
 							if ((symbol.Flags & SymbolFlags.Relative) == 0)
 								output.AppendNotNull("offset ");
 							WriteSymbol(output, imm32, symbol);
@@ -328,7 +306,7 @@ namespace Iced.Intel {
 							Debug.Assert(opKind == OpKind.Immediate64);
 							imm64 = instruction.Immediate64;
 						}
-						if (!((symbolResolver = this.symbolResolver) is null) && symbolResolver.TryGetSymbol(instruction, operand, operand, imm64, 8, out symbol)) {
+						if ((symbolResolver = this.symbolResolver) is not null && symbolResolver.TryGetSymbol(instruction, operand, operand, imm64, 8, out symbol)) {
 							if ((symbol.Flags & SymbolFlags.Relative) == 0)
 								output.AppendNotNull("offset ");
 							WriteSymbol(output, imm64, symbol);
@@ -373,8 +351,9 @@ namespace Iced.Intel {
 						FormatMemory(output, instruction, operand, Register.ES, Register.RDI, Register.None, 0, 0, 0, 8);
 						break;
 
+#pragma warning disable CS0618 // Type or member is obsolete
 					case OpKind.Memory64:
-						FormatMemory(output, instruction, operand, instruction.MemorySegment, Register.None, Register.None, 0, 8, (long)instruction.MemoryAddress64, 8);
+#pragma warning restore CS0618 // Type or member is obsolete
 						break;
 
 					case OpKind.Memory:
@@ -386,7 +365,7 @@ namespace Iced.Intel {
 						if (addrSize == 8)
 							displ = (long)instruction.MemoryDisplacement64;
 						else
-							displ = instruction.MemoryDisplacement;
+							displ = instruction.MemoryDisplacement32;
 						if (code == Code.Xlat_m8)
 							indexReg = Register.None;
 						FormatMemory(output, instruction, operand, instruction.MemorySegment, baseReg, indexReg, instruction.InternalMemoryIndexScale, displSize, displ, addrSize);
@@ -426,7 +405,7 @@ namespace Iced.Intel {
 
 		// Only one caller
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		bool ShowSegmentPrefix(in Instruction instruction, int opCount) {
+		static bool ShowSegmentPrefix(in Instruction instruction, int opCount) {
 			for (int i = 0; i < opCount; i++) {
 				switch (instruction.GetOpKind(i)) {
 				case OpKind.Register:
@@ -455,7 +434,9 @@ namespace Iced.Intel {
 				case OpKind.MemorySegDI:
 				case OpKind.MemorySegEDI:
 				case OpKind.MemorySegRDI:
+#pragma warning disable CS0618 // Type or member is obsolete
 				case OpKind.Memory64:
+#pragma warning restore CS0618 // Type or member is obsolete
 				case OpKind.Memory:
 					return false;
 
@@ -508,7 +489,7 @@ namespace Iced.Intel {
 
 			var text = symbol.Text;
 			var array = text.TextArray;
-			if (!(array is null)) {
+			if (array is not null) {
 				foreach (var part in array) {
 					if (part.Text is string s)
 						output.AppendNotNull(s);
@@ -539,30 +520,31 @@ namespace Iced.Intel {
 
 			ulong absAddr;
 			if (baseReg == Register.RIP) {
-				absAddr = (ulong)((long)instruction.NextIP + (int)displ);
-				if (!options.RipRelativeAddresses) {
+				absAddr = (ulong)displ;
+				if (options.RipRelativeAddresses)
+					displ -= (long)instruction.NextIP;
+				else {
 					Debug.Assert(indexReg == Register.None);
 					baseReg = Register.None;
-					displ = (long)absAddr;
-					displSize = 8;
 				}
+				displSize = 8;
 			}
 			else if (baseReg == Register.EIP) {
-				absAddr = instruction.NextIP32 + (uint)displ;
-				if (!options.RipRelativeAddresses) {
+				absAddr = (uint)displ;
+				if (options.RipRelativeAddresses)
+					displ = (int)((uint)displ - instruction.NextIP32);
+				else {
 					Debug.Assert(indexReg == Register.None);
 					baseReg = Register.None;
-					displ = (long)absAddr;
-					displSize = 4;
 				}
+				displSize = 4;
 			}
 			else
 				absAddr = (ulong)displ;
 
 			SymbolResult symbol;
 			bool useSymbol;
-			var symbolResolver = this.symbolResolver;
-			if (!(symbolResolver is null))
+			if (this.symbolResolver is ISymbolResolver symbolResolver)
 				useSymbol = symbolResolver.TryGetSymbol(instruction, operand, operand, absAddr, addrSize, out symbol);
 			else {
 				useSymbol = false;

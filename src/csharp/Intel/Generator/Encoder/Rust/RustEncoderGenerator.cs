@@ -1,25 +1,5 @@
-/*
-Copyright (C) 2018-2019 de4dot@gmail.com
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2018-present iced project and contributors
 
 using System;
 using System.Collections.Generic;
@@ -112,7 +92,7 @@ namespace Generator.Encoder.Rust {
 				var declTypeStr = genTypes[TypeIds.OpCodeOperandKind].Name(idConverter);
 				writer.WriteLine();
 				writer.WriteLine(RustConstants.AttributeNoRustFmt);
-				if (feature is object)
+				if (feature is not null)
 					writer.WriteLine(feature);
 				writer.WriteLine($"pub(super) static {name}: [{declTypeStr}; {table.Length}] = [");
 				using (writer.Indent()) {
@@ -148,7 +128,7 @@ namespace Generator.Encoder.Rust {
 					var info = kv.Value;
 					var structName = idConverter.Type(GetStructName(info.OpHandlerKind));
 					var features = GetFeatures(info);
-					if (features is object)
+					if (features is not null)
 						writer.WriteLine(features);
 					writer.WriteLine(RustConstants.AttributeNoRustFmt);
 					writer.Write($"static {info.Name}: {structName} = {structName}");
@@ -306,10 +286,10 @@ namespace Generator.Encoder.Rust {
 
 			void WriteTable(FileWriter writer, string name, string? feature, Dictionary<(OpHandlerKind opHandlerKind, object[] args), OpInfo> dict, IEnumerable<(EnumValue opKind, OpHandlerKind opHandlerKind, object[] args)> values) {
 				var all = values.ToArray();
-				if (feature is object)
+				if (feature is not null)
 					writer.WriteLine(feature);
 				writer.WriteLine(RustConstants.AttributeNoRustFmt);
-				writer.WriteLine($"pub(super) static {name}: [&(Op + Sync); {all.Length}] = [");
+				writer.WriteLine($"pub(super) static {name}: [&(dyn Op + Sync); {all.Length}] = [");
 				using (writer.Indent()) {
 					foreach (var value in all) {
 						var info = dict[(value.opHandlerKind, value.args)];
@@ -343,7 +323,7 @@ namespace Generator.Encoder.Rust {
 						sb.Append(value.RawName);
 						break;
 					case int value:
-						sb.Append(value.ToString());
+						sb.Append(value);
 						break;
 					case bool value:
 						sb.Append(value ? "true" : "false");
@@ -403,7 +383,7 @@ namespace Generator.Encoder.Rust {
 		}
 
 		protected override void Generate((EnumValue value, uint size)[] immSizes) {
-			var filename = generatorContext.Types.Dirs.GetRustFilename("encoder", "mod.rs");
+			var filename = generatorContext.Types.Dirs.GetRustFilename("encoder.rs");
 			new FileUpdater(TargetLanguage.Rust, "ImmSizes", filename).Generate(writer => {
 				writer.WriteLine(RustConstants.AttributeNoRustFmt);
 				writer.WriteLine($"static IMM_SIZES: [u32; {immSizes.Length}] = [");

@@ -1,25 +1,5 @@
-/*
-Copyright (C) 2018-2019 de4dot@gmail.com
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2018-present iced project and contributors
 
 using System;
 using System.Collections.Generic;
@@ -545,7 +525,7 @@ namespace IcedFuzzer.Core {
 					}
 
 					if (rex != 0) {
-						Assert.True(prefixes[prefixes.Length - 1] == rex);
+						Assert.True(prefixes[^1] == rex);
 						if (context.Bitness < 64)
 							continue;
 						if (!canUseMPREX)
@@ -563,7 +543,7 @@ namespace IcedFuzzer.Core {
 							var prefixesTmp = prefixes.Length == 1 ? prefixesTmp1 : prefixesTmp2;
 							for (int j = 0; j < prefixes.Length; j++)
 								prefixesTmp[j] = prefixes[j];
-							prefixesTmp[prefixesTmp.Length - 1] = rex;
+							prefixesTmp[^1] = rex;
 							prefixes = prefixesTmp;
 						}
 					}
@@ -758,29 +738,29 @@ namespace IcedFuzzer.Core {
 			}
 
 			public bool IsOpMask =>
-				regOp is object && regOp.Register == FuzzerRegisterKind.K && regOp.RegLocation == FuzzerOperandRegLocation.AaaBits;
+				regOp is not null && regOp.Register == FuzzerRegisterKind.K && regOp.RegLocation == FuzzerOperandRegLocation.AaaBits;
 
 			public bool IsValidRegister(FuzzerInstruction instruction, uint regNum) {
 				regNum = MaskOutIgnoredBits(regNum);
-				if (regOp is object)
+				if (regOp is not null)
 					return regInfo.IsValid(instruction, regOp.Register, regNum);
 				return true;
 			}
 
 			public uint MaskOutIgnoredBits(uint regNum) {
 				regNum %= MaxRegCount;
-				if (regOp is object)
+				if (regOp is not null)
 					return regInfo.MaskOutIgnoredBits(regOp.Register, regNum);
-				if (memOp is object)
+				if (memOp is not null)
 					return regNum & regMask;
 				throw ThrowHelpers.Unreachable;
 			}
 
 			public void InitializeOperand(ref InstructionInfo info, uint regNum) {
 				regNum = MaskOutIgnoredBits(regNum);
-				if (regOp is object)
+				if (regOp is not null)
 					info.SetRegister(regOp.RegLocation, regNum);
-				else if (memOp is object) {
+				else if (memOp is not null) {
 					if (info.Bitness == 16)
 						info.addressSizePrefix = 0x67;
 					info.SetModrmSibMemory(0x04, 0x40 + ((regNum & 7) << 3), UsedBits.x | UsedBits.v2);// [eax+vec[n]*2] / [rax+vec[n]*2]
@@ -1286,46 +1266,21 @@ namespace IcedFuzzer.Core {
 	// is a special pseudo op instruction in which case we generate all 256 imm values.
 	// Also gens instructions with unused bits set to 1 (W R X B R') (unless it has a reg op, it has been tested already).
 	sealed class AllImmediateMemFuzzerGen : FuzzerGen {
-		static bool ShouldGenAllImmValues(Code code) {
-			switch (code) {
-			case Code.Cmpps_xmm_xmmm128_imm8:
-			case Code.VEX_Vcmpps_xmm_xmm_xmmm128_imm8:
-			case Code.VEX_Vcmpps_ymm_ymm_ymmm256_imm8:
-			case Code.EVEX_Vcmpps_kr_k1_xmm_xmmm128b32_imm8:
-			case Code.EVEX_Vcmpps_kr_k1_ymm_ymmm256b32_imm8:
-			case Code.EVEX_Vcmpps_kr_k1_zmm_zmmm512b32_imm8_sae:
-			case Code.Cmppd_xmm_xmmm128_imm8:
-			case Code.VEX_Vcmppd_xmm_xmm_xmmm128_imm8:
-			case Code.VEX_Vcmppd_ymm_ymm_ymmm256_imm8:
-			case Code.EVEX_Vcmppd_kr_k1_xmm_xmmm128b64_imm8:
-			case Code.EVEX_Vcmppd_kr_k1_ymm_ymmm256b64_imm8:
-			case Code.EVEX_Vcmppd_kr_k1_zmm_zmmm512b64_imm8_sae:
-			case Code.Cmpss_xmm_xmmm32_imm8:
-			case Code.VEX_Vcmpss_xmm_xmm_xmmm32_imm8:
-			case Code.EVEX_Vcmpss_kr_k1_xmm_xmmm32_imm8_sae:
-			case Code.Cmpsd_xmm_xmmm64_imm8:
-			case Code.VEX_Vcmpsd_xmm_xmm_xmmm64_imm8:
-			case Code.EVEX_Vcmpsd_kr_k1_xmm_xmmm64_imm8_sae:
-			case Code.Pclmulqdq_xmm_xmmm128_imm8:
-			case Code.VEX_Vpclmulqdq_xmm_xmm_xmmm128_imm8:
-			case Code.VEX_Vpclmulqdq_ymm_ymm_ymmm256_imm8:
-			case Code.EVEX_Vpclmulqdq_xmm_xmm_xmmm128_imm8:
-			case Code.EVEX_Vpclmulqdq_ymm_ymm_ymmm256_imm8:
-			case Code.EVEX_Vpclmulqdq_zmm_zmm_zmmm512_imm8:
-			case Code.XOP_Vpcomb_xmm_xmm_xmmm128_imm8:
-			case Code.XOP_Vpcomw_xmm_xmm_xmmm128_imm8:
-			case Code.XOP_Vpcomd_xmm_xmm_xmmm128_imm8:
-			case Code.XOP_Vpcomq_xmm_xmm_xmmm128_imm8:
-			case Code.XOP_Vpcomub_xmm_xmm_xmmm128_imm8:
-			case Code.XOP_Vpcomuw_xmm_xmm_xmmm128_imm8:
-			case Code.XOP_Vpcomud_xmm_xmm_xmmm128_imm8:
-			case Code.XOP_Vpcomuq_xmm_xmm_xmmm128_imm8:
-				return true;
-
-			default:
-				return false;
-			}
-		}
+		static bool ShouldGenAllImmValues(Code code) =>
+			code switch {
+				Code.Cmpps_xmm_xmmm128_imm8 or Code.VEX_Vcmpps_xmm_xmm_xmmm128_imm8 or Code.VEX_Vcmpps_ymm_ymm_ymmm256_imm8 or
+				Code.EVEX_Vcmpps_kr_k1_xmm_xmmm128b32_imm8 or Code.EVEX_Vcmpps_kr_k1_ymm_ymmm256b32_imm8 or
+				Code.EVEX_Vcmpps_kr_k1_zmm_zmmm512b32_imm8_sae or Code.Cmppd_xmm_xmmm128_imm8 or Code.VEX_Vcmppd_xmm_xmm_xmmm128_imm8 or
+				Code.VEX_Vcmppd_ymm_ymm_ymmm256_imm8 or Code.EVEX_Vcmppd_kr_k1_xmm_xmmm128b64_imm8 or Code.EVEX_Vcmppd_kr_k1_ymm_ymmm256b64_imm8 or
+				Code.EVEX_Vcmppd_kr_k1_zmm_zmmm512b64_imm8_sae or Code.Cmpss_xmm_xmmm32_imm8 or Code.VEX_Vcmpss_xmm_xmm_xmmm32_imm8 or
+				Code.EVEX_Vcmpss_kr_k1_xmm_xmmm32_imm8_sae or Code.Cmpsd_xmm_xmmm64_imm8 or Code.VEX_Vcmpsd_xmm_xmm_xmmm64_imm8 or
+				Code.EVEX_Vcmpsd_kr_k1_xmm_xmmm64_imm8_sae or Code.Pclmulqdq_xmm_xmmm128_imm8 or Code.VEX_Vpclmulqdq_xmm_xmm_xmmm128_imm8 or
+				Code.VEX_Vpclmulqdq_ymm_ymm_ymmm256_imm8 or Code.EVEX_Vpclmulqdq_xmm_xmm_xmmm128_imm8 or Code.EVEX_Vpclmulqdq_ymm_ymm_ymmm256_imm8 or
+				Code.EVEX_Vpclmulqdq_zmm_zmm_zmmm512_imm8 or Code.XOP_Vpcomb_xmm_xmm_xmmm128_imm8 or Code.XOP_Vpcomw_xmm_xmm_xmmm128_imm8 or
+				Code.XOP_Vpcomd_xmm_xmm_xmmm128_imm8 or Code.XOP_Vpcomq_xmm_xmm_xmmm128_imm8 or Code.XOP_Vpcomub_xmm_xmm_xmmm128_imm8 or
+				Code.XOP_Vpcomuw_xmm_xmm_xmmm128_imm8 or Code.XOP_Vpcomud_xmm_xmm_xmmm128_imm8 or Code.XOP_Vpcomuq_xmm_xmm_xmmm128_imm8 => true,
+				_ => false,
+			};
 
 		public override IEnumerable<FuzzerGenResult> Generate(FuzzerGenContext context) {
 			if (context.Instruction.ImmediateOperands.Length == 0)

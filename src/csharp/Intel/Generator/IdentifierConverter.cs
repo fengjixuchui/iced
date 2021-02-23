@@ -1,25 +1,5 @@
-/*
-Copyright (C) 2018-2019 de4dot@gmail.com
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2018-present iced project and contributors
 
 using System;
 using System.Collections.Generic;
@@ -44,7 +24,28 @@ namespace Generator {
 		public abstract string Argument(string name);
 
 		protected string ToSnakeCase(string name) => ToSnakeCase(name, upper: false);
-		protected string ToScreamingSnakeCase(string name) => ToSnakeCase(name, upper: true);
+
+		protected string ToScreamingSnakeCase(string name) =>
+			name switch {
+				"Fxsave_512Byte" => "FXSAVE_512BYTE",
+				"Fxsave64_512Byte" => "FXSAVE64_512BYTE",
+				"Cmpxchg486A" => "CMPXCHG486A",
+				"NoMPFX_0FBC" => "NO_MPFX_0FBC",
+				"NoMPFX_0FBD" => "NO_MPFX_0FBD",
+				"NoLahfSahf64" => "NO_LAHF_SAHF_64",
+				"OpKind_MemoryESDI" => "OP_KIND_MEMORY_ES_DI",
+				"OpKind_MemoryESEDI" => "OP_KIND_MEMORY_ES_EDI",
+				"OpKind_MemoryESRDI" => "OP_KIND_MEMORY_ES_RDI",
+				"HighLegacy8BitRegs" => "HIGH_LEGACY_8_BIT_REGS",
+				"TwoByteHandlers_0FXXIndex" => "TWO_BYTE_HANDLERS_0FXX_INDEX",
+				"ThreeByteHandlers_0F38XXIndex" => "THREE_BYTE_HANDLERS_0F38XX_INDEX",
+				"ThreeByteHandlers_0F3AXXIndex" => "THREE_BYTE_HANDLERS_0F3AXX_INDEX",
+				"XOPAIndex" => "XOPA_INDEX",
+				"Handler66Reg" => "HANDLER_66_REG",
+				"Handler66Mem" => "HANDLER_66_MEM",
+				"Cyrix_SMINT_0F7E" => "CYRIX_SMINT_0F7E",
+				_ => ToSnakeCase(name, upper: true),
+			};
 
 		string ToSnakeCase(string name, bool upper) {
 			sb.Clear();
@@ -52,7 +53,7 @@ namespace Generator {
 			foreach (var c in name) {
 				bool isUpper = char.IsUpper(c);
 				if (isUpper && !prevWasUpper) {
-					if (sb.Length > 0 && sb[sb.Length - 1] != '_')
+					if (sb.Length > 0 && sb[^1] != '_')
 						sb.Append('_');
 				}
 				prevWasUpper = isUpper;
@@ -120,27 +121,7 @@ namespace Generator {
 		public override string PropertyDoc(string name) => ToSnakeCase(name) + "()";
 		public override string MethodDoc(string name) => ToSnakeCase(name) + "()";
 		public override string Method(string name) => ToSnakeCase(name);
-
-		public override string Constant(string name) =>
-			name switch {
-				"Cmpxchg486A" => "CMPXCHG486A",
-				"NoMPFX_0FBC" => "NO_MPFX_0FBC",
-				"NoMPFX_0FBD" => "NO_MPFX_0FBD",
-				"NoLahfSahf64" => "NO_LAHF_SAHF_64",
-				"OpKind_MemoryESDI" => "OP_KIND_MEMORY_ES_DI",
-				"OpKind_MemoryESEDI" => "OP_KIND_MEMORY_ES_EDI",
-				"OpKind_MemoryESRDI" => "OP_KIND_MEMORY_ES_RDI",
-				"HighLegacy8BitRegs" => "HIGH_LEGACY_8_BIT_REGS",
-				"TwoByteHandlers_0FXXIndex" => "TWO_BYTE_HANDLERS_0FXX_INDEX",
-				"ThreeByteHandlers_0F38XXIndex" => "THREE_BYTE_HANDLERS_0F38XX_INDEX",
-				"ThreeByteHandlers_0F3AXXIndex" => "THREE_BYTE_HANDLERS_0F3AXX_INDEX",
-				"XOPAIndex" => "XOPA_INDEX",
-				"Handler66Reg" => "HANDLER_66_REG",
-				"Handler66Mem" => "HANDLER_66_MEM",
-				"Cyrix_SMINT_0F7E" => "CYRIX_SMINT_0F7E",
-				_ => ToScreamingSnakeCase(name),
-			};
-
+		public override string Constant(string name) => ToScreamingSnakeCase(name);
 		public override string Static(string name) => ToScreamingSnakeCase(name);
 		public override string Namespace(string name) => ToSnakeCase(name);
 		public override string Argument(string name) => ToSnakeCase(name);
@@ -159,5 +140,20 @@ namespace Generator {
 		public override string Static(string name) => name;
 		public override string Namespace(string name) => name;
 		public override string Argument(string name) => ToLowerCamelCase(name);
+	}
+
+	sealed class PythonIdentifierConverter : IdentifierConverter {
+		public static IdentifierConverter Create() => new PythonIdentifierConverter();
+		PythonIdentifierConverter() { }
+		public override string Type(string name) => name;
+		public override string Field(string name) => "__" + ToSnakeCase(name);
+		public override string EnumField(string name) => ToScreamingSnakeCase(name);
+		public override string PropertyDoc(string name) => ToSnakeCase(name);
+		public override string MethodDoc(string name) => ToSnakeCase(name);
+		public override string Method(string name) => ToSnakeCase(name);
+		public override string Constant(string name) => ToScreamingSnakeCase(name);
+		public override string Static(string name) => ToScreamingSnakeCase(name);
+		public override string Namespace(string name) => ToSnakeCase(name);
+		public override string Argument(string name) => ToSnakeCase(name);
 	}
 }

@@ -1,25 +1,5 @@
-/*
-Copyright (C) 2018-2019 de4dot@gmail.com
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2018-present iced project and contributors
 
 using System;
 using System.Collections.Generic;
@@ -85,7 +65,7 @@ namespace Generator.Constants.CSharp {
 			if (toFullFileInfo.TryGetValue(constantsType.TypeId, out var fullFileInfo))
 				WriteFile(fullFileInfo, constantsType);
 			else if (toPartialFileInfo.TryGetValue(constantsType.TypeId, out var partialInfo)) {
-				if (!(partialInfo is null))
+				if (partialInfo is not null)
 					new FileUpdater(TargetLanguage.CSharp, partialInfo.Id, partialInfo.Filename).Generate(writer => WriteConstants(writer, constantsType));
 			}
 			else
@@ -95,7 +75,7 @@ namespace Generator.Constants.CSharp {
 		void WriteFile(FullConstantsFileInfo info, ConstantsType constantsType) {
 			using (var writer = new FileWriter(TargetLanguage.CSharp, FileUtils.OpenWrite(info.Filename))) {
 				writer.WriteFileHeader();
-				if (!(info.Define is null))
+				if (info.Define is not null)
 					writer.WriteLineNoIndent($"#if {info.Define}");
 
 				writer.WriteLine($"namespace {info.Namespace} {{");
@@ -106,7 +86,7 @@ namespace Generator.Constants.CSharp {
 					WriteConstants(writer, constantsType);
 				writer.WriteLine("}");
 
-				if (!(info.Define is null))
+				if (info.Define is not null)
 					writer.WriteLineNoIndent("#endif");
 			}
 		}
@@ -134,26 +114,16 @@ namespace Generator.Constants.CSharp {
 			writer.WriteLine("}");
 		}
 
-		string GetType(ConstantKind kind) {
-			switch (kind) {
-			case ConstantKind.Char:
-				return "char";
-			case ConstantKind.String:
-				return "string";
-			case ConstantKind.Int32:
-			case ConstantKind.Index:
-				return "int";
-			case ConstantKind.UInt32:
-				return "uint";
-			case ConstantKind.UInt64:
-				return "ulong";
-			case ConstantKind.Register:
-			case ConstantKind.MemorySize:
-				return EnumUtils.GetEnumType(genTypes, kind).Name(idConverter);
-			default:
-				throw new InvalidOperationException();
-			}
-		}
+		string GetType(ConstantKind kind) =>
+			kind switch {
+				ConstantKind.Char => "char",
+				ConstantKind.String => "string",
+				ConstantKind.Int32 or ConstantKind.Index => "int",
+				ConstantKind.UInt32 => "uint",
+				ConstantKind.UInt64 => "ulong",
+				ConstantKind.Register or ConstantKind.MemorySize => EnumUtils.GetEnumType(genTypes, kind).Name(idConverter),
+				_ => throw new InvalidOperationException(),
+			};
 
 		string GetValue(Constant constant) {
 			switch (constant.Kind) {

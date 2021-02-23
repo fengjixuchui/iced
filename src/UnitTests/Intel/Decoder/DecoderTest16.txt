@@ -1,25 +1,5 @@
-#
-# Copyright (C) 2018-2019 de4dot@gmail.com
-#
-# Permission is hereby granted, free of charge, to any person obtaining
-# a copy of this software and associated documentation files (the
-# "Software"), to deal in the Software without restriction, including
-# without limitation the rights to use, copy, modify, merge, publish,
-# distribute, sublicense, and/or sell copies of the Software, and to
-# permit persons to whom the Software is furnished to do so, subject to
-# the following conditions:
-#
-# The above copyright notice and this permission notice shall be
-# included in all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-# CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-#
+# SPDX-License-Identifier: MIT
+# Copyright (C) 2018-present iced project and contributors
 
 # popcnt
 66 0FB8 CE, INVALID, INVALID, 0, code=INVALID
@@ -3636,22 +3616,14 @@ F3 0F1E FB, Endbr32, Endbr32, 0,
 0F20 F9, INVALID, INVALID, 0, code=Mov_r32_cr
 66 0F20 C1, Mov_r32_cr, Mov, 2, op0=r;ecx op1=r;cr0 enc=0F20C1
 # LOCK MOV CRn
-F0 0F20 C1, Mov_r32_cr, Mov, 2, op0=r;ecx op1=r;cr8
-F0 0F20 C9, Mov_r32_cr, Mov, 2, op0=r;ecx op1=r;cr9 decopt=NoInvalidCheck
-F0 0F20 D1, Mov_r32_cr, Mov, 2, op0=r;ecx op1=r;cr10 decopt=NoInvalidCheck
-F0 0F20 D9, Mov_r32_cr, Mov, 2, op0=r;ecx op1=r;cr11 decopt=NoInvalidCheck
-F0 0F20 E1, Mov_r32_cr, Mov, 2, op0=r;ecx op1=r;cr12 decopt=NoInvalidCheck
-F0 0F20 E9, Mov_r32_cr, Mov, 2, op0=r;ecx op1=r;cr13 decopt=NoInvalidCheck
-F0 0F20 F1, Mov_r32_cr, Mov, 2, op0=r;ecx op1=r;cr14 decopt=NoInvalidCheck
-F0 0F20 F9, Mov_r32_cr, Mov, 2, op0=r;ecx op1=r;cr15 decopt=NoInvalidCheck
-F0 0F20 C1, INVALID, INVALID, 0, code=Mov_r32_cr decopt=NoLockMovCR
-F0 0F20 C9, INVALID, INVALID, 0, code=Mov_r32_cr decopt=NoLockMovCR
-F0 0F20 D1, INVALID, INVALID, 0, code=Mov_r32_cr decopt=NoLockMovCR
-F0 0F20 D9, INVALID, INVALID, 0, code=Mov_r32_cr decopt=NoLockMovCR
-F0 0F20 E1, INVALID, INVALID, 0, code=Mov_r32_cr decopt=NoLockMovCR
-F0 0F20 E9, INVALID, INVALID, 0, code=Mov_r32_cr decopt=NoLockMovCR
-F0 0F20 F1, INVALID, INVALID, 0, code=Mov_r32_cr decopt=NoLockMovCR
-F0 0F20 F9, INVALID, INVALID, 0, code=Mov_r32_cr decopt=NoLockMovCR
+F0 0F20 C1, Mov_r32_cr, Mov, 2, op0=r;ecx op1=r;cr8 decopt=AMD
+F0 0F20 C9, Mov_r32_cr, Mov, 2, op0=r;ecx op1=r;cr9 decopt=AMD;NoInvalidCheck
+F0 0F20 D1, Mov_r32_cr, Mov, 2, op0=r;ecx op1=r;cr10 decopt=AMD;NoInvalidCheck
+F0 0F20 D9, Mov_r32_cr, Mov, 2, op0=r;ecx op1=r;cr11 decopt=AMD;NoInvalidCheck
+F0 0F20 E1, Mov_r32_cr, Mov, 2, op0=r;ecx op1=r;cr12 decopt=AMD;NoInvalidCheck
+F0 0F20 E9, Mov_r32_cr, Mov, 2, op0=r;ecx op1=r;cr13 decopt=AMD;NoInvalidCheck
+F0 0F20 F1, Mov_r32_cr, Mov, 2, op0=r;ecx op1=r;cr14 decopt=AMD;NoInvalidCheck
+F0 0F20 F9, Mov_r32_cr, Mov, 2, op0=r;ecx op1=r;cr15 decopt=AMD;NoInvalidCheck
 F0 0F20 C9, INVALID, INVALID, 0, code=Mov_r32_cr
 F0 0F20 D1, INVALID, INVALID, 0, code=Mov_r32_cr
 F0 0F20 D9, INVALID, INVALID, 0, code=Mov_r32_cr
@@ -3659,14 +3631,14 @@ F0 0F20 E1, INVALID, INVALID, 0, code=Mov_r32_cr
 F0 0F20 E9, INVALID, INVALID, 0, code=Mov_r32_cr
 F0 0F20 F1, INVALID, INVALID, 0, code=Mov_r32_cr
 F0 0F20 F9, INVALID, INVALID, 0, code=Mov_r32_cr
-F0 0F20 C1, Mov_r32_cr, Mov, 2, op0=r;ecx op1=r;cr0 decopt=NoInvalidCheck decopt=NoLockMovCR lock
-F0 0F20 C9, Mov_r32_cr, Mov, 2, op0=r;ecx op1=r;cr1 decopt=NoInvalidCheck decopt=NoLockMovCR lock
-F0 0F20 D1, Mov_r32_cr, Mov, 2, op0=r;ecx op1=r;cr2 decopt=NoInvalidCheck decopt=NoLockMovCR lock
-F0 0F20 D9, Mov_r32_cr, Mov, 2, op0=r;ecx op1=r;cr3 decopt=NoInvalidCheck decopt=NoLockMovCR lock
-F0 0F20 E1, Mov_r32_cr, Mov, 2, op0=r;ecx op1=r;cr4 decopt=NoInvalidCheck decopt=NoLockMovCR lock
-F0 0F20 E9, Mov_r32_cr, Mov, 2, op0=r;ecx op1=r;cr5 decopt=NoInvalidCheck decopt=NoLockMovCR lock
-F0 0F20 F1, Mov_r32_cr, Mov, 2, op0=r;ecx op1=r;cr6 decopt=NoInvalidCheck decopt=NoLockMovCR lock
-F0 0F20 F9, Mov_r32_cr, Mov, 2, op0=r;ecx op1=r;cr7 decopt=NoInvalidCheck decopt=NoLockMovCR lock
+F0 0F20 C1, Mov_r32_cr, Mov, 2, op0=r;ecx op1=r;cr0 decopt=NoInvalidCheck lock
+F0 0F20 C9, Mov_r32_cr, Mov, 2, op0=r;ecx op1=r;cr1 decopt=NoInvalidCheck lock
+F0 0F20 D1, Mov_r32_cr, Mov, 2, op0=r;ecx op1=r;cr2 decopt=NoInvalidCheck lock
+F0 0F20 D9, Mov_r32_cr, Mov, 2, op0=r;ecx op1=r;cr3 decopt=NoInvalidCheck lock
+F0 0F20 E1, Mov_r32_cr, Mov, 2, op0=r;ecx op1=r;cr4 decopt=NoInvalidCheck lock
+F0 0F20 E9, Mov_r32_cr, Mov, 2, op0=r;ecx op1=r;cr5 decopt=NoInvalidCheck lock
+F0 0F20 F1, Mov_r32_cr, Mov, 2, op0=r;ecx op1=r;cr6 decopt=NoInvalidCheck lock
+F0 0F20 F9, Mov_r32_cr, Mov, 2, op0=r;ecx op1=r;cr7 decopt=NoInvalidCheck lock
 
 0F21 81, Mov_r32_dr, Mov, 2, op0=r;ecx op1=r;dr0 enc=0F21C1
 0F21 41, Mov_r32_dr, Mov, 2, op0=r;ecx op1=r;dr0 enc=0F21C1
@@ -3698,22 +3670,14 @@ F0 0F20 F9, Mov_r32_cr, Mov, 2, op0=r;ecx op1=r;cr7 decopt=NoInvalidCheck decopt
 0F22 F9, INVALID, INVALID, 0, code=Mov_cr_r32
 66 0F22 C1, Mov_cr_r32, Mov, 2, op0=r;cr0 op1=r;ecx enc=0F22C1
 # LOCK MOV CRn
-F0 0F22 C1, Mov_cr_r32, Mov, 2, op0=r;cr8 op1=r;ecx
-F0 0F22 C9, Mov_cr_r32, Mov, 2, op0=r;cr9 op1=r;ecx decopt=NoInvalidCheck
-F0 0F22 D1, Mov_cr_r32, Mov, 2, op0=r;cr10 op1=r;ecx decopt=NoInvalidCheck
-F0 0F22 D9, Mov_cr_r32, Mov, 2, op0=r;cr11 op1=r;ecx decopt=NoInvalidCheck
-F0 0F22 E1, Mov_cr_r32, Mov, 2, op0=r;cr12 op1=r;ecx decopt=NoInvalidCheck
-F0 0F22 E9, Mov_cr_r32, Mov, 2, op0=r;cr13 op1=r;ecx decopt=NoInvalidCheck
-F0 0F22 F1, Mov_cr_r32, Mov, 2, op0=r;cr14 op1=r;ecx decopt=NoInvalidCheck
-F0 0F22 F9, Mov_cr_r32, Mov, 2, op0=r;cr15 op1=r;ecx decopt=NoInvalidCheck
-F0 0F22 C1, INVALID, INVALID, 0, code=Mov_cr_r32 decopt=NoLockMovCR
-F0 0F22 C9, INVALID, INVALID, 0, code=Mov_cr_r32 decopt=NoLockMovCR
-F0 0F22 D1, INVALID, INVALID, 0, code=Mov_cr_r32 decopt=NoLockMovCR
-F0 0F22 D9, INVALID, INVALID, 0, code=Mov_cr_r32 decopt=NoLockMovCR
-F0 0F22 E1, INVALID, INVALID, 0, code=Mov_cr_r32 decopt=NoLockMovCR
-F0 0F22 E9, INVALID, INVALID, 0, code=Mov_cr_r32 decopt=NoLockMovCR
-F0 0F22 F1, INVALID, INVALID, 0, code=Mov_cr_r32 decopt=NoLockMovCR
-F0 0F22 F9, INVALID, INVALID, 0, code=Mov_cr_r32 decopt=NoLockMovCR
+F0 0F22 C1, Mov_cr_r32, Mov, 2, op0=r;cr8 op1=r;ecx decopt=AMD
+F0 0F22 C9, Mov_cr_r32, Mov, 2, op0=r;cr9 op1=r;ecx decopt=AMD;NoInvalidCheck
+F0 0F22 D1, Mov_cr_r32, Mov, 2, op0=r;cr10 op1=r;ecx decopt=AMD;NoInvalidCheck
+F0 0F22 D9, Mov_cr_r32, Mov, 2, op0=r;cr11 op1=r;ecx decopt=AMD;NoInvalidCheck
+F0 0F22 E1, Mov_cr_r32, Mov, 2, op0=r;cr12 op1=r;ecx decopt=AMD;NoInvalidCheck
+F0 0F22 E9, Mov_cr_r32, Mov, 2, op0=r;cr13 op1=r;ecx decopt=AMD;NoInvalidCheck
+F0 0F22 F1, Mov_cr_r32, Mov, 2, op0=r;cr14 op1=r;ecx decopt=AMD;NoInvalidCheck
+F0 0F22 F9, Mov_cr_r32, Mov, 2, op0=r;cr15 op1=r;ecx decopt=AMD;NoInvalidCheck
 F0 0F22 C9, INVALID, INVALID, 0, code=Mov_cr_r32
 F0 0F22 D1, INVALID, INVALID, 0, code=Mov_cr_r32
 F0 0F22 D9, INVALID, INVALID, 0, code=Mov_cr_r32
@@ -3721,14 +3685,14 @@ F0 0F22 E1, INVALID, INVALID, 0, code=Mov_cr_r32
 F0 0F22 E9, INVALID, INVALID, 0, code=Mov_cr_r32
 F0 0F22 F1, INVALID, INVALID, 0, code=Mov_cr_r32
 F0 0F22 F9, INVALID, INVALID, 0, code=Mov_cr_r32
-F0 0F22 C1, Mov_cr_r32, Mov, 2, op0=r;cr0 op1=r;ecx decopt=NoInvalidCheck decopt=NoLockMovCR lock
-F0 0F22 C9, Mov_cr_r32, Mov, 2, op0=r;cr1 op1=r;ecx decopt=NoInvalidCheck decopt=NoLockMovCR lock
-F0 0F22 D1, Mov_cr_r32, Mov, 2, op0=r;cr2 op1=r;ecx decopt=NoInvalidCheck decopt=NoLockMovCR lock
-F0 0F22 D9, Mov_cr_r32, Mov, 2, op0=r;cr3 op1=r;ecx decopt=NoInvalidCheck decopt=NoLockMovCR lock
-F0 0F22 E1, Mov_cr_r32, Mov, 2, op0=r;cr4 op1=r;ecx decopt=NoInvalidCheck decopt=NoLockMovCR lock
-F0 0F22 E9, Mov_cr_r32, Mov, 2, op0=r;cr5 op1=r;ecx decopt=NoInvalidCheck decopt=NoLockMovCR lock
-F0 0F22 F1, Mov_cr_r32, Mov, 2, op0=r;cr6 op1=r;ecx decopt=NoInvalidCheck decopt=NoLockMovCR lock
-F0 0F22 F9, Mov_cr_r32, Mov, 2, op0=r;cr7 op1=r;ecx decopt=NoInvalidCheck decopt=NoLockMovCR lock
+F0 0F22 C1, Mov_cr_r32, Mov, 2, op0=r;cr0 op1=r;ecx decopt=NoInvalidCheck lock
+F0 0F22 C9, Mov_cr_r32, Mov, 2, op0=r;cr1 op1=r;ecx decopt=NoInvalidCheck lock
+F0 0F22 D1, Mov_cr_r32, Mov, 2, op0=r;cr2 op1=r;ecx decopt=NoInvalidCheck lock
+F0 0F22 D9, Mov_cr_r32, Mov, 2, op0=r;cr3 op1=r;ecx decopt=NoInvalidCheck lock
+F0 0F22 E1, Mov_cr_r32, Mov, 2, op0=r;cr4 op1=r;ecx decopt=NoInvalidCheck lock
+F0 0F22 E9, Mov_cr_r32, Mov, 2, op0=r;cr5 op1=r;ecx decopt=NoInvalidCheck lock
+F0 0F22 F1, Mov_cr_r32, Mov, 2, op0=r;cr6 op1=r;ecx decopt=NoInvalidCheck lock
+F0 0F22 F9, Mov_cr_r32, Mov, 2, op0=r;cr7 op1=r;ecx decopt=NoInvalidCheck lock
 
 0F23 81, Mov_dr_r32, Mov, 2, op0=r;dr0 op1=r;ecx enc=0F23C1
 0F23 41, Mov_dr_r32, Mov, 2, op0=r;dr0 op1=r;ecx enc=0F23C1
@@ -21443,11 +21407,11 @@ C4C37B F0 10 5A, VEX_Rorx_r32_rm32_imm8, Rorx, 3, op0=r;edx op1=m;ds;bx;si;1;0;0
 0F0F 88 5AA5 1D, D3NOW_Pf2id_mm_mmm64, Pf2id, 2, op0=r;mm1 op1=m;ds;bx;si;1;0xA55A;2;Packed64_Float32 co=0;0;0;0;3;2
 0F0F CD 1D, D3NOW_Pf2id_mm_mmm64, Pf2id, 2, op0=r;mm1 op1=r;mm5
 
-0F0F 88 5AA5 86, D3NOW_Pfrcpv_mm_mmm64, Pfrcpv, 2, op0=r;mm1 op1=m;ds;bx;si;1;0xA55A;2;Packed64_Float32 co=0;0;0;0;3;2
-0F0F CD 86, D3NOW_Pfrcpv_mm_mmm64, Pfrcpv, 2, op0=r;mm1 op1=r;mm5
+0F0F 88 5AA5 86, D3NOW_Pfrcpv_mm_mmm64, Pfrcpv, 2, op0=r;mm1 op1=m;ds;bx;si;1;0xA55A;2;Packed64_Float32 co=0;0;0;0;3;2 decopt=Cyrix
+0F0F CD 86, D3NOW_Pfrcpv_mm_mmm64, Pfrcpv, 2, op0=r;mm1 op1=r;mm5 decopt=Cyrix
 
-0F0F 88 5AA5 87, D3NOW_Pfrsqrtv_mm_mmm64, Pfrsqrtv, 2, op0=r;mm1 op1=m;ds;bx;si;1;0xA55A;2;Packed64_Float32 co=0;0;0;0;3;2
-0F0F CD 87, D3NOW_Pfrsqrtv_mm_mmm64, Pfrsqrtv, 2, op0=r;mm1 op1=r;mm5
+0F0F 88 5AA5 87, D3NOW_Pfrsqrtv_mm_mmm64, Pfrsqrtv, 2, op0=r;mm1 op1=m;ds;bx;si;1;0xA55A;2;Packed64_Float32 co=0;0;0;0;3;2 decopt=Cyrix
+0F0F CD 87, D3NOW_Pfrsqrtv_mm_mmm64, Pfrsqrtv, 2, op0=r;mm1 op1=r;mm5 decopt=Cyrix
 
 0F0F 88 5AA5 8A, D3NOW_Pfnacc_mm_mmm64, Pfnacc, 2, op0=r;mm1 op1=m;ds;bx;si;1;0xA55A;2;Packed64_Float32 co=0;0;0;0;3;2
 0F0F CD 8A, D3NOW_Pfnacc_mm_mmm64, Pfnacc, 2, op0=r;mm1 op1=r;mm5
@@ -21772,3 +21736,23 @@ C4C249 53 10, VEX_Vpdpwssds_xmm_xmm_xmmm128, Vpdpwssds, 3, op0=r;xmm2 op1=r;xmm6
 C4E24D 53 10, VEX_Vpdpwssds_ymm_ymm_ymmm256, Vpdpwssds, 3, op0=r;ymm2 op1=r;ymm6 op2=m;ds;bx;si;1;0;0;Packed256_Int16
 C4E24D 53 D3, VEX_Vpdpwssds_ymm_ymm_ymmm256, Vpdpwssds, 3, op0=r;ymm2 op1=r;ymm6 op2=r;ymm3
 C4C24D 53 10, VEX_Vpdpwssds_ymm_ymm_ymmm256, Vpdpwssds, 3, op0=r;ymm2 op1=r;ymm6 op2=m;ds;bx;si;1;0;0;Packed256_Int16 enc=C4E24D5310
+
+F3 0FA6 E8, Ccs_hash_16, Ccs_hash, 0, rep
+F2 0FA6 E8, INVALID, INVALID, 0, code=Ccs_hash_16
+F2 F3 0FA6 E8, Ccs_hash_16, Ccs_hash, 0, rep enc=F30FA6E8
+F3 F2 0FA6 E8, INVALID, INVALID, 0, code=Ccs_hash_16
+0FA6 E8, INVALID, INVALID, 0, code=Ccs_hash_16
+
+F3 67 0FA6 E8, Ccs_hash_32, Ccs_hash, 0, rep enc=67F30FA6E8
+67 F3 0FA6 E8, Ccs_hash_32, Ccs_hash, 0, rep
+67 0FA6 E8, INVALID, INVALID, 0, code=Ccs_hash_32
+
+F3 0FA7 F0, Ccs_encrypt_16, Ccs_encrypt, 0, rep
+F2 0FA7 F0, INVALID, INVALID, 0, code=Ccs_encrypt_16
+F2 F3 0FA7 F0, Ccs_encrypt_16, Ccs_encrypt, 0, rep enc=F30FA7F0
+F3 F2 0FA7 F0, INVALID, INVALID, 0, code=Ccs_encrypt_16
+0FA7 F0, INVALID, INVALID, 0, code=Ccs_encrypt_16
+
+F3 67 0FA7 F0, Ccs_encrypt_32, Ccs_encrypt, 0, rep enc=67F30FA7F0
+67 F3 0FA7 F0, Ccs_encrypt_32, Ccs_encrypt, 0, rep
+67 0FA7 F0, INVALID, INVALID, 0, code=Ccs_encrypt_32

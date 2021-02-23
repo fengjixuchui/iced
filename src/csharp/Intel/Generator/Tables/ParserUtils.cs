@@ -1,25 +1,5 @@
-/*
-Copyright (C) 2018-2019 de4dot@gmail.com
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2018-present iced project and contributors
 
 using System;
 using System.Diagnostics.CodeAnalysis;
@@ -32,8 +12,8 @@ namespace Generator.Tables {
 			if (index < 0)
 				return (s, string.Empty);
 			else {
-				var key = s.Substring(0, index).Trim();
-				var value = s.Substring(index + 1).Trim();
+				var key = s[0..index].Trim();
+				var value = s[(index + 1)..].Trim();
 				return (key, value);
 			}
 		}
@@ -42,9 +22,9 @@ namespace Generator.Tables {
 			var origValue = value;
 			var numberStyles = NumberStyles.None;
 			bool bad = false;
-			if (value.StartsWith("0x", System.StringComparison.OrdinalIgnoreCase)) {
+			if (value.StartsWith("0x", StringComparison.OrdinalIgnoreCase)) {
 				numberStyles |= NumberStyles.HexNumber;
-				value = value.Substring(2);
+				value = value[2..];
 				bad = value.TrimStart() != value;
 			}
 			if (bad || !uint.TryParse(value, numberStyles, null, out result)) {
@@ -60,15 +40,15 @@ namespace Generator.Tables {
 		public static bool TryParseInt32(string value, out int result, [NotNullWhen(false)] out string? error) {
 			result = 0;
 			var origValue = value;
-			bool isSigned = value.StartsWith("-", System.StringComparison.Ordinal);
+			bool isSigned = value.StartsWith("-", StringComparison.Ordinal);
 			if (isSigned)
-				value = value.Substring(1).Trim();
+				value = value[1..].Trim();
 
 			var numberStyles = NumberStyles.None;
 			bool bad = false;
-			if (value.StartsWith("0x", System.StringComparison.OrdinalIgnoreCase)) {
+			if (value.StartsWith("0x", StringComparison.OrdinalIgnoreCase)) {
 				numberStyles |= NumberStyles.HexNumber;
-				value = value.Substring(2);
+				value = value[2..];
 				bad = value.TrimStart() != value;
 			}
 			if (bad || !uint.TryParse(value, numberStyles, null, out var parsedValue)) {

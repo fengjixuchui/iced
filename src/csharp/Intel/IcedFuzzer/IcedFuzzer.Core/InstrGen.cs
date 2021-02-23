@@ -1,25 +1,5 @@
-/*
-Copyright (C) 2018-2019 de4dot@gmail.com
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2018-present iced project and contributors
 
 using System;
 using System.Collections.Generic;
@@ -504,10 +484,11 @@ namespace IcedFuzzer.Core {
 			public FuzzerInstruction? Instr64;
 			public List<FuzzerInstruction> GetInstructions() {
 				Assert.False(Instr16 is null || Instr32 is null);
-				var instrs = new List<FuzzerInstruction>(Instr64 is object ? 3 : 2);
-				instrs.Add(Instr16);
-				instrs.Add(Instr32);
-				if (Instr64 is object)
+				var instrs = new List<FuzzerInstruction>(Instr64 is not null ? 3 : 2) {
+					Instr16,
+					Instr32
+				};
+				if (Instr64 is not null)
 					instrs.Add(Instr64);
 				return instrs;
 			}
@@ -627,15 +608,15 @@ namespace IcedFuzzer.Core {
 					Assert.True(instruction.MandatoryPrefix == MandatoryPrefix.None);
 					switch (instruction.OperandSize) {
 					case 16:
-						Assert.False(resNop.Instr16 is object);
+						Assert.False(resNop.Instr16 is not null);
 						resNop.Instr16 = instruction;
 						break;
 					case 32:
-						Assert.False(resNop.Instr32 is object);
+						Assert.False(resNop.Instr32 is not null);
 						resNop.Instr32 = instruction;
 						break;
 					case 64:
-						Assert.False(resNop.Instr64 is object);
+						Assert.False(resNop.Instr64 is not null);
 						resNop.Instr64 = instruction;
 						break;
 					default:
@@ -657,7 +638,7 @@ namespace IcedFuzzer.Core {
 
 				InitializeLegacyFlags(flags, instruction, instruction.OpCode, instruction.GroupIndex);
 			}
-			if (resNop is object) {
+			if (resNop is not null) {
 				// We assume none of them were removed by the user. What's the point of removing just one of them instead of all of them?
 				Assert.False(resNop.Instr16 is null || resNop.Instr32 is null || (bitness == 64 && resNop.Instr64 is null));
 			}
@@ -713,7 +694,7 @@ namespace IcedFuzzer.Core {
 							AddLegacy(bitness, table, prefix => (new OpCode(opCode), groupIndex), isModrmMemory, ref groupInfos[groupIndex], groupInstrs[groupIndex]);
 
 						// If there's a reserved-nop, replace all invalid instructions with a reserved-nop instruction
-						if (resNop is object) {
+						if (resNop is not null) {
 							for (int groupIndex = 0; groupIndex < groupInfos.Length; groupIndex++)
 								InitializeResNop(bitness, flags, table, prefix => (new OpCode(opCode), groupIndex), isModrmMemory, ref groupInfos[groupIndex], groupIndex << 3, resNop, InvalidInstructionKind.Group, 0);
 						}
@@ -730,7 +711,7 @@ namespace IcedFuzzer.Core {
 							foreach (var infoInstrs in info.Instructions) {
 								foreach (var instr in infoInstrs) {
 									// If there's a reserved nop, it must be used
-									Assert.False(resNop is object && !instr.IsValid);
+									Assert.False(resNop is not null && !instr.IsValid);
 									yield return instr;
 								}
 							}
@@ -770,8 +751,8 @@ namespace IcedFuzzer.Core {
 						}
 
 						for (int index = 0; index < infos.Length; index++) {
-							Func<MandatoryPrefix, (OpCode opCode, int groupIndex)> getOpCode = prefix => GetOpCodeAndGroup(rmGroups, index, opCode, prefix);
-							AddLegacy(bitness, table, getOpCode, isModrmMemory, ref infos[index], groupInstrs[index]);
+							(OpCode opCode, int groupIndex) GetOpCode(MandatoryPrefix prefix) => GetOpCodeAndGroup(rmGroups, index, opCode, prefix);
+							AddLegacy(bitness, table, GetOpCode, isModrmMemory, ref infos[index], groupInstrs[index]);
 						}
 
 						static bool IsInvalidGroup(LegacyInfo[] infos, int index) {
@@ -832,7 +813,7 @@ namespace IcedFuzzer.Core {
 						}
 
 						// If there's a reserved-nop, replace all invalid instructions with a reserved-nop instruction
-						if (resNop is object) {
+						if (resNop is not null) {
 							// Convert 8 consecutive invalid instructions to a reserved nop with modrm.reg=N
 							for (int groupIndex = 0; groupIndex < 8; groupIndex++) {
 								int index = groupIndex << 3;
@@ -877,8 +858,8 @@ namespace IcedFuzzer.Core {
 										ignoredPrefixes |= LegacyFlags.PF2;
 								}
 
-								Func<MandatoryPrefix, (OpCode opCode, int groupIndex)> getOpCode = prefix => GetOpCodeAndGroup(rmGroups, index, opCode, prefix);
-								InitializeResNop(bitness, flags, table, getOpCode, isModrmMemory, ref infos[index], index, resNop, InvalidInstructionKind.TwoByte, ignoredPrefixes);
+								(OpCode opCode, int groupIndex) GetOpCode(MandatoryPrefix prefix) => GetOpCodeAndGroup(rmGroups, index, opCode, prefix);
+								InitializeResNop(bitness, flags, table, GetOpCode, isModrmMemory, ref infos[index], index, resNop, InvalidInstructionKind.TwoByte, ignoredPrefixes);
 							}
 						}
 
@@ -907,7 +888,7 @@ namespace IcedFuzzer.Core {
 							foreach (var infoInstrs in info.Instructions) {
 								foreach (var instr in infoInstrs) {
 									// If there's a reserved nop, it must be used
-									Assert.False(resNop is object && !instr.IsValid);
+									Assert.False(resNop is not null && !instr.IsValid);
 									yield return instr;
 								}
 							}
@@ -929,13 +910,13 @@ namespace IcedFuzzer.Core {
 					AddLegacy(bitness, table, prefix => (new OpCode(opCode), -1), isModrmMemory, ref info, instrs);
 
 					// If there's a reserved-nop, replace all invalid instructions with a reserved-nop instruction
-					if (resNop is object)
+					if (resNop is not null)
 						InitializeResNop(bitness, flags, table, prefix => (new OpCode(opCode), -1), isModrmMemory, ref info, 0, resNop, InvalidInstructionKind.Full, 0);
 
 					foreach (var infoInstrs in info.Instructions) {
 						foreach (var instr in infoInstrs) {
 							// If there's a reserved nop, it must be used
-							Assert.False(resNop is object && !instr.IsValid);
+							Assert.False(resNop is not null && !instr.IsValid);
 							yield return instr;
 						}
 					}
@@ -1263,7 +1244,7 @@ namespace IcedFuzzer.Core {
 							Assert.True(instr.RmGroupIndex < 0, "Mem with rm-group index???");
 							var group = groupInstrs[GetRealGroupIndex(instr)];
 							int keyIndex = getKeyIndex(instr.W, instr.L);
-							if (group[keyIndex] is object)
+							if (group[keyIndex] is not null)
 								Assert.Fail($"Dupe instruction {group[keyIndex]!.Code} vs {instr.Code}");
 							group[keyIndex] = instr;
 						}
@@ -1282,7 +1263,7 @@ namespace IcedFuzzer.Core {
 
 						foreach (var group in groupInstrs) {
 							foreach (var instr in group) {
-								Assert.True(instr is object);
+								Assert.True(instr is not null);
 								yield return instr;
 							}
 						}
@@ -1302,7 +1283,7 @@ namespace IcedFuzzer.Core {
 							int groupIndex = GetRegGroupIndex(instr);
 							var group = groupInstrs[groupIndex];
 							int keyIndex = getKeyIndex(instr.W, instr.L);
-							if (group[keyIndex] is object)
+							if (group[keyIndex] is not null)
 								Assert.Fail($"Dupe instruction {group[keyIndex]!.Code} vs {instr.Code}");
 							group[keyIndex] = instr;
 						}
@@ -1336,7 +1317,7 @@ namespace IcedFuzzer.Core {
 											// Verify that reg=0..7 is only used by this instruction.
 											for (int i = 1; i < 0x40; i += 8) {
 												group = groupInstrs[rmGroupIndex + i];
-												if (group[keyIndex] is object)
+												if (group[keyIndex] is not null)
 													Assert.Fail($"Dupe instruction {group[keyIndex]!.Code} vs {instr.Code}");
 											}
 										}
@@ -1372,7 +1353,7 @@ namespace IcedFuzzer.Core {
 											// Verify that rm=0..7 is only used by this instruction.
 											for (int i = 1; i < 8; i++) {
 												group = groupInstrs[groupIndex + i];
-												if (group[keyIndex] is object)
+												if (group[keyIndex] is not null)
 													Assert.Fail($"Dupe instruction {group[keyIndex]!.Code} vs {instr.Code}");
 											}
 										}
@@ -1408,7 +1389,7 @@ namespace IcedFuzzer.Core {
 
 						foreach (var group in groupInstrs) {
 							foreach (var instr in group) {
-								if (instr is object)
+								if (instr is not null)
 									yield return instr;
 							}
 						}
@@ -1422,7 +1403,7 @@ namespace IcedFuzzer.Core {
 					// Add all valid instructions, verifying that there are no two instructions with the same key (prefix, W, L)
 					foreach (var instr in prefixInstrs) {
 						int keyIndex = getKeyIndex(instr.W, instr.L);
-						if (instrs[keyIndex] is object)
+						if (instrs[keyIndex] is not null)
 							Assert.Fail($"Dupe instruction {instrs[keyIndex]!.Code} vs {instr.Code}");
 						instrs[keyIndex] = instr;
 					}
@@ -1452,7 +1433,7 @@ namespace IcedFuzzer.Core {
 					}
 
 					foreach (var instr in instrs) {
-						Assert.True(instr is object);
+						Assert.True(instr is not null);
 						yield return instr;
 					}
 				}
@@ -1487,7 +1468,7 @@ namespace IcedFuzzer.Core {
 			Assert.True((groupIndex & 7) == 0);
 			instr = null;
 			var group = groupInstrs[groupIndex];
-			if (!(group[keyIndex] is FuzzerInstruction finstr))
+			if (group[keyIndex] is not FuzzerInstruction finstr)
 				return false;
 			if (finstr.RmGroupIndex >= 0)
 				return false;
@@ -1503,7 +1484,7 @@ namespace IcedFuzzer.Core {
 		static bool IsRmGroupIndexInstruction(FuzzerInstruction?[][] groupInstrs, int rmGroupIndex, int keyIndex, [NotNullWhen(true)] out FuzzerInstruction? instr) {
 			instr = null;
 			var group = groupInstrs[rmGroupIndex];
-			if (!(group[keyIndex] is FuzzerInstruction finstr))
+			if (group[keyIndex] is not FuzzerInstruction finstr)
 				return false;
 			if (finstr.RmGroupIndex < 0)
 				return false;
@@ -1521,29 +1502,13 @@ namespace IcedFuzzer.Core {
 			return false;
 		}
 
-		static bool IsSETcc(Code code) {
-			switch (code) {
-			case Code.Seto_rm8:
-			case Code.Setno_rm8:
-			case Code.Setb_rm8:
-			case Code.Setae_rm8:
-			case Code.Sete_rm8:
-			case Code.Setne_rm8:
-			case Code.Setbe_rm8:
-			case Code.Seta_rm8:
-			case Code.Sets_rm8:
-			case Code.Setns_rm8:
-			case Code.Setp_rm8:
-			case Code.Setnp_rm8:
-			case Code.Setl_rm8:
-			case Code.Setge_rm8:
-			case Code.Setle_rm8:
-			case Code.Setg_rm8:
-				return true;
-			default:
-				return false;
-			}
-		}
+		static bool IsSETcc(Code code) =>
+			code switch {
+				Code.Seto_rm8 or Code.Setno_rm8 or Code.Setb_rm8 or Code.Setae_rm8 or Code.Sete_rm8 or Code.Setne_rm8 or Code.Setbe_rm8 or
+				Code.Seta_rm8 or Code.Sets_rm8 or Code.Setns_rm8 or Code.Setp_rm8 or Code.Setnp_rm8 or Code.Setl_rm8 or Code.Setge_rm8 or
+				Code.Setle_rm8 or Code.Setg_rm8 => true,
+				_ => false,
+			};
 
 		static IEnumerable<(bool hasModrm, FuzzerInstruction)> GetInstructions(int bitness, OpCodeInfo[] opCodes) {
 			// Split up instructions with a reg/mem (modrm) operand into two instructions,

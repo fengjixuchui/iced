@@ -1,28 +1,11 @@
-/*
-Copyright (C) 2018-2019 de4dot@gmail.com
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2018-present iced project and contributors
 
 using System;
 using System.Collections.Generic;
+using Generator.Enums.Encoder;
+using Generator.Enums.InstructionInfo;
+using Generator.Enums;
 
 namespace Generator.Documentation {
 	abstract class DocCommentWriter {
@@ -58,7 +41,7 @@ namespace Generator.Documentation {
 				if (nextIndex < 0)
 					nextIndex = comment.Length;
 				if (nextIndex != index) {
-					yield return (TokenKind.String, comment.Substring(index, nextIndex - index), string.Empty);
+					yield return (TokenKind.String, comment[index..nextIndex], string.Empty);
 					index = nextIndex;
 				}
 				if (index == comment.Length)
@@ -74,7 +57,7 @@ namespace Generator.Documentation {
 					throw new InvalidOperationException($"Invalid comment: {comment}");
 
 				string typeName, memberName;
-				var data = comment.Substring(index + kindLen, nextIndex - (index + kindLen));
+				var data = comment[(index + kindLen)..nextIndex];
 				switch (type) {
 				case newParagraph:
 					if (!string.IsNullOrEmpty(data))
@@ -130,8 +113,8 @@ namespace Generator.Documentation {
 				memberName = s;
 			}
 			else {
-				typeName = s.Substring(0, typeIndex);
-				memberName = s.Substring(typeIndex + 1);
+				typeName = s[0..typeIndex];
+				memberName = s[(typeIndex + 1)..];
 			}
 			return (typeName, memberName);
 		}
@@ -140,7 +123,28 @@ namespace Generator.Documentation {
 			int i = type.LastIndexOf('.');
 			if (i < 0)
 				return type;
-			return type.Substring(i + 1);
+			return type[(i + 1)..];
+		}
+
+		protected static string GetTypeKind(string name) =>
+			name switch {
+				nameof(Code) or nameof(CpuidFeature) or nameof(OpKind) or nameof(Register) or nameof(RepPrefixKind) => "enum",
+				"BlockEncoder" or "ConstantOffsets" or "Instruction" or "RelocInfo" or "SymbolResult" => "struct",
+				_ => throw new InvalidOperationException(),
+			};
+
+		protected static string GetMethodNameOnly(string name) {
+			int index = name.IndexOf('(', StringComparison.Ordinal);
+			if (index < 0)
+				return name;
+			return name[0..index];
+		}
+
+		protected static string TranslateMethodName(string name) {
+			const string GetPattern = "Get";
+			if (name.StartsWith(GetPattern, StringComparison.Ordinal))
+				return name[GetPattern.Length..];
+			return name;
 		}
 	}
 }

@@ -1,25 +1,5 @@
-/*
-Copyright (C) 2018-2019 de4dot@gmail.com
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2018-present iced project and contributors
 
 #if ENCODER
 using System;
@@ -166,16 +146,11 @@ namespace Iced.Intel {
 		/// <param name="bitness">16, 32 or 64</param>
 		/// <param name="writer">Destination</param>
 		/// <returns></returns>
-		public static Encoder Create(int bitness, CodeWriter writer) {
-			switch (bitness) {
-			case 16:
-			case 32:
-			case 64:
-				return new Encoder(writer, bitness);
-			default:
-				throw new ArgumentOutOfRangeException(nameof(bitness));
-			}
-		}
+		public static Encoder Create(int bitness, CodeWriter writer) =>
+			bitness switch {
+				16 or 32 or 64 => new Encoder(writer, bitness),
+				_ => throw new ArgumentOutOfRangeException(nameof(bitness)),
+			};
 
 		/// <summary>
 		/// Encodes an instruction and returns the size of the encoded instruction.
@@ -316,7 +291,7 @@ namespace Iced.Intel {
 			if (instrLen > IcedConstants.MaxInstructionLength && !handler.IsDeclareData)
 				ErrorMessage = $"Instruction length > {IcedConstants.MaxInstructionLength} bytes";
 			errorMessage = this.errorMessage;
-			if (!(errorMessage is null)) {
+			if (errorMessage is not null) {
 				encodedLength = 0;
 				return false;
 			}
@@ -548,23 +523,13 @@ namespace Iced.Intel {
 		internal void AddAbsMem(in Instruction instruction, int operand) {
 			EncoderFlags |= EncoderFlags.Displ;
 			var opKind = instruction.GetOpKind(operand);
-			if (opKind == OpKind.Memory64) {
-				if (bitness != 64) {
-					ErrorMessage = $"Operand {operand}: 64-bit abs address is only available in 64-bit mode";
-					return;
-				}
-				DisplSize = DisplSize.Size8;
-				ulong addr = instruction.MemoryAddress64;
-				Displ = (uint)addr;
-				DisplHi = (uint)(addr >> 32);
-			}
-			else if (opKind == OpKind.Memory) {
+			if (opKind == OpKind.Memory) {
 				if (instruction.MemoryBase != Register.None || instruction.MemoryIndex != Register.None) {
 					ErrorMessage = $"Operand {operand}: Absolute addresses can't have base and/or index regs";
 					return;
 				}
-				var displSize = instruction.MemoryDisplSize;
-				if (displSize == 2) {
+				switch (instruction.MemoryDisplSize) {
+				case 2:
 					if (bitness == 64) {
 						ErrorMessage = $"Operand {operand}: 16-bit abs addresses can't be used in 64-bit mode";
 						return;
@@ -572,18 +537,30 @@ namespace Iced.Intel {
 					if (bitness == 32)
 						EncoderFlags |= EncoderFlags.P67;
 					DisplSize = DisplSize.Size2;
-					Displ = instruction.MemoryDisplacement;
-				}
-				else if (displSize == 4) {
+					Displ = instruction.MemoryDisplacement32;
+					break;
+				case 4:
 					EncoderFlags |= adrSize32Flags;
 					DisplSize = DisplSize.Size4;
-					Displ = instruction.MemoryDisplacement;
-				}
-				else
+					Displ = instruction.MemoryDisplacement32;
+					break;
+				case 8:
+					if (bitness != 64) {
+						ErrorMessage = $"Operand {operand}: 64-bit abs address is only available in 64-bit mode";
+						return;
+					}
+					DisplSize = DisplSize.Size8;
+					ulong addr = instruction.MemoryDisplacement64;
+					Displ = (uint)addr;
+					DisplHi = (uint)(addr >> 32);
+					break;
+				default:
 					ErrorMessage = $"Operand {operand}: {nameof(Instruction)}.{nameof(Instruction.MemoryDisplSize)} must be initialized to 2 (16-bit) or 4 (32-bit)";
+					break;
+				}
 			}
 			else
-				ErrorMessage = $"Operand {operand}: Expected OpKind {nameof(OpKind.Memory)} or {nameof(OpKind.Memory64)}, actual: {opKind}";
+				ErrorMessage = $"Operand {operand}: Expected OpKind {nameof(OpKind.Memory)}, actual: {opKind}";
 		}
 
 		internal void AddModRMRegister(in Instruction instruction, int operand, Register regLo, Register regHi) {
@@ -724,7 +701,7 @@ namespace Iced.Intel {
 
 		bool TryConvertToDisp8N(int displ, out sbyte compressedValue) {
 			var tryConvertToDisp8N = handler.TryConvertToDisp8N;
-			if (!(tryConvertToDisp8N is null))
+			if (tryConvertToDisp8N is not null)
 				return tryConvertToDisp8N(this, handler, displ, out compressedValue);
 			if (sbyte.MinValue <= displ && displ <= sbyte.MaxValue) {
 				compressedValue = (sbyte)displ;
@@ -762,7 +739,7 @@ namespace Iced.Intel {
 			else if (baseReg == Register.None && indexReg == Register.None) {
 				ModRM |= 6;
 				DisplSize = DisplSize.Size2;
-				Displ = instruction.MemoryDisplacement;
+				Displ = instruction.MemoryDisplacement32;
 			}
 			else {
 				ErrorMessage = $"Operand {operand}: Invalid 16-bit base + index registers: base={baseReg}, index={indexReg}";
@@ -770,7 +747,7 @@ namespace Iced.Intel {
 			}
 
 			if (baseReg != Register.None || indexReg != Register.None) {
-				Displ = instruction.MemoryDisplacement;
+				Displ = instruction.MemoryDisplacement32;
 				// [bp] => [bp+00]
 				if (displSize == 0 && baseReg == Register.BP && indexReg == Register.None) {
 					displSize = 1;
@@ -810,7 +787,7 @@ namespace Iced.Intel {
 			var baseReg = instruction.MemoryBase;
 			var indexReg = instruction.MemoryIndex;
 			var displSize = instruction.MemoryDisplSize;
-			Displ = instruction.MemoryDisplacement;
+			Displ = instruction.MemoryDisplacement32;
 
 			Register baseRegLo, baseRegHi;
 			Register indexRegLo, indexRegHi;
@@ -854,15 +831,19 @@ namespace Iced.Intel {
 					return;
 				}
 				ModRM |= 5;
+				ulong target = instruction.MemoryDisplacement64;
 				if (baseReg == Register.RIP) {
 					DisplSize = DisplSize.RipRelSize4_Target64;
-					ulong target = instruction.NextIP + (ulong)(int)Displ;
 					Displ = (uint)target;
 					DisplHi = (uint)(target >> 32);
 				}
 				else {
 					DisplSize = DisplSize.RipRelSize4_Target32;
-					Displ = instruction.NextIP32 + Displ;
+					if (target > uint.MaxValue) {
+						ErrorMessage = $"Operand {operand}: Target address doesn't fit in 32 bits: 0x{target:X}";
+						return;
+					}
+					Displ = (uint)target;
 				}
 				return;
 			}
@@ -889,15 +870,15 @@ namespace Iced.Intel {
 			int baseNum = baseReg == Register.None ? -1 : baseReg - baseRegLo;
 			int indexNum = indexReg == Register.None ? -1 : indexReg - indexRegLo;
 
-			// [ebp] => [ebp+00]
-			if (displSize == 0 && indexReg == Register.None && (baseNum & 7) == 5) {
+			// [ebp]/[ebp+index*scale] => [ebp+00]/[ebp+index*scale+00]
+			if (displSize == 0 && (baseNum & 7) == 5) {
 				displSize = 1;
 				Displ = 0;
 			}
 
 			if (displSize == 1) {
 				if (TryConvertToDisp8N((short)Displ, out sbyte compressedValue))
-					Displ = (byte)compressedValue;
+					Displ = (uint)compressedValue;
 				else
 					displSize = addrSize / 8;
 			}

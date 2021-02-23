@@ -1,25 +1,5 @@
-/*
-Copyright (C) 2018-2019 de4dot@gmail.com
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2018-present iced project and contributors
 
 using System;
 using System.Collections.Generic;
@@ -42,8 +22,8 @@ namespace Generator.Tables {
 			int index = instrStr.IndexOf(' ', StringComparison.Ordinal);
 			if (index < 0)
 				index = instrStr.Length;
-			mnemonic = instrStr.Substring(0, index);
-			var opsStr = instrStr.Substring(index).Trim();
+			mnemonic = instrStr[0..index];
+			var opsStr = instrStr[index..].Trim();
 			operands = opsStr == string.Empty ? Array.Empty<string>() : opsStr.Split(',').Select(a => a.Trim()).ToArray();
 			instrFlags = ParsedInstructionFlags.None;
 		}
@@ -96,11 +76,11 @@ namespace Generator.Tables {
 
 				var firstPart = opParts[0];
 				if (firstPart.EndsWith("+1", StringComparison.Ordinal)) {
-					firstPart = firstPart.Substring(0, firstPart.Length - "+1".Length);
+					firstPart = firstPart[0..(firstPart.Length - "+1".Length)];
 					opFlags |= ParsedInstructionOperandFlags.RegPlus1;
 				}
 				else if (firstPart.EndsWith("+3", StringComparison.Ordinal)) {
-					firstPart = firstPart.Substring(0, firstPart.Length - "+3".Length);
+					firstPart = firstPart[0..(firstPart.Length - "+3".Length)];
 					opFlags |= ParsedInstructionOperandFlags.RegPlus3;
 				}
 				if (firstPart == "r") {
@@ -224,20 +204,20 @@ namespace Generator.Tables {
 
 				case "disp16":
 				case "disp32":
-					sizeBits = int.Parse(firstPart.Substring("disp".Length));
+					sizeBits = int.Parse(firstPart.AsSpan()["disp".Length..]);
 					opFlags |= ParsedInstructionOperandFlags.DispBranch;
 					break;
 
 				case "ptr16:16":
 				case "ptr16:32":
-					sizeBits = int.Parse(firstPart.Substring("ptr16:".Length));
+					sizeBits = int.Parse(firstPart.AsSpan()["ptr16:".Length..]);
 					opFlags |= ParsedInstructionOperandFlags.FarBranch;
 					break;
 
 				case "rel8":
 				case "rel16":
 				case "rel32":
-					sizeBits = int.Parse(firstPart.Substring("rel".Length));
+					sizeBits = int.Parse(firstPart.AsSpan()["rel".Length..]);
 					opFlags |= ParsedInstructionOperandFlags.RelBranch;
 					break;
 
@@ -246,7 +226,7 @@ namespace Generator.Tables {
 				case "imm16":
 				case "imm32":
 				case "imm64":
-					sizeBits = int.Parse(firstPart.Substring("imm".Length));
+					sizeBits = int.Parse(firstPart.AsSpan()["imm".Length..]);
 					opFlags |= ParsedInstructionOperandFlags.Immediate;
 					break;
 
@@ -264,7 +244,7 @@ namespace Generator.Tables {
 				case "vm64y":
 				case "vm64z":
 					opFlags |= ParsedInstructionOperandFlags.Memory | ParsedInstructionOperandFlags.Vsib;
-					sizeBits = int.Parse(firstPart.Substring(2, 2));
+					sizeBits = int.Parse(firstPart.AsSpan()[2..4]);
 					register = (firstPart[^1]) switch {
 						'x' => Register.XMM0,
 						'y' => Register.YMM0,

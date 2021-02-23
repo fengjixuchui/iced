@@ -1,25 +1,5 @@
-/*
-Copyright (C) 2018-2019 de4dot@gmail.com
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2018-present iced project and contributors
 
 using System;
 using System.Collections.Generic;
@@ -75,6 +55,7 @@ namespace Generator {
 		public string CSharpTestsDir { get; }
 		public string RustDir => langDirs[(int)TargetLanguage.Rust];
 		public string RustJSDir => langDirs[(int)TargetLanguage.RustJS];
+		public string PythonDir => langDirs[(int)TargetLanguage.Python];
 		public string GeneratorDir { get; }
 		readonly string[] langDirs;
 
@@ -88,6 +69,7 @@ namespace Generator {
 					TargetLanguage.CSharp => GetAndVerifyPath(baseDir, "csharp", "Intel", "Iced"),
 					TargetLanguage.Rust => GetAndVerifyPath(baseDir, "rust", "iced-x86", "src"),
 					TargetLanguage.RustJS => GetAndVerifyPath(baseDir, "rust", "iced-x86-js", "src"),
+					TargetLanguage.Python => GetAndVerifyPath(baseDir, "rust", "iced-x86-py"),
 					_ => throw new InvalidOperationException(),
 				};
 				langDirs[i] = path;
@@ -106,6 +88,9 @@ namespace Generator {
 		public string GetCSharpTestFilename(params string[] names) => Path.Combine(CSharpTestsDir, Path.Combine(names));
 		public string GetRustFilename(params string[] names) => Path.Combine(RustDir, Path.Combine(names));
 		public string GetRustJSFilename(params string[] names) => Path.Combine(RustJSDir, Path.Combine(names));
+		public string GetPythonPyFilename(params string[] names) => Path.Combine(Path.Combine(PythonDir, "src", "iced_x86"), Path.Combine(names));
+		public string GetPythonRustFilename(params string[] names) => Path.Combine(Path.Combine(PythonDir, "src"), Path.Combine(names));
+		public string GetPythonRustDir() => Path.Combine(PythonDir, "src");
 		public string GetGeneratorFilename(params string[] names) => Path.Combine(GeneratorDir, Path.Combine(names));
 	}
 

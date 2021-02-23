@@ -1,27 +1,6 @@
-/*
-Copyright (C) 2018-2019 de4dot@gmail.com
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2018-present iced project and contributors
 
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
-
-using System;
 using System.Collections.Generic;
 using Generator.Documentation;
 using Generator.Documentation.CSharp;
@@ -190,15 +169,13 @@ namespace Generator.Enums.CSharp {
 
 		public override void Generate(EnumType enumType) {
 			if (toFullFileInfo.TryGetValue(enumType.TypeId, out var fullFileInfo)) {
-				if (!(fullFileInfo is null))
+				if (fullFileInfo is not null)
 					WriteFile(fullFileInfo, enumType);
 			}
 			else if (toPartialFileInfo.TryGetValue(enumType.TypeId, out var partialInfo)) {
-				if (!(partialInfo is null))
+				if (partialInfo is not null)
 					new FileUpdater(TargetLanguage.CSharp, partialInfo.Id, partialInfo.Filename).Generate(writer => WriteEnum(writer, partialInfo, enumType));
 			}
-			else
-				throw new InvalidOperationException();
 		}
 
 		void WriteEnum(FileWriter writer, EnumType enumType, string? baseType) {
@@ -208,7 +185,7 @@ namespace Generator.Enums.CSharp {
 			if (enumType.IsFlags)
 				writer.WriteLine("[Flags]");
 			var pub = enumType.IsPublic ? "public " : string.Empty;
-			var theBaseType = !(baseType is null) ? $" : {baseType}" : string.Empty;
+			var theBaseType = baseType is not null ? $" : {baseType}" : string.Empty;
 			writer.WriteLine($"{pub}enum {enumType.Name(idConverter)}{theBaseType} {{");
 			using (writer.Indent()) {
 				uint expectedValue = 0;
@@ -232,7 +209,7 @@ namespace Generator.Enums.CSharp {
 		void WriteFile(FullEnumFileInfo info, EnumType enumType) {
 			using (var writer = new FileWriter(TargetLanguage.CSharp, FileUtils.OpenWrite(info.Filename))) {
 				writer.WriteFileHeader();
-				if (!(info.Define is null))
+				if (info.Define is not null)
 					writer.WriteLineNoIndent($"#if {info.Define}");
 
 				if (enumType.IsFlags) {
@@ -246,7 +223,7 @@ namespace Generator.Enums.CSharp {
 					WriteEnum(writer, enumType, info.BaseType);
 
 				writer.WriteLine("}");
-				if (!(info.Define is null))
+				if (info.Define is not null)
 					writer.WriteLineNoIndent("#endif");
 			}
 		}

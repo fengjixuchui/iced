@@ -1,25 +1,5 @@
-/*
-Copyright (C) 2018-2019 de4dot@gmail.com
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2018-present iced project and contributors
 
 using System;
 using System.Linq;
@@ -70,7 +50,7 @@ namespace Generator.Encoder.CSharp {
 
 			void Generate(FileWriter writer, string name, string? define, (EnumValue opCodeOperandKind, OpHandlerKind opHandlerKind, object[] args)[] table) {
 				var declTypeStr = genTypes[TypeIds.OpCodeOperandKind].Name(idConverter);
-				if (define is object)
+				if (define is not null)
 					writer.WriteLineNoIndent($"#if {define}");
 				writer.WriteLineNoIndent($"#if {CSharpConstants.HasSpanDefine}");
 				writer.WriteLine($"public static System.ReadOnlySpan<byte> {name} => new byte[{table.Length}] {{");
@@ -82,7 +62,7 @@ namespace Generator.Encoder.CSharp {
 						writer.WriteLine($"(byte){declTypeStr}.{info.opCodeOperandKind.Name(idConverter)},");
 				}
 				writer.WriteLine("};");
-				if (define is object)
+				if (define is not null)
 					writer.WriteLineNoIndent("#endif");
 			}
 		}
@@ -112,7 +92,7 @@ namespace Generator.Encoder.CSharp {
 				var declTypeStr = genTypes[TypeIds.OpCodeOperandKind].Name(idConverter);
 				if (table[0].opHandlerKind != OpHandlerKind.None)
 					throw new InvalidOperationException();
-				if (define is object)
+				if (define is not null)
 					writer.WriteLineNoIndent($"#if {define}");
 				writer.WriteLine($"public static readonly Op[] {name} = new Op[{table.Length - 1}] {{");
 				using (writer.Indent()) {
@@ -143,7 +123,7 @@ namespace Generator.Encoder.CSharp {
 					}
 				}
 				writer.WriteLine("};");
-				if (define is object)
+				if (define is not null)
 					writer.WriteLineNoIndent("#endif");
 			}
 		}
@@ -224,7 +204,7 @@ namespace Generator.Encoder.CSharp {
 				using (writer.Indent()) {
 					foreach (var statement in statements)
 						writer.WriteLine(statement);
-					if (!statements[statements.Length - 1].StartsWith("return ", StringComparison.Ordinal))
+					if (!statements[^1].StartsWith("return ", StringComparison.Ordinal))
 						writer.WriteLine("break;");
 				}
 			});
@@ -280,7 +260,7 @@ namespace Generator.Encoder.CSharp {
 			new FileUpdater(TargetLanguage.CSharp, "PrintImpliedOps", filename).Generate(writer => {
 				foreach (var info in impliedOpsInfo) {
 					var feature = CSharpConstants.GetDefine(info.Encoding);
-					if (feature is object)
+					if (feature is not null)
 						writer.WriteLineNoIndent($"#if {feature}");
 					foreach (var def in info.defs)
 						writer.WriteLine($"case {def.Code.DeclaringType.Name(idConverter)}.{def.Code.Name(idConverter)}:");
@@ -291,7 +271,7 @@ namespace Generator.Encoder.CSharp {
 						}
 						writer.WriteLine("break;");
 					}
-					if (feature is object)
+					if (feature is not null)
 						writer.WriteLineNoIndent("#endif");
 				}
 			});

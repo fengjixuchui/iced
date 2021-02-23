@@ -1,25 +1,5 @@
-/*
-Copyright (C) 2018-2019 de4dot@gmail.com
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2018-present iced project and contributors
 
 using System;
 using System.Collections.Generic;
@@ -95,11 +75,11 @@ namespace Generator.Assembler.CSharp {
 		}
 
 		protected override void Generate(Dictionary<GroupKey, OpCodeInfoGroup> map, OpCodeInfoGroup[] groups) {
-			GenerateCode(map, groups);
+			GenerateCode(groups);
 			GenerateTests(groups);
 		}
 
-		void GenerateCode(Dictionary<GroupKey, OpCodeInfoGroup> map, OpCodeInfoGroup[] groups) {
+		void GenerateCode(OpCodeInfoGroup[] groups) {
 			var filename = CSharpConstants.GetFilename(genTypes, CSharpConstants.IcedNamespace, "Assembler", "Assembler.g.cs");
 			using (var writer = new FileWriter(TargetLanguage.CSharp, FileUtils.OpenWrite(filename))) {
 				writer.WriteFileHeader();
@@ -248,7 +228,7 @@ namespace Generator.Assembler.CSharp {
 			}
 		}
 
-		List<RenderArg> GetRenderArgs(OpCodeInfoGroup group) {
+		static List<RenderArg> GetRenderArgs(OpCodeInfoGroup group) {
 			var renderArgs = new List<RenderArg>();
 			int immArg = 0;
 			var signature = group.Signature;
@@ -383,7 +363,7 @@ namespace Generator.Assembler.CSharp {
 					writer.WriteLine("));");
 				}
 				else if (group.Flags == OpCodeArgFlags.Pseudo) {
-					Debug.Assert(group.ParentPseudoOpsKind is object);
+					Debug.Assert(group.ParentPseudoOpsKind is not null);
 					writer.Write($"{group.ParentPseudoOpsKind.Name}(");
 					for (var i = 0; i < renderArgs.Count; i++) {
 						var renderArg = renderArgs[i];
@@ -530,16 +510,16 @@ namespace Generator.Assembler.CSharp {
 					fullMethodName.Append(renderArg.Kind.ToString().Replace("Register", "reg"));
 					break;
 				case ArgKind.Memory:
-					fullMethodName.Append("m");
+					fullMethodName.Append('m');
 					break;
 				case ArgKind.Immediate:
-					fullMethodName.Append("i");
+					fullMethodName.Append('i');
 					break;
 				case ArgKind.ImmediateUnsigned:
-					fullMethodName.Append("u");
+					fullMethodName.Append('u');
 					break;
 				case ArgKind.Label:
-					fullMethodName.Append("l");
+					fullMethodName.Append('l');
 					break;
 				case ArgKind.LabelUlong:
 					fullMethodName.Append("lu");
@@ -553,7 +533,7 @@ namespace Generator.Assembler.CSharp {
 			if (IgnoredTestsPerBitness.TryGetValue(bitness, out var ignoredTests) && ignoredTests.Contains(fullMethodNameStr))
 				return;
 			var define = GetDefine(group);
-			if (define is object)
+			if (define is not null)
 				writer.WriteLineNoIndent($"#if {define}");
 			writer.WriteLine("[Fact]");
 			writer.WriteLine($"public void {fullMethodNameStr}() {{");
@@ -563,27 +543,27 @@ namespace Generator.Assembler.CSharp {
 					argValues.Add(null);
 
 				if (group.Flags == OpCodeArgFlags.Pseudo) {
-					Debug.Assert(group.ParentPseudoOpsKind is object);
+					Debug.Assert(group.ParentPseudoOpsKind is not null);
 					GenerateTestAssemblerForOpCode(writer, bitness, bitnessFlags, @group, methodName, renderArgs, argValues, OpCodeArgFlags.Default, group.ParentPseudoOpsKind.Items[0]);
 				}
 				else
 					GenerateOpCodeTest(writer, bitness, bitnessFlags, group, methodName, group.RootOpCodeNode, renderArgs, argValues, OpCodeArgFlags.Default);
 			}
 			writer.WriteLine("}");
-			if (define is object)
+			if (define is not null)
 				writer.WriteLineNoIndent("#endif");
 			writer.WriteLine(); ;
 		}
 
 		void GenerateOpCodeTest(FileWriter writer, int bitness, InstructionDefFlags1 bitnessFlags, OpCodeInfoGroup group, string methodName, OpCodeNode node, List<RenderArg> args, List<object?> argValues, OpCodeArgFlags contextFlags) {
 			var opCodeInfo = node.Def;
-			if (opCodeInfo is object)
+			if (opCodeInfo is not null)
 				GenerateTestAssemblerForOpCode(writer, bitness, bitnessFlags, @group, methodName, args, argValues, contextFlags, opCodeInfo);
 			else {
 				var selector = node.Selector;
-				Debug.Assert(selector is object);
+				Debug.Assert(selector is not null);
 				var argKind = selector.ArgIndex >= 0 ? args[selector.ArgIndex] : default;
-				var condition = GetArgConditionForOpCodeKind(argKind, selector.Kind, selector.ArgIndex, group.Flags);
+				var condition = GetArgConditionForOpCodeKind(argKind, selector.Kind, selector.ArgIndex);
 				var isSelectorSupportedByBitness = IsSelectorSupportedByBitness(bitness, selector.Kind, out var continueElse);
 				var (contextIfFlags, contextElseFlags) = GetIfElseContextFlags(selector.Kind);
 				if (isSelectorSupportedByBitness) {
@@ -621,7 +601,7 @@ namespace Generator.Assembler.CSharp {
 						// Don't generate AssertInvalid for unsigned as they are already tested by signed
 						if (isSelectorSupportedByBitness && selector.ArgIndex >= 0 && !group.HasImmediateUnsigned) {
 							var newArg = GetInvalidArgValue(bitness, selector.Kind, selector.ArgIndex);
-							if (newArg is object) {
+							if (newArg is not null) {
 								// Force fake bitness support to allow to generate a throw for the last selector
 								if (bitness == 64 && (group.Name == "bndcn" ||
 													  group.Name == "bndmk" ||
@@ -664,7 +644,6 @@ namespace Generator.Assembler.CSharp {
 				return false;
 			}
 
-			bool isMoffs = IsMoffs(def);
 			var assemblerArgs = new List<string>();
 			var instructionCreateArgs = new List<string>();
 			int forceBitness = 0;
@@ -705,8 +684,8 @@ namespace Generator.Assembler.CSharp {
 				if (argValueForAssembler is null) {
 					var localBitness = forceBitness > 0 ? forceBitness : bitness;
 
-					argValueForAssembler = GetDefaultArgument(localBitness, def.OpKinds[@group.NumberOfLeadingArgToDiscard + i], isMemory, true, i, renderArg);
-					argValueForInstructionCreate = GetDefaultArgument(localBitness, def.OpKinds[@group.NumberOfLeadingArgToDiscard + i], isMemory, false, i, renderArg);
+					argValueForAssembler = GetDefaultArgument(localBitness, def.OpKindDefs[@group.NumberOfLeadingArgToDiscard + i], isMemory, true, i, renderArg);
+					argValueForInstructionCreate = GetDefaultArgument(localBitness, def.OpKindDefs[@group.NumberOfLeadingArgToDiscard + i], isMemory, false, i, renderArg);
 				}
 
 				if ((def.Flags1 & InstructionDefFlags1.OpMaskRegister) != 0 && i == 0) {
@@ -714,7 +693,7 @@ namespace Generator.Assembler.CSharp {
 					argValueForInstructionCreate += ".k1";
 				}
 
-				if (renderArg.Kind == ArgKind.Memory && (!isMoffs || bitness != 64))
+				if (renderArg.Kind == ArgKind.Memory)
 					argValueForInstructionCreate += ".ToMemoryOperand(Bitness)";
 
 				// Perform casting for unsigned
@@ -729,9 +708,9 @@ namespace Generator.Assembler.CSharp {
 					}
 				}
 
-				Debug.Assert(argValueForAssembler is object);
+				Debug.Assert(argValueForAssembler is not null);
 				assemblerArgs.Add(argValueForAssembler);
-				Debug.Assert(argValueForInstructionCreate is object);
+				Debug.Assert(argValueForInstructionCreate is not null);
 				instructionCreateArgs.Add(argValueForInstructionCreate);
 			}
 
@@ -771,10 +750,6 @@ namespace Generator.Assembler.CSharp {
 				beginInstruction = $"ApplyK1({beginInstruction}";
 				endInstruction = "))";
 			}
-
-			// Special case for moffs
-			if (isMoffs && bitness == 64)
-				beginInstruction = $"CreateMemory64(Code.{def.Code.Name(idConverter)}";
 
 			var assemblerArgsStr = string.Join(", ", assemblerArgs);
 			var instructionCreateArgsStr = instructionCreateArgs.Count > 0 ? $", {string.Join(", ", instructionCreateArgs)}" : string.Empty;
@@ -923,7 +898,7 @@ namespace Generator.Assembler.CSharp {
 
 		void GenerateOpCodeSelector(FileWriter writer, OpCodeInfoGroup group, bool isLeaf, OpCodeNode node, List<RenderArg> args) {
 			var opCodeInfo = node.Def;
-			if (opCodeInfo is object) {
+			if (opCodeInfo is not null) {
 				if (isLeaf)
 					writer.Write("op = ");
 				writer.Write($"Code.{opCodeInfo.Code.Name(idConverter)}");
@@ -932,9 +907,9 @@ namespace Generator.Assembler.CSharp {
 			}
 			else {
 				var selector = node.Selector;
-				Debug.Assert(selector is object);
-				var condition = GetArgConditionForOpCodeKind(selector.ArgIndex >= 0 ? args[selector.ArgIndex] : default, selector.Kind, selector.ArgIndex, group.Flags);
-				if (selector.IsConditionInlineable && !IsMemOffs64Selector(selector.Kind)) {
+				Debug.Assert(selector is not null);
+				var condition = GetArgConditionForOpCodeKind(selector.ArgIndex >= 0 ? args[selector.ArgIndex] : default, selector.Kind, selector.ArgIndex);
+				if (selector.IsConditionInlineable) {
 					writer.Write($"op = {condition} ? ");
 					GenerateOpCodeSelector(writer, group, false, selector.IfTrue, args);
 					writer.Write(" : ");
@@ -943,18 +918,8 @@ namespace Generator.Assembler.CSharp {
 				}
 				else {
 					writer.WriteLine($"if ({condition}) {{");
-					using (writer.Indent()) {
+					using (writer.Indent())
 						GenerateOpCodeSelector(writer, group, true, selector.IfTrue, args);
-
-						if (IsMemOffs64Selector(selector.Kind)) {
-							var argIndex = selector.ArgIndex;
-							if (argIndex == 1)
-								writer.WriteLine($"AddInstruction(Instruction.CreateMemory64(op, {args[0].Name}, (ulong){args[1].Name}.Displacement, {args[1].Name}.Prefix));");
-							else
-								writer.WriteLine($"AddInstruction(Instruction.CreateMemory64(op, (ulong){args[0].Name}.Displacement, {args[1].Name}, {args[0].Name}.Prefix));");
-							writer.WriteLine("return;");
-						}
-					}
 
 					writer.Write("} else ");
 					if (!selector.IfFalse.IsEmpty)
@@ -978,7 +943,7 @@ namespace Generator.Assembler.CSharp {
 			}
 		}
 
-		static string GetArgConditionForOpCodeKind(RenderArg arg, OpCodeSelectorKind selectorKind, int index, OpCodeArgFlags groupFlags) {
+		static string GetArgConditionForOpCodeKind(RenderArg arg, OpCodeSelectorKind selectorKind, int index) {
 			var regName = arg.Name;
 			var otherRegName = arg.Name == "src" ? "dst" : "src";
 			return selectorKind switch {
@@ -1057,44 +1022,33 @@ namespace Generator.Assembler.CSharp {
 			};
 		}
 
-		static string? GetInvalidArgValue(int bitness, OpCodeSelectorKind selectorKind, int argIndex) {
-			switch (selectorKind) {
-			case OpCodeSelectorKind.Memory8:
-			case OpCodeSelectorKind.Memory16:
-			case OpCodeSelectorKind.Memory32:
-			case OpCodeSelectorKind.Memory48:
-			case OpCodeSelectorKind.Memory80:
-			case OpCodeSelectorKind.Memory64:
-				return bitness switch {
-					16 => "__zmmword_ptr[di]",
-					32 => "__zmmword_ptr[edx]",
-					64 => "__zmmword_ptr[rdx]",
-					_ => throw new InvalidOperationException(),
-				};
-			case OpCodeSelectorKind.MemoryMM:
-			case OpCodeSelectorKind.MemoryXMM:
-			case OpCodeSelectorKind.MemoryYMM:
-			case OpCodeSelectorKind.MemoryZMM:
-				return bitness switch {
-					16 => "__byte_ptr[di]",
-					32 => "__byte_ptr[edx]",
-					64 => "__byte_ptr[rdx]",
-					_ => throw new InvalidOperationException(),
-				};
-			case OpCodeSelectorKind.MemoryIndex32Xmm:
-			case OpCodeSelectorKind.MemoryIndex64Xmm:
-			case OpCodeSelectorKind.MemoryIndex64Ymm:
-			case OpCodeSelectorKind.MemoryIndex32Ymm:
-				return bitness switch {
-					16 => $"__[edi + zmm{argIndex}]",
-					32 => $"__[edx + zmm{argIndex}]",
-					64 => $"__[rdx + zmm{argIndex}]",
-					_ => throw new InvalidOperationException(),
-				};
-			default:
-				return null;
-			}
-		}
+		static string? GetInvalidArgValue(int bitness, OpCodeSelectorKind selectorKind, int argIndex) =>
+			selectorKind switch {
+				OpCodeSelectorKind.Memory8 or OpCodeSelectorKind.Memory16 or OpCodeSelectorKind.Memory32 or OpCodeSelectorKind.Memory48 or
+				OpCodeSelectorKind.Memory80 or OpCodeSelectorKind.Memory64 =>
+					bitness switch {
+						16 => "__zmmword_ptr[di]",
+						32 => "__zmmword_ptr[edx]",
+						64 => "__zmmword_ptr[rdx]",
+						_ => throw new InvalidOperationException(),
+					},
+				OpCodeSelectorKind.MemoryMM or OpCodeSelectorKind.MemoryXMM or OpCodeSelectorKind.MemoryYMM or OpCodeSelectorKind.MemoryZMM =>
+					bitness switch {
+						16 => "__byte_ptr[di]",
+						32 => "__byte_ptr[edx]",
+						64 => "__byte_ptr[rdx]",
+						_ => throw new InvalidOperationException(),
+					},
+				OpCodeSelectorKind.MemoryIndex32Xmm or OpCodeSelectorKind.MemoryIndex64Xmm or OpCodeSelectorKind.MemoryIndex64Ymm or
+				OpCodeSelectorKind.MemoryIndex32Ymm =>
+					bitness switch {
+						16 => $"__[edi + zmm{argIndex}]",
+						32 => $"__[edx + zmm{argIndex}]",
+						64 => $"__[rdx + zmm{argIndex}]",
+						_ => throw new InvalidOperationException(),
+					},
+				_ => null,
+			};
 
 		static IEnumerable<string?> GetArgValue(int bitness, OpCodeSelectorKind selectorKind, bool isElseBranch, int index, List<RenderArg> args) {
 			switch (selectorKind) {
@@ -1562,34 +1516,20 @@ namespace Generator.Assembler.CSharp {
 			public string Type;
 			public ArgKind Kind;
 
-			public bool IsTypeSigned() {
-				switch (Type) {
-				case "sbyte":
-				case "short":
-				case "int":
-				case "long":
-					return true;
-				}
-				return false;
-			}
+			public bool IsTypeSigned() =>
+				Type switch {
+					"sbyte" or "short" or "int" or "long" => true,
+					_ => false,
+				};
 
-			public int GetArgSize() {
-				switch (Type) {
-				case "byte":
-				case "sbyte":
-					return 1;
-				case "short":
-				case "ushort":
-					return 2;
-				case "int":
-				case "uint":
-					return 4;
-				case "long":
-				case "ulong":
-					return 8;
-				}
-				throw new ArgumentException($"Invalid {Type}");
-			}
+			public int GetArgSize() =>
+				Type switch {
+					"byte" or "sbyte" => 1,
+					"short" or "ushort" => 2,
+					"int" or "uint" => 4,
+					"long" or "ulong" => 8,
+					_ => throw new ArgumentException($"Invalid {Type}"),
+				};
 
 			public string GetSignedTypeFromUnsigned() {
 				Debug.Assert(!IsTypeSigned());

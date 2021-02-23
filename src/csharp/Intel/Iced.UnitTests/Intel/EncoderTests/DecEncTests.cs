@@ -1,25 +1,5 @@
-/*
-Copyright (C) 2018-2019 de4dot@gmail.com
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2018-present iced project and contributors
 
 #if ENCODER && OPCODE_INFO
 using System;
@@ -221,8 +201,6 @@ namespace Iced.UnitTests.Intel.EncoderTests {
 					if (instruction.MemoryDisplSize == 8)
 						return 64;
 					break;
-				case OpKind.Memory64:
-					return 64;
 				default:
 					throw new InvalidOperationException();
 				}
@@ -714,8 +692,8 @@ namespace Iced.UnitTests.Intel.EncoderTests {
 
 		static bool TryGetSaeErInstruction(OpCodeInfo opCode, out Code newCode) {
 			if (opCode.Encoding == EncodingKind.EVEX && !(opCode.CanSuppressAllExceptions || opCode.CanUseRoundingControl)) {
-				var mnemonic = opCode.Code.Mnemonic();
-				for (int i = (int)opCode.Code + 1, j = 1; i < IcedConstants.NumberOfCodeValues && j <= 2; i++, j++) {
+				var mnemonic = opCode.Mnemonic;
+				for (int i = (int)opCode.Code + 1, j = 1; i < IcedConstants.CodeEnumCount && j <= 2; i++, j++) {
 					var nextCode = (Code)i;
 					if (nextCode.Mnemonic() != mnemonic)
 						break;
@@ -735,7 +713,7 @@ namespace Iced.UnitTests.Intel.EncoderTests {
 		[Fact]
 		void Verify_tuple_type_bcst() {
 			var codeNames = ToEnumConverter.GetCodeNames();
-			for (int i = 0; i < IcedConstants.NumberOfCodeValues; i++) {
+			for (int i = 0; i < IcedConstants.CodeEnumCount; i++) {
 				if (CodeUtils.IsIgnored(codeNames[i]))
 					continue;
 				var opCode = ((Code)i).ToOpCode();
@@ -1677,14 +1655,14 @@ namespace Iced.UnitTests.Intel.EncoderTests {
 		}
 		[Fact]
 		void Verify_that_test_cases_test_enough_bits() {
-			var testedInfos16 = new TestedInfo[IcedConstants.NumberOfCodeValues];
-			var testedInfos32 = new TestedInfo[IcedConstants.NumberOfCodeValues];
-			var testedInfos64 = new TestedInfo[IcedConstants.NumberOfCodeValues];
+			var testedInfos16 = new TestedInfo[IcedConstants.CodeEnumCount];
+			var testedInfos32 = new TestedInfo[IcedConstants.CodeEnumCount];
+			var testedInfos64 = new TestedInfo[IcedConstants.CodeEnumCount];
 
-			var canUseW = new bool[IcedConstants.NumberOfCodeValues];
+			var canUseW = new bool[IcedConstants.CodeEnumCount];
 			{
 				var usesW = new HashSet<(OpCodeTableKind table, uint opCode)>();
-				for (int i = 0; i < IcedConstants.NumberOfCodeValues; i++) {
+				for (int i = 0; i < IcedConstants.CodeEnumCount; i++) {
 					var code = (Code)i;
 					var opCode = code.ToOpCode();
 					if (opCode.Encoding != EncodingKind.Legacy)
@@ -1692,7 +1670,7 @@ namespace Iced.UnitTests.Intel.EncoderTests {
 					if (opCode.OperandSize != 0)
 						usesW.Add((opCode.Table, opCode.OpCode));
 				}
-				for (int i = 0; i < IcedConstants.NumberOfCodeValues; i++) {
+				for (int i = 0; i < IcedConstants.CodeEnumCount; i++) {
 					var code = (Code)i;
 					var opCode = code.ToOpCode();
 					switch (opCode.Encoding) {
@@ -1749,7 +1727,7 @@ namespace Iced.UnitTests.Intel.EncoderTests {
 					tested.V2Bits |= 1U << (((bytes[evexIndex + 3] >> 3) & 1) ^ 1);
 					if ((bytes[evexIndex + 5] >> 6) != 3) {
 						tested.RegMem = true;
-						if (instruction.MemoryDisplSize == 1 && instruction.MemoryDisplacement != 0)
+						if (instruction.MemoryDisplSize == 1 && instruction.MemoryDisplacement64 != 0)
 							tested.MemDisp8 = true;
 					}
 					else
@@ -2029,7 +2007,7 @@ namespace Iced.UnitTests.Intel.EncoderTests {
 					_ => throw new InvalidOperationException(),
 				};
 
-				for (int i = 0; i < IcedConstants.NumberOfCodeValues; i++) {
+				for (int i = 0; i < IcedConstants.CodeEnumCount; i++) {
 					if (CodeUtils.IsIgnored(codeNames[i]))
 						continue;
 					var code = (Code)i;
@@ -2726,7 +2704,7 @@ namespace Iced.UnitTests.Intel.EncoderTests {
 			foreach (var code in DecoderTestUtils.NotDecoded64Only)
 				hash64.Add(code);
 			var codeNames = ToEnumConverter.GetCodeNames();
-			for (int i = 0; i < IcedConstants.NumberOfCodeValues; i++) {
+			for (int i = 0; i < IcedConstants.CodeEnumCount; i++) {
 				if (CodeUtils.IsIgnored(codeNames[i]))
 					continue;
 				var code = (Code)i;
@@ -3012,7 +2990,6 @@ namespace Iced.UnitTests.Intel.EncoderTests {
 					DecoderOptions.NoInvalidCheck |
 					DecoderOptions.NoPause |
 					DecoderOptions.NoWbnoinvd |
-					DecoderOptions.NoLockMovCR |
 					DecoderOptions.NoMPFX_0FBC |
 					DecoderOptions.NoMPFX_0FBD |
 					DecoderOptions.NoLahfSahf64;

@@ -1,25 +1,5 @@
-/*
-Copyright (C) 2018-2019 de4dot@gmail.com
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2018-present iced project and contributors
 
 using System;
 using System.Collections.Generic;
@@ -115,8 +95,8 @@ namespace Generator.Encoder {
 			var jmpInstr = defs.Where(a => a.BranchKind == BranchKind.JmpShort || a.BranchKind == BranchKind.JmpNear).Select(a => a.Code).OrderBy(a => a.Value).ToArray();
 			var xbeginInstr = defs.Where(a => a.BranchKind == BranchKind.Xbegin).Select(a => a.Code).OrderBy(a => a.Value).ToArray();
 			GenerateInstrSwitch(jccInstr, simpleBranchInstr, callInstr, jmpInstr, xbeginInstr);
-			var vsib32 = defs.Where(a => a.OpKinds.Any(b => b.Vsib32)).Select(a => a.Code).ToArray();
-			var vsib64 = defs.Where(a => a.OpKinds.Any(b => b.Vsib64)).Select(a => a.Code).ToArray();
+			var vsib32 = defs.Where(a => a.OpKindDefs.Any(b => b.Vsib32)).Select(a => a.Code).ToArray();
+			var vsib64 = defs.Where(a => a.OpKindDefs.Any(b => b.Vsib64)).Select(a => a.Code).ToArray();
 			GenerateVsib(vsib32, vsib64);
 
 			var decoderOptionsType = genTypes[TypeIds.DecoderOptions];
@@ -323,26 +303,26 @@ namespace Generator.Encoder {
 				uint tableIndex;
 				switch (def.Encoding) {
 				case EncodingKind.Legacy:
-					for (int i = 0; i < def.OpKinds.Length; i++)
-						encFlags1 |= encoderTypes.ToLegacy(def.OpKinds[i]) << legacyOpShifts[i];
+					for (int i = 0; i < def.OpKindDefs.Length; i++)
+						encFlags1 |= encoderTypes.ToLegacy(def.OpKindDefs[i]) << legacyOpShifts[i];
 					tableIndex = (uint)GetLegacyTable(def.Table);
 					break;
 
 				case EncodingKind.VEX:
-					for (int i = 0; i < def.OpKinds.Length; i++)
-						encFlags1 |= encoderTypes.ToVex(def.OpKinds[i]) << vexOpShifts[i];
+					for (int i = 0; i < def.OpKindDefs.Length; i++)
+						encFlags1 |= encoderTypes.ToVex(def.OpKindDefs[i]) << vexOpShifts[i];
 					tableIndex = (uint)GetVexTable(def.Table);
 					break;
 
 				case EncodingKind.EVEX:
-					for (int i = 0; i < def.OpKinds.Length; i++)
-						encFlags1 |= encoderTypes.ToEvex(def.OpKinds[i]) << evexOpShifts[i];
+					for (int i = 0; i < def.OpKindDefs.Length; i++)
+						encFlags1 |= encoderTypes.ToEvex(def.OpKindDefs[i]) << evexOpShifts[i];
 					tableIndex = (uint)GetEvexTable(def.Table);
 					break;
 
 				case EncodingKind.XOP:
-					for (int i = 0; i < def.OpKinds.Length; i++)
-						encFlags1 |= encoderTypes.ToXop(def.OpKinds[i]) << xopOpShifts[i];
+					for (int i = 0; i < def.OpKindDefs.Length; i++)
+						encFlags1 |= encoderTypes.ToXop(def.OpKindDefs[i]) << xopOpShifts[i];
 					tableIndex = (uint)GetXopTable(def.Table);
 					break;
 

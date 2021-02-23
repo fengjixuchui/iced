@@ -1,25 +1,5 @@
-/*
-Copyright (C) 2018-2019 de4dot@gmail.com
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2018-present iced project and contributors
 
 using System;
 using System.Text;
@@ -29,7 +9,7 @@ namespace Generator.Tables {
 	readonly struct CodeFormatter {
 		readonly StringBuilder sb;
 		readonly RegisterDef[] regDefs;
-		readonly MemorySizeInfoTable memSizeTbl;
+		readonly MemorySizeDefs memSizeTbl;
 		readonly string codeMnemonic;
 		readonly string? codeSuffix;
 		readonly string? codeMemorySize;
@@ -40,7 +20,7 @@ namespace Generator.Tables {
 		readonly EncodingKind encoding;
 		readonly OpCodeOperandKindDef[] opKinds;
 
-		public CodeFormatter(StringBuilder sb, RegisterDef[] regDefs, MemorySizeInfoTable memSizeTbl, string codeMnemonic, string? codeSuffix, string? codeMemorySize, string? codeMemorySizeSuffix, EnumValue memSize, EnumValue memSizeBcst, InstructionDefFlags1 flags, EncodingKind encoding, OpCodeOperandKindDef[] opKinds) {
+		public CodeFormatter(StringBuilder sb, RegisterDef[] regDefs, MemorySizeDefs memSizeTbl, string codeMnemonic, string? codeSuffix, string? codeMemorySize, string? codeMemorySizeSuffix, EnumValue memSize, EnumValue memSizeBcst, InstructionDefFlags1 flags, EncodingKind encoding, OpCodeOperandKindDef[] opKinds) {
 			if (codeMnemonic == string.Empty)
 				throw new ArgumentOutOfRangeException(nameof(codeMnemonic));
 			this.sb = sb;
@@ -111,7 +91,7 @@ namespace Generator.Tables {
 						break;
 
 					case OperandEncoding.ImpliedConst:
-						sb.Append(def.ImpliedConst.ToString());
+						sb.Append(def.ImpliedConst);
 						break;
 
 					case OperandEncoding.ImpliedRegister:
@@ -159,7 +139,7 @@ namespace Generator.Tables {
 						else if (def.Vsib) {
 							var sz = def.Vsib32 ? "32" : "64";
 							// x, y, z
-							var reg = regDefs[(int)def.Register].Name.ToLowerInvariant().Substring(0, 1);
+							var reg = regDefs[(int)def.Register].Name.ToLowerInvariant()[0..1];
 							sb.Append($"vm{sz}{reg}");
 						}
 						else
@@ -180,7 +160,7 @@ namespace Generator.Tables {
 						if ((flags & InstructionDefFlags1.OpMaskRegister) != 0) {
 							sb.Append("_k1");
 							if ((flags & InstructionDefFlags1.ZeroingMasking) != 0)
-								sb.Append("z");
+								sb.Append('z');
 						}
 					}
 					if (i == opKinds.Length - 1) {
@@ -192,7 +172,7 @@ namespace Generator.Tables {
 				}
 			}
 
-			if (codeSuffix is object) {
+			if (codeSuffix is not null) {
 				sb.Append('_');
 				sb.Append(codeSuffix);
 			}
@@ -256,7 +236,7 @@ namespace Generator.Tables {
 		}
 
 		void WriteMemorySize(MemorySize memorySize) {
-			if (codeMemorySize is object)
+			if (codeMemorySize is not null)
 				sb.Append(codeMemorySize);
 			else {
 				int memSize = GetSizeInBytes(memorySize);
@@ -264,7 +244,7 @@ namespace Generator.Tables {
 					sb.Append(memSize * 8);
 			}
 
-			if (codeMemorySizeSuffix is object)
+			if (codeMemorySizeSuffix is not null)
 				sb.Append(codeMemorySizeSuffix);
 		}
 

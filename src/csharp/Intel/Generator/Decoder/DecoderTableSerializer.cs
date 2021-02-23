@@ -1,29 +1,8 @@
-/*
-Copyright (C) 2018-2019 de4dot@gmail.com
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2018-present iced project and contributors
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Generator.Enums;
 using Generator.Enums.Decoder;
 using Generator.IO;
@@ -120,7 +99,6 @@ namespace Generator.Decoder {
 		protected readonly IdentifierConverter idConverter;
 		readonly Dictionary<IEnumValue, (int codeIndex, int codeLen)> enumValueInfo;
 		readonly Dictionary<string, Info> infos;
-		readonly StringBuilder sb;
 
 		protected DecoderTableSerializer(GenTypes genTypes, IdentifierConverter idConverter, DecoderTableSerializerInfo info) {
 			this.genTypes = genTypes;
@@ -128,7 +106,6 @@ namespace Generator.Decoder {
 			this.info = info;
 			enumValueInfo = CreateEnumValueInfo(genTypes);
 			infos = new Dictionary<string, Info>(StringComparer.Ordinal);
-			sb = new StringBuilder();
 		}
 
 		protected void SerializeCore(FileWriter writer) {
@@ -235,14 +212,14 @@ namespace Generator.Decoder {
 		int CountInvalid(object?[] handlers, int index) {
 			int count = 0;
 			for (int i = index; i < handlers.Length; i++) {
-				if (!(handlers[i] is object?[] h) || !DecoderTableUtils.IsInvalid(genTypes, h))
+				if (handlers[i] is not object?[] h || !DecoderTableUtils.IsInvalid(genTypes, h))
 					break;
 				count++;
 			}
 			return count;
 		}
 
-		Dictionary<IEnumValue, (int codeIndex, int codeLen)> CreateEnumValueInfo(GenTypes genTypes) {
+		static Dictionary<IEnumValue, (int codeIndex, int codeLen)> CreateEnumValueInfo(GenTypes genTypes) {
 			var opCodeHandlerKind = genTypes[TypeIds.OpCodeHandlerKind];
 			var vexOpCodeHandlerKind = genTypes[TypeIds.VexOpCodeHandlerKind];
 			var evexOpCodeHandlerKind = genTypes[TypeIds.EvexOpCodeHandlerKind];
