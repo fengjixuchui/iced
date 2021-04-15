@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright (C) 2018-present iced project and contributors
 
-use super::super::super::*;
-use super::enums::OptionsProps;
+use crate::formatter::tests::enums::OptionsProps;
+use crate::*;
 use alloc::string::String;
 
 #[allow(non_camel_case_types)]
@@ -362,7 +362,7 @@ impl OptionValue {
 		}
 	}
 
-	pub(super) fn initialize_decoder(&self, decoder: &mut Decoder, property: OptionsProps) {
+	pub(super) fn initialize_decoder(&self, decoder: &mut Decoder<'_>, property: OptionsProps) {
 		if property == OptionsProps::IP {
 			decoder.set_ip(self.to_u64());
 		}

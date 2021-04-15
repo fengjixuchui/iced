@@ -1,17 +1,18 @@
 // SPDX-License-Identifier: MIT
 // Copyright (C) 2018-present iced project and contributors
 
-use super::super::super::data_reader::DataReader;
-use super::super::super::iced_constants::IcedConstants;
-use super::super::pseudo_ops::get_pseudo_ops;
-use super::super::strings_tbl::get_strings_table_ref;
-use super::enums::*;
-use super::fmt_data::FORMATTER_TBL_DATA;
-use super::info::*;
+use crate::data_reader::DataReader;
+use crate::formatter::intel::enums::*;
+use crate::formatter::intel::fmt_data::FORMATTER_TBL_DATA;
+use crate::formatter::intel::info::*;
+use crate::formatter::pseudo_ops::get_pseudo_ops;
+use crate::formatter::strings_tbl::get_strings_table_ref;
+use crate::iced_constants::IcedConstants;
 use alloc::boxed::Box;
 use alloc::string::String;
 use alloc::vec::Vec;
 use core::{mem, u32};
+use lazy_static::lazy_static;
 
 lazy_static! {
 	pub(super) static ref ALL_INFOS: Vec<Box<dyn InstrInfo + Sync + Send>> = read();
@@ -23,6 +24,7 @@ fn read() -> Vec<Box<dyn InstrInfo + Sync + Send>> {
 	let strings = get_strings_table_ref();
 	let mut prev_index = -1isize;
 	for i in 0..IcedConstants::CODE_ENUM_COUNT {
+		// SAFETY: generated (and immutable) data is valid
 		let f = reader.read_u8();
 		let mut ctor_kind: CtorKind = unsafe { mem::transmute((f & 0x7F) as u8) };
 		let current_index;

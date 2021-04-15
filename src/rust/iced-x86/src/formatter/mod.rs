@@ -28,41 +28,43 @@ mod nasm;
 mod num_fmt;
 #[cfg(any(feature = "gas", feature = "intel", feature = "masm", feature = "nasm"))]
 mod num_fmt_opts;
+#[cfg(any(feature = "gas", feature = "intel", feature = "masm", feature = "nasm"))]
 mod pseudo_ops;
 mod regs_tbl;
 #[cfg(any(feature = "gas", feature = "intel", feature = "masm", feature = "nasm"))]
 mod string_output;
 mod strings_data;
+#[cfg(any(feature = "gas", feature = "intel", feature = "masm", feature = "nasm"))]
 mod strings_tbl;
 mod symres;
 #[cfg(test)]
 pub(crate) mod tests;
 
 #[cfg(any(feature = "gas", feature = "intel", feature = "masm", feature = "nasm"))]
-pub use self::enums::*;
-pub use self::enums_shared::*;
+pub use crate::formatter::enums::*;
+pub use crate::formatter::enums_shared::*;
 #[cfg(feature = "fast_fmt")]
-pub use self::fast::*;
+pub use crate::formatter::fast::*;
 #[cfg(any(feature = "gas", feature = "intel", feature = "masm", feature = "nasm"))]
-pub use self::fmt_opt_provider::*;
+pub use crate::formatter::fmt_opt_provider::*;
 #[cfg(any(feature = "gas", feature = "intel", feature = "masm", feature = "nasm"))]
-pub use self::fmt_opts::*;
+pub use crate::formatter::fmt_opts::*;
 #[cfg(feature = "gas")]
-pub use self::gas::*;
+pub use crate::formatter::gas::*;
 #[cfg(feature = "intel")]
-pub use self::intel::*;
+pub use crate::formatter::intel::*;
 #[cfg(feature = "masm")]
-pub use self::masm::*;
+pub use crate::formatter::masm::*;
 #[cfg(feature = "nasm")]
-pub use self::nasm::*;
+pub use crate::formatter::nasm::*;
 #[cfg(any(feature = "gas", feature = "intel", feature = "masm", feature = "nasm"))]
-use self::num_fmt::NumberFormatter;
+use crate::formatter::num_fmt::NumberFormatter;
 #[cfg(any(feature = "gas", feature = "intel", feature = "masm", feature = "nasm"))]
-pub use self::num_fmt_opts::*;
+pub use crate::formatter::num_fmt_opts::*;
 #[cfg(any(feature = "gas", feature = "intel", feature = "masm", feature = "nasm"))]
-pub use self::string_output::*;
-pub use self::symres::*;
-use super::*;
+pub use crate::formatter::string_output::*;
+pub use crate::formatter::symres::*;
+use crate::*;
 use alloc::string::String;
 use alloc::vec::Vec;
 use core::{i16, i32};
@@ -96,17 +98,11 @@ impl FormatterString {
 		strings.into_iter().map(FormatterString::new).collect()
 	}
 
+	#[cfg(any(feature = "gas", feature = "intel", feature = "masm", feature = "nasm"))]
 	#[must_use]
 	fn new_str(lower: &str) -> Self {
 		debug_assert_eq!(lower.to_lowercase(), lower);
-		#[cfg(any(feature = "gas", feature = "intel", feature = "masm", feature = "nasm"))]
-		{
-			Self { lower: String::from(lower), upper: lower.to_uppercase() }
-		}
-		#[cfg(not(any(feature = "gas", feature = "intel", feature = "masm", feature = "nasm")))]
-		{
-			Self { lower: String::from(lower) }
-		}
+		Self { lower: String::from(lower), upper: lower.to_uppercase() }
 	}
 
 	#[cfg(any(feature = "gas", feature = "intel", feature = "masm", feature = "nasm"))]
@@ -132,13 +128,6 @@ impl FormatterString {
 		} else {
 			&self.lower
 		}
-	}
-
-	#[cfg(feature = "fast_fmt")]
-	#[must_use]
-	#[inline]
-	fn lower(&self) -> &str {
-		&self.lower
 	}
 }
 
@@ -245,7 +234,7 @@ pub trait FormatterOutput {
 	/// - `symbol`: Symbol
 	#[inline]
 	#[allow(unused_variables)]
-	fn write_symbol(&mut self, instruction: &Instruction, operand: u32, instruction_operand: Option<u32>, address: u64, symbol: &SymbolResult) {
+	fn write_symbol(&mut self, instruction: &Instruction, operand: u32, instruction_operand: Option<u32>, address: u64, symbol: &SymbolResult<'_>) {
 		match symbol.text {
 			SymResTextInfo::Text(ref part) => {
 				let s = match &part.text {
@@ -275,7 +264,7 @@ impl FormatterOutputMethods {
 	#[allow(clippy::too_many_arguments)]
 	fn write1(
 		output: &mut dyn FormatterOutput, instruction: &Instruction, operand: u32, instruction_operand: Option<u32>, options: &FormatterOptions,
-		number_formatter: &mut NumberFormatter, number_options: &NumberFormattingOptions, address: u64, symbol: &SymbolResult,
+		number_formatter: &mut NumberFormatter, number_options: &NumberFormattingOptions<'_>, address: u64, symbol: &SymbolResult<'_>,
 		show_symbol_address: bool,
 	) {
 		FormatterOutputMethods::write2(
@@ -297,7 +286,7 @@ impl FormatterOutputMethods {
 	#[allow(clippy::too_many_arguments)]
 	fn write2(
 		output: &mut dyn FormatterOutput, instruction: &Instruction, operand: u32, instruction_operand: Option<u32>, options: &FormatterOptions,
-		number_formatter: &mut NumberFormatter, number_options: &NumberFormattingOptions, address: u64, symbol: &SymbolResult,
+		number_formatter: &mut NumberFormatter, number_options: &NumberFormattingOptions<'_>, address: u64, symbol: &SymbolResult<'_>,
 		show_symbol_address: bool, write_minus_if_signed: bool, spaces_between_op: bool,
 	) {
 		let mut displ = address.wrapping_sub(symbol.address) as i64;
@@ -569,7 +558,7 @@ pub trait Formatter: private::Sealed {
 	/// - `value`: Value
 	/// - `number_options`: Options
 	#[must_use]
-	fn format_i8_options(&mut self, value: i8, number_options: &NumberFormattingOptions) -> &str;
+	fn format_i8_options(&mut self, value: i8, number_options: &NumberFormattingOptions<'_>) -> &str;
 
 	/// Formats a `i16`
 	///
@@ -578,7 +567,7 @@ pub trait Formatter: private::Sealed {
 	/// - `value`: Value
 	/// - `number_options`: Options
 	#[must_use]
-	fn format_i16_options(&mut self, value: i16, number_options: &NumberFormattingOptions) -> &str;
+	fn format_i16_options(&mut self, value: i16, number_options: &NumberFormattingOptions<'_>) -> &str;
 
 	/// Formats a `i32`
 	///
@@ -587,7 +576,7 @@ pub trait Formatter: private::Sealed {
 	/// - `value`: Value
 	/// - `number_options`: Options
 	#[must_use]
-	fn format_i32_options(&mut self, value: i32, number_options: &NumberFormattingOptions) -> &str;
+	fn format_i32_options(&mut self, value: i32, number_options: &NumberFormattingOptions<'_>) -> &str;
 
 	/// Formats a `i64`
 	///
@@ -596,7 +585,7 @@ pub trait Formatter: private::Sealed {
 	/// - `value`: Value
 	/// - `number_options`: Options
 	#[must_use]
-	fn format_i64_options(&mut self, value: i64, number_options: &NumberFormattingOptions) -> &str;
+	fn format_i64_options(&mut self, value: i64, number_options: &NumberFormattingOptions<'_>) -> &str;
 
 	/// Formats a `u8`
 	///
@@ -605,7 +594,7 @@ pub trait Formatter: private::Sealed {
 	/// - `value`: Value
 	/// - `number_options`: Options
 	#[must_use]
-	fn format_u8_options(&mut self, value: u8, number_options: &NumberFormattingOptions) -> &str;
+	fn format_u8_options(&mut self, value: u8, number_options: &NumberFormattingOptions<'_>) -> &str;
 
 	/// Formats a `u16`
 	///
@@ -614,7 +603,7 @@ pub trait Formatter: private::Sealed {
 	/// - `value`: Value
 	/// - `number_options`: Options
 	#[must_use]
-	fn format_u16_options(&mut self, value: u16, number_options: &NumberFormattingOptions) -> &str;
+	fn format_u16_options(&mut self, value: u16, number_options: &NumberFormattingOptions<'_>) -> &str;
 
 	/// Formats a `u32`
 	///
@@ -623,7 +612,7 @@ pub trait Formatter: private::Sealed {
 	/// - `value`: Value
 	/// - `number_options`: Options
 	#[must_use]
-	fn format_u32_options(&mut self, value: u32, number_options: &NumberFormattingOptions) -> &str;
+	fn format_u32_options(&mut self, value: u32, number_options: &NumberFormattingOptions<'_>) -> &str;
 
 	/// Formats a `u64`
 	///
@@ -632,23 +621,23 @@ pub trait Formatter: private::Sealed {
 	/// - `value`: Value
 	/// - `number_options`: Options
 	#[must_use]
-	fn format_u64_options(&mut self, value: u64, number_options: &NumberFormattingOptions) -> &str;
+	fn format_u64_options(&mut self, value: u64, number_options: &NumberFormattingOptions<'_>) -> &str;
 }
 
 #[cfg(any(feature = "gas", feature = "intel", feature = "masm", feature = "nasm"))]
 mod private {
 	pub trait Sealed {}
 	#[cfg(feature = "gas")]
-	impl Sealed for super::gas::GasFormatter {}
+	impl Sealed for crate::GasFormatter {}
 	#[cfg(feature = "intel")]
-	impl Sealed for super::intel::IntelFormatter {}
+	impl Sealed for crate::IntelFormatter {}
 	#[cfg(feature = "masm")]
-	impl Sealed for super::masm::MasmFormatter {}
+	impl Sealed for crate::MasmFormatter {}
 	#[cfg(feature = "nasm")]
-	impl Sealed for super::nasm::NasmFormatter {}
+	impl Sealed for crate::NasmFormatter {}
 }
 
-fn to_owned<'a>(sym_res: Option<SymbolResult>, vec: &'a mut Vec<SymResTextPart<'a>>) -> Option<SymbolResult<'a>> {
+fn to_owned<'a>(sym_res: Option<SymbolResult<'_>>, vec: &'a mut Vec<SymResTextPart<'a>>) -> Option<SymbolResult<'a>> {
 	match sym_res {
 		None => None,
 		Some(sym_res) => Some(sym_res.to_owned(vec)),
@@ -656,8 +645,8 @@ fn to_owned<'a>(sym_res: Option<SymbolResult>, vec: &'a mut Vec<SymResTextPart<'
 }
 
 #[cfg(any(feature = "gas", feature = "intel", feature = "masm", feature = "nasm"))]
-fn get_mnemonic_cc<'a, 'b>(options: &'a FormatterOptions, cc_index: u32, mnemonics: &'b [FormatterString]) -> &'b FormatterString {
-	use super::iced_constants::IcedConstants;
+fn get_mnemonic_cc<'a>(options: &FormatterOptions, cc_index: u32, mnemonics: &'a [FormatterString]) -> &'a FormatterString {
+	use crate::iced_constants::IcedConstants;
 	let index = match cc_index {
 		// o
 		0 => {

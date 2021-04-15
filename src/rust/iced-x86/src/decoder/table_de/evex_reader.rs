@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: MIT
 // Copyright (C) 2018-present iced project and contributors
 
-use super::super::handlers::OpCodeHandler;
-use super::super::handlers::*;
-use super::super::handlers_evex::*;
-use super::super::Code;
-use super::enums::*;
-use super::TableDeserializer;
+use crate::decoder::handlers::OpCodeHandler;
+use crate::decoder::handlers::*;
+use crate::decoder::handlers_evex::*;
+use crate::decoder::table_de::enums::*;
+use crate::decoder::table_de::TableDeserializer;
+use crate::decoder::Code;
 use alloc::boxed::Box;
 use alloc::vec::Vec;
 
 #[allow(trivial_casts)]
-pub(super) fn read_handlers(deserializer: &mut TableDeserializer, result: &mut Vec<&'static OpCodeHandler>) {
+pub(super) fn read_handlers(deserializer: &mut TableDeserializer<'_>, result: &mut Vec<&'static OpCodeHandler>) {
 	let code;
 	let reg;
 	let elem: *const OpCodeHandler = match deserializer.read_evex_op_code_handler_kind() {

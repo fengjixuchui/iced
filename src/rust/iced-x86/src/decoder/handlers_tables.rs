@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 // Copyright (C) 2018-present iced project and contributors
 
-use super::handlers::OpCodeHandler;
-use super::table_de::*;
+use crate::decoder::handlers::OpCodeHandler;
+use crate::decoder::table_de::*;
 use alloc::vec::Vec;
+use lazy_static::lazy_static;
 
 pub(super) struct Tables {
 	pub(super) handlers_xx: Vec<&'static OpCodeHandler>,

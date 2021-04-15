@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 // Copyright (C) 2018-present iced project and contributors
 
-use super::super::super::test_utils::from_str_conv::*;
-use super::super::super::test_utils::get_default_ip;
-use super::enums::OptionsProps;
-use super::opt_value::OptionValue;
-use super::options_parser::parse_option;
-use super::opts_info::*;
+use crate::formatter::tests::enums::OptionsProps;
+use crate::formatter::tests::opt_value::OptionValue;
+use crate::formatter::tests::options_parser::parse_option;
+use crate::formatter::tests::opts_info::*;
+use crate::test_utils::from_str_conv::*;
+use crate::test_utils::get_default_ip;
 use alloc::string::String;
 use alloc::vec::Vec;
 use core::iter::IntoIterator;
@@ -49,7 +49,7 @@ pub(super) struct IntoIter<'a> {
 	line_number: u32,
 }
 
-impl<'a> Iterator for IntoIter<'a> {
+impl Iterator for IntoIter<'_> {
 	type Item = OptionsInstructionInfo;
 
 	fn next(&mut self) -> Option<Self::Item> {
@@ -80,7 +80,7 @@ impl<'a> Iterator for IntoIter<'a> {
 	}
 }
 
-impl<'a> IntoIter<'a> {
+impl IntoIter<'_> {
 	fn read_next_test_case(line: String, _line_number: u32) -> Result<Option<OptionsInstructionInfo>, String> {
 		let elems: Vec<_> = line.split(',').collect();
 		if elems.len() != 4 {

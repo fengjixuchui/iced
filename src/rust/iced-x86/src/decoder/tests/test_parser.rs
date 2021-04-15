@@ -1,15 +1,16 @@
 // SPDX-License-Identifier: MIT
 // Copyright (C) 2018-present iced project and contributors
 
-use super::super::super::test_utils::from_str_conv::*;
-use super::super::super::test_utils::get_default_ip;
-use super::super::super::*;
-use super::decoder_test_case::*;
-use super::enums::DecoderTestOptions;
+use crate::decoder::tests::decoder_test_case::*;
+use crate::decoder::tests::enums::DecoderTestOptions;
+use crate::test_utils::from_str_conv::*;
+use crate::test_utils::get_default_ip;
+use crate::*;
 use alloc::string::String;
 use alloc::vec::Vec;
 use core::iter::IntoIterator;
 use core::u32;
+use lazy_static::lazy_static;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::prelude::*;

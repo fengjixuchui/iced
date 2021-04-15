@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 // Copyright (C) 2018-present iced project and contributors
 
-use super::super::*;
-use super::iced_constants::IcedConstants;
-use super::instruction_fmt::*;
-use super::op_code_fmt::*;
-use super::op_kind_tables::*;
+use crate::encoder::iced_constants::IcedConstants;
+use crate::encoder::instruction_fmt::*;
+use crate::encoder::op_code_fmt::*;
+use crate::encoder::op_kind_tables::*;
+use crate::*;
 use alloc::string::String;
 use core::{fmt, mem};
 
@@ -107,6 +107,9 @@ impl OpCodeInfo {
 		let operand_size;
 		let address_size;
 		let lkind;
+
+		// SAFETY: all generated (and also immutable) data is valid, eg. using transmute to
+		// convert an integer to an enum value is valid
 
 		let encoding = unsafe { mem::transmute(((enc_flags3 >> EncFlags3::ENCODING_SHIFT) & EncFlags3::ENCODING_MASK) as u8) };
 		mandatory_prefix =
@@ -542,21 +545,21 @@ impl OpCodeInfo {
 		(self.enc_flags3 & EncFlags3::SUPPRESS_ALL_EXCEPTIONS) != 0
 	}
 
-	/// (EVEX) `true` if an op mask register can be used
+	/// (EVEX) `true` if an opmask register can be used
 	#[must_use]
 	#[inline]
 	pub fn can_use_op_mask_register(&self) -> bool {
 		(self.enc_flags3 & EncFlags3::OP_MASK_REGISTER) != 0
 	}
 
-	/// (EVEX) `true` if a non-zero op mask register must be used
+	/// (EVEX) `true` if a non-zero opmask register must be used
 	#[must_use]
 	#[inline]
 	pub fn require_op_mask_register(&self) -> bool {
 		(self.enc_flags3 & EncFlags3::REQUIRE_OP_MASK_REGISTER) != 0
 	}
 
-	/// (EVEX) `true` if the instruction supports zeroing masking (if one of the op mask registers `K1`-`K7` is used and destination operand is not a memory operand)
+	/// (EVEX) `true` if the instruction supports zeroing masking (if one of the opmask registers `K1`-`K7` is used and destination operand is not a memory operand)
 	#[must_use]
 	#[inline]
 	pub fn can_use_zeroing_masking(&self) -> bool {
@@ -809,7 +812,7 @@ impl OpCodeInfo {
 		(self.opc_flags1 & OpCodeInfoFlags1::IGNORES_SEGMENT) != 0
 	}
 
-	/// `true` if the op mask register is read and written (instead of just read). This also implies that it can't be `K0`.
+	/// `true` if the opmask register is read and written (instead of just read). This also implies that it can't be `K0`.
 	#[must_use]
 	#[inline]
 	pub fn is_op_mask_read_write(&self) -> bool {
@@ -1050,7 +1053,7 @@ impl OpCodeInfo {
 	#[inline]
 	pub fn decoder_option(&self) -> u32 {
 		let index = ((self.opc_flags1 >> OpCodeInfoFlags1::DEC_OPTION_VALUE_SHIFT) & OpCodeInfoFlags1::DEC_OPTION_VALUE_MASK) as usize;
-		// Safe, index is generated (always valid)
+		// SAFETY: index is generated (always valid)
 		unsafe { *TO_DECODER_OPTIONS.get_unchecked(index) }
 	}
 
@@ -1146,6 +1149,7 @@ impl OpCodeInfo {
 	#[must_use]
 	#[inline]
 	pub fn op_count(&self) -> u32 {
+		// SAFETY: All Code values are valid indexes into this table
 		unsafe { *instruction_op_counts::OP_COUNT.get_unchecked(self.code as usize) as u32 }
 	}
 

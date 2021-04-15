@@ -1,16 +1,17 @@
 // SPDX-License-Identifier: MIT
 // Copyright (C) 2018-present iced project and contributors
 
-use super::super::super::iced_constants::IcedConstants;
-use super::super::super::*;
-use super::super::FormatterString;
-use super::enums::*;
-use super::fmt_utils::show_segment_prefix;
-use super::get_mnemonic_cc;
-use super::regs::*;
+use crate::formatter::masm::enums::*;
+use crate::formatter::masm::fmt_utils::show_segment_prefix;
+use crate::formatter::masm::get_mnemonic_cc;
+use crate::formatter::masm::regs::*;
+use crate::formatter::FormatterString;
+use crate::iced_constants::IcedConstants;
+use crate::*;
 use alloc::string::String;
 use alloc::vec::Vec;
 use core::{mem, u32};
+use static_assertions::const_assert_eq;
 
 #[derive(Debug)]
 pub(super) struct InstrOpInfo<'a> {
@@ -121,7 +122,7 @@ impl<'a> InstrOpInfo<'a> {
 		}
 	}
 
-	pub(self) fn new(mnemonic: &'a FormatterString, instruction: &Instruction, flags: u32) -> Self {
+	fn new(mnemonic: &'a FormatterString, instruction: &Instruction, flags: u32) -> Self {
 		let mut res = InstrOpInfo::default(mnemonic);
 
 		const_assert_eq!(IcedConstants::MAX_OP_COUNT, 5);
@@ -1148,7 +1149,7 @@ impl SimpleInstrInfo_pops {
 		Self { mnemonic: FormatterString::new(mnemonic), pseudo_ops, flags }
 	}
 
-	fn remove_last_op(info: &mut InstrOpInfo) {
+	fn remove_last_op(info: &mut InstrOpInfo<'_>) {
 		match info.op_count {
 			4 => info.op_indexes[3] = OP_ACCESS_INVALID,
 			3 => info.op_indexes[2] = OP_ACCESS_INVALID,

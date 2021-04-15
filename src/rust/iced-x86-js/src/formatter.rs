@@ -1,18 +1,19 @@
 // SPDX-License-Identifier: MIT
 // Copyright (C) 2018-present iced project and contributors
 
-use super::cc::{
+use crate::cc::{
 	cc_a_to_iced, cc_ae_to_iced, cc_b_to_iced, cc_be_to_iced, cc_e_to_iced, cc_g_to_iced, cc_ge_to_iced, cc_l_to_iced, cc_le_to_iced, cc_ne_to_iced,
 	cc_np_to_iced, cc_p_to_iced, iced_to_cc_a, iced_to_cc_ae, iced_to_cc_b, iced_to_cc_be, iced_to_cc_e, iced_to_cc_g, iced_to_cc_ge, iced_to_cc_l,
 	iced_to_cc_le, iced_to_cc_ne, iced_to_cc_np, iced_to_cc_p, CC_a, CC_ae, CC_b, CC_be, CC_e, CC_g, CC_ge, CC_l, CC_le, CC_ne, CC_np, CC_p,
 };
-use super::format_mnemonic_options::FormatMnemonicOptions;
-use super::instruction::Instruction;
-use super::memory_size_options::{iced_to_memory_size_options, memory_size_options_to_iced, MemorySizeOptions};
+use crate::format_mnemonic_options::FormatMnemonicOptions;
+use crate::instruction::Instruction;
+use crate::memory_size_options::{iced_to_memory_size_options, memory_size_options_to_iced, MemorySizeOptions};
 #[cfg(feature = "instr_info")]
-use super::op_access::{iced_to_op_access, OpAccess};
+use crate::op_access::{iced_to_op_access, OpAccess};
 #[cfg(feature = "instr_api")]
-use super::register::{register_to_iced, Register};
+use crate::register::{register_to_iced, Register};
+use static_assertions::const_assert_eq;
 use wasm_bindgen::prelude::*;
 
 // GENERATOR-BEGIN: FormatterSyntax
@@ -374,7 +375,7 @@ impl Formatter {
 
 	// NOTE: These tables must render correctly by `cargo doc` and inside of IDEs, eg. VSCode.
 
-	/// Prefixes are upper cased
+	/// Prefixes are uppercased
 	///
 	/// Default | Value | Example
 	/// --------|-------|--------
@@ -386,7 +387,7 @@ impl Formatter {
 		self.formatter.options().uppercase_prefixes()
 	}
 
-	/// Prefixes are upper cased
+	/// Prefixes are uppercased
 	///
 	/// Default | Value | Example
 	/// --------|-------|--------
@@ -402,7 +403,7 @@ impl Formatter {
 		self.formatter.options_mut().set_uppercase_prefixes(value);
 	}
 
-	/// Mnemonics are upper cased
+	/// Mnemonics are uppercased
 	///
 	/// Default | Value | Example
 	/// --------|-------|--------
@@ -414,7 +415,7 @@ impl Formatter {
 		self.formatter.options().uppercase_mnemonics()
 	}
 
-	/// Mnemonics are upper cased
+	/// Mnemonics are uppercased
 	///
 	/// Default | Value | Example
 	/// --------|-------|--------
@@ -430,7 +431,7 @@ impl Formatter {
 		self.formatter.options_mut().set_uppercase_mnemonics(value);
 	}
 
-	/// Registers are upper cased
+	/// Registers are uppercased
 	///
 	/// Default | Value | Example
 	/// --------|-------|--------
@@ -442,7 +443,7 @@ impl Formatter {
 		self.formatter.options().uppercase_registers()
 	}
 
-	/// Registers are upper cased
+	/// Registers are uppercased
 	///
 	/// Default | Value | Example
 	/// --------|-------|--------
@@ -458,7 +459,7 @@ impl Formatter {
 		self.formatter.options_mut().set_uppercase_registers(value);
 	}
 
-	/// Keywords are upper cased (eg. `BYTE PTR`, `SHORT`)
+	/// Keywords are uppercased (eg. `BYTE PTR`, `SHORT`)
 	///
 	/// Default | Value | Example
 	/// --------|-------|--------
@@ -470,7 +471,7 @@ impl Formatter {
 		self.formatter.options().uppercase_keywords()
 	}
 
-	/// Keywords are upper cased (eg. `BYTE PTR`, `SHORT`)
+	/// Keywords are uppercased (eg. `BYTE PTR`, `SHORT`)
 	///
 	/// Default | Value | Example
 	/// --------|-------|--------
@@ -486,7 +487,7 @@ impl Formatter {
 		self.formatter.options_mut().set_uppercase_keywords(value);
 	}
 
-	/// Upper case decorators, eg. `{z}`, `{sae}`, `{rd-sae}` (but not op mask registers: `{k1}`)
+	/// Uppercase decorators, eg. `{z}`, `{sae}`, `{rd-sae}` (but not opmask registers: `{k1}`)
 	///
 	/// Default | Value | Example
 	/// --------|-------|--------
@@ -498,7 +499,7 @@ impl Formatter {
 		self.formatter.options().uppercase_decorators()
 	}
 
-	/// Upper case decorators, eg. `{z}`, `{sae}`, `{rd-sae}` (but not op mask registers: `{k1}`)
+	/// Uppercase decorators, eg. `{z}`, `{sae}`, `{rd-sae}` (but not opmask registers: `{k1}`)
 	///
 	/// Default | Value | Example
 	/// --------|-------|--------
@@ -514,7 +515,7 @@ impl Formatter {
 		self.formatter.options_mut().set_uppercase_decorators(value);
 	}
 
-	/// Everything is upper cased, except numbers and their prefixes/suffixes
+	/// Everything is uppercased, except numbers and their prefixes/suffixes
 	///
 	/// Default | Value | Example
 	/// --------|-------|--------
@@ -526,7 +527,7 @@ impl Formatter {
 		self.formatter.options().uppercase_all()
 	}
 
-	/// Everything is upper cased, except numbers and their prefixes/suffixes
+	/// Everything is uppercased, except numbers and their prefixes/suffixes
 	///
 	/// Default | Value | Example
 	/// --------|-------|--------
@@ -1194,7 +1195,7 @@ impl Formatter {
 		self.formatter.options_mut().set_leading_zeroes(value);
 	}
 
-	/// Use upper case hex digits
+	/// Use uppercase hex digits
 	///
 	/// Default | Value | Example
 	/// --------|-------|--------
@@ -1206,7 +1207,7 @@ impl Formatter {
 		self.formatter.options().uppercase_hex()
 	}
 
-	/// Use upper case hex digits
+	/// Use uppercase hex digits
 	///
 	/// Default | Value | Example
 	/// --------|-------|--------

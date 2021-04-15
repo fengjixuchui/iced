@@ -6,25 +6,36 @@
 #![allow(unknown_lints)]
 #![warn(absolute_paths_not_starting_with_crate)]
 #![warn(anonymous_parameters)]
-#![warn(deprecated_in_future)]
+#![warn(elided_lifetimes_in_paths)]
+#![warn(explicit_outlives_requirements)]
+#![warn(invalid_html_tags)]
 #![warn(keyword_idents)]
+#![warn(macro_use_extern_crate)]
 #![warn(meta_variable_misuse)]
+#![warn(missing_copy_implementations)]
+#![warn(missing_debug_implementations)]
 #![warn(missing_docs)]
 #![warn(non_ascii_idents)]
 #![warn(trivial_casts)]
 #![warn(trivial_numeric_casts)]
 #![warn(unused_extern_crates)]
 #![warn(unused_import_braces)]
-#![warn(unused_labels)]
 #![warn(unused_lifetimes)]
 #![warn(unused_must_use)]
 #![warn(unused_qualifications)]
 #![warn(unused_results)]
 #![allow(clippy::cast_lossless)]
+#![allow(clippy::collapsible_else_if)]
 #![allow(clippy::collapsible_if)]
+#![allow(clippy::field_reassign_with_default)]
+#![allow(clippy::manual_range_contains)]
+#![allow(clippy::manual_strip)]
+#![allow(clippy::match_like_matches_macro)]
+#![allow(clippy::match_ref_pats)]
+#![allow(clippy::ptr_eq)]
 #![allow(clippy::too_many_arguments)]
 #![allow(clippy::type_complexity)]
-#![allow(clippy::unknown_clippy_lints)]
+#![allow(clippy::upper_case_acronyms)]
 #![allow(clippy::wrong_self_convention)]
 #![warn(clippy::clone_on_ref_ptr)]
 #![warn(clippy::dbg_macro)]
@@ -63,9 +74,6 @@
 #![warn(clippy::useless_transmute)]
 #![warn(clippy::zero_sized_map_values)]
 
-#[macro_use]
-extern crate static_assertions;
-
 mod block_encoder;
 mod constant_offsets;
 mod decoder;
@@ -100,7 +108,7 @@ use register_ext::RegisterExt;
 use register_info::RegisterInfo;
 
 #[pymodule]
-fn _iced_x86_py(_py: Python, m: &PyModule) -> PyResult<()> {
+fn _iced_x86_py(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
 	// If you add a new struct, also add it to
 	//	- src/iced_x86/__init__.py's `__init__` array and `from` statement
 	//	- docs/index.rst

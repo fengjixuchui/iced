@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: MIT
 // Copyright (C) 2018-present iced project and contributors
 
-use super::super::super::test_utils::from_str_conv::*;
-use super::constants::*;
-use super::reg_info_test_case::*;
+use crate::info::tests::constants::*;
+use crate::info::tests::reg_info_test_case::*;
+use crate::test_utils::from_str_conv::*;
 use alloc::string::String;
 use alloc::vec::Vec;
 use core::iter::IntoIterator;
 use core::u32;
+use static_assertions::const_assert_eq;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::prelude::*;

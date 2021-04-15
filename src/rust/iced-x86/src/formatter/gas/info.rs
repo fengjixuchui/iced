@@ -1,17 +1,18 @@
 // SPDX-License-Identifier: MIT
 // Copyright (C) 2018-present iced project and contributors
 
-use super::super::super::iced_constants::IcedConstants;
-use super::super::super::*;
-use super::super::FormatterString;
-use super::enums::*;
-use super::fmt_utils::can_show_rounding_control;
-use super::get_mnemonic_cc;
-use super::mem_size_tbl::MEM_SIZE_TBL;
-use super::regs::*;
+use crate::formatter::gas::enums::*;
+use crate::formatter::gas::fmt_utils::can_show_rounding_control;
+use crate::formatter::gas::get_mnemonic_cc;
+use crate::formatter::gas::mem_size_tbl::MEM_SIZE_TBL;
+use crate::formatter::gas::regs::*;
+use crate::formatter::FormatterString;
+use crate::iced_constants::IcedConstants;
+use crate::*;
 use alloc::string::String;
 use alloc::vec::Vec;
 use core::{mem, u32};
+use static_assertions::const_assert_eq;
 
 #[derive(Debug)]
 pub(super) struct InstrOpInfo<'a> {
@@ -122,7 +123,7 @@ impl<'a> InstrOpInfo<'a> {
 		}
 	}
 
-	pub(self) fn new(mnemonic: &'a FormatterString, instruction: &Instruction, flags: u32) -> Self {
+	fn new(mnemonic: &'a FormatterString, instruction: &Instruction, flags: u32) -> Self {
 		let mut res = InstrOpInfo::default(mnemonic);
 
 		const_assert_eq!(IcedConstants::MAX_OP_COUNT, 5);
@@ -1035,7 +1036,7 @@ impl SimpleInstrInfo_er {
 		Self { mnemonic: FormatterString::new(mnemonic), mnemonic_suffix: FormatterString::new(mnemonic_suffix), er_index, flags }
 	}
 
-	fn move_operands(info: &mut InstrOpInfo, index: u32, new_op_kind: InstrOpKind) {
+	fn move_operands(info: &mut InstrOpInfo<'_>, index: u32, new_op_kind: InstrOpKind) {
 		debug_assert!(info.op_count <= 4);
 
 		match index {
@@ -1188,7 +1189,7 @@ impl SimpleInstrInfo_pops {
 		Self { mnemonic: FormatterString::new(mnemonic), pseudo_ops, can_use_sae }
 	}
 
-	fn remove_first_imm8_operand(info: &mut InstrOpInfo) {
+	fn remove_first_imm8_operand(info: &mut InstrOpInfo<'_>) {
 		debug_assert_eq!(info.op_kinds[0], InstrOpKind::Immediate8);
 		info.op_count -= 1;
 		match info.op_count {

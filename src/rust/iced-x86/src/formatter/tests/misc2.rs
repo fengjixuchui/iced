@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 // Copyright (C) 2018-present iced project and contributors
 
-use super::super::super::iced_constants::IcedConstants;
 #[cfg(feature = "encoder")]
-use super::super::encoder::tests::non_decoded_tests;
-use super::super::test_utils::from_str_conv::*;
-use super::super::*;
-use super::instr_infos::*;
+use crate::formatter::encoder::tests::non_decoded_tests;
+use crate::formatter::test_utils::from_str_conv::*;
+use crate::formatter::tests::instr_infos::*;
+use crate::formatter::*;
+use crate::iced_constants::IcedConstants;
 use alloc::string::String;
 use std::fmt::Write;
 
@@ -34,10 +34,10 @@ fn make_sure_all_code_values_are_formatted() {
 			tested[info.2.code() as usize] = 1;
 		}
 	} else {
-		for &code in &super::super::super::decoder::tests::NON_DECODED_CODE_VALUES1632 {
+		for &code in &crate::decoder::tests::NON_DECODED_CODE_VALUES1632 {
 			tested[code as usize] = 1;
 		}
-		for &code in &super::super::super::decoder::tests::NON_DECODED_CODE_VALUES {
+		for &code in &crate::decoder::tests::NON_DECODED_CODE_VALUES {
 			tested[code as usize] = 1;
 		}
 	}

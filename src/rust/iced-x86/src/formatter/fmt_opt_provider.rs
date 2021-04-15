@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (C) 2018-present iced project and contributors
 
-use super::super::*;
+use crate::*;
 use core::mem;
 
 /// Can override options used by a [`Formatter`]
@@ -19,7 +19,7 @@ pub trait FormatterOptionsProvider {
 	/// - `number_options`: Number formatting options
 	fn operand_options(
 		&mut self, instruction: &Instruction, operand: u32, instruction_operand: Option<u32>, options: &mut FormatterOperandOptions,
-		number_options: &mut NumberFormattingOptions,
+		number_options: &mut NumberFormattingOptions<'_>,
 	);
 }
 
@@ -99,6 +99,7 @@ impl FormatterOperandOptions {
 	#[must_use]
 	#[inline]
 	pub fn memory_size_options(&self) -> MemorySizeOptions {
+		// SAFETY: the bits can only be a valid enum value
 		unsafe { mem::transmute((self.flags >> FormatterOperandOptionsFlags::MEMORY_SIZE_SHIFT) as u8) }
 	}
 

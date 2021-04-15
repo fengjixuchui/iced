@@ -1,20 +1,20 @@
 // SPDX-License-Identifier: MIT
 // Copyright (C) 2018-present iced project and contributors
 
-use super::iced_constants::IcedConstants;
-use super::iced_error::IcedError;
+use crate::iced_constants::IcedConstants;
+use crate::iced_error::IcedError;
 use core::convert::TryFrom;
 use core::iter::{ExactSizeIterator, FusedIterator, Iterator};
 use core::ops::{Add, AddAssign, Sub, SubAssign};
 use core::{fmt, mem};
 
 #[cfg(feature = "instr_info")]
-pub use self::info::*;
+pub use crate::register::info::*;
 
 #[cfg(feature = "instr_info")]
 mod info {
-	use super::super::iced_constants::IcedConstants;
-	use super::Register;
+	use crate::iced_constants::IcedConstants;
+	use crate::Register;
 
 	#[rustfmt::skip]
 	pub(super) static REGISTER_INFOS: &[RegisterInfo; IcedConstants::REGISTER_ENUM_COUNT] = &[
@@ -1451,36 +1451,10 @@ impl Register {
 	/// Iterates over all `Register` enum values
 	#[inline]
 	pub fn values() -> impl Iterator<Item = Register> + ExactSizeIterator + FusedIterator {
-		RegisterIterator { index: 0 }
+		// SAFETY: all values 0-max are valid enum values
+		(0..IcedConstants::REGISTER_ENUM_COUNT).map(|x| unsafe { core::mem::transmute::<u8, Register>(x as u8) })
 	}
 }
-#[allow(non_camel_case_types)]
-struct RegisterIterator {
-	index: u32,
-}
-#[rustfmt::skip]
-impl Iterator for RegisterIterator {
-	type Item = Register;
-	#[inline]
-	fn next(&mut self) -> Option<Self::Item> {
-		let index = self.index;
-		if index < IcedConstants::REGISTER_ENUM_COUNT as u32 {
-			// Safe, all values [0, max) are valid enum values
-			let value: Register = unsafe { mem::transmute(index as u8) };
-			self.index = index + 1;
-			Some(value)
-		} else {
-			None
-		}
-	}
-	#[inline]
-	fn size_hint(&self) -> (usize, Option<usize>) {
-		let len = IcedConstants::REGISTER_ENUM_COUNT - self.index as usize;
-		(len, Some(len))
-	}
-}
-impl ExactSizeIterator for RegisterIterator {}
-impl FusedIterator for RegisterIterator {}
 #[test]
 #[rustfmt::skip]
 fn test_register_values() {
@@ -1503,7 +1477,7 @@ impl TryFrom<usize> for Register {
 	#[inline]
 	fn try_from(value: usize) -> Result<Self, Self::Error> {
 		if value < IcedConstants::REGISTER_ENUM_COUNT {
-			// Safe, all values [0, max) are valid enum values
+			// SAFETY: all values 0-max are valid enum values
 			Ok(unsafe { mem::transmute(value as u8) })
 		} else {
 			Err(IcedError::new("Invalid Register value"))
@@ -1526,13 +1500,15 @@ impl Register {
 	#[must_use]
 	fn add(self, rhs: u32) -> Self {
 		let result = (self as u32).wrapping_add(rhs);
-		assert!(result < IcedConstants::REGISTER_ENUM_COUNT as u32);
+		iced_assert!(result < IcedConstants::REGISTER_ENUM_COUNT as u32);
+		// SAFETY: verified by the assert above. All values 0-max are valid enum values
 		unsafe { mem::transmute(result as u8) }
 	}
 	#[must_use]
 	fn sub(self, rhs: u32) -> Self {
 		let result = (self as u32).wrapping_sub(rhs);
-		assert!(result < IcedConstants::REGISTER_ENUM_COUNT as u32);
+		iced_assert!(result < IcedConstants::REGISTER_ENUM_COUNT as u32);
+		// SAFETY: verified by the assert above. All values 0-max are valid enum values
 		unsafe { mem::transmute(result as u8) }
 	}
 }

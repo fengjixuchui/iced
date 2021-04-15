@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (C) 2018-present iced project and contributors
 
-use super::instruction::Instruction;
+use crate::instruction::Instruction;
 use wasm_bindgen::prelude::*;
 
 /// x86 formatter that uses less code (smaller wasm files)
@@ -224,7 +224,7 @@ impl FastFormatter {
 		self.0.options_mut().set_always_show_memory_size(value)
 	}
 
-	/// Use upper case hex digits
+	/// Use uppercase hex digits
 	///
 	/// Default | Value | Example
 	/// --------|-------|--------
@@ -236,7 +236,7 @@ impl FastFormatter {
 		self.0.options().uppercase_hex()
 	}
 
-	/// Use upper case hex digits
+	/// Use uppercase hex digits
 	///
 	/// Default | Value | Example
 	/// --------|-------|--------

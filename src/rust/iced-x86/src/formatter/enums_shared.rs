@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright (C) 2018-present iced project and contributors
 
-use super::iced_constants::IcedConstants;
-use super::iced_error::IcedError;
+use crate::formatter::iced_constants::IcedConstants;
+use crate::formatter::iced_error::IcedError;
 use core::convert::TryFrom;
 use core::iter::{ExactSizeIterator, FusedIterator, Iterator};
 use core::{fmt, mem};
@@ -99,36 +99,10 @@ impl FormatterTextKind {
 	/// Iterates over all `FormatterTextKind` enum values
 	#[inline]
 	pub fn values() -> impl Iterator<Item = FormatterTextKind> + ExactSizeIterator + FusedIterator {
-		FormatterTextKindIterator { index: 0 }
+		// SAFETY: all values 0-max are valid enum values
+		(0..IcedConstants::FORMATTER_TEXT_KIND_ENUM_COUNT).map(|x| unsafe { core::mem::transmute::<u8, FormatterTextKind>(x as u8) })
 	}
 }
-#[allow(non_camel_case_types)]
-struct FormatterTextKindIterator {
-	index: u32,
-}
-#[rustfmt::skip]
-impl Iterator for FormatterTextKindIterator {
-	type Item = FormatterTextKind;
-	#[inline]
-	fn next(&mut self) -> Option<Self::Item> {
-		let index = self.index;
-		if index < IcedConstants::FORMATTER_TEXT_KIND_ENUM_COUNT as u32 {
-			// Safe, all values [0, max) are valid enum values
-			let value: FormatterTextKind = unsafe { mem::transmute(index as u8) };
-			self.index = index + 1;
-			Some(value)
-		} else {
-			None
-		}
-	}
-	#[inline]
-	fn size_hint(&self) -> (usize, Option<usize>) {
-		let len = IcedConstants::FORMATTER_TEXT_KIND_ENUM_COUNT - self.index as usize;
-		(len, Some(len))
-	}
-}
-impl ExactSizeIterator for FormatterTextKindIterator {}
-impl FusedIterator for FormatterTextKindIterator {}
 #[test]
 #[rustfmt::skip]
 fn test_formattertextkind_values() {
@@ -151,7 +125,7 @@ impl TryFrom<usize> for FormatterTextKind {
 	#[inline]
 	fn try_from(value: usize) -> Result<Self, Self::Error> {
 		if value < IcedConstants::FORMATTER_TEXT_KIND_ENUM_COUNT {
-			// Safe, all values [0, max) are valid enum values
+			// SAFETY: all values 0-max are valid enum values
 			Ok(unsafe { mem::transmute(value as u8) })
 		} else {
 			Err(IcedError::new("Invalid FormatterTextKind value"))
@@ -270,36 +244,10 @@ impl MemorySizeOptions {
 	/// Iterates over all `MemorySizeOptions` enum values
 	#[inline]
 	pub fn values() -> impl Iterator<Item = MemorySizeOptions> + ExactSizeIterator + FusedIterator {
-		MemorySizeOptionsIterator { index: 0 }
+		// SAFETY: all values 0-max are valid enum values
+		(0..IcedConstants::MEMORY_SIZE_OPTIONS_ENUM_COUNT).map(|x| unsafe { core::mem::transmute::<u8, MemorySizeOptions>(x as u8) })
 	}
 }
-#[allow(non_camel_case_types)]
-struct MemorySizeOptionsIterator {
-	index: u32,
-}
-#[rustfmt::skip]
-impl Iterator for MemorySizeOptionsIterator {
-	type Item = MemorySizeOptions;
-	#[inline]
-	fn next(&mut self) -> Option<Self::Item> {
-		let index = self.index;
-		if index < IcedConstants::MEMORY_SIZE_OPTIONS_ENUM_COUNT as u32 {
-			// Safe, all values [0, max) are valid enum values
-			let value: MemorySizeOptions = unsafe { mem::transmute(index as u8) };
-			self.index = index + 1;
-			Some(value)
-		} else {
-			None
-		}
-	}
-	#[inline]
-	fn size_hint(&self) -> (usize, Option<usize>) {
-		let len = IcedConstants::MEMORY_SIZE_OPTIONS_ENUM_COUNT - self.index as usize;
-		(len, Some(len))
-	}
-}
-impl ExactSizeIterator for MemorySizeOptionsIterator {}
-impl FusedIterator for MemorySizeOptionsIterator {}
 #[test]
 #[rustfmt::skip]
 fn test_memorysizeoptions_values() {
@@ -322,7 +270,7 @@ impl TryFrom<usize> for MemorySizeOptions {
 	#[inline]
 	fn try_from(value: usize) -> Result<Self, Self::Error> {
 		if value < IcedConstants::MEMORY_SIZE_OPTIONS_ENUM_COUNT {
-			// Safe, all values [0, max) are valid enum values
+			// SAFETY: all values 0-max are valid enum values
 			Ok(unsafe { mem::transmute(value as u8) })
 		} else {
 			Err(IcedError::new("Invalid MemorySizeOptions value"))

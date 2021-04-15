@@ -1,10 +1,13 @@
 // SPDX-License-Identifier: MIT
 // Copyright (C) 2018-present iced project and contributors
 
-use super::enums_shared::PseudoOpsKind;
-use super::FormatterString;
+// Keep this file in sync with pseudo_ops_fast.rs
+
+use crate::formatter::enums_shared::PseudoOpsKind;
+use crate::formatter::FormatterString;
 use alloc::string::String;
 use alloc::vec::Vec;
+use lazy_static::lazy_static;
 
 pub(super) fn get_pseudo_ops(kind: PseudoOpsKind) -> &'static Vec<FormatterString> {
 	let pseudo_ops = &*PSEUDO_OPS;

@@ -9,16 +9,16 @@ mod simple_br_instr;
 mod simple_instr;
 mod xbegin_instr;
 
-use self::call_instr::CallInstr;
-use self::ip_relmem_instr::IpRelMemOpInstr;
-use self::jcc_instr::JccInstr;
-use self::jmp_instr::JmpInstr;
-use self::simple_br_instr::SimpleBranchInstr;
-use self::simple_instr::SimpleInstr;
-use self::xbegin_instr::XbeginInstr;
-use super::super::iced_error::IcedError;
-use super::block::{Block, BlockData};
-use super::*;
+use crate::block_enc::block::{Block, BlockData};
+use crate::block_enc::instr::call_instr::CallInstr;
+use crate::block_enc::instr::ip_relmem_instr::IpRelMemOpInstr;
+use crate::block_enc::instr::jcc_instr::JccInstr;
+use crate::block_enc::instr::jmp_instr::JmpInstr;
+use crate::block_enc::instr::simple_br_instr::SimpleBranchInstr;
+use crate::block_enc::instr::simple_instr::SimpleInstr;
+use crate::block_enc::instr::xbegin_instr::XbeginInstr;
+use crate::block_enc::*;
+use crate::iced_error::IcedError;
 use alloc::rc::Rc;
 use alloc::string::String;
 use core::cell::RefCell;
@@ -90,15 +90,15 @@ impl TargetInstr {
 pub(super) struct InstrUtils;
 impl InstrUtils {
 	// 6 = FF 15 XXXXXXXX = call qword ptr [rip+mem_target]
-	pub(self) const CALL_OR_JMP_POINTER_DATA_INSTRUCTION_SIZE64: u32 = 6;
+	const CALL_OR_JMP_POINTER_DATA_INSTRUCTION_SIZE64: u32 = 6;
 
 	#[cfg(any(feature = "gas", feature = "intel", feature = "masm", feature = "nasm"))]
-	pub(self) fn create_error_message<T: Display>(error_message: T, instruction: &Instruction) -> String {
+	fn create_error_message<T: Display>(error_message: T, instruction: &Instruction) -> String {
 		format!("{} : 0x{:X} {}", error_message, instruction.ip(), instruction)
 	}
 
 	#[cfg(not(any(feature = "gas", feature = "intel", feature = "masm", feature = "nasm")))]
-	pub(self) fn create_error_message<T: Display>(error_message: T, instruction: &Instruction) -> String {
+	fn create_error_message<T: Display>(error_message: T, instruction: &Instruction) -> String {
 		format!("{} : 0x{:X}", error_message, instruction.ip())
 	}
 

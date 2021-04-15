@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright (C) 2018-present iced project and contributors
 
-use super::iced_constants::IcedConstants;
-use super::iced_error::IcedError;
+use crate::iced_constants::IcedConstants;
+use crate::iced_error::IcedError;
 use core::convert::TryFrom;
 use core::iter::{ExactSizeIterator, FusedIterator, Iterator};
 use core::{fmt, mem};
@@ -1644,9 +1644,12 @@ pub enum Mnemonic {
 	Hreset = 1626,
 	Ccs_hash = 1627,
 	Ccs_encrypt = 1628,
+	Lkgs = 1629,
+	Eretu = 1630,
+	Erets = 1631,
 }
 #[rustfmt::skip]
-static GEN_DEBUG_MNEMONIC: [&str; 1629] = [
+static GEN_DEBUG_MNEMONIC: [&str; 1632] = [
 	"INVALID",
 	"Aaa",
 	"Aad",
@@ -3276,6 +3279,9 @@ static GEN_DEBUG_MNEMONIC: [&str; 1629] = [
 	"Hreset",
 	"Ccs_hash",
 	"Ccs_encrypt",
+	"Lkgs",
+	"Eretu",
+	"Erets",
 ];
 impl fmt::Debug for Mnemonic {
 	#[inline]
@@ -3295,36 +3301,10 @@ impl Mnemonic {
 	/// Iterates over all `Mnemonic` enum values
 	#[inline]
 	pub fn values() -> impl Iterator<Item = Mnemonic> + ExactSizeIterator + FusedIterator {
-		MnemonicIterator { index: 0 }
+		// SAFETY: all values 0-max are valid enum values
+		(0..IcedConstants::MNEMONIC_ENUM_COUNT).map(|x| unsafe { core::mem::transmute::<u16, Mnemonic>(x as u16) })
 	}
 }
-#[allow(non_camel_case_types)]
-struct MnemonicIterator {
-	index: u32,
-}
-#[rustfmt::skip]
-impl Iterator for MnemonicIterator {
-	type Item = Mnemonic;
-	#[inline]
-	fn next(&mut self) -> Option<Self::Item> {
-		let index = self.index;
-		if index < IcedConstants::MNEMONIC_ENUM_COUNT as u32 {
-			// Safe, all values [0, max) are valid enum values
-			let value: Mnemonic = unsafe { mem::transmute(index as u16) };
-			self.index = index + 1;
-			Some(value)
-		} else {
-			None
-		}
-	}
-	#[inline]
-	fn size_hint(&self) -> (usize, Option<usize>) {
-		let len = IcedConstants::MNEMONIC_ENUM_COUNT - self.index as usize;
-		(len, Some(len))
-	}
-}
-impl ExactSizeIterator for MnemonicIterator {}
-impl FusedIterator for MnemonicIterator {}
 #[test]
 #[rustfmt::skip]
 fn test_mnemonic_values() {
@@ -3347,7 +3327,7 @@ impl TryFrom<usize> for Mnemonic {
 	#[inline]
 	fn try_from(value: usize) -> Result<Self, Self::Error> {
 		if value < IcedConstants::MNEMONIC_ENUM_COUNT {
-			// Safe, all values [0, max) are valid enum values
+			// SAFETY: all values 0-max are valid enum values
 			Ok(unsafe { mem::transmute(value as u16) })
 		} else {
 			Err(IcedError::new("Invalid Mnemonic value"))

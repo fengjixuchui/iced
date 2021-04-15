@@ -6,8 +6,11 @@
 #![allow(unknown_lints)]
 #![warn(absolute_paths_not_starting_with_crate)]
 #![warn(anonymous_parameters)]
-#![warn(deprecated_in_future)]
+#![warn(elided_lifetimes_in_paths)]
+#![warn(explicit_outlives_requirements)]
+#![warn(invalid_html_tags)]
 #![warn(keyword_idents)]
+#![warn(macro_use_extern_crate)]
 #![warn(meta_variable_misuse)]
 #![warn(missing_docs)]
 #![warn(non_ascii_idents)]
@@ -15,16 +18,22 @@
 #![warn(trivial_numeric_casts)]
 #![warn(unused_extern_crates)]
 #![warn(unused_import_braces)]
-#![warn(unused_labels)]
 #![warn(unused_lifetimes)]
 #![warn(unused_must_use)]
 #![warn(unused_qualifications)]
 #![warn(unused_results)]
 #![allow(clippy::cast_lossless)]
+#![allow(clippy::collapsible_else_if)]
 #![allow(clippy::collapsible_if)]
+#![allow(clippy::field_reassign_with_default)]
+#![allow(clippy::manual_range_contains)]
+#![allow(clippy::manual_strip)]
+#![allow(clippy::match_like_matches_macro)]
+#![allow(clippy::match_ref_pats)]
+#![allow(clippy::ptr_eq)]
 #![allow(clippy::too_many_arguments)]
 #![allow(clippy::type_complexity)]
-#![allow(clippy::unknown_clippy_lints)]
+#![allow(clippy::upper_case_acronyms)]
 #![allow(clippy::wrong_self_convention)]
 #![warn(clippy::clone_on_ref_ptr)]
 #![warn(clippy::dbg_macro)]
@@ -62,18 +71,6 @@
 #![warn(clippy::useless_let_if_seq)]
 #![warn(clippy::useless_transmute)]
 #![warn(clippy::zero_sized_map_values)]
-
-#[cfg(any(
-	feature = "instr_info",
-	feature = "decoder",
-	feature = "gas",
-	feature = "intel",
-	feature = "masm",
-	feature = "nasm",
-	all(feature = "encoder", feature = "block_encoder")
-))]
-#[macro_use]
-extern crate static_assertions;
 
 #[cfg(all(feature = "encoder", feature = "block_encoder"))]
 mod block_encoder;

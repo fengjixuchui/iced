@@ -11,6 +11,7 @@ use pyo3::gc::{PyGCProtocol, PyVisit};
 use pyo3::prelude::*;
 use pyo3::types::{PyByteArray, PyBytes};
 use pyo3::{PyIterProtocol, PyTraverseError};
+use static_assertions::const_assert_eq;
 
 enum DecoderDataRef {
 	None,
@@ -388,7 +389,7 @@ impl Decoder {
 
 #[pyproto]
 impl PyGCProtocol for Decoder {
-	fn __traverse__(&self, visit: PyVisit) -> Result<(), PyTraverseError> {
+	fn __traverse__(&self, visit: PyVisit<'_>) -> Result<(), PyTraverseError> {
 		if let DecoderDataRef::PyObj(ref data_obj) = self.data_ref {
 			visit.call(data_obj)?
 		}

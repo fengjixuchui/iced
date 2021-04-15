@@ -10,15 +10,16 @@ mod test_cases;
 mod test_parser;
 pub(crate) mod test_utils;
 
-use self::decoder_mem_test_case::*;
-use self::decoder_test_case::*;
-use self::test_utils::*;
-use super::super::iced_constants::IcedConstants;
-use super::super::test_utils::from_str_conv::{code_names, is_ignored_code, to_vec_u8};
-use super::super::test_utils::*;
-use super::super::*;
+use crate::decoder::tests::decoder_mem_test_case::*;
+use crate::decoder::tests::decoder_test_case::*;
+use crate::decoder::tests::test_utils::*;
+use crate::iced_constants::IcedConstants;
+use crate::test_utils::from_str_conv::{code_names, is_ignored_code, to_vec_u8};
+use crate::test_utils::*;
+use crate::*;
 use alloc::string::String;
 use core::fmt::Write;
+use static_assertions::const_assert_eq;
 
 #[rustfmt::skip]
 pub(crate) static NON_DECODED_CODE_VALUES: [Code; 16] = [
@@ -374,7 +375,7 @@ fn make_sure_all_code_values_are_tested_in_16_32_64_bit_modes() {
 
 	if cfg!(feature = "encoder") {
 		#[cfg(feature = "encoder")] // needed...
-		for info in super::super::encoder::tests::non_decoded_tests::get_tests() {
+		for info in crate::encoder::tests::non_decoded_tests::get_tests() {
 			tested[info.2.code() as usize] |= match info.0 {
 				16 => T16,
 				32 => T32,

@@ -5,7 +5,7 @@
 # pylint: disable=no-name-in-module
 
 """
-iced-x86 is a high performance and correct x86/x64 disassembler, assembler and instruction decoder written in Rust with Python bindings
+iced-x86 is a blazing fast and correct x86/x64 disassembler, assembler and instruction decoder written in Rust with Python bindings
 """
 
 from ._iced_x86_py import BlockEncoder, ConstantOffsets, Decoder, Encoder, FastFormatter, \
@@ -60,6 +60,7 @@ __all__ = [
 	"Instruction",
 	"InstructionInfo",
 	"InstructionInfoFactory",
+	"MemoryOperand",
 	"MemorySizeExt",
 	"MemorySizeInfo",
 	"OpCodeInfo",
@@ -91,7 +92,6 @@ __all__ = [
 	"FormatMnemonicOptions",
 	"FormatterSyntax",
 	"MandatoryPrefix",
-	"MemoryOperand",
 	"MemorySize",
 	"MemorySizeOptions",
 	"Mnemonic",

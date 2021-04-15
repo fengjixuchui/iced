@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright (C) 2018-present iced project and contributors
 
-use super::iced_constants::IcedConstants;
-use super::iced_error::IcedError;
+use crate::encoder::iced_constants::IcedConstants;
+use crate::encoder::iced_error::IcedError;
 use core::convert::TryFrom;
 use core::iter::{ExactSizeIterator, FusedIterator, Iterator};
 use core::{fmt, mem};
@@ -606,36 +606,10 @@ impl RepPrefixKind {
 	/// Iterates over all `RepPrefixKind` enum values
 	#[inline]
 	pub fn values() -> impl Iterator<Item = RepPrefixKind> + ExactSizeIterator + FusedIterator {
-		RepPrefixKindIterator { index: 0 }
+		// SAFETY: all values 0-max are valid enum values
+		(0..IcedConstants::REP_PREFIX_KIND_ENUM_COUNT).map(|x| unsafe { core::mem::transmute::<u8, RepPrefixKind>(x as u8) })
 	}
 }
-#[allow(non_camel_case_types)]
-struct RepPrefixKindIterator {
-	index: u32,
-}
-#[rustfmt::skip]
-impl Iterator for RepPrefixKindIterator {
-	type Item = RepPrefixKind;
-	#[inline]
-	fn next(&mut self) -> Option<Self::Item> {
-		let index = self.index;
-		if index < IcedConstants::REP_PREFIX_KIND_ENUM_COUNT as u32 {
-			// Safe, all values [0, max) are valid enum values
-			let value: RepPrefixKind = unsafe { mem::transmute(index as u8) };
-			self.index = index + 1;
-			Some(value)
-		} else {
-			None
-		}
-	}
-	#[inline]
-	fn size_hint(&self) -> (usize, Option<usize>) {
-		let len = IcedConstants::REP_PREFIX_KIND_ENUM_COUNT - self.index as usize;
-		(len, Some(len))
-	}
-}
-impl ExactSizeIterator for RepPrefixKindIterator {}
-impl FusedIterator for RepPrefixKindIterator {}
 #[test]
 #[rustfmt::skip]
 fn test_repprefixkind_values() {
@@ -658,7 +632,7 @@ impl TryFrom<usize> for RepPrefixKind {
 	#[inline]
 	fn try_from(value: usize) -> Result<Self, Self::Error> {
 		if value < IcedConstants::REP_PREFIX_KIND_ENUM_COUNT {
-			// Safe, all values [0, max) are valid enum values
+			// SAFETY: all values 0-max are valid enum values
 			Ok(unsafe { mem::transmute(value as u8) })
 		} else {
 			Err(IcedError::new("Invalid RepPrefixKind value"))

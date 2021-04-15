@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright (C) 2018-present iced project and contributors
 
-use super::iced_constants::IcedConstants;
-use super::iced_error::IcedError;
+use crate::iced_constants::IcedConstants;
+use crate::iced_error::IcedError;
 use core::convert::TryFrom;
 use core::iter::{ExactSizeIterator, FusedIterator, Iterator};
 use core::{fmt, mem};
@@ -46,36 +46,10 @@ impl CodeSize {
 	/// Iterates over all `CodeSize` enum values
 	#[inline]
 	pub fn values() -> impl Iterator<Item = CodeSize> + ExactSizeIterator + FusedIterator {
-		CodeSizeIterator { index: 0 }
+		// SAFETY: all values 0-max are valid enum values
+		(0..IcedConstants::CODE_SIZE_ENUM_COUNT).map(|x| unsafe { core::mem::transmute::<u8, CodeSize>(x as u8) })
 	}
 }
-#[allow(non_camel_case_types)]
-struct CodeSizeIterator {
-	index: u32,
-}
-#[rustfmt::skip]
-impl Iterator for CodeSizeIterator {
-	type Item = CodeSize;
-	#[inline]
-	fn next(&mut self) -> Option<Self::Item> {
-		let index = self.index;
-		if index < IcedConstants::CODE_SIZE_ENUM_COUNT as u32 {
-			// Safe, all values [0, max) are valid enum values
-			let value: CodeSize = unsafe { mem::transmute(index as u8) };
-			self.index = index + 1;
-			Some(value)
-		} else {
-			None
-		}
-	}
-	#[inline]
-	fn size_hint(&self) -> (usize, Option<usize>) {
-		let len = IcedConstants::CODE_SIZE_ENUM_COUNT - self.index as usize;
-		(len, Some(len))
-	}
-}
-impl ExactSizeIterator for CodeSizeIterator {}
-impl FusedIterator for CodeSizeIterator {}
 #[test]
 #[rustfmt::skip]
 fn test_codesize_values() {
@@ -98,7 +72,7 @@ impl TryFrom<usize> for CodeSize {
 	#[inline]
 	fn try_from(value: usize) -> Result<Self, Self::Error> {
 		if value < IcedConstants::CODE_SIZE_ENUM_COUNT {
-			// Safe, all values [0, max) are valid enum values
+			// SAFETY: all values 0-max are valid enum values
 			Ok(unsafe { mem::transmute(value as u8) })
 		} else {
 			Err(IcedError::new("Invalid CodeSize value"))
@@ -159,36 +133,10 @@ impl RoundingControl {
 	/// Iterates over all `RoundingControl` enum values
 	#[inline]
 	pub fn values() -> impl Iterator<Item = RoundingControl> + ExactSizeIterator + FusedIterator {
-		RoundingControlIterator { index: 0 }
+		// SAFETY: all values 0-max are valid enum values
+		(0..IcedConstants::ROUNDING_CONTROL_ENUM_COUNT).map(|x| unsafe { core::mem::transmute::<u8, RoundingControl>(x as u8) })
 	}
 }
-#[allow(non_camel_case_types)]
-struct RoundingControlIterator {
-	index: u32,
-}
-#[rustfmt::skip]
-impl Iterator for RoundingControlIterator {
-	type Item = RoundingControl;
-	#[inline]
-	fn next(&mut self) -> Option<Self::Item> {
-		let index = self.index;
-		if index < IcedConstants::ROUNDING_CONTROL_ENUM_COUNT as u32 {
-			// Safe, all values [0, max) are valid enum values
-			let value: RoundingControl = unsafe { mem::transmute(index as u8) };
-			self.index = index + 1;
-			Some(value)
-		} else {
-			None
-		}
-	}
-	#[inline]
-	fn size_hint(&self) -> (usize, Option<usize>) {
-		let len = IcedConstants::ROUNDING_CONTROL_ENUM_COUNT - self.index as usize;
-		(len, Some(len))
-	}
-}
-impl ExactSizeIterator for RoundingControlIterator {}
-impl FusedIterator for RoundingControlIterator {}
 #[test]
 #[rustfmt::skip]
 fn test_roundingcontrol_values() {
@@ -211,7 +159,7 @@ impl TryFrom<usize> for RoundingControl {
 	#[inline]
 	fn try_from(value: usize) -> Result<Self, Self::Error> {
 		if value < IcedConstants::ROUNDING_CONTROL_ENUM_COUNT {
-			// Safe, all values [0, max) are valid enum values
+			// SAFETY: all values 0-max are valid enum values
 			Ok(unsafe { mem::transmute(value as u8) })
 		} else {
 			Err(IcedError::new("Invalid RoundingControl value"))
@@ -420,36 +368,10 @@ impl OpKind {
 	/// Iterates over all `OpKind` enum values
 	#[inline]
 	pub fn values() -> impl Iterator<Item = OpKind> + ExactSizeIterator + FusedIterator {
-		OpKindIterator { index: 0 }
+		// SAFETY: all values 0-max are valid enum values
+		(0..IcedConstants::OP_KIND_ENUM_COUNT).map(|x| unsafe { core::mem::transmute::<u8, OpKind>(x as u8) })
 	}
 }
-#[allow(non_camel_case_types)]
-struct OpKindIterator {
-	index: u32,
-}
-#[rustfmt::skip]
-impl Iterator for OpKindIterator {
-	type Item = OpKind;
-	#[inline]
-	fn next(&mut self) -> Option<Self::Item> {
-		let index = self.index;
-		if index < IcedConstants::OP_KIND_ENUM_COUNT as u32 {
-			// Safe, all values [0, max) are valid enum values
-			let value: OpKind = unsafe { mem::transmute(index as u8) };
-			self.index = index + 1;
-			Some(value)
-		} else {
-			None
-		}
-	}
-	#[inline]
-	fn size_hint(&self) -> (usize, Option<usize>) {
-		let len = IcedConstants::OP_KIND_ENUM_COUNT - self.index as usize;
-		(len, Some(len))
-	}
-}
-impl ExactSizeIterator for OpKindIterator {}
-impl FusedIterator for OpKindIterator {}
 #[test]
 #[rustfmt::skip]
 fn test_opkind_values() {
@@ -472,7 +394,7 @@ impl TryFrom<usize> for OpKind {
 	#[inline]
 	fn try_from(value: usize) -> Result<Self, Self::Error> {
 		if value < IcedConstants::OP_KIND_ENUM_COUNT {
-			// Safe, all values [0, max) are valid enum values
+			// SAFETY: all values 0-max are valid enum values
 			Ok(unsafe { mem::transmute(value as u8) })
 		} else {
 			Err(IcedError::new("Invalid OpKind value"))
@@ -611,42 +533,12 @@ impl EncodingKind {
 	/// Iterates over all `EncodingKind` enum values
 	#[inline]
 	pub fn values() -> impl Iterator<Item = EncodingKind> + ExactSizeIterator + FusedIterator {
-		EncodingKindIterator { index: 0 }
+		// SAFETY: all values 0-max are valid enum values
+		(0..IcedConstants::ENCODING_KIND_ENUM_COUNT).map(|x| unsafe { core::mem::transmute::<u8, EncodingKind>(x as u8) })
 	}
 }
-#[cfg(any(feature = "decoder", feature = "encoder", feature = "instr_info"))]
-#[allow(non_camel_case_types)]
-struct EncodingKindIterator {
-	index: u32,
-}
-#[cfg(any(feature = "decoder", feature = "encoder", feature = "instr_info"))]
-#[rustfmt::skip]
-impl Iterator for EncodingKindIterator {
-	type Item = EncodingKind;
-	#[inline]
-	fn next(&mut self) -> Option<Self::Item> {
-		let index = self.index;
-		if index < IcedConstants::ENCODING_KIND_ENUM_COUNT as u32 {
-			// Safe, all values [0, max) are valid enum values
-			let value: EncodingKind = unsafe { mem::transmute(index as u8) };
-			self.index = index + 1;
-			Some(value)
-		} else {
-			None
-		}
-	}
-	#[inline]
-	fn size_hint(&self) -> (usize, Option<usize>) {
-		let len = IcedConstants::ENCODING_KIND_ENUM_COUNT - self.index as usize;
-		(len, Some(len))
-	}
-}
-#[cfg(any(feature = "decoder", feature = "encoder", feature = "instr_info"))]
-impl ExactSizeIterator for EncodingKindIterator {}
-#[cfg(any(feature = "decoder", feature = "encoder", feature = "instr_info"))]
-impl FusedIterator for EncodingKindIterator {}
-#[cfg(any(feature = "decoder", feature = "encoder", feature = "instr_info"))]
 #[test]
+#[cfg(any(feature = "decoder", feature = "encoder", feature = "instr_info"))]
 #[rustfmt::skip]
 fn test_encodingkind_values() {
 	let mut iter = EncodingKind::values();
@@ -669,7 +561,7 @@ impl TryFrom<usize> for EncodingKind {
 	#[inline]
 	fn try_from(value: usize) -> Result<Self, Self::Error> {
 		if value < IcedConstants::ENCODING_KIND_ENUM_COUNT {
-			// Safe, all values [0, max) are valid enum values
+			// SAFETY: all values 0-max are valid enum values
 			Ok(unsafe { mem::transmute(value as u8) })
 		} else {
 			Err(IcedError::new("Invalid EncodingKind value"))
@@ -765,42 +657,12 @@ impl TupleType {
 	/// Iterates over all `TupleType` enum values
 	#[inline]
 	pub fn values() -> impl Iterator<Item = TupleType> + ExactSizeIterator + FusedIterator {
-		TupleTypeIterator { index: 0 }
+		// SAFETY: all values 0-max are valid enum values
+		(0..IcedConstants::TUPLE_TYPE_ENUM_COUNT).map(|x| unsafe { core::mem::transmute::<u8, TupleType>(x as u8) })
 	}
 }
-#[cfg(any(feature = "decoder", feature = "encoder"))]
-#[allow(non_camel_case_types)]
-struct TupleTypeIterator {
-	index: u32,
-}
-#[cfg(any(feature = "decoder", feature = "encoder"))]
-#[rustfmt::skip]
-impl Iterator for TupleTypeIterator {
-	type Item = TupleType;
-	#[inline]
-	fn next(&mut self) -> Option<Self::Item> {
-		let index = self.index;
-		if index < IcedConstants::TUPLE_TYPE_ENUM_COUNT as u32 {
-			// Safe, all values [0, max) are valid enum values
-			let value: TupleType = unsafe { mem::transmute(index as u8) };
-			self.index = index + 1;
-			Some(value)
-		} else {
-			None
-		}
-	}
-	#[inline]
-	fn size_hint(&self) -> (usize, Option<usize>) {
-		let len = IcedConstants::TUPLE_TYPE_ENUM_COUNT - self.index as usize;
-		(len, Some(len))
-	}
-}
-#[cfg(any(feature = "decoder", feature = "encoder"))]
-impl ExactSizeIterator for TupleTypeIterator {}
-#[cfg(any(feature = "decoder", feature = "encoder"))]
-impl FusedIterator for TupleTypeIterator {}
-#[cfg(any(feature = "decoder", feature = "encoder"))]
 #[test]
+#[cfg(any(feature = "decoder", feature = "encoder"))]
 #[rustfmt::skip]
 fn test_tupletype_values() {
 	let mut iter = TupleType::values();
@@ -823,7 +685,7 @@ impl TryFrom<usize> for TupleType {
 	#[inline]
 	fn try_from(value: usize) -> Result<Self, Self::Error> {
 		if value < IcedConstants::TUPLE_TYPE_ENUM_COUNT {
-			// Safe, all values [0, max) are valid enum values
+			// SAFETY: all values 0-max are valid enum values
 			Ok(unsafe { mem::transmute(value as u8) })
 		} else {
 			Err(IcedError::new("Invalid TupleType value"))
@@ -907,42 +769,12 @@ impl FlowControl {
 	/// Iterates over all `FlowControl` enum values
 	#[inline]
 	pub fn values() -> impl Iterator<Item = FlowControl> + ExactSizeIterator + FusedIterator {
-		FlowControlIterator { index: 0 }
+		// SAFETY: all values 0-max are valid enum values
+		(0..IcedConstants::FLOW_CONTROL_ENUM_COUNT).map(|x| unsafe { core::mem::transmute::<u8, FlowControl>(x as u8) })
 	}
 }
-#[cfg(feature = "instr_info")]
-#[allow(non_camel_case_types)]
-struct FlowControlIterator {
-	index: u32,
-}
-#[cfg(feature = "instr_info")]
-#[rustfmt::skip]
-impl Iterator for FlowControlIterator {
-	type Item = FlowControl;
-	#[inline]
-	fn next(&mut self) -> Option<Self::Item> {
-		let index = self.index;
-		if index < IcedConstants::FLOW_CONTROL_ENUM_COUNT as u32 {
-			// Safe, all values [0, max) are valid enum values
-			let value: FlowControl = unsafe { mem::transmute(index as u8) };
-			self.index = index + 1;
-			Some(value)
-		} else {
-			None
-		}
-	}
-	#[inline]
-	fn size_hint(&self) -> (usize, Option<usize>) {
-		let len = IcedConstants::FLOW_CONTROL_ENUM_COUNT - self.index as usize;
-		(len, Some(len))
-	}
-}
-#[cfg(feature = "instr_info")]
-impl ExactSizeIterator for FlowControlIterator {}
-#[cfg(feature = "instr_info")]
-impl FusedIterator for FlowControlIterator {}
-#[cfg(feature = "instr_info")]
 #[test]
+#[cfg(feature = "instr_info")]
 #[rustfmt::skip]
 fn test_flowcontrol_values() {
 	let mut iter = FlowControl::values();
@@ -965,7 +797,7 @@ impl TryFrom<usize> for FlowControl {
 	#[inline]
 	fn try_from(value: usize) -> Result<Self, Self::Error> {
 		if value < IcedConstants::FLOW_CONTROL_ENUM_COUNT {
-			// Safe, all values [0, max) are valid enum values
+			// SAFETY: all values 0-max are valid enum values
 			Ok(unsafe { mem::transmute(value as u8) })
 		} else {
 			Err(IcedError::new("Invalid FlowControl value"))
@@ -1354,42 +1186,12 @@ impl OpCodeOperandKind {
 	/// Iterates over all `OpCodeOperandKind` enum values
 	#[inline]
 	pub fn values() -> impl Iterator<Item = OpCodeOperandKind> + ExactSizeIterator + FusedIterator {
-		OpCodeOperandKindIterator { index: 0 }
+		// SAFETY: all values 0-max are valid enum values
+		(0..IcedConstants::OP_CODE_OPERAND_KIND_ENUM_COUNT).map(|x| unsafe { core::mem::transmute::<u8, OpCodeOperandKind>(x as u8) })
 	}
 }
-#[cfg(all(feature = "encoder", feature = "op_code_info"))]
-#[allow(non_camel_case_types)]
-struct OpCodeOperandKindIterator {
-	index: u32,
-}
-#[cfg(all(feature = "encoder", feature = "op_code_info"))]
-#[rustfmt::skip]
-impl Iterator for OpCodeOperandKindIterator {
-	type Item = OpCodeOperandKind;
-	#[inline]
-	fn next(&mut self) -> Option<Self::Item> {
-		let index = self.index;
-		if index < IcedConstants::OP_CODE_OPERAND_KIND_ENUM_COUNT as u32 {
-			// Safe, all values [0, max) are valid enum values
-			let value: OpCodeOperandKind = unsafe { mem::transmute(index as u8) };
-			self.index = index + 1;
-			Some(value)
-		} else {
-			None
-		}
-	}
-	#[inline]
-	fn size_hint(&self) -> (usize, Option<usize>) {
-		let len = IcedConstants::OP_CODE_OPERAND_KIND_ENUM_COUNT - self.index as usize;
-		(len, Some(len))
-	}
-}
-#[cfg(all(feature = "encoder", feature = "op_code_info"))]
-impl ExactSizeIterator for OpCodeOperandKindIterator {}
-#[cfg(all(feature = "encoder", feature = "op_code_info"))]
-impl FusedIterator for OpCodeOperandKindIterator {}
-#[cfg(all(feature = "encoder", feature = "op_code_info"))]
 #[test]
+#[cfg(all(feature = "encoder", feature = "op_code_info"))]
 #[rustfmt::skip]
 fn test_opcodeoperandkind_values() {
 	let mut iter = OpCodeOperandKind::values();
@@ -1412,7 +1214,7 @@ impl TryFrom<usize> for OpCodeOperandKind {
 	#[inline]
 	fn try_from(value: usize) -> Result<Self, Self::Error> {
 		if value < IcedConstants::OP_CODE_OPERAND_KIND_ENUM_COUNT {
-			// Safe, all values [0, max) are valid enum values
+			// SAFETY: all values 0-max are valid enum values
 			Ok(unsafe { mem::transmute(value as u8) })
 		} else {
 			Err(IcedError::new("Invalid OpCodeOperandKind value"))
@@ -1758,10 +1560,14 @@ pub enum CpuidFeature {
 	AVX_VNNI = 154,
 	/// CPUID.0C0000000H:EAX >= 0C0000001H AND CPUID.0C0000001H:EDX.GMI\[Bits 5:4\] = 11B (\[4\] = exists, \[5\] = enabled)
 	PADLOCK_GMI = 155,
+	/// CPUID.(EAX=07H, ECX=01H):EAX.FRED\[bit 17\]
+	FRED = 156,
+	/// CPUID.(EAX=07H, ECX=01H):EAX.LKGS\[bit 18\]
+	LKGS = 157,
 }
 #[cfg(feature = "instr_info")]
 #[rustfmt::skip]
-static GEN_DEBUG_CPUID_FEATURE: [&str; 156] = [
+static GEN_DEBUG_CPUID_FEATURE: [&str; 158] = [
 	"INTEL8086",
 	"INTEL8086_ONLY",
 	"INTEL186",
@@ -1918,6 +1724,8 @@ static GEN_DEBUG_CPUID_FEATURE: [&str; 156] = [
 	"HRESET",
 	"AVX_VNNI",
 	"PADLOCK_GMI",
+	"FRED",
+	"LKGS",
 ];
 #[cfg(feature = "instr_info")]
 impl fmt::Debug for CpuidFeature {
@@ -1940,42 +1748,12 @@ impl CpuidFeature {
 	/// Iterates over all `CpuidFeature` enum values
 	#[inline]
 	pub fn values() -> impl Iterator<Item = CpuidFeature> + ExactSizeIterator + FusedIterator {
-		CpuidFeatureIterator { index: 0 }
+		// SAFETY: all values 0-max are valid enum values
+		(0..IcedConstants::CPUID_FEATURE_ENUM_COUNT).map(|x| unsafe { core::mem::transmute::<u8, CpuidFeature>(x as u8) })
 	}
 }
-#[cfg(feature = "instr_info")]
-#[allow(non_camel_case_types)]
-struct CpuidFeatureIterator {
-	index: u32,
-}
-#[cfg(feature = "instr_info")]
-#[rustfmt::skip]
-impl Iterator for CpuidFeatureIterator {
-	type Item = CpuidFeature;
-	#[inline]
-	fn next(&mut self) -> Option<Self::Item> {
-		let index = self.index;
-		if index < IcedConstants::CPUID_FEATURE_ENUM_COUNT as u32 {
-			// Safe, all values [0, max) are valid enum values
-			let value: CpuidFeature = unsafe { mem::transmute(index as u8) };
-			self.index = index + 1;
-			Some(value)
-		} else {
-			None
-		}
-	}
-	#[inline]
-	fn size_hint(&self) -> (usize, Option<usize>) {
-		let len = IcedConstants::CPUID_FEATURE_ENUM_COUNT - self.index as usize;
-		(len, Some(len))
-	}
-}
-#[cfg(feature = "instr_info")]
-impl ExactSizeIterator for CpuidFeatureIterator {}
-#[cfg(feature = "instr_info")]
-impl FusedIterator for CpuidFeatureIterator {}
-#[cfg(feature = "instr_info")]
 #[test]
+#[cfg(feature = "instr_info")]
 #[rustfmt::skip]
 fn test_cpuidfeature_values() {
 	let mut iter = CpuidFeature::values();
@@ -1998,7 +1776,7 @@ impl TryFrom<usize> for CpuidFeature {
 	#[inline]
 	fn try_from(value: usize) -> Result<Self, Self::Error> {
 		if value < IcedConstants::CPUID_FEATURE_ENUM_COUNT {
-			// Safe, all values [0, max) are valid enum values
+			// SAFETY: all values 0-max are valid enum values
 			Ok(unsafe { mem::transmute(value as u8) })
 		} else {
 			Err(IcedError::new("Invalid CpuidFeature value"))
@@ -2116,42 +1894,12 @@ impl OpAccess {
 	/// Iterates over all `OpAccess` enum values
 	#[inline]
 	pub fn values() -> impl Iterator<Item = OpAccess> + ExactSizeIterator + FusedIterator {
-		OpAccessIterator { index: 0 }
+		// SAFETY: all values 0-max are valid enum values
+		(0..IcedConstants::OP_ACCESS_ENUM_COUNT).map(|x| unsafe { core::mem::transmute::<u8, OpAccess>(x as u8) })
 	}
 }
-#[cfg(feature = "instr_info")]
-#[allow(non_camel_case_types)]
-struct OpAccessIterator {
-	index: u32,
-}
-#[cfg(feature = "instr_info")]
-#[rustfmt::skip]
-impl Iterator for OpAccessIterator {
-	type Item = OpAccess;
-	#[inline]
-	fn next(&mut self) -> Option<Self::Item> {
-		let index = self.index;
-		if index < IcedConstants::OP_ACCESS_ENUM_COUNT as u32 {
-			// Safe, all values [0, max) are valid enum values
-			let value: OpAccess = unsafe { mem::transmute(index as u8) };
-			self.index = index + 1;
-			Some(value)
-		} else {
-			None
-		}
-	}
-	#[inline]
-	fn size_hint(&self) -> (usize, Option<usize>) {
-		let len = IcedConstants::OP_ACCESS_ENUM_COUNT - self.index as usize;
-		(len, Some(len))
-	}
-}
-#[cfg(feature = "instr_info")]
-impl ExactSizeIterator for OpAccessIterator {}
-#[cfg(feature = "instr_info")]
-impl FusedIterator for OpAccessIterator {}
-#[cfg(feature = "instr_info")]
 #[test]
+#[cfg(feature = "instr_info")]
 #[rustfmt::skip]
 fn test_opaccess_values() {
 	let mut iter = OpAccess::values();
@@ -2174,7 +1922,7 @@ impl TryFrom<usize> for OpAccess {
 	#[inline]
 	fn try_from(value: usize) -> Result<Self, Self::Error> {
 		if value < IcedConstants::OP_ACCESS_ENUM_COUNT {
-			// Safe, all values [0, max) are valid enum values
+			// SAFETY: all values 0-max are valid enum values
 			Ok(unsafe { mem::transmute(value as u8) })
 		} else {
 			Err(IcedError::new("Invalid OpAccess value"))
@@ -2278,42 +2026,12 @@ impl ConditionCode {
 	/// Iterates over all `ConditionCode` enum values
 	#[inline]
 	pub fn values() -> impl Iterator<Item = ConditionCode> + ExactSizeIterator + FusedIterator {
-		ConditionCodeIterator { index: 0 }
+		// SAFETY: all values 0-max are valid enum values
+		(0..IcedConstants::CONDITION_CODE_ENUM_COUNT).map(|x| unsafe { core::mem::transmute::<u8, ConditionCode>(x as u8) })
 	}
 }
-#[cfg(feature = "instr_info")]
-#[allow(non_camel_case_types)]
-struct ConditionCodeIterator {
-	index: u32,
-}
-#[cfg(feature = "instr_info")]
-#[rustfmt::skip]
-impl Iterator for ConditionCodeIterator {
-	type Item = ConditionCode;
-	#[inline]
-	fn next(&mut self) -> Option<Self::Item> {
-		let index = self.index;
-		if index < IcedConstants::CONDITION_CODE_ENUM_COUNT as u32 {
-			// Safe, all values [0, max) are valid enum values
-			let value: ConditionCode = unsafe { mem::transmute(index as u8) };
-			self.index = index + 1;
-			Some(value)
-		} else {
-			None
-		}
-	}
-	#[inline]
-	fn size_hint(&self) -> (usize, Option<usize>) {
-		let len = IcedConstants::CONDITION_CODE_ENUM_COUNT - self.index as usize;
-		(len, Some(len))
-	}
-}
-#[cfg(feature = "instr_info")]
-impl ExactSizeIterator for ConditionCodeIterator {}
-#[cfg(feature = "instr_info")]
-impl FusedIterator for ConditionCodeIterator {}
-#[cfg(feature = "instr_info")]
 #[test]
+#[cfg(feature = "instr_info")]
 #[rustfmt::skip]
 fn test_conditioncode_values() {
 	let mut iter = ConditionCode::values();
@@ -2336,7 +2054,7 @@ impl TryFrom<usize> for ConditionCode {
 	#[inline]
 	fn try_from(value: usize) -> Result<Self, Self::Error> {
 		if value < IcedConstants::CONDITION_CODE_ENUM_COUNT {
-			// Safe, all values [0, max) are valid enum values
+			// SAFETY: all values 0-max are valid enum values
 			Ok(unsafe { mem::transmute(value as u8) })
 		} else {
 			Err(IcedError::new("Invalid ConditionCode value"))
@@ -2403,42 +2121,12 @@ impl MandatoryPrefix {
 	/// Iterates over all `MandatoryPrefix` enum values
 	#[inline]
 	pub fn values() -> impl Iterator<Item = MandatoryPrefix> + ExactSizeIterator + FusedIterator {
-		MandatoryPrefixIterator { index: 0 }
+		// SAFETY: all values 0-max are valid enum values
+		(0..IcedConstants::MANDATORY_PREFIX_ENUM_COUNT).map(|x| unsafe { core::mem::transmute::<u8, MandatoryPrefix>(x as u8) })
 	}
 }
-#[cfg(all(feature = "encoder", feature = "op_code_info"))]
-#[allow(non_camel_case_types)]
-struct MandatoryPrefixIterator {
-	index: u32,
-}
-#[cfg(all(feature = "encoder", feature = "op_code_info"))]
-#[rustfmt::skip]
-impl Iterator for MandatoryPrefixIterator {
-	type Item = MandatoryPrefix;
-	#[inline]
-	fn next(&mut self) -> Option<Self::Item> {
-		let index = self.index;
-		if index < IcedConstants::MANDATORY_PREFIX_ENUM_COUNT as u32 {
-			// Safe, all values [0, max) are valid enum values
-			let value: MandatoryPrefix = unsafe { mem::transmute(index as u8) };
-			self.index = index + 1;
-			Some(value)
-		} else {
-			None
-		}
-	}
-	#[inline]
-	fn size_hint(&self) -> (usize, Option<usize>) {
-		let len = IcedConstants::MANDATORY_PREFIX_ENUM_COUNT - self.index as usize;
-		(len, Some(len))
-	}
-}
-#[cfg(all(feature = "encoder", feature = "op_code_info"))]
-impl ExactSizeIterator for MandatoryPrefixIterator {}
-#[cfg(all(feature = "encoder", feature = "op_code_info"))]
-impl FusedIterator for MandatoryPrefixIterator {}
-#[cfg(all(feature = "encoder", feature = "op_code_info"))]
 #[test]
+#[cfg(all(feature = "encoder", feature = "op_code_info"))]
 #[rustfmt::skip]
 fn test_mandatoryprefix_values() {
 	let mut iter = MandatoryPrefix::values();
@@ -2461,7 +2149,7 @@ impl TryFrom<usize> for MandatoryPrefix {
 	#[inline]
 	fn try_from(value: usize) -> Result<Self, Self::Error> {
 		if value < IcedConstants::MANDATORY_PREFIX_ENUM_COUNT {
-			// Safe, all values [0, max) are valid enum values
+			// SAFETY: all values 0-max are valid enum values
 			Ok(unsafe { mem::transmute(value as u8) })
 		} else {
 			Err(IcedError::new("Invalid MandatoryPrefix value"))
@@ -2535,42 +2223,12 @@ impl OpCodeTableKind {
 	/// Iterates over all `OpCodeTableKind` enum values
 	#[inline]
 	pub fn values() -> impl Iterator<Item = OpCodeTableKind> + ExactSizeIterator + FusedIterator {
-		OpCodeTableKindIterator { index: 0 }
+		// SAFETY: all values 0-max are valid enum values
+		(0..IcedConstants::OP_CODE_TABLE_KIND_ENUM_COUNT).map(|x| unsafe { core::mem::transmute::<u8, OpCodeTableKind>(x as u8) })
 	}
 }
-#[cfg(all(feature = "encoder", feature = "op_code_info"))]
-#[allow(non_camel_case_types)]
-struct OpCodeTableKindIterator {
-	index: u32,
-}
-#[cfg(all(feature = "encoder", feature = "op_code_info"))]
-#[rustfmt::skip]
-impl Iterator for OpCodeTableKindIterator {
-	type Item = OpCodeTableKind;
-	#[inline]
-	fn next(&mut self) -> Option<Self::Item> {
-		let index = self.index;
-		if index < IcedConstants::OP_CODE_TABLE_KIND_ENUM_COUNT as u32 {
-			// Safe, all values [0, max) are valid enum values
-			let value: OpCodeTableKind = unsafe { mem::transmute(index as u8) };
-			self.index = index + 1;
-			Some(value)
-		} else {
-			None
-		}
-	}
-	#[inline]
-	fn size_hint(&self) -> (usize, Option<usize>) {
-		let len = IcedConstants::OP_CODE_TABLE_KIND_ENUM_COUNT - self.index as usize;
-		(len, Some(len))
-	}
-}
-#[cfg(all(feature = "encoder", feature = "op_code_info"))]
-impl ExactSizeIterator for OpCodeTableKindIterator {}
-#[cfg(all(feature = "encoder", feature = "op_code_info"))]
-impl FusedIterator for OpCodeTableKindIterator {}
-#[cfg(all(feature = "encoder", feature = "op_code_info"))]
 #[test]
+#[cfg(all(feature = "encoder", feature = "op_code_info"))]
 #[rustfmt::skip]
 fn test_opcodetablekind_values() {
 	let mut iter = OpCodeTableKind::values();
@@ -2593,7 +2251,7 @@ impl TryFrom<usize> for OpCodeTableKind {
 	#[inline]
 	fn try_from(value: usize) -> Result<Self, Self::Error> {
 		if value < IcedConstants::OP_CODE_TABLE_KIND_ENUM_COUNT {
-			// Safe, all values [0, max) are valid enum values
+			// SAFETY: all values 0-max are valid enum values
 			Ok(unsafe { mem::transmute(value as u8) })
 		} else {
 			Err(IcedError::new("Invalid OpCodeTableKind value"))

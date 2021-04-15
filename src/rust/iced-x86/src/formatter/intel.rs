@@ -10,24 +10,26 @@ mod regs;
 #[cfg(test)]
 mod tests;
 
-use self::enums::*;
-use self::fmt_tbl::ALL_INFOS;
-use self::info::*;
-use self::mem_size_tbl::Info;
-use self::mem_size_tbl::MEM_SIZE_TBL;
-use self::regs::*;
-use super::super::iced_error::IcedError;
-use super::super::*;
-use super::fmt_consts::*;
-use super::fmt_utils::*;
-use super::fmt_utils_all::*;
-use super::instruction_internal::get_address_size_in_bytes;
-use super::num_fmt::*;
-use super::regs_tbl::REGS_TBL;
-use super::*;
+use crate::formatter::fmt_consts::*;
+use crate::formatter::fmt_utils::*;
+use crate::formatter::fmt_utils_all::*;
+use crate::formatter::instruction_internal::get_address_size_in_bytes;
+use crate::formatter::intel::enums::*;
+use crate::formatter::intel::fmt_tbl::ALL_INFOS;
+use crate::formatter::intel::info::*;
+use crate::formatter::intel::mem_size_tbl::Info;
+use crate::formatter::intel::mem_size_tbl::MEM_SIZE_TBL;
+use crate::formatter::intel::regs::*;
+use crate::formatter::num_fmt::*;
+use crate::formatter::regs_tbl::REGS_TBL;
+use crate::formatter::*;
+use crate::iced_error::IcedError;
+use crate::instruction_internal;
+use crate::*;
 use alloc::boxed::Box;
 use alloc::vec::Vec;
 use core::{mem, u16, u32, u8};
+use static_assertions::const_assert_eq;
 
 /// Intel formatter (same as Intel XED)
 ///
@@ -47,7 +49,7 @@ use core::{mem, u16, u32, u8};
 /// assert_eq!("VCVTNE2PS2BF16 zmm2{k5}{z},zmm6,[rax+4]{1to16}", output);
 /// ```
 ///
-/// Using a symbol resolver:
+/// # Using a symbol resolver
 ///
 /// ```
 /// use iced_x86::*;
@@ -141,7 +143,7 @@ impl IntelFormatter {
 	}
 
 	fn format_mnemonic(
-		&mut self, instruction: &Instruction, output: &mut dyn FormatterOutput, op_info: &InstrOpInfo, column: &mut u32, mnemonic_options: u32,
+		&mut self, instruction: &Instruction, output: &mut dyn FormatterOutput, op_info: &InstrOpInfo<'_>, column: &mut u32, mnemonic_options: u32,
 	) {
 		let mut need_space = false;
 		if (mnemonic_options & FormatMnemonicOptions::NO_PREFIXES) == 0 && (op_info.flags & InstrOpInfoFlags::MNEMONIC_IS_DIRECTIVE as u16) == 0 {
@@ -153,7 +155,7 @@ impl IntelFormatter {
 				| InstrOpInfoFlags::JCC_NOT_TAKEN
 				| InstrOpInfoFlags::JCC_TAKEN;
 			if ((prefix_seg as u32)
-				| super::super::instruction_internal::internal_has_any_of_xacquire_xrelease_lock_rep_repne_prefix(instruction)
+				| instruction_internal::internal_has_any_of_xacquire_xrelease_lock_rep_repne_prefix(instruction)
 				| ((op_info.flags as u32) & PREFIX_FLAGS))
 				!= 0
 			{
@@ -307,7 +309,7 @@ impl IntelFormatter {
 		}
 	}
 
-	fn show_segment_prefix(&self, instruction: &Instruction, op_info: &InstrOpInfo) -> bool {
+	fn show_segment_prefix(&self, instruction: &Instruction, op_info: &InstrOpInfo<'_>) -> bool {
 		if (op_info.flags & InstrOpInfoFlags::IGNORE_SEGMENT_PREFIX as u16) != 0 {
 			return false;
 		}
@@ -380,7 +382,7 @@ impl IntelFormatter {
 		*need_space = true;
 	}
 
-	fn format_operands(&mut self, instruction: &Instruction, output: &mut dyn FormatterOutput, op_info: &InstrOpInfo) {
+	fn format_operands(&mut self, instruction: &Instruction, output: &mut dyn FormatterOutput, op_info: &InstrOpInfo<'_>) {
 		for i in 0..op_info.op_count as u32 {
 			if i > 0 {
 				output.write(",", FormatterTextKind::Punctuation);
@@ -392,7 +394,7 @@ impl IntelFormatter {
 		}
 	}
 
-	fn format_operand(&mut self, instruction: &Instruction, output: &mut dyn FormatterOutput, op_info: &InstrOpInfo, operand: u32) {
+	fn format_operand(&mut self, instruction: &Instruction, output: &mut dyn FormatterOutput, op_info: &InstrOpInfo<'_>, operand: u32) {
 		debug_assert!(operand < op_info.op_count as u32);
 
 		let instruction_operand = op_info.instruction_index(operand);
@@ -514,7 +516,7 @@ impl IntelFormatter {
 				} else {
 					FormatterOperandOptionsFlags::NO_BRANCH_SIZE
 				});
-				let mut vec: Vec<SymResTextPart> = Vec::new();
+				let mut vec: Vec<SymResTextPart<'_>> = Vec::new();
 				if let Some(ref symbol) = if let Some(ref mut symbol_resolver) = self.symbol_resolver {
 					to_owned(symbol_resolver.symbol(instruction, operand, instruction_operand, imm64 as u32 as u64, imm_size), &mut vec)
 				} else {
@@ -996,7 +998,7 @@ impl IntelFormatter {
 					instruction.memory_segment(),
 					base_reg,
 					index_reg,
-					super::super::instruction_internal::internal_get_memory_index_scale(instruction),
+					instruction_internal::internal_get_memory_index_scale(instruction),
 					displ_size,
 					displ,
 					addr_size,
@@ -1005,7 +1007,7 @@ impl IntelFormatter {
 			}
 		}
 
-		if operand == 0 && super::super::instruction_internal::internal_has_op_mask_or_zeroing_masking(instruction) {
+		if operand == 0 && instruction_internal::internal_has_op_mask_or_zeroing_masking(instruction) {
 			if instruction.has_op_mask() && (op_info.flags & InstrOpInfoFlags::IGNORE_OP_MASK as u16) == 0 {
 				output.write("{", FormatterTextKind::Punctuation);
 				IntelFormatter::format_register_internal(&self.d, output, instruction, operand, instruction_operand, instruction.op_mask() as u32);
@@ -1023,7 +1025,7 @@ impl IntelFormatter {
 				);
 			}
 		}
-		if operand == 0 && super::super::instruction_internal::internal_has_rounding_control_or_sae(instruction) {
+		if operand == 0 && instruction_internal::internal_has_rounding_control_or_sae(instruction) {
 			let rc = instruction.rounding_control();
 			if rc != RoundingControl::None && can_show_rounding_control(instruction, &self.d.options) {
 				const_assert_eq!(RoundingControl::None as u32, 0);
@@ -1101,6 +1103,7 @@ impl IntelFormatter {
 			operand,
 			instruction_operand,
 			IntelFormatter::get_reg_str(d, reg_num),
+			// SAFETY: either it's REGISTER_ST or it's a valid Register enum value, see Registers::EXTRA_REGISTERS == 1 above
 			if reg_num == Registers::REGISTER_ST { Register::ST0 } else { unsafe { mem::transmute(reg_num as u8) } },
 		);
 	}
@@ -1368,7 +1371,7 @@ impl IntelFormatter {
 
 	#[allow(clippy::unwrap_used)]
 	fn format_memory_size(
-		d: &SelfData, output: &mut dyn FormatterOutput, symbol: &Option<SymbolResult>, mem_size: MemorySize, flags: u32,
+		d: &SelfData, output: &mut dyn FormatterOutput, symbol: &Option<SymbolResult<'_>>, mem_size: MemorySize, flags: u32,
 		operand_options: FormatterOperandOptions,
 	) {
 		let mem_size_options = operand_options.memory_size_options();
@@ -1410,7 +1413,7 @@ impl IntelFormatter {
 		}
 	}
 
-	fn is_same_mem_size(d: &SelfData, mem_size_strings: &[&FormatterString], symbol: &SymbolResult) -> bool {
+	fn is_same_mem_size(d: &SelfData, mem_size_strings: &[&FormatterString], symbol: &SymbolResult<'_>) -> bool {
 		let symbol_size = symbol.symbol_size.unwrap_or(MemorySize::Unknown);
 		debug_assert!((symbol_size as usize) < d.all_memory_sizes.len());
 		let symbol_mem_info = &d.all_memory_sizes[symbol_size as usize];
@@ -1604,49 +1607,49 @@ impl Formatter for IntelFormatter {
 
 	#[must_use]
 	#[inline]
-	fn format_i8_options(&mut self, value: i8, number_options: &NumberFormattingOptions) -> &str {
+	fn format_i8_options(&mut self, value: i8, number_options: &NumberFormattingOptions<'_>) -> &str {
 		self.number_formatter.format_i8(&self.d.options, number_options, value)
 	}
 
 	#[must_use]
 	#[inline]
-	fn format_i16_options(&mut self, value: i16, number_options: &NumberFormattingOptions) -> &str {
+	fn format_i16_options(&mut self, value: i16, number_options: &NumberFormattingOptions<'_>) -> &str {
 		self.number_formatter.format_i16(&self.d.options, number_options, value)
 	}
 
 	#[must_use]
 	#[inline]
-	fn format_i32_options(&mut self, value: i32, number_options: &NumberFormattingOptions) -> &str {
+	fn format_i32_options(&mut self, value: i32, number_options: &NumberFormattingOptions<'_>) -> &str {
 		self.number_formatter.format_i32(&self.d.options, number_options, value)
 	}
 
 	#[must_use]
 	#[inline]
-	fn format_i64_options(&mut self, value: i64, number_options: &NumberFormattingOptions) -> &str {
+	fn format_i64_options(&mut self, value: i64, number_options: &NumberFormattingOptions<'_>) -> &str {
 		self.number_formatter.format_i64(&self.d.options, number_options, value)
 	}
 
 	#[must_use]
 	#[inline]
-	fn format_u8_options(&mut self, value: u8, number_options: &NumberFormattingOptions) -> &str {
+	fn format_u8_options(&mut self, value: u8, number_options: &NumberFormattingOptions<'_>) -> &str {
 		self.number_formatter.format_u8(&self.d.options, number_options, value)
 	}
 
 	#[must_use]
 	#[inline]
-	fn format_u16_options(&mut self, value: u16, number_options: &NumberFormattingOptions) -> &str {
+	fn format_u16_options(&mut self, value: u16, number_options: &NumberFormattingOptions<'_>) -> &str {
 		self.number_formatter.format_u16(&self.d.options, number_options, value)
 	}
 
 	#[must_use]
 	#[inline]
-	fn format_u32_options(&mut self, value: u32, number_options: &NumberFormattingOptions) -> &str {
+	fn format_u32_options(&mut self, value: u32, number_options: &NumberFormattingOptions<'_>) -> &str {
 		self.number_formatter.format_u32(&self.d.options, number_options, value)
 	}
 
 	#[must_use]
 	#[inline]
-	fn format_u64_options(&mut self, value: u64, number_options: &NumberFormattingOptions) -> &str {
+	fn format_u64_options(&mut self, value: u64, number_options: &NumberFormattingOptions<'_>) -> &str {
 		self.number_formatter.format_u64(&self.d.options, number_options, value)
 	}
 }

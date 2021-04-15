@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright (C) 2018-present iced project and contributors
 
-use super::super::super::*;
-use super::enums::OptionsProps;
-use super::opt_value::OptionValue;
+use crate::formatter::tests::enums::OptionsProps;
+use crate::formatter::tests::opt_value::OptionValue;
+use crate::*;
 use alloc::string::String;
 use alloc::vec::Vec;
 
@@ -31,7 +31,7 @@ impl OptionsInstructionInfo {
 		}
 	}
 
-	pub(super) fn initialize_decoder(&self, decoder: &mut Decoder) {
+	pub(super) fn initialize_decoder(&self, decoder: &mut Decoder<'_>) {
 		for info in &self.vec {
 			info.1.initialize_decoder(decoder, info.0);
 		}

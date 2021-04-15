@@ -1,14 +1,19 @@
 // SPDX-License-Identifier: MIT
 // Copyright (C) 2018-present iced project and contributors
 
-use super::super::super::Instruction;
-use super::super::test_utils::get_formatter_unit_tests_dir;
-use super::super::*;
-use super::filter_removed_code_tests;
-use super::sym_res_test_case::*;
-use super::sym_res_test_parser::*;
+use crate::formatter::test_utils::get_formatter_unit_tests_dir;
+use crate::formatter::tests::filter_removed_code_tests;
+use crate::formatter::tests::sym_res_test_case::*;
+use crate::formatter::tests::sym_res_test_parser::*;
+#[cfg(any(feature = "gas", feature = "intel", feature = "masm", feature = "nasm"))]
+use crate::Formatter;
+use crate::Instruction;
+use crate::{FormatterTextKind, SymResTextInfo, SymResTextPart, SymbolResolver, SymbolResult};
+#[cfg(feature = "fast_fmt")]
+use crate::{SpecializedFormatter, SpecializedFormatterTraitOptions};
 use alloc::boxed::Box;
 use alloc::vec::Vec;
+use lazy_static::lazy_static;
 use std::collections::HashSet;
 
 lazy_static! {
@@ -26,10 +31,10 @@ struct SymbolResolverImpl<'a> {
 	vec: Vec<SymResTextPart<'a>>,
 }
 
-impl<'a> SymbolResolver for SymbolResolverImpl<'a> {
+impl SymbolResolver for SymbolResolverImpl<'_> {
 	fn symbol(
 		&mut self, _instruction: &Instruction, _operand: u32, _instruction_operand: Option<u32>, address: u64, address_size: u32,
-	) -> Option<SymbolResult> {
+	) -> Option<SymbolResult<'_>> {
 		for tc in &self.info.symbol_results {
 			if tc.address != address || tc.address_size != address_size {
 				continue;
@@ -88,8 +93,8 @@ pub(in super::super) fn symbol_resolver_test(
 }
 
 #[cfg(feature = "fast_fmt")]
-pub(in super::super) fn symbol_resolver_test_fast(
-	dir: &str, filename: &str, fmt_factory: fn(symbol_resolver: Box<dyn SymbolResolver>) -> Box<FastFormatter>,
+pub(in super::super) fn symbol_resolver_test_fast<TraitOptions: SpecializedFormatterTraitOptions>(
+	dir: &str, filename: &str, fmt_factory: fn(symbol_resolver: Box<dyn SymbolResolver>) -> Box<SpecializedFormatter<TraitOptions>>,
 ) {
 	let (infos, formatted_lines) = get_infos_and_lines(dir, filename);
 	for (info, formatted_line) in infos.iter().zip(formatted_lines.into_iter()) {

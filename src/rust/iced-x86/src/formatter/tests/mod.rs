@@ -22,16 +22,16 @@ pub(super) mod sym_res;
 pub(super) mod sym_res_test_case;
 pub(super) mod sym_res_test_parser;
 
-use self::instr_infos::*;
 #[cfg(feature = "encoder")]
-use super::super::encoder::tests::non_decoded_tests;
-use super::super::test_utils::create_decoder;
-use super::super::test_utils::from_str_conv::to_vec_u8;
-use super::super::{Code, Decoder, Instruction};
-#[cfg(feature = "fast_fmt")]
-use super::FastFormatter;
+use crate::encoder::tests::non_decoded_tests;
+use crate::formatter::tests::instr_infos::*;
 #[cfg(any(feature = "gas", feature = "intel", feature = "masm", feature = "nasm"))]
-use super::Formatter;
+use crate::formatter::Formatter;
+#[cfg(feature = "fast_fmt")]
+use crate::formatter::{SpecializedFormatter, SpecializedFormatterTraitOptions};
+use crate::test_utils::create_decoder;
+use crate::test_utils::from_str_conv::to_vec_u8;
+use crate::{Code, Decoder, Instruction};
 use alloc::boxed::Box;
 use alloc::string::String;
 use alloc::vec::Vec;
@@ -46,7 +46,7 @@ fn get_lines_ignore_comments(filename: &Path) -> Vec<String> {
 	let file = File::open(filename).unwrap_or_else(|_| panic!("Couldn't open file {}", display_filename));
 	BufReader::new(file)
 		.lines()
-		.map(|r| r.unwrap_or_else(|e| panic!(e.to_string())))
+		.map(|r| r.unwrap_or_else(|e| panic!("{}", e.to_string())))
 		.filter(|line| !line.is_empty() && !line.starts_with('#'))
 		.collect()
 }
@@ -64,7 +64,9 @@ pub(super) fn formatter_test(bitness: u32, dir: &str, filename: &str, is_misc: b
 }
 
 #[cfg(feature = "fast_fmt")]
-pub(super) fn formatter_test_fast(bitness: u32, dir: &str, filename: &str, is_misc: bool, fmt_factory: fn() -> Box<FastFormatter>) {
+pub(super) fn formatter_test_fast<TraitOptions: SpecializedFormatterTraitOptions>(
+	bitness: u32, dir: &str, filename: &str, is_misc: bool, fmt_factory: fn() -> Box<SpecializedFormatter<TraitOptions>>,
+) {
 	let &(ref infos, ref ignored) = get_infos(bitness, is_misc);
 	let lines = filter_removed_code_tests(get_formatted_lines(bitness, dir, filename), ignored);
 	if infos.len() != lines.len() {
@@ -90,7 +92,9 @@ pub(super) fn formatter_test_nondec(bitness: u32, dir: &str, filename: &str, fmt
 
 #[cfg(feature = "fast_fmt")]
 #[cfg(feature = "encoder")]
-pub(super) fn formatter_test_nondec_fast(bitness: u32, dir: &str, filename: &str, fmt_factory: fn() -> Box<FastFormatter>) {
+pub(super) fn formatter_test_nondec_fast<TraitOptions: SpecializedFormatterTraitOptions>(
+	bitness: u32, dir: &str, filename: &str, fmt_factory: fn() -> Box<SpecializedFormatter<TraitOptions>>,
+) {
 	let instrs = non_decoded_tests::get_infos(bitness);
 	let lines = get_formatted_lines(bitness, dir, filename);
 	if instrs.len() != instrs.len() {
@@ -107,7 +111,9 @@ fn format_test_info(info: &InstructionInfo, formatted_string: &str, formatter: B
 }
 
 #[cfg(feature = "fast_fmt")]
-fn format_test_info_fast(info: &InstructionInfo, formatted_string: &str, formatter: Box<FastFormatter>) {
+fn format_test_info_fast<TraitOptions: SpecializedFormatterTraitOptions>(
+	info: &InstructionInfo, formatted_string: &str, formatter: Box<SpecializedFormatter<TraitOptions>>,
+) {
 	format_test_fast(info.bitness, &info.hex_bytes, info.ip, info.code, info.options, formatted_string, formatter);
 }
 
@@ -119,7 +125,9 @@ fn format_test_instruction(instruction: &Instruction, formatted_string: &str, fo
 
 #[cfg(feature = "fast_fmt")]
 #[cfg(feature = "encoder")]
-fn format_test_instruction_fast(instruction: &Instruction, formatted_string: &str, formatter: Box<FastFormatter>) {
+fn format_test_instruction_fast<TraitOptions: SpecializedFormatterTraitOptions>(
+	instruction: &Instruction, formatted_string: &str, formatter: Box<SpecializedFormatter<TraitOptions>>,
+) {
 	format_test_instruction_fast_core(instruction, formatted_string, formatter);
 }
 
@@ -142,7 +150,9 @@ fn format_test(bitness: u32, hex_bytes: &str, ip: u64, code: Code, options: u32,
 }
 
 #[cfg(feature = "fast_fmt")]
-fn format_test_fast(bitness: u32, hex_bytes: &str, ip: u64, code: Code, options: u32, formatted_string: &str, formatter: Box<FastFormatter>) {
+fn format_test_fast<TraitOptions: SpecializedFormatterTraitOptions>(
+	bitness: u32, hex_bytes: &str, ip: u64, code: Code, options: u32, formatted_string: &str, formatter: Box<SpecializedFormatter<TraitOptions>>,
+) {
 	let bytes = to_vec_u8(hex_bytes).unwrap();
 	let mut decoder = create_decoder(bitness, &bytes, ip, options).0;
 	let mut ip = decoder.ip();
@@ -194,14 +204,16 @@ fn format_test_instruction_core(instruction: &Instruction, formatted_string: &st
 }
 
 #[cfg(feature = "fast_fmt")]
-fn format_test_instruction_fast_core(instruction: &Instruction, formatted_string: &str, mut formatter: Box<FastFormatter>) {
+fn format_test_instruction_fast_core<TraitOptions: SpecializedFormatterTraitOptions>(
+	instruction: &Instruction, formatted_string: &str, mut formatter: Box<SpecializedFormatter<TraitOptions>>,
+) {
 	let mut actual_formatted_string = String::new();
 	formatter.as_mut().format(instruction, &mut actual_formatted_string);
 	assert_eq!(actual_formatted_string, formatted_string);
 }
 
 #[cfg(any(feature = "gas", feature = "intel", feature = "masm", feature = "nasm"))]
-fn simple_format_test<F: Fn(&mut Decoder)>(
+fn simple_format_test<F: Fn(&mut Decoder<'_>)>(
 	bitness: u32, hex_bytes: &str, ip: u64, code: Code, decoder_options: u32, formatted_string: &str, formatter: &mut dyn Formatter, init_decoder: F,
 ) {
 	let bytes = to_vec_u8(hex_bytes).unwrap();
@@ -225,8 +237,9 @@ fn simple_format_test<F: Fn(&mut Decoder)>(
 }
 
 #[cfg(feature = "fast_fmt")]
-fn simple_format_test_fast<F: Fn(&mut Decoder)>(
-	bitness: u32, hex_bytes: &str, ip: u64, code: Code, decoder_options: u32, formatted_string: &str, formatter: &mut FastFormatter, init_decoder: F,
+fn simple_format_test_fast<TraitOptions: SpecializedFormatterTraitOptions, F: Fn(&mut Decoder<'_>)>(
+	bitness: u32, hex_bytes: &str, ip: u64, code: Code, decoder_options: u32, formatted_string: &str,
+	formatter: &mut SpecializedFormatter<TraitOptions>, init_decoder: F,
 ) {
 	let bytes = to_vec_u8(hex_bytes).unwrap();
 	let mut decoder = create_decoder(bitness, &bytes, ip, decoder_options).0;

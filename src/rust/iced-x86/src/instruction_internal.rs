@@ -8,11 +8,13 @@
 // pub(crate) from Instruction's fields.
 
 #[cfg(feature = "encoder")]
-use super::iced_error::IcedError;
-use super::*;
+use crate::iced_error::IcedError;
+use crate::*;
 #[cfg(feature = "encoder")]
 use core::{i16, i32, i8, u8};
 use core::{u16, u32};
+#[cfg(feature = "encoder")]
+use static_assertions::const_assert_eq;
 
 #[cfg(feature = "decoder")]
 #[inline]
@@ -88,6 +90,12 @@ pub(crate) fn internal_has_any_of_xacquire_xrelease_lock_rep_repne_prefix(this: 
 #[inline]
 pub(crate) fn internal_has_op_mask_or_zeroing_masking(this: &Instruction) -> bool {
 	(this.code_flags & ((CodeFlags::OP_MASK_MASK << CodeFlags::OP_MASK_SHIFT) | CodeFlags::ZEROING_MASKING)) != 0
+}
+
+#[cfg(feature = "decoder")]
+#[inline]
+pub(crate) fn internal_clear_has_repe_repne_prefix(this: &mut Instruction) {
+	this.code_flags &= !(CodeFlags::REPE_PREFIX | CodeFlags::REPNE_PREFIX)
 }
 
 #[cfg(feature = "decoder")]
@@ -376,7 +384,7 @@ pub(crate) fn get_address_size_in_bytes(base_reg: Register, index_reg: Register,
 	if (Register::AX <= base_reg && base_reg <= Register::DI) || (Register::AX <= index_reg && index_reg <= Register::DI) {
 		return 2;
 	}
-	if displ_size == 2 || displ_size == 4 || displ_size == 8 {
+	if displ_size >= 2 {
 		return displ_size;
 	}
 
@@ -542,7 +550,7 @@ pub(crate) fn initialize_unsigned_immediate(instruction: &mut Instruction, opera
 
 #[cfg(feature = "encoder")]
 fn get_immediate_op_kind(code: Code, operand: usize) -> Result<OpKind, IcedError> {
-	let operands = &super::encoder::handlers_table::HANDLERS_TABLE[code as usize].operands;
+	let operands = &crate::encoder::handlers_table::HANDLERS_TABLE[code as usize].operands;
 	if let Some(op) = operands.get(operand) {
 		match op.immediate_op_kind() {
 			Some(op_kind) => {
@@ -578,7 +586,7 @@ fn get_immediate_op_kind(code: Code, operand: usize) -> Result<OpKind, IcedError
 
 #[cfg(feature = "encoder")]
 pub(crate) fn get_near_branch_op_kind(code: Code, operand: usize) -> Result<OpKind, IcedError> {
-	let operands = &super::encoder::handlers_table::HANDLERS_TABLE[code as usize].operands;
+	let operands = &crate::encoder::handlers_table::HANDLERS_TABLE[code as usize].operands;
 	if let Some(op) = operands.get(operand) {
 		match op.near_branch_op_kind() {
 			Some(op_kind) => Ok(op_kind),
@@ -601,7 +609,7 @@ pub(crate) fn get_near_branch_op_kind(code: Code, operand: usize) -> Result<OpKi
 
 #[cfg(feature = "encoder")]
 pub(crate) fn get_far_branch_op_kind(code: Code, operand: usize) -> Result<OpKind, IcedError> {
-	let operands = &super::encoder::handlers_table::HANDLERS_TABLE[code as usize].operands;
+	let operands = &crate::encoder::handlers_table::HANDLERS_TABLE[code as usize].operands;
 	if let Some(op) = operands.get(operand) {
 		match op.far_branch_op_kind() {
 			Some(op_kind) => Ok(op_kind),

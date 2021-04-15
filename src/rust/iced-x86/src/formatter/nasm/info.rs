@@ -1,16 +1,18 @@
 // SPDX-License-Identifier: MIT
 // Copyright (C) 2018-present iced project and contributors
 
-use super::super::super::iced_constants::IcedConstants;
-use super::super::super::*;
-use super::super::FormatterString;
-use super::enums::*;
-use super::fmt_utils::can_show_rounding_control;
-use super::get_mnemonic_cc;
-use super::mem_size_tbl::MEM_SIZE_TBL;
+use crate::formatter::nasm::enums::MemorySizeInfo as NasmMemorySizeInfo;
+use crate::formatter::nasm::enums::*;
+use crate::formatter::nasm::fmt_utils::can_show_rounding_control;
+use crate::formatter::nasm::get_mnemonic_cc;
+use crate::formatter::nasm::mem_size_tbl::MEM_SIZE_TBL;
+use crate::formatter::FormatterString;
+use crate::iced_constants::IcedConstants;
+use crate::*;
 use alloc::string::String;
 use alloc::vec::Vec;
 use core::{mem, u32};
+use static_assertions::const_assert_eq;
 
 #[derive(Debug)]
 pub(super) struct InstrOpInfo<'a> {
@@ -35,8 +37,8 @@ impl<'a> InstrOpInfo<'a> {
 			| (((value as u32) & InstrOpInfoFlags::MEMORY_SIZE_MASK) << InstrOpInfoFlags::MEMORY_SIZE_SHIFT);
 	}
 
-	pub(super) fn op_register(&self, operand: u32) -> usize {
-		self.op_registers[operand as usize] as usize
+	pub(super) fn op_register(&self, operand: u32) -> Register {
+		unsafe { mem::transmute(self.op_registers[operand as usize]) }
 	}
 
 	pub(super) fn op_kind(&self, operand: u32) -> InstrOpKind {
@@ -130,7 +132,7 @@ impl<'a> InstrOpInfo<'a> {
 		}
 	}
 
-	pub(self) fn new(mnemonic: &'a FormatterString, instruction: &Instruction, flags: u32) -> Self {
+	fn new(mnemonic: &'a FormatterString, instruction: &Instruction, flags: u32) -> Self {
 		let mut res = InstrOpInfo::default(mnemonic);
 
 		const_assert_eq!(IcedConstants::MAX_OP_COUNT, 5);
@@ -1192,19 +1194,19 @@ impl InstrInfo for SimpleInstrInfo_movabs {
 		if instr_bitness == 0 {
 			instr_bitness = mem_size;
 		}
-		let mut mem_size_info = super::enums::MemorySizeInfo::None;
+		let mut mem_size_info = NasmMemorySizeInfo::None;
 		if instr_bitness == 64 {
 			if mem_size == 32 {
 				flags |= InstrOpInfoFlags::ADDR_SIZE32;
 			} else {
-				mem_size_info = super::enums::MemorySizeInfo::Qword;
+				mem_size_info = NasmMemorySizeInfo::Qword;
 			}
 		} else if instr_bitness != mem_size {
 			debug_assert!(mem_size == 16 || mem_size == 32);
 			if mem_size == 16 {
-				mem_size_info = super::enums::MemorySizeInfo::Word;
+				mem_size_info = NasmMemorySizeInfo::Word;
 			} else {
-				mem_size_info = super::enums::MemorySizeInfo::Dword;
+				mem_size_info = NasmMemorySizeInfo::Dword;
 			}
 		}
 		flags |= (mem_size_info as u32) << InstrOpInfoFlags::MEMORY_SIZE_INFO_SHIFT;
@@ -1227,7 +1229,7 @@ impl SimpleInstrInfo_er {
 		Self { mnemonic: FormatterString::new(mnemonic), er_index, flags }
 	}
 
-	fn move_operands(info: &mut InstrOpInfo, index: u32, new_op_kind: InstrOpKind) {
+	fn move_operands(info: &mut InstrOpInfo<'_>, index: u32, new_op_kind: InstrOpKind) {
 		debug_assert!(info.op_count <= 4);
 
 		match index {
@@ -1350,7 +1352,7 @@ impl SimpleInstrInfo_pops {
 		Self { mnemonic: FormatterString::new(mnemonic), pseudo_ops }
 	}
 
-	fn remove_last_op(info: &mut InstrOpInfo) {
+	fn remove_last_op(info: &mut InstrOpInfo<'_>) {
 		match info.op_count {
 			5 => info.op_indexes[4] = OP_ACCESS_INVALID,
 			4 => info.op_indexes[3] = OP_ACCESS_INVALID,

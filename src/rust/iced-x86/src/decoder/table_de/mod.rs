@@ -15,13 +15,13 @@ mod legacy_reader;
 #[cfg(any(not(feature = "no_vex"), not(feature = "no_xop")))]
 mod vex_reader;
 
-use self::enums::*;
-use super::super::data_reader::DataReader;
-use super::super::Register;
+use crate::data_reader::DataReader;
+use crate::decoder::handlers::is_null_instance_handler;
+use crate::decoder::handlers::OpCodeHandler;
+use crate::decoder::table_de::enums::*;
+use crate::Register;
 #[cfg(not(feature = "no_evex"))]
-use super::super::TupleType;
-use super::handlers::is_null_instance_handler;
-use super::handlers::OpCodeHandler;
+use crate::TupleType;
 use alloc::vec::Vec;
 use core::mem;
 
@@ -32,7 +32,7 @@ enum HandlerInfo {
 
 struct TableDeserializer<'a> {
 	reader: DataReader<'a>,
-	handler_reader: fn(deserializer: &mut TableDeserializer, result: &mut Vec<&'static OpCodeHandler>),
+	handler_reader: fn(deserializer: &mut TableDeserializer<'_>, result: &mut Vec<&'static OpCodeHandler>),
 	id_to_handler: Vec<HandlerInfo>,
 	temp_vecs: Vec<Vec<&'static OpCodeHandler>>,
 }
@@ -40,14 +40,15 @@ struct TableDeserializer<'a> {
 impl<'a> TableDeserializer<'a> {
 	#[must_use]
 	#[inline]
-	pub(self) fn new(
-		data: &'a [u8], max_ids: usize, handler_reader: fn(deserializer: &mut TableDeserializer, result: &mut Vec<&'static OpCodeHandler>),
+	fn new(
+		data: &'a [u8], max_ids: usize, handler_reader: fn(deserializer: &mut TableDeserializer<'_>, result: &mut Vec<&'static OpCodeHandler>),
 	) -> Self {
 		Self { reader: DataReader::new(data), handler_reader, id_to_handler: Vec::with_capacity(max_ids), temp_vecs: Vec::new() }
 	}
 
-	pub(self) fn deserialize(&mut self) {
+	fn deserialize(&mut self) {
 		while self.reader.can_read() {
+			// SAFETY: generated (and also immutable) data is valid
 			let kind: SerializedDataKind = unsafe { mem::transmute(self.reader.read_u8() as u8) };
 			match kind {
 				SerializedDataKind::HandlerReference => {
@@ -67,76 +68,81 @@ impl<'a> TableDeserializer<'a> {
 
 	#[must_use]
 	#[inline]
-	pub(self) fn read_op_code_handler_kind(&mut self) -> OpCodeHandlerKind {
+	fn read_op_code_handler_kind(&mut self) -> OpCodeHandlerKind {
+		// SAFETY: generated (and also immutable) data is valid
 		unsafe { mem::transmute(self.reader.read_u8() as u8) }
 	}
 
 	#[cfg(any(not(feature = "no_vex"), not(feature = "no_xop")))]
 	#[must_use]
 	#[inline]
-	pub(self) fn read_vex_op_code_handler_kind(&mut self) -> VexOpCodeHandlerKind {
+	fn read_vex_op_code_handler_kind(&mut self) -> VexOpCodeHandlerKind {
+		// SAFETY: generated (and also immutable) data is valid
 		unsafe { mem::transmute(self.reader.read_u8() as u8) }
 	}
 
 	#[cfg(not(feature = "no_evex"))]
 	#[must_use]
 	#[inline]
-	pub(self) fn read_evex_op_code_handler_kind(&mut self) -> EvexOpCodeHandlerKind {
+	fn read_evex_op_code_handler_kind(&mut self) -> EvexOpCodeHandlerKind {
+		// SAFETY: generated (and also immutable) data is valid
 		unsafe { mem::transmute(self.reader.read_u8() as u8) }
 	}
 
 	#[must_use]
 	#[inline]
-	pub(self) fn read_code(&mut self) -> u32 {
+	fn read_code(&mut self) -> u32 {
 		self.reader.read_compressed_u32()
 	}
 
 	#[must_use]
 	#[inline]
-	pub(self) fn read_register(&mut self) -> Register {
+	fn read_register(&mut self) -> Register {
+		// SAFETY: generated (and also immutable) data is valid
 		unsafe { mem::transmute(self.reader.read_u8() as u8) }
 	}
 
 	#[must_use]
 	#[inline]
-	pub(self) fn read_decoder_options(&mut self) -> u32 {
+	fn read_decoder_options(&mut self) -> u32 {
 		self.reader.read_compressed_u32()
 	}
 
 	#[must_use]
 	#[inline]
-	pub(self) fn read_handler_flags(&mut self) -> u32 {
+	fn read_handler_flags(&mut self) -> u32 {
 		self.reader.read_compressed_u32()
 	}
 
 	#[must_use]
 	#[inline]
-	pub(self) fn read_legacy_handler_flags(&mut self) -> u32 {
+	fn read_legacy_handler_flags(&mut self) -> u32 {
 		self.reader.read_compressed_u32()
 	}
 
 	#[cfg(not(feature = "no_evex"))]
 	#[must_use]
 	#[inline]
-	pub(self) fn read_tuple_type(&mut self) -> TupleType {
+	fn read_tuple_type(&mut self) -> TupleType {
+		// SAFETY: generated (and also immutable) data is valid
 		unsafe { mem::transmute(self.reader.read_u8() as u8) }
 	}
 
 	#[must_use]
 	#[inline]
-	pub(self) fn read_boolean(&mut self) -> bool {
+	fn read_boolean(&mut self) -> bool {
 		self.reader.read_u8() != 0
 	}
 
 	#[must_use]
 	#[inline]
-	pub(self) fn read_u32(&mut self) -> u32 {
+	fn read_u32(&mut self) -> u32 {
 		self.reader.read_compressed_u32()
 	}
 
 	#[must_use]
 	#[inline]
-	pub(self) fn read_handler(&mut self) -> *const OpCodeHandler {
+	fn read_handler(&mut self) -> *const OpCodeHandler {
 		let result = self.read_handler_or_null_instance();
 		debug_assert!(!is_null_instance_handler(result));
 		result
@@ -144,7 +150,7 @@ impl<'a> TableDeserializer<'a> {
 
 	#[must_use]
 	#[allow(clippy::unwrap_used)]
-	pub(self) fn read_handler_or_null_instance(&mut self) -> *const OpCodeHandler {
+	fn read_handler_or_null_instance(&mut self) -> *const OpCodeHandler {
 		let mut tmp_vec = self.temp_vecs.pop().unwrap_or_else(|| Vec::with_capacity(1));
 		debug_assert!(tmp_vec.is_empty());
 		(self.handler_reader)(self, &mut tmp_vec);
@@ -156,7 +162,7 @@ impl<'a> TableDeserializer<'a> {
 	}
 
 	#[must_use]
-	pub(self) fn read_handlers(&mut self, count: usize) -> Vec<&'static OpCodeHandler> {
+	fn read_handlers(&mut self, count: usize) -> Vec<&'static OpCodeHandler> {
 		let mut handlers: Vec<&'static OpCodeHandler> = Vec::with_capacity(count);
 		let mut i = 0;
 		while handlers.len() < count {
@@ -177,7 +183,7 @@ impl<'a> TableDeserializer<'a> {
 
 	#[must_use]
 	#[allow(clippy::get_unwrap)]
-	pub(self) fn read_handler_reference(&mut self) -> *const OpCodeHandler {
+	fn read_handler_reference(&mut self) -> *const OpCodeHandler {
 		let index = self.reader.read_u8();
 		if let &HandlerInfo::Handler(handler) = self.id_to_handler.get(index).unwrap() {
 			handler
@@ -188,7 +194,7 @@ impl<'a> TableDeserializer<'a> {
 
 	#[must_use]
 	#[allow(clippy::get_unwrap)]
-	pub(self) fn read_array_reference(&mut self, kind: u32) -> Vec<&'static OpCodeHandler> {
+	fn read_array_reference(&mut self, kind: u32) -> Vec<&'static OpCodeHandler> {
 		let read_kind = self.reader.read_u8() as u32;
 		debug_assert_eq!(read_kind, kind);
 		let index = self.reader.read_u8();
@@ -201,7 +207,7 @@ impl<'a> TableDeserializer<'a> {
 	}
 
 	#[must_use]
-	pub(self) fn read_array_reference_no_clone(&mut self, kind: u32) -> Vec<&'static OpCodeHandler> {
+	fn read_array_reference_no_clone(&mut self, kind: u32) -> Vec<&'static OpCodeHandler> {
 		let read_kind = self.reader.read_u8() as u32;
 		debug_assert_eq!(read_kind, kind);
 		let index = self.reader.read_u8();
@@ -210,7 +216,7 @@ impl<'a> TableDeserializer<'a> {
 
 	#[must_use]
 	#[allow(clippy::get_unwrap)]
-	pub(self) fn table(&mut self, index: usize) -> Vec<&'static OpCodeHandler> {
+	fn table(&mut self, index: usize) -> Vec<&'static OpCodeHandler> {
 		if let &mut HandlerInfo::Handlers(ref mut tmp) = self.id_to_handler.get_mut(index).unwrap() {
 			let handlers = mem::replace(tmp, Vec::new());
 			debug_assert!(!handlers.is_empty());

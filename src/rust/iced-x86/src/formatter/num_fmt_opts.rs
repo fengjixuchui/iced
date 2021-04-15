@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (C) 2018-present iced project and contributors
 
-use super::*;
+use crate::formatter::*;
 use core::{cmp, u32};
 
 /// Gets initialized with the default options and can be overridden by a [`FormatterOptionsProvider`]
@@ -19,7 +19,7 @@ pub struct NumberFormattingOptions<'a> {
 	pub digit_group_size: u8,
 	/// Number base
 	pub number_base: NumberBase,
-	/// Use upper case hex digits
+	/// Use uppercase hex digits
 	pub uppercase_hex: bool,
 	/// Small hex numbers (-9 .. 9) are shown in decimal
 	pub small_hex_numbers_in_decimal: bool,

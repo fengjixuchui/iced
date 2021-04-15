@@ -24,11 +24,11 @@ py_limited_api = any(arg == "--py-limited-api" or arg.startswith("--py-limited-a
 
 setup(
 	name="iced-x86",
-	version="1.10.3",
+	version="1.11.1",
 	license="MIT",
 	author_email="wtfsck@protonmail.com",
 	author="wtfsck",
-	description="iced-x86 is a high performance and correct x86/x64 disassembler, assembler and instruction decoder",
+	description="iced-x86 is a blazing fast and correct x86/x64 disassembler, assembler and instruction decoder",
 	long_description=readme_md,
 	long_description_content_type="text/markdown",
 	url="https://github.com/icedland/iced/tree/master/src/rust/iced-x86-py",
